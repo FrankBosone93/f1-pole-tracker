@@ -1,0 +1,40 @@
+name: Aggiorna pole position F1
+
+on:
+  schedule:
+    # Ogni sabato alle 18:00 UTC e alle 22:00 UTC (dopo la maggior parte
+    # delle qualifiche del weekend, che si tengono di sabato pomeriggio/sera).
+    # GitHub Actions esegue i cron job in orario UTC.
+    - cron: '0 18 * * 6'
+    - cron: '0 22 * * 6'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Esegui script di aggiornamento pole position
+        run: node scripts/update-poles.js
+
+      - name: Commit e push se data.json è cambiato
+        run: |
+          if git diff --quiet -- data.json; then
+            echo "Nessuna modifica a data.json, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add data.json
+            git commit -m "🏎️ Aggiornamento automatico pole position"
+            git push
+          fi

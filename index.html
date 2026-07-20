@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Pole Position Tracker Completo (2021-2026)</title>
+    <!-- Tailwind CSS per la grafica -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js per il grafico -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #121212; color: #ffffff; font-family: system-ui, sans-serif; }
+    </style>
+</head>
+<body class="p-4 max-w-md mx-auto pb-12">
+
+    <header class="text-center my-6">
+        <h1 class="text-2xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
+        <p class="text-gray-400 text-sm">Calendario Completo Storico & Live 2021 - 2026</p>
+        <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
+    </header>
+
+    <!-- Selettore Circuito -->
+    <div class="mb-6">
+        <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
+        <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-[#E10600]">
+            <!-- Inseriti automaticamente dallo script -->
+        </select>
+    </div>
+
+    <!-- Contenitore Grafico -->
+    <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
+        <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
+        <div style="position: relative; height: 200px; max-height: 200px; width: 100%; overflow: hidden;">
+            <canvas id="poleChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Pulsante per aprire il Pannello Admin -->
+    <button onclick="toggleAdminPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
+        🔧 Apri Pannello Aggiornamento Live (2026)
+    </button>
+
+    <!-- Pannello Inserimento Nuovi Dati 2026 (Nascosto di default) -->
+    <div id="adminPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-[#E10600] mb-6 space-y-3">
+        <h3 class="text-sm font-bold text-[#E10600]">AGGIORNA POLE POSITION 2026</h3>
+        
+        <div>
+            <label class="block text-xs text-gray-400 mb-1">Circuito da aggiornare</label>
+            <select id="adminCircuit" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700"></select>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Pilota</label>
+                <input type="text" id="adminDriver" placeholder="Es. Charles Leclerc" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Scuderia</label>
+                <input type="text" id="adminTeam" placeholder="Es. Ferrari" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Tempo (MIN:SEC.ms)</label>
+                <input type="text" id="adminTime" placeholder="Es. 1:12.345" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Meteo + Emoji</label>
+                <input type="text" id="adminWeather" placeholder="Es. ☀️ Sereno" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
+            </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+            <button onclick="saveNewPole()" class="flex-1 bg-[#E10600] hover:bg-red-700 text-white font-bold text-xs py-2 rounded transition-colors cursor-pointer">Salva nei Dati 2026</button>
+            <button onclick="resetToDefault()" class="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-3 rounded transition-colors cursor-pointer" title="Ripristina database originale">Reset</button>
+        </div>
+
+        <div class="flex gap-2 pt-1 border-t border-gray-700 mt-2">
+            <button onclick="exportData()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs py-2 rounded transition-colors cursor-pointer mt-2" title="Scarica un backup di tutti i dati in formato JSON">💾 Esporta JSON</button>
+            <button onclick="document.getElementById('importFileInput').click()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs py-2 rounded transition-colors cursor-pointer mt-2" title="Carica un backup JSON precedentemente esportato">📂 Importa JSON</button>
+            <input type="file" id="importFileInput" accept="application/json" class="hidden" onchange="importData(event)">
+        </div>
+    </div>
+
+    <!-- Pulsante Vista Classifica -->
+    <button onclick="toggleClassificaPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
+        🏆 Apri Vista Classifica
+    </button>
+
+    <!-- Pannello Classifica (Nascosto di default) -->
+    <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
+        <div>
+            <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Piloti (n° Pole Position)</h3>
+            <div id="driverRanking" class="space-y-1 text-sm"></div>
+        </div>
+        <div>
+            <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Team (n° Pole Position)</h3>
+            <div id="teamRanking" class="space-y-1 text-sm"></div>
+        </div>
+        <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
+    </div>
+
+    <!-- Lista Dettagli -->
+    <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
+    <div id="detailsList" class="space-y-3">
+        <!-- I dettagli compariranno qui -->
+    </div>
+
+    <script>
+        // FALLBACK MINIMO — usato SOLO se data.json non è raggiungibile
+        // (es. file aperto in locale con doppio click, senza server/hosting).
+        // La fonte di verità è data.json: viene caricato con fetch() più sotto.
+        const fallbackData = [
+            // === BAHRAIN (SAKHIR) ===
+            {year: 2021, circuit: "Bahrain (Sakhir)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:28.997", seconds: 88.997, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Bahrain (Sakhir)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:30.558", seconds: 90.558, weather: "☀️ Soleggiato"},
+            {year: 2023, circuit: "Bahrain (Sakhir)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:29.708", seconds: 89.708, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Bahrain (Sakhir)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:29.179", seconds: 89.179, weather: "☀️ Sereno"},
+            {year: 2025, circuit: "Bahrain (Sakhir)", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:29.841", seconds: 89.841, weather: "☀️ Soleggiato"},
+
+            // === JEDDAH (ARABIA SAUDITA) ===
+            {year: 2021, circuit: "Jeddah (Arabia Saudita)", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:27.511", seconds: 87.511, weather: "🌙 Notturno Sereno"},
+            {year: 2022, circuit: "Jeddah (Arabia Saudita)", driver: "Sergio Perez", team: "Red Bull", timeStr: "1:28.200", seconds: 88.2, weather: "🌙 Notturno Sereno"},
+            {year: 2023, circuit: "Jeddah (Arabia Saudita)", driver: "Sergio Perez", team: "Red Bull", timeStr: "1:28.265", seconds: 88.265, weather: "🌙 Notturno"},
+            {year: 2024, circuit: "Jeddah (Arabia Saudita)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:27.472", seconds: 87.472, weather: "🌙 Notturno"},
+            {year: 2025, circuit: "Jeddah (Arabia Saudita)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:27.294", seconds: 87.294, weather: "🌙 Notturno"},
+
+            // === MELBOURNE (AUSTRALIA) ===
+            {year: 2022, circuit: "Melbourne (Australia)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:17.868", seconds: 77.868, weather: "☀️ Splendido"},
+            {year: 2023, circuit: "Melbourne (Australia)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:16.732", seconds: 76.732, weather: "☀️ Soleggiato"},
+            {year: 2024, circuit: "Melbourne (Australia)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:15.915", seconds: 75.915, weather: "☀️ Sereno"},
+            {year: 2025, circuit: "Melbourne (Australia)", driver: "Lando Norris", team: "McLaren", timeStr: "1:15.096", seconds: 75.096, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Melbourne (Australia)", driver: "George Russell", team: "Mercedes", timeStr: "1:18.518", seconds: 78.518, weather: "☀️ Sereno"},
+
+            // === SHANGHAI (CINA) ===
+            {year: 2024, circuit: "Shanghai (Cina)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:33.660", seconds: 93.66, weather: "☁️ Nuvoloso"},
+            {year: 2025, circuit: "Shanghai (Cina)", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:30.641", seconds: 90.641, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Shanghai (Cina)", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:32.064", seconds: 92.064, weather: "☀️ Sereno"},
+
+            // === BAKU (AZERBAIJAN) ===
+            {year: 2021, circuit: "Baku (Azerbaijan)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:41.218", seconds: 101.218, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Baku (Azerbaijan)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:41.359", seconds: 101.359, weather: "☀️ Ventoso"},
+            {year: 2023, circuit: "Baku (Azerbaijan)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:40.203", seconds: 100.203, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Baku (Azerbaijan)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:41.365", seconds: 101.365, weather: "☀️ Splendido"},
+            {year: 2025, circuit: "Baku (Azerbaijan)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:41.117", seconds: 101.117, weather: "☀️ Soleggiato"},
+
+            // === MIAMI ===
+            {year: 2022, circuit: "Miami", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:28.796", seconds: 88.796, weather: "☀️ Caldo afoso"},
+            {year: 2023, circuit: "Miami", driver: "Sergio Perez", team: "Red Bull", timeStr: "1:26.841", seconds: 86.841, weather: "☀️ Soleggiato"},
+            {year: 2024, circuit: "Miami", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:27.241", seconds: 87.241, weather: "☀️ Sereno"},
+            {year: 2025, circuit: "Miami", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:26.204", seconds: 86.204, weather: "☀️ Caldo"},
+            {year: 2026, circuit: "Miami", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:27.798", seconds: 87.798, weather: "☀️ Splendido"},
+
+            // === IMOLA ===
+            {year: 2021, circuit: "Imola", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:14.411", seconds: 74.411, weather: "☁️ Nuvoloso"},
+            {year: 2022, circuit: "Imola", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:27.999", seconds: 87.999, weather: "🌧️ Pioggia bagnato"},
+            {year: 2024, circuit: "Imola", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:14.746", seconds: 74.746, weather: "☀️ Soleggiato"},
+            {year: 2025, circuit: "Imola", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:14.670", seconds: 74.67, weather: "☀️ Splendido"},
+
+            // === MONACO ===
+            {year: 2021, circuit: "Monaco", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:10.346", seconds: 70.346, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Monaco", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:11.376", seconds: 71.376, weather: "☁️ Nuvoloso"},
+            {year: 2023, circuit: "Monaco", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:11.365", seconds: 71.365, weather: "☀️ Soleggiato"},
+            {year: 2024, circuit: "Monaco", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:10.270", seconds: 70.27, weather: "☀️ Splendido"},
+            {year: 2025, circuit: "Monaco", driver: "Lando Norris", team: "McLaren", timeStr: "1:09.954", seconds: 69.954, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Monaco", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:12.051", seconds: 72.051, weather: "☀️ Sereno"},
+
+            // === MONTREAL (CANADA) ===
+            {year: 2022, circuit: "Montreal (Canada)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:21.299", seconds: 81.299, weather: "🌧️ Umido"},
+            {year: 2023, circuit: "Montreal (Canada)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:25.858", seconds: 85.858, weather: "🌧️ Pioggia"},
+            {year: 2024, circuit: "Montreal (Canada)", driver: "George Russell", team: "Mercedes", timeStr: "1:12.000", seconds: 72.0, weather: "☁️ Variabile"},
+            {year: 2025, circuit: "Montreal (Canada)", driver: "George Russell", team: "Mercedes", timeStr: "1:10.899", seconds: 70.899, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Montreal (Canada)", driver: "George Russell", team: "Mercedes", timeStr: "1:12.578", seconds: 72.578, weather: "☀️ Sereno"},
+
+            // === BARCELLONA ===
+            {year: 2021, circuit: "Barcellona", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:16.741", seconds: 76.741, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Barcellona", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:18.750", seconds: 78.75, weather: "☀️ Molto Caldo"},
+            {year: 2023, circuit: "Barcellona", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:12.272", seconds: 72.272, weather: "☁️ Nuvoloso"},
+            {year: 2024, circuit: "Barcellona", driver: "Lando Norris", team: "McLaren", timeStr: "1:11.383", seconds: 71.383, weather: "☀️ Sereno"},
+            {year: 2025, circuit: "Barcellona", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:11.546", seconds: 71.546, weather: "☀️ Splendido"},
+            {year: 2026, circuit: "Barcellona", driver: "George Russell", team: "Mercedes", timeStr: "1:14.679", seconds: 74.679, weather: "☀️ Soleggiato"},
+
+            // === RED BULL RING ===
+            {year: 2021, circuit: "Red Bull Ring", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:03.720", seconds: 63.72, weather: "☀️ Sereno"},
+            {year: 2022, circuit: "Red Bull Ring", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:05.013", seconds: 65.013, weather: "☀️ Soleggiato"},
+            {year: 2023, circuit: "Red Bull Ring", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:04.391", seconds: 64.391, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Red Bull Ring", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:04.314", seconds: 64.314, weather: "☀️ Caldo"},
+            {year: 2025, circuit: "Red Bull Ring", driver: "Lando Norris", team: "McLaren", timeStr: "1:03.971", seconds: 63.971, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Red Bull Ring", driver: "George Russell", team: "Mercedes", timeStr: "1:06.113", seconds: 66.113, weather: "☀️ Sereno"},
+
+            // === SILVERSTONE ===
+            {year: 2021, circuit: "Silverstone", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:26.134", seconds: 86.134, weather: "☀️ Caldo"},
+            {year: 2022, circuit: "Silverstone", driver: "Carlos Sainz", team: "Ferrari", timeStr: "1:40.983", seconds: 100.983, weather: "🌧️ Pioggia"},
+            {year: 2023, circuit: "Silverstone", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:26.720", seconds: 86.72, weather: "⛅ Variabile"},
+            {year: 2024, circuit: "Silverstone", driver: "George Russell", team: "Mercedes", timeStr: "1:25.819", seconds: 85.819, weather: "☁️ Nuvoloso / Umido"},
+            {year: 2025, circuit: "Silverstone", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:24.892", seconds: 84.892, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Silverstone", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:28.111", seconds: 88.111, weather: "☀️ Sereno"},
+
+            // === HUNGARORING ===
+            {year: 2021, circuit: "Hungaroring", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:15.419", seconds: 75.419, weather: "☀️ Molto Caldo"},
+            {year: 2022, circuit: "Hungaroring", driver: "George Russell", team: "Mercedes", timeStr: "1:17.377", seconds: 77.377, weather: "☀️ Asciutto"},
+            {year: 2023, circuit: "Hungaroring", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:16.609", seconds: 76.609, weather: "☀️ Splendido"},
+            {year: 2024, circuit: "Hungaroring", driver: "Lando Norris", team: "McLaren", timeStr: "1:15.227", seconds: 75.227, weather: "☁️ Nuvoloso / Umido"},
+            {year: 2025, circuit: "Hungaroring", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:15.372", seconds: 75.372, weather: "☀️ Afoso"},
+
+            // === SPA-FRANCORCHAMPS ===
+            {year: 2021, circuit: "Spa-Francorchamps", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:59.765", seconds: 119.765, weather: "🌧️ Pioggia Diluvio"},
+            {year: 2022, circuit: "Spa-Francorchamps", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:43.665", seconds: 103.665, weather: "☁️ Nuvoloso"},
+            {year: 2023, circuit: "Spa-Francorchamps", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:46.988", seconds: 106.988, weather: "🌧️ Tracciato Umido"},
+            {year: 2024, circuit: "Spa-Francorchamps", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:53.159", seconds: 113.159, weather: "🌧️ Pioggia bagnato"},
+            {year: 2025, circuit: "Spa-Francorchamps", driver: "Lando Norris", team: "McLaren", timeStr: "1:40.562", seconds: 100.562, weather: "☀️ Soleggiato"},
+            {year: 2026, circuit: "Spa-Francorchamps", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:44.361", seconds: 104.361, weather: "☀️ Sereno"},
+
+            // === ZANDVOORT ===
+            {year: 2021, circuit: "Zandvoort", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:08.885", seconds: 68.885, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Zandvoort", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:10.342", seconds: 70.342, weather: "☀️ Sereno"},
+            {year: 2023, circuit: "Zandvoort", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:10.567", seconds: 70.567, weather: "🌧️ Pioggia / Umido"},
+            {year: 2024, circuit: "Zandvoort", driver: "Lando Norris", team: "McLaren", timeStr: "1:09.673", seconds: 69.673, weather: "☀️ Ventoso"},
+            {year: 2025, circuit: "Zandvoort", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:08.662", seconds: 68.662, weather: "☀️ Sereno"},
+
+            // === MONZA ===
+            {year: 2021, circuit: "Monza", driver: "Valtteri Bottas", team: "Mercedes", timeStr: "1:19.555", seconds: 79.555, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Monza", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:20.161", seconds: 80.161, weather: "☀️ Caldo"},
+            {year: 2023, circuit: "Monza", driver: "Carlos Sainz", team: "Ferrari", timeStr: "1:20.294", seconds: 80.294, weather: "☀️ Splendido"},
+            {year: 2024, circuit: "Monza", driver: "Lando Norris", team: "McLaren", timeStr: "1:19.327", seconds: 79.327, weather: "☀️ Afoso"},
+            {year: 2025, circuit: "Monza", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:18.792", seconds: 78.792, weather: "☀️ Soleggiato"},
+
+            // === SINGAPORE ===
+            {year: 2022, circuit: "Singapore", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:49.412", seconds: 109.412, weather: "🌧️ Umido in asciugatura"},
+            {year: 2023, circuit: "Singapore", driver: "Carlos Sainz", team: "Ferrari", timeStr: "1:30.984", seconds: 90.984, weather: "🌙 Umido tropicale"},
+            {year: 2024, circuit: "Singapore", driver: "Lando Norris", team: "McLaren", timeStr: "1:29.525", seconds: 89.525, weather: "🌙 Caldo Notturno"},
+            {year: 2025, circuit: "Singapore", driver: "George Russell", team: "Mercedes", timeStr: "1:29.158", seconds: 89.158, weather: "🌙 Sereno"},
+
+            // === SUZUKA ===
+            {year: 2022, circuit: "Suzuka", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:29.304", seconds: 89.304, weather: "☀️ Soleggiato"},
+            {year: 2023, circuit: "Suzuka", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:28.877", seconds: 88.877, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Suzuka", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:28.197", seconds: 88.197, weather: "☀️ Splendido"},
+            {year: 2025, circuit: "Suzuka", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:26.983", seconds: 86.983, weather: "☀️ Sereno"},
+            {year: 2026, circuit: "Suzuka", driver: "Kimi Antonelli", team: "Mercedes", timeStr: "1:28.778", seconds: 88.778, weather: "☀️ Splendido"},
+
+            // === AUSTIN (COTA) ===
+            {year: 2021, circuit: "Austin (COTA)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:32.910", seconds: 92.91, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Austin (COTA)", driver: "Carlos Sainz", team: "Ferrari", timeStr: "1:34.356", seconds: 94.356, weather: "☀️ Caldo"},
+            {year: 2023, circuit: "Austin (COTA)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:34.723", seconds: 94.723, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Austin (COTA)", driver: "Lando Norris", team: "McLaren", timeStr: "1:32.330", seconds: 92.33, weather: "☀️ Soleggiato"},
+            {year: 2025, circuit: "Austin (COTA)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:32.510", seconds: 92.51, weather: "☀️ Splendido"},
+
+            // === CITTÀ DEL MESSICO ===
+            {year: 2021, circuit: "Città del Messico", driver: "Valtteri Bottas", team: "Mercedes", timeStr: "1:15.875", seconds: 75.875, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Città del Messico", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:17.775", seconds: 77.775, weather: "☀️ Altitudine"},
+            {year: 2023, circuit: "Città del Messico", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:17.166", seconds: 77.166, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Città del Messico", driver: "Carlos Sainz", team: "Ferrari", timeStr: "1:15.946", seconds: 75.946, weather: "☀️ Splendido"},
+            {year: 2025, circuit: "Città del Messico", driver: "Lando Norris", team: "McLaren", timeStr: "1:15.586", seconds: 75.586, weather: "☀️ Sereno"},
+
+            // === INTERLAGOS (SAN PAOLO) ===
+            {year: 2021, circuit: "Interlagos (San Paolo)", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:07.934", seconds: 67.934, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Interlagos (San Paolo)", driver: "Kevin Magnussen", team: "Haas", timeStr: "1:11.674", seconds: 71.674, weather: "🌧️ Pioggia improvvisa!"},
+            {year: 2023, circuit: "Interlagos (San Paolo)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:10.725", seconds: 70.725, weather: "⛈️ Tempesta imminente"},
+            {year: 2024, circuit: "Interlagos (San Paolo)", driver: "Lando Norris", team: "McLaren", timeStr: "1:23.405", seconds: 83.405, weather: "🌧️ Pioggia estrema"},
+            {year: 2025, circuit: "Interlagos (San Paolo)", driver: "Lando Norris", team: "McLaren", timeStr: "1:09.511", seconds: 69.511, weather: "☀️ Sereno"},
+
+            // === LAS VEGAS ===
+            {year: 2023, circuit: "Las Vegas", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:34.054", seconds: 94.054, weather: "🌙 Freddo Notturno"},
+            {year: 2024, circuit: "Las Vegas", driver: "George Russell", team: "Mercedes", timeStr: "1:32.312", seconds: 92.312, weather: "🌙 Notturno"},
+            {year: 2025, circuit: "Las Vegas", driver: "Lando Norris", team: "McLaren", timeStr: "1:47.934", seconds: 107.934, weather: "🌙 Notturno Sereno"},
+
+            // === QATAR (LUSAIL) ===
+            {year: 2021, circuit: "Qatar (Lusail)", driver: "Lewis Hamilton", team: "Mercedes", timeStr: "1:20.827", seconds: 80.827, weather: "🌙 Notturno Sereno"},
+            {year: 2023, circuit: "Qatar (Lusail)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:23.778", seconds: 83.778, weather: "🌙 Caldo afoso"},
+            {year: 2024, circuit: "Qatar (Lusail)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:20.520", seconds: 80.52, weather: "🌙 Notturno"},
+            {year: 2025, circuit: "Qatar (Lusail)", driver: "Oscar Piastri", team: "McLaren", timeStr: "1:19.387", seconds: 79.387, weather: "🌙 Ventoso"},
+
+            // === ABU DHABI (YAS MARINA) ===
+            {year: 2021, circuit: "Abu Dhabi (Yas Marina)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:22.109", seconds: 82.109, weather: "☀️ Notturno Sereno"},
+            {year: 2022, circuit: "Abu Dhabi (Yas Marina)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:23.824", seconds: 83.824, weather: "☀️ Sereno"},
+            {year: 2023, circuit: "Abu Dhabi (Yas Marina)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:24.008", seconds: 84.008, weather: "☀️ Sereno"},
+            {year: 2024, circuit: "Abu Dhabi (Yas Marina)", driver: "Lando Norris", team: "McLaren", timeStr: "1:22.595", seconds: 82.595, weather: "☀️ Sereno"},
+            {year: 2025, circuit: "Abu Dhabi (Yas Marina)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:22.207", seconds: 82.207, weather: "☀️ Asciutto"},
+
+            // === PAUL RICARD (FRANCIA) ===
+            {year: 2021, circuit: "Paul Ricard (Francia)", driver: "Max Verstappen", team: "Red Bull", timeStr: "1:29.990", seconds: 89.99, weather: "☀️ Soleggiato"},
+            {year: 2022, circuit: "Paul Ricard (Francia)", driver: "Charles Leclerc", team: "Ferrari", timeStr: "1:30.872", seconds: 90.872, weather: "☀️ Caldo Torrido"},
+
+            // === SOCHI (RUSSIA) ===
+            {year: 2021, circuit: "Sochi (Russia)", driver: "Lando Norris", team: "McLaren", timeStr: "1:41.993", seconds: 101.993, weather: "🌧️ Pioggia / Umido"},
+
+            // === PORTIMÃO (PORTOGALLO) ===
+            {year: 2021, circuit: "Portimão (Portogallo)", driver: "Valtteri Bottas", team: "Mercedes", timeStr: "1:18.348", seconds: 78.348, weather: "☀️ Sereno"},
+
+            // === ISTANBUL (TURCHIA) ===
+            {year: 2021, circuit: "Istanbul (Turchia)", driver: "Valtteri Bottas", team: "Mercedes", timeStr: "1:22.998", seconds: 82.998, weather: "🌧️ Umido bagnato"}
+
+        ];
+
+        // baseData = fonte di verità "ufficiale": data.json se raggiungibile, altrimenti fallbackData
+        let baseData = fallbackData;
+        let poleData = [];
+
+        const select = document.getElementById('circuitSelect');
+        const adminCircuit = document.getElementById('adminCircuit');
+        const detailsList = document.getElementById('detailsList');
+        const dataSourceBadge = document.getElementById('dataSourceBadge');
+        let currentChart = null;
+
+        function populateCircuitSelectors(circuits) {
+            select.innerHTML = '';
+            adminCircuit.innerHTML = '';
+            circuits.forEach(c => {
+                const opt1 = document.createElement('option');
+                opt1.value = c; opt1.innerText = c;
+                select.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = c; opt2.innerText = c;
+                adminCircuit.appendChild(opt2);
+            });
+        }
+
+        async function initApp() {
+            try {
+                const response = await fetch('data.json', { cache: 'no-store' });
+                if(!response.ok) throw new Error('data.json non raggiungibile (status ' + response.status + ')');
+                baseData = await response.json();
+                if(dataSourceBadge) dataSourceBadge.innerText = '🟢 Dati aggiornati da data.json';
+            } catch(err) {
+                // Probabile apertura del file in locale (file://) oppure data.json assente:
+                // si usa il fallback incorporato nel codice.
+                baseData = fallbackData;
+                if(dataSourceBadge) dataSourceBadge.innerText = '🟡 Dati di fallback (data.json non raggiungibile)';
+                console.warn('Impossibile caricare data.json, uso il fallback incorporato.', err);
+            }
+
+            // Le modifiche fatte in locale dal pannello Aggiornamento Live restano
+            // salvate solo nel browser di chi le fa (localStorage), sopra ai dati ufficiali.
+            const localOverride = JSON.parse(localStorage.getItem('f1_pole_data') || 'null');
+            poleData = localOverride || [...baseData];
+
+            const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
+            populateCircuitSelectors(uniqueCircuits);
+
+            select.addEventListener('change', (e) => updateApp(e.target.value));
+            updateApp(uniqueCircuits[0]);
+        }
+
+        function formatSecondsToTime(totalSeconds) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = Math.floor(totalSeconds % 60);
+            const ms = Math.round((totalSeconds % 1) * 1000);
+            return mins + ':' + secs.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
+        }
+
+        function parseTimeToSeconds(timeStr) {
+            try {
+                const parts = timeStr.split(':');
+                const mins = parseInt(parts[0], 10);
+                const secs = parseFloat(parts[1]);
+                return (mins * 60) + secs;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        // --- VALIDAZIONE INPUT (più severa) ---
+        // Nomi: lettere (anche accentate), spazi, apostrofi e trattini, 2-40 caratteri
+        const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,40}$/;
+        // Tempo pole: M:SS.mmm con minuti 0-9, secondi 00-59, millisecondi 000-999
+        const TIME_REGEX = /^([0-9]):([0-5][0-9])\.([0-9]{3})$/;
+
+        function validatePoleEntry(circuit, driver, team, timeStr, weather) {
+            const errors = [];
+
+            if(!circuit) {
+                errors.push("Seleziona un circuito.");
+            }
+            if(!driver || !NAME_REGEX.test(driver)) {
+                errors.push("Il nome del Pilota non è valido (usa solo lettere, spazi, apostrofi o trattini, 2-40 caratteri).");
+            }
+            if(!team || !NAME_REGEX.test(team)) {
+                errors.push("Il nome della Scuderia non è valido (usa solo lettere, spazi, apostrofi o trattini, 2-40 caratteri).");
+            }
+            if(!timeStr || !TIME_REGEX.test(timeStr)) {
+                errors.push("Formato tempo non valido. Usa MINUTI:SECONDI.MILLISECONDI, es. 1:12.345 (secondi 00-59, millisecondi a 3 cifre).");
+            }
+            if(weather && weather.length > 40) {
+                errors.push("La descrizione Meteo è troppo lunga (max 40 caratteri).");
+            }
+
+            return errors;
+        }
+
+        function saveNewPole() {
+            const circuit = adminCircuit.value;
+            const driver = document.getElementById('adminDriver').value.trim();
+            const team = document.getElementById('adminTeam').value.trim();
+            const timeStr = document.getElementById('adminTime').value.trim();
+            const weather = document.getElementById('adminWeather').value.trim();
+
+            const errors = validatePoleEntry(circuit, driver, team, timeStr, weather);
+            if(errors.length > 0) {
+                alert("Impossibile salvare:\n\n- " + errors.join("\n- "));
+                return;
+            }
+
+            const seconds = parseTimeToSeconds(timeStr);
+            if(seconds === null || isNaN(seconds)) {
+                alert("Formato tempo non valido! Usa MINUTI:SECONDI.MILLISECONDI (es. 1:12.530)");
+                return;
+            }
+
+            const existingIndex = poleData.findIndex(d => d.circuit === circuit && d.year === 2026);
+            const newEntry = { year: 2026, circuit, driver, team, timeStr, seconds, weather: weather || "☀️ Sereno" };
+
+            if(existingIndex > -1) {
+                poleData[existingIndex] = newEntry;
+            } else {
+                poleData.push(newEntry);
+            }
+
+            localStorage.setItem('f1_pole_data', JSON.stringify(poleData));
+            select.value = circuit; 
+            updateApp(circuit);
+            
+            document.getElementById('adminDriver').value = "";
+            document.getElementById('adminTeam').value = "";
+            document.getElementById('adminTime').value = "";
+            document.getElementById('adminWeather').value = "";
+            alert(`Pole del 2026 per ${circuit} salvata con successo!`);
+        }
+
+        function resetToDefault() {
+            if(confirm("Vuoi cancellare tutte le modifiche locali e ripristinare i dati ufficiali (data.json)?")) {
+                localStorage.removeItem('f1_pole_data');
+                poleData = [...baseData];
+                const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
+                populateCircuitSelectors(uniqueCircuits);
+                updateApp(select.value && uniqueCircuits.includes(select.value) ? select.value : uniqueCircuits[0]);
+            }
+        }
+
+        // --- BACKUP / RIPRISTINO TRAMITE FILE JSON ---
+        function exportData() {
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                source: "F1 Pole Tracker",
+                data: poleData
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().slice(0,10);
+            a.href = url;
+            a.download = `f1_pole_data_backup_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function isValidPoleDataArray(arr) {
+            if(!Array.isArray(arr)) return false;
+            return arr.every(d =>
+                d && typeof d.year === 'number' &&
+                typeof d.circuit === 'string' && d.circuit.length > 0 &&
+                typeof d.driver === 'string' && NAME_REGEX.test(d.driver) &&
+                typeof d.team === 'string' && NAME_REGEX.test(d.team) &&
+                typeof d.timeStr === 'string' && TIME_REGEX.test(d.timeStr) &&
+                typeof d.seconds === 'number' && !isNaN(d.seconds) &&
+                typeof d.weather === 'string'
+            );
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    const importedArray = Array.isArray(parsed) ? parsed : parsed.data;
+
+                    if(!isValidPoleDataArray(importedArray)) {
+                        alert("Il file JSON non è valido o contiene dati mal formattati. Import annullato.");
+                        return;
+                    }
+
+                    if(!confirm(`Trovate ${importedArray.length} pole position nel file. Vuoi sostituire tutti i dati attuali con questi importati?`)) {
+                        return;
+                    }
+
+                    poleData = importedArray;
+                    localStorage.setItem('f1_pole_data', JSON.stringify(poleData));
+
+                    // Ricostruisce la select dei circuiti nel caso siano stati importati nuovi circuiti
+                    const importedCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
+                    select.innerHTML = '';
+                    adminCircuit.innerHTML = '';
+                    importedCircuits.forEach(c => {
+                        const opt1 = document.createElement('option');
+                        opt1.value = c; opt1.innerText = c;
+                        select.appendChild(opt1);
+                        const opt2 = document.createElement('option');
+                        opt2.value = c; opt2.innerText = c;
+                        adminCircuit.appendChild(opt2);
+                    });
+
+                    updateApp(importedCircuits[0]);
+                    alert("Import completato con successo!");
+                } catch(err) {
+                    alert("Errore nella lettura del file JSON: " + err.message);
+                } finally {
+                    event.target.value = "";
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- VISTA CLASSIFICA ---
+        function toggleClassificaPanel() {
+            const panel = document.getElementById('classificaPanel');
+            panel.classList.toggle('hidden');
+            if(!panel.classList.contains('hidden')) {
+                renderClassifica();
+            }
+        }
+
+        function renderClassifica() {
+            const driverCounts = {};
+            const teamCounts = {};
+
+            poleData.forEach(d => {
+                driverCounts[d.driver] = (driverCounts[d.driver] || 0) + 1;
+                teamCounts[d.team] = (teamCounts[d.team] || 0) + 1;
+            });
+
+            const sortedDrivers = Object.entries(driverCounts).sort((a,b) => b[1] - a[1]);
+            const sortedTeams = Object.entries(teamCounts).sort((a,b) => b[1] - a[1]);
+
+            const medal = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+
+            const driverRanking = document.getElementById('driverRanking');
+            driverRanking.innerHTML = sortedDrivers.map(([name, count], i) => `
+                <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
+                    <span>${medal(i)} ${name}</span>
+                    <span class="font-bold text-[#E10600]">${count}</span>
+                </div>
+            `).join('');
+
+            const teamRanking = document.getElementById('teamRanking');
+            teamRanking.innerHTML = sortedTeams.map(([name, count], i) => `
+                <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
+                    <span>${medal(i)} ${name}</span>
+                    <span class="font-bold text-[#E10600]">${count}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('classificaMeta').innerText =
+                `Totale pole position registrate: ${poleData.length} · Circuiti: ${new Set(poleData.map(d=>d.circuit)).size}`;
+        }
+
+        function updateApp(circuitName) {
+            const filtered = poleData.filter(d => d.circuit === circuitName).sort((a,b) => a.year - b.year);
+            
+            if(currentChart) currentChart.destroy();
+            
+            const ctx = document.getElementById('poleChart').getContext('2d');
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: filtered.map(d => d.year),
+                    datasets: [{
+                        data: filtered.map(d => d.seconds),
+                        borderColor: '#E10600',
+                        backgroundColor: 'rgba(225, 6, 0, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.2,
+                        pointBackgroundColor: '#ffffff',
+                        pointHoverBackgroundColor: '#E10600',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            reverse: true,
+                            grid: { color: '#2a2a2a' },
+                            ticks: { 
+                                color: '#a0aec0',
+                                callback: function(value) { return formatSecondsToTime(value); }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a0aec0' }
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return " Tempo: " + filtered[context.dataIndex].timeStr;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Record storico del circuito = tempo più basso tra tutti gli anni disponibili
+            const recordSeconds = filtered.length > 0 ? Math.min(...filtered.map(d => d.seconds)) : null;
+
+            detailsList.innerHTML = '';
+            [...filtered].reverse().forEach(d => {
+                const isRecord = recordSeconds !== null && d.seconds === recordSeconds;
+                const card = document.createElement('div');
+                card.className = "bg-[#1E1E1E] p-4 rounded-xl border flex flex-col gap-1 transition-all duration-200 hover:border-gray-700 " +
+                    (isRecord ? "border-yellow-500" : "border-gray-800");
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
+                        <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
+                    </div>
+                    <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${d.driver}</span></div>
+                    <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${d.team}</span></div>
+                    <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${d.weather}</div>
+                `;
+                detailsList.appendChild(card);
+            });
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
