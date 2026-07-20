@@ -1,0 +1,44 @@
+name: Controlla penalità pole position F1
+
+on:
+  schedule:
+    # Gira DOPO la gara (a differenza di update-poles.yml, che gira dopo la
+    # qualifica del sabato), quando f1api.dev pubblica anche i risultati di
+    # gara con la griglia di partenza reale. Orari approssimativi per coprire
+    # i fusi orari dei vari GP: domenica 18:00 e 22:00 UTC, più un run di
+    # sicurezza lunedì mattina per le gare che finiscono più tardi (es. Messico,
+    # Brasile, Las Vegas) o in caso di gare interrotte/ritardate.
+    - cron: '0 18 * * 0'
+    - cron: '0 22 * * 0'
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: write
+
+jobs:
+  check-penalty:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Esegui controllo penalità pole position
+        run: node scripts/check-pole-penalty.js
+
+      - name: Commit e push se data.json è cambiato
+        run: |
+          if git diff --quiet -- data.json; then
+            echo "Nessuna modifica a data.json, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add data.json
+            git commit -m "🚩 Aggiornamento automatico avviso penalità pole"
+            git push
+          fi
