@@ -21,33 +21,50 @@ const path = require('path');
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const API_URL = 'https://f1api.dev/api/current/last/qualy';
 
-// --- Mappatura Circuito: da parole chiave (circuitId/circuitName/country) al nome usato nel sito ---
-const CIRCUIT_KEYWORDS = [
-    { keywords: ['red_bull_ring', 'red bull ring', 'spielberg'], name: 'Red Bull Ring' },
-    { keywords: ['americas', 'austin', 'cota'], name: 'Austin (COTA)' },
-    { keywords: ['las_vegas', 'las vegas'], name: 'Las Vegas' },
-    { keywords: ['miami'], name: 'Miami' },
-    { keywords: ['rodriguez', 'mexico', 'messico'], name: 'Città del Messico' },
-    { keywords: ['interlagos', 'sao_paulo', 'sao paulo', 'brazil', 'brasile'], name: 'Interlagos (San Paolo)' },
-    { keywords: ['yas_marina', 'yas marina', 'abu_dhabi', 'abu dhabi'], name: 'Abu Dhabi (Yas Marina)' },
-    { keywords: ['losail', 'qatar'], name: 'Qatar (Lusail)' },
-    { keywords: ['marina_bay', 'marina bay', 'singapore'], name: 'Singapore' },
-    { keywords: ['suzuka'], name: 'Suzuka' },
-    { keywords: ['monza'], name: 'Monza' },
-    { keywords: ['zandvoort'], name: 'Zandvoort' },
-    { keywords: ['spa'], name: 'Spa-Francorchamps' },
-    { keywords: ['hungaroring', 'hungary', 'ungheria'], name: 'Hungaroring' },
-    { keywords: ['silverstone'], name: 'Silverstone' },
-    { keywords: ['catalunya', 'barcelona', 'spain', 'spagna'], name: 'Barcellona' },
-    { keywords: ['villeneuve', 'montreal', 'canada'], name: 'Montreal (Canada)' },
-    { keywords: ['monaco'], name: 'Monaco' },
-    { keywords: ['imola', 'emilia'], name: 'Imola' },
-    { keywords: ['baku', 'azerbaijan'], name: 'Baku (Azerbaijan)' },
-    { keywords: ['shanghai', 'china', 'cina'], name: 'Shanghai (Cina)' },
-    { keywords: ['albert_park', 'melbourne', 'australia'], name: 'Melbourne (Australia)' },
-    { keywords: ['jeddah', 'saudi'], name: 'Jeddah (Arabia Saudita)' },
-    { keywords: ['bahrain', 'sakhir'], name: 'Bahrain (Sakhir)' },
-];
+// --- Mappatura Circuito: circuitId dell'API (match ESATTO, case-insensitive) -> nome usato nel sito ---
+// NOTA: in passato questa tabella funzionava per parole chiave cercate anche dentro
+// "country" e "raceName", ma è un approccio fragile: "country: Spain" contiene la
+// sottostringa "spa" (Spagna veniva scambiata per Spa-Francorchamps) e molte gare
+// usano "Qatar Airways" come sponsor del titolo anche quando il circuito non è il
+// Qatar (es. "Qatar Airways Australian Grand Prix", venendo scambiate per Qatar/Lusail).
+// Il circuitId invece è stabile e univoco: si mappa 1:1, senza ambiguità.
+const CIRCUIT_ID_MAP = {
+    'red_bull_ring': 'Red Bull Ring',
+    'americas': 'Austin (COTA)',
+    'austin': 'Austin (COTA)',
+    'las_vegas': 'Las Vegas',
+    'vegas': 'Las Vegas',
+    'miami': 'Miami',
+    'rodriguez': 'Città del Messico',
+    'hermanos_rodriguez': 'Città del Messico',
+    'interlagos': 'Interlagos (San Paolo)',
+    'yas_marina': 'Abu Dhabi (Yas Marina)',
+    'losail': 'Qatar (Lusail)',
+    'lusail': 'Qatar (Lusail)',
+    'marina_bay': 'Singapore',
+    'suzuka': 'Suzuka',
+    'monza': 'Monza',
+    'zandvoort': 'Zandvoort',
+    'spa': 'Spa-Francorchamps',
+    'hungaroring': 'Hungaroring',
+    'silverstone': 'Silverstone',
+    'catalunya': 'Barcellona',
+    'montmelo': 'Barcellona',
+    'villeneuve': 'Montreal (Canada)',
+    'gilles_villeneuve': 'Montreal (Canada)',
+    'monaco': 'Monaco',
+    'imola': 'Imola',
+    'baku': 'Baku (Azerbaijan)',
+    'shanghai': 'Shanghai (Cina)',
+    'albert_park': 'Melbourne (Australia)',
+    'jeddah': 'Jeddah (Arabia Saudita)',
+    'bahrain': 'Bahrain (Sakhir)',
+    // Circuiti storici non più in calendario, ma presenti in data.json (stagione 2021)
+    'ricard': 'Paul Ricard (Francia)',
+    'sochi': 'Sochi (Russia)',
+    'portimao': 'Portimão (Portogallo)',
+    'istanbul': 'Istanbul (Turchia)',
+};
 
 // --- Mappatura Team: nome completo restituito dall'API -> nome breve usato nel sito ---
 const TEAM_KEYWORDS = [
@@ -71,6 +88,8 @@ function normalize(str) {
         .replace(/[^a-z0-9]+/g, '_');
 }
 
+// Usata solo per il team (un'unica stringa affidabile, il nome ufficiale del team,
+// non inquinata da sponsor/nomi di gara come invece accade per circuitName/raceName).
 function matchByKeywords(candidates, table) {
     const normalizedCandidates = candidates.filter(Boolean).map(normalize);
     for (const entry of table) {
@@ -82,6 +101,11 @@ function matchByKeywords(candidates, table) {
         }
     }
     return null;
+}
+
+function matchCircuitById(circuitId) {
+    if (!circuitId || typeof circuitId !== 'string') return null;
+    return CIRCUIT_ID_MAP[circuitId.toLowerCase()] || null;
 }
 
 // Converte una stringa tempo in formato M:SS.mmm (o simili) in {timeStr, seconds}
@@ -124,18 +148,13 @@ async function main() {
 
     const raceName = racesNode.raceName || '';
     const circuitInfo = Array.isArray(racesNode.circuit) ? racesNode.circuit[0] : racesNode.circuit;
-    const circuitCandidates = [
-        circuitInfo?.circuitId,
-        circuitInfo?.circuitName,
-        circuitInfo?.country,
-        raceName,
-    ];
-    const mappedCircuit = matchByKeywords(circuitCandidates, CIRCUIT_KEYWORDS);
+    const mappedCircuit = matchCircuitById(circuitInfo?.circuitId);
 
     if (!mappedCircuit) {
         throw new Error(
-            `Impossibile mappare il circuito. Candidati trovati: ${JSON.stringify(circuitCandidates)}. ` +
-            `Aggiungere una nuova voce a CIRCUIT_KEYWORDS in questo script.`
+            `Circuito con circuitId="${circuitInfo?.circuitId}" non riconosciuto ` +
+            `(gara: "${raceName}", circuitName: "${circuitInfo?.circuitName}", country: "${circuitInfo?.country}"). ` +
+            `Aggiungere una nuova voce a CIRCUIT_ID_MAP in questo script.`
         );
     }
 
