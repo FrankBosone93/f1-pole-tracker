@@ -50,6 +50,7 @@ const CIRCUIT_ID_MAP = {
     'silverstone': 'Silverstone',
     'catalunya': 'Barcellona',
     'montmelo': 'Barcellona',
+    'madring': 'Madrid', // nuovo circuito dal calendario 2026 (round 14), gara distinta da Barcellona
     'villeneuve': 'Montreal (Canada)',
     'gilles_villeneuve': 'Montreal (Canada)',
     'monaco': 'Monaco',
