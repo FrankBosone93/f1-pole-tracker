@@ -452,10 +452,10 @@
   {
     "year": 2022,
     "circuit": "Red Bull Ring",
-    "driver": "Charles Leclerc",
-    "team": "Ferrari",
-    "timeStr": "1:05.013",
-    "seconds": 65.013,
+    "driver": "Max Verstappen",
+    "team": "Red Bull",
+    "timeStr": "1:04.984",
+    "seconds": 64.984,
     "weather": "☀️ Soleggiato"
   },
   {
@@ -614,11 +614,12 @@
   {
     "year": 2023,
     "circuit": "Spa-Francorchamps",
-    "driver": "Charles Leclerc",
-    "team": "Ferrari",
-    "timeStr": "1:46.988",
-    "seconds": 106.988,
-    "weather": "🌧️ Tracciato Umido"
+    "driver": "Max Verstappen",
+    "team": "Red Bull",
+    "timeStr": "1:46.168",
+    "seconds": 106.168,
+    "weather": "🌧️ Tracciato Umido",
+    "penaltyNote": "Pole in qualifica, ma partito 6° in griglia per una penalità tecnica: il via al palo è stato di Charles Leclerc."
   },
   {
     "year": 2024,
@@ -1100,10 +1101,11 @@
   {
     "year": 2021,
     "circuit": "Istanbul (Turchia)",
-    "driver": "Valtteri Bottas",
+    "driver": "Lewis Hamilton",
     "team": "Mercedes",
-    "timeStr": "1:22.998",
-    "seconds": 82.998,
-    "weather": "🌧️ Umido bagnato"
+    "timeStr": "1:22.868",
+    "seconds": 82.868,
+    "weather": "🌧️ Umido bagnato",
+    "penaltyNote": "Pole in qualifica, ma partito P11 per una penalità sul cambio motore: il via al palo è stato di Valtteri Bottas."
   }
 ]

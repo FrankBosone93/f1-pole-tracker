@@ -453,6 +453,7 @@
                     <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${d.driver}</span></div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${d.team}</span></div>
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${d.weather}</div>
+                    ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${d.penaltyNote}</span></div>` : ''}
                 `;
                 detailsList.appendChild(card);
             });
