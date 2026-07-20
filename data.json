@@ -365,7 +365,7 @@
     "driver": "George Russell",
     "team": "Mercedes",
     "timeStr": "1:12.000",
-    "seconds": 72.0,
+    "seconds": 72,
     "weather": "☁️ Variabile"
   },
   {
@@ -641,7 +641,7 @@
   {
     "year": 2026,
     "circuit": "Spa-Francorchamps",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:44.361",
     "seconds": 104.361,
