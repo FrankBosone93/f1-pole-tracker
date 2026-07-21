@@ -12,52 +12,61 @@
         body { background-color: #121212; color: #ffffff; font-family: system-ui, sans-serif; }
     </style>
 </head>
-<body class="p-4 max-w-md mx-auto pb-12">
+<body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12">
 
-    <header class="text-center my-6">
-        <h1 class="text-2xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
-        <p class="text-gray-400 text-sm">Calendario Completo Storico & Live 2021 - 2026</p>
+    <header class="text-center my-6 md:my-8">
+        <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
+        <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
         <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
     </header>
 
-    <!-- Selettore Circuito -->
-    <div class="mb-6">
-        <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
-        <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-[#E10600]">
-            <!-- Inseriti automaticamente dallo script -->
-        </select>
-    </div>
+    <div class="md:grid md:grid-cols-[360px_1fr] md:gap-8 md:items-start">
 
-    <!-- Contenitore Grafico -->
-    <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
-        <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
-        <div style="position: relative; height: 200px; max-height: 200px; width: 100%; overflow: hidden;">
-            <canvas id="poleChart"></canvas>
+        <!-- Colonna sinistra (desktop): selettore, grafico, classifica. Su mobile è semplicemente in cima. -->
+        <div class="md:sticky md:top-8">
+            <!-- Selettore Circuito -->
+            <div class="mb-6">
+                <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
+                <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-[#E10600]">
+                    <!-- Inseriti automaticamente dallo script -->
+                </select>
+            </div>
+
+            <!-- Contenitore Grafico -->
+            <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
+                <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
+                <div style="position: relative; height: 200px; max-height: 200px; width: 100%; overflow: hidden;">
+                    <canvas id="poleChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pulsante Vista Classifica -->
+            <button onclick="toggleClassificaPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
+                🏆 Apri Vista Classifica
+            </button>
+
+            <!-- Pannello Classifica (Nascosto di default) -->
+            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
+                <div>
+                    <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Piloti (n° Pole Position)</h3>
+                    <div id="driverRanking" class="space-y-1 text-sm"></div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Team (n° Pole Position)</h3>
+                    <div id="teamRanking" class="space-y-1 text-sm"></div>
+                </div>
+                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Pulsante Vista Classifica -->
-    <button onclick="toggleClassificaPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
-        🏆 Apri Vista Classifica
-    </button>
-
-    <!-- Pannello Classifica (Nascosto di default) -->
-    <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
+        <!-- Colonna destra (desktop): lista dettagli, in griglia su schermi larghi invece che impilata. -->
         <div>
-            <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Piloti (n° Pole Position)</h3>
-            <div id="driverRanking" class="space-y-1 text-sm"></div>
+            <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
+            <div id="detailsList" class="space-y-3 md:space-y-0 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-3">
+                <!-- I dettagli compariranno qui -->
+            </div>
         </div>
-        <div>
-            <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Team (n° Pole Position)</h3>
-            <div id="teamRanking" class="space-y-1 text-sm"></div>
-        </div>
-        <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
-    </div>
 
-    <!-- Lista Dettagli -->
-    <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
-    <div id="detailsList" class="space-y-3">
-        <!-- I dettagli compariranno qui -->
     </div>
 
     <script>
