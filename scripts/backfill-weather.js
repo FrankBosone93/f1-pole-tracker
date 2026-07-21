@@ -46,6 +46,7 @@ async function main() {
             if (!entry) continue;
 
             const qualyDate = race.schedule?.qualy?.date || race.schedule?.race?.date;
+            const qualyTime = race.schedule?.qualy?.time || race.schedule?.race?.time;
             if (!qualyDate) {
                 console.log(`[SKIP] ${year} ${mappedCircuit}: nessuna data di qualifica trovata`);
                 skipped++;
@@ -53,7 +54,7 @@ async function main() {
             }
 
             try {
-                const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate);
+                const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate, qualyTime);
                 if (!weather) {
                     console.log(`[SKIP] ${year} ${mappedCircuit}: circuito senza coordinate note`);
                     skipped++;
@@ -62,7 +63,7 @@ async function main() {
                 const before = entry.weather;
                 entry.weather = weather.description;
                 updated++;
-                console.log(`${year} ${mappedCircuit} (${qualyDate}): "${before}" -> "${weather.description}" ` +
+                console.log(`${year} ${mappedCircuit} (${weather.raw.localDate} locale): "${before}" -> "${weather.description}" ` +
                     `[wc=${weather.raw.weathercode} precip=${weather.raw.precipSum}mm tmax=${weather.raw.tempMax}°C]`);
             } catch (err) {
                 console.log(`[ERRORE] ${year} ${mappedCircuit}: ${err.message}`);

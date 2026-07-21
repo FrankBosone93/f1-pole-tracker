@@ -84,15 +84,16 @@ async function main() {
 
     console.log(`Pole rilevata: ${year} - ${mappedCircuit} - ${driverFullName} (${mappedTeam}) - ${parsedTime.timeStr}`);
 
-    // --- Meteo reale (Open-Meteo) del giorno di qualifica, non un placeholder ---
+    // --- Meteo reale (Open-Meteo) del giorno locale di qualifica, non un placeholder ---
     const qualyDate = racesNode.qualyDate;
+    const qualyTime = racesNode.qualyTime;
     let weatherDescription = null;
     if (qualyDate) {
         try {
-            const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate);
+            const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate, qualyTime);
             if (weather) {
                 weatherDescription = weather.description;
-                console.log(`Meteo (${qualyDate}): ${weather.description} [wc=${weather.raw.weathercode} precip=${weather.raw.precipSum}mm tmax=${weather.raw.tempMax}°C]`);
+                console.log(`Meteo (${weather.raw.localDate} locale): ${weather.description} [wc=${weather.raw.weathercode} precip=${weather.raw.precipSum}mm tmax=${weather.raw.tempMax}°C]`);
             } else {
                 console.warn(`⚠️  Nessuna coordinata nota per "${mappedCircuit}", impossibile calcolare il meteo.`);
             }
