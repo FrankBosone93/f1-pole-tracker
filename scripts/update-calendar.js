@@ -42,6 +42,10 @@ async function main() {
         const round = race.round;
         const mappedCircuit = matchCircuitById(race.circuit?.circuitId) || race.circuit?.circuitName || 'Sconosciuto';
         const date = race.schedule?.race?.date || null;
+        // Inizio del weekend di gara (venerdì delle prove libere), usato dal
+        // sito per decidere quando mostrare di default questo circuito invece
+        // dell'ultimo GP disputato.
+        const weekendStart = race.schedule?.fp1?.date || race.schedule?.qualy?.date || date;
 
         let winner = null;
         try {
@@ -58,7 +62,7 @@ async function main() {
             console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore nel recupero risultati - ${err.message}`);
         }
 
-        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, winner });
+        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner });
         console.log(`Round ${round} - ${mappedCircuit}: ${winner ? `${winner.driver} (${winner.team})` : 'da disputare'}`);
 
         await sleep(150); // rate limit gentile

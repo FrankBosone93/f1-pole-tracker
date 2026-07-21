@@ -156,8 +156,30 @@
             populateCircuitSelectors(uniqueCircuits);
 
             select.addEventListener('change', (e) => updateApp(e.target.value));
-            updateApp(uniqueCircuits[0]);
+
+            const defaultCircuit = determineDefaultCircuit();
+            const initialCircuit = (defaultCircuit && uniqueCircuits.includes(defaultCircuit)) ? defaultCircuit : uniqueCircuits[0];
+            select.value = initialCircuit;
+            updateApp(initialCircuit);
             applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
+        }
+
+        // Circuito da mostrare di default all'apertura del sito: quello
+        // dell'ultimo GP disputato, a meno che non sia già iniziato il
+        // weekend del prossimo GP (dal venerdì delle prove libere in poi),
+        // nel qual caso si mostra quello.
+        function determineDefaultCircuit() {
+            if (!calendarData) return null;
+            const now = new Date();
+            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+
+            const currentWeekend = calendarData.races.find(r => r.weekendStart && r.date && r.weekendStart <= todayStr && todayStr <= r.date);
+            if (currentWeekend) return currentWeekend.circuit;
+
+            const pastRaces = calendarData.races
+                .filter(r => r.date && r.date <= todayStr)
+                .sort((a, b) => b.date.localeCompare(a.date));
+            return pastRaces.length > 0 ? pastRaces[0].circuit : null;
         }
 
         // --- DIVISORE TRASCINABILE (solo desktop) tra grafico e dettagli ---
