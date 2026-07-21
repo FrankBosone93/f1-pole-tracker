@@ -6,7 +6,7 @@
     "team": "Red Bull",
     "timeStr": "1:28.997",
     "seconds": 88.997,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2022,
@@ -15,7 +15,7 @@
     "team": "Ferrari",
     "timeStr": "1:30.558",
     "seconds": 90.558,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2023,
@@ -24,7 +24,7 @@
     "team": "Red Bull",
     "timeStr": "1:29.708",
     "seconds": 89.708,
-    "weather": "☀️ Sereno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2024,
@@ -33,7 +33,7 @@
     "team": "Red Bull",
     "timeStr": "1:29.179",
     "seconds": 89.179,
-    "weather": "☀️ Sereno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2025,
@@ -42,7 +42,7 @@
     "team": "McLaren",
     "timeStr": "1:29.841",
     "seconds": 89.841,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2021,
@@ -69,7 +69,7 @@
     "team": "Red Bull",
     "timeStr": "1:28.265",
     "seconds": 88.265,
-    "weather": "🌙 Notturno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2024,
@@ -78,7 +78,7 @@
     "team": "Red Bull",
     "timeStr": "1:27.472",
     "seconds": 87.472,
-    "weather": "🌙 Notturno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2025,
@@ -87,7 +87,7 @@
     "team": "Red Bull",
     "timeStr": "1:27.294",
     "seconds": 87.294,
-    "weather": "🌙 Notturno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2022,
@@ -96,7 +96,7 @@
     "team": "Ferrari",
     "timeStr": "1:17.868",
     "seconds": 77.868,
-    "weather": "☀️ Splendido"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2023,
@@ -105,7 +105,7 @@
     "team": "Red Bull",
     "timeStr": "1:16.732",
     "seconds": 76.732,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2024,
@@ -123,7 +123,7 @@
     "team": "McLaren",
     "timeStr": "1:15.096",
     "seconds": 75.096,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2026,
@@ -141,7 +141,7 @@
     "team": "Red Bull",
     "timeStr": "1:33.660",
     "seconds": 93.66,
-    "weather": "☁️ Nuvoloso"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2025,
@@ -150,7 +150,7 @@
     "team": "McLaren",
     "timeStr": "1:30.641",
     "seconds": 90.641,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2026,
@@ -159,7 +159,7 @@
     "team": "Mercedes",
     "timeStr": "1:32.064",
     "seconds": 92.064,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -168,7 +168,7 @@
     "team": "Ferrari",
     "timeStr": "1:41.218",
     "seconds": 101.218,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -177,7 +177,7 @@
     "team": "Ferrari",
     "timeStr": "1:41.359",
     "seconds": 101.359,
-    "weather": "☀️ Ventoso"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -186,7 +186,7 @@
     "team": "Ferrari",
     "timeStr": "1:40.203",
     "seconds": 100.203,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2024,
@@ -195,7 +195,7 @@
     "team": "Ferrari",
     "timeStr": "1:41.365",
     "seconds": 101.365,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2025,
@@ -204,7 +204,7 @@
     "team": "Red Bull",
     "timeStr": "1:41.117",
     "seconds": 101.117,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2022,
@@ -213,7 +213,7 @@
     "team": "Ferrari",
     "timeStr": "1:28.796",
     "seconds": 88.796,
-    "weather": "☀️ Caldo afoso"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2023,
@@ -222,7 +222,7 @@
     "team": "Red Bull",
     "timeStr": "1:26.841",
     "seconds": 86.841,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2024,
@@ -240,7 +240,7 @@
     "team": "Red Bull",
     "timeStr": "1:26.204",
     "seconds": 86.204,
-    "weather": "☀️ Caldo"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2026,
@@ -249,7 +249,7 @@
     "team": "Mercedes",
     "timeStr": "1:27.798",
     "seconds": 87.798,
-    "weather": "☀️ Splendido"
+    "weather": "☀️ Caldo"
   },
   {
     "year": 2021,
@@ -267,7 +267,7 @@
     "team": "Red Bull",
     "timeStr": "1:27.999",
     "seconds": 87.999,
-    "weather": "🌧️ Pioggia bagnato"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2024,
@@ -276,7 +276,7 @@
     "team": "Red Bull",
     "timeStr": "1:14.746",
     "seconds": 74.746,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2025,
@@ -285,7 +285,7 @@
     "team": "McLaren",
     "timeStr": "1:14.670",
     "seconds": 74.67,
-    "weather": "☀️ Splendido"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2021,
@@ -294,7 +294,7 @@
     "team": "Ferrari",
     "timeStr": "1:10.346",
     "seconds": 70.346,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2022,
@@ -312,7 +312,7 @@
     "team": "Red Bull",
     "timeStr": "1:11.365",
     "seconds": 71.365,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2024,
@@ -321,7 +321,7 @@
     "team": "Ferrari",
     "timeStr": "1:10.270",
     "seconds": 70.27,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2025,
@@ -330,7 +330,7 @@
     "team": "McLaren",
     "timeStr": "1:09.954",
     "seconds": 69.954,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2026,
@@ -348,7 +348,7 @@
     "team": "Red Bull",
     "timeStr": "1:21.299",
     "seconds": 81.299,
-    "weather": "🌧️ Umido"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2023,
@@ -357,7 +357,7 @@
     "team": "Red Bull",
     "timeStr": "1:25.858",
     "seconds": 85.858,
-    "weather": "🌧️ Pioggia"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2024,
@@ -366,7 +366,7 @@
     "team": "Mercedes",
     "timeStr": "1:12.000",
     "seconds": 72,
-    "weather": "☁️ Variabile"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2025,
@@ -375,7 +375,7 @@
     "team": "Mercedes",
     "timeStr": "1:10.899",
     "seconds": 70.899,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2026,
@@ -384,7 +384,7 @@
     "team": "Mercedes",
     "timeStr": "1:12.578",
     "seconds": 72.578,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -393,7 +393,7 @@
     "team": "Mercedes",
     "timeStr": "1:16.741",
     "seconds": 76.741,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -402,7 +402,7 @@
     "team": "Ferrari",
     "timeStr": "1:18.750",
     "seconds": 78.75,
-    "weather": "☀️ Molto Caldo"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -411,7 +411,7 @@
     "team": "Red Bull",
     "timeStr": "1:12.272",
     "seconds": 72.272,
-    "weather": "☁️ Nuvoloso"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2024,
@@ -420,7 +420,7 @@
     "team": "McLaren",
     "timeStr": "1:11.383",
     "seconds": 71.383,
-    "weather": "☀️ Sereno"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2025,
@@ -429,7 +429,7 @@
     "team": "McLaren",
     "timeStr": "1:11.546",
     "seconds": 71.546,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2026,
@@ -438,7 +438,7 @@
     "team": "Mercedes",
     "timeStr": "1:14.679",
     "seconds": 74.679,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -456,7 +456,7 @@
     "team": "Red Bull",
     "timeStr": "1:04.984",
     "seconds": 64.984,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2023,
@@ -483,7 +483,7 @@
     "team": "McLaren",
     "timeStr": "1:03.971",
     "seconds": 63.971,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2026,
@@ -492,7 +492,7 @@
     "team": "Mercedes",
     "timeStr": "1:06.113",
     "seconds": 66.113,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -501,7 +501,7 @@
     "team": "Mercedes",
     "timeStr": "1:26.134",
     "seconds": 86.134,
-    "weather": "☀️ Caldo"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -519,7 +519,7 @@
     "team": "Red Bull",
     "timeStr": "1:26.720",
     "seconds": 86.72,
-    "weather": "⛅ Variabile"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2024,
@@ -528,7 +528,7 @@
     "team": "Mercedes",
     "timeStr": "1:25.819",
     "seconds": 85.819,
-    "weather": "☁️ Nuvoloso / Umido"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2025,
@@ -537,7 +537,7 @@
     "team": "Red Bull",
     "timeStr": "1:24.892",
     "seconds": 84.892,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2026,
@@ -546,7 +546,7 @@
     "team": "Mercedes",
     "timeStr": "1:28.111",
     "seconds": 88.111,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -555,7 +555,7 @@
     "team": "Mercedes",
     "timeStr": "1:15.419",
     "seconds": 75.419,
-    "weather": "☀️ Molto Caldo"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2022,
@@ -564,7 +564,7 @@
     "team": "Mercedes",
     "timeStr": "1:17.377",
     "seconds": 77.377,
-    "weather": "☀️ Asciutto"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2023,
@@ -573,7 +573,7 @@
     "team": "Mercedes",
     "timeStr": "1:16.609",
     "seconds": 76.609,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2024,
@@ -582,7 +582,7 @@
     "team": "McLaren",
     "timeStr": "1:15.227",
     "seconds": 75.227,
-    "weather": "☁️ Nuvoloso / Umido"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2025,
@@ -591,7 +591,7 @@
     "team": "Ferrari",
     "timeStr": "1:15.372",
     "seconds": 75.372,
-    "weather": "☀️ Afoso"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2021,
@@ -600,7 +600,7 @@
     "team": "Red Bull",
     "timeStr": "1:59.765",
     "seconds": 119.765,
-    "weather": "🌧️ Pioggia Diluvio"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2022,
@@ -618,7 +618,7 @@
     "team": "Red Bull",
     "timeStr": "1:46.168",
     "seconds": 106.168,
-    "weather": "🌧️ Tracciato Umido",
+    "weather": "🌧️ Pioggia Battente",
     "penaltyNote": "Pole in qualifica, ma partito 6° in griglia per una penalità tecnica: il via al palo è stato di Charles Leclerc."
   },
   {
@@ -628,7 +628,7 @@
     "team": "Red Bull",
     "timeStr": "1:53.159",
     "seconds": 113.159,
-    "weather": "🌧️ Pioggia bagnato"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2025,
@@ -637,7 +637,7 @@
     "team": "McLaren",
     "timeStr": "1:40.562",
     "seconds": 100.562,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2026,
@@ -655,7 +655,7 @@
     "team": "Red Bull",
     "timeStr": "1:08.885",
     "seconds": 68.885,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -664,7 +664,7 @@
     "team": "Red Bull",
     "timeStr": "1:10.342",
     "seconds": 70.342,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -673,7 +673,7 @@
     "team": "Red Bull",
     "timeStr": "1:10.567",
     "seconds": 70.567,
-    "weather": "🌧️ Pioggia / Umido"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2024,
@@ -682,7 +682,7 @@
     "team": "McLaren",
     "timeStr": "1:09.673",
     "seconds": 69.673,
-    "weather": "☀️ Ventoso"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2025,
@@ -691,7 +691,7 @@
     "team": "McLaren",
     "timeStr": "1:08.662",
     "seconds": 68.662,
-    "weather": "☀️ Sereno"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2021,
@@ -700,7 +700,7 @@
     "team": "Mercedes",
     "timeStr": "1:19.555",
     "seconds": 79.555,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -709,7 +709,7 @@
     "team": "Ferrari",
     "timeStr": "1:20.161",
     "seconds": 80.161,
-    "weather": "☀️ Caldo"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -718,7 +718,7 @@
     "team": "Ferrari",
     "timeStr": "1:20.294",
     "seconds": 80.294,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2024,
@@ -727,7 +727,7 @@
     "team": "McLaren",
     "timeStr": "1:19.327",
     "seconds": 79.327,
-    "weather": "☀️ Afoso"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2025,
@@ -736,7 +736,7 @@
     "team": "Red Bull",
     "timeStr": "1:18.792",
     "seconds": 78.792,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -745,7 +745,7 @@
     "team": "Ferrari",
     "timeStr": "1:49.412",
     "seconds": 109.412,
-    "weather": "🌧️ Umido in asciugatura"
+    "weather": "🌧️ Notturno Piovoso"
   },
   {
     "year": 2023,
@@ -754,7 +754,7 @@
     "team": "Ferrari",
     "timeStr": "1:30.984",
     "seconds": 90.984,
-    "weather": "🌙 Umido tropicale"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2024,
@@ -763,7 +763,7 @@
     "team": "McLaren",
     "timeStr": "1:29.525",
     "seconds": 89.525,
-    "weather": "🌙 Caldo Notturno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2025,
@@ -772,7 +772,7 @@
     "team": "Mercedes",
     "timeStr": "1:29.158",
     "seconds": 89.158,
-    "weather": "🌙 Sereno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2022,
@@ -781,7 +781,7 @@
     "team": "Red Bull",
     "timeStr": "1:29.304",
     "seconds": 89.304,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -790,7 +790,7 @@
     "team": "Red Bull",
     "timeStr": "1:28.877",
     "seconds": 88.877,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2024,
@@ -799,7 +799,7 @@
     "team": "Red Bull",
     "timeStr": "1:28.197",
     "seconds": 88.197,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2025,
@@ -808,7 +808,7 @@
     "team": "Red Bull",
     "timeStr": "1:26.983",
     "seconds": 86.983,
-    "weather": "☀️ Sereno"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2026,
@@ -817,7 +817,7 @@
     "team": "Mercedes",
     "timeStr": "1:28.778",
     "seconds": 88.778,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -826,7 +826,7 @@
     "team": "Red Bull",
     "timeStr": "1:32.910",
     "seconds": 92.91,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2022,
@@ -835,7 +835,7 @@
     "team": "Ferrari",
     "timeStr": "1:34.356",
     "seconds": 94.356,
-    "weather": "☀️ Caldo"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2023,
@@ -844,7 +844,7 @@
     "team": "Ferrari",
     "timeStr": "1:34.723",
     "seconds": 94.723,
-    "weather": "☀️ Sereno"
+    "weather": "☀️ Caldo"
   },
   {
     "year": 2024,
@@ -853,7 +853,7 @@
     "team": "McLaren",
     "timeStr": "1:32.330",
     "seconds": 92.33,
-    "weather": "☀️ Soleggiato"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2025,
@@ -862,7 +862,7 @@
     "team": "Red Bull",
     "timeStr": "1:32.510",
     "seconds": 92.51,
-    "weather": "☀️ Splendido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -871,7 +871,7 @@
     "team": "Mercedes",
     "timeStr": "1:15.875",
     "seconds": 75.875,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -880,7 +880,7 @@
     "team": "Red Bull",
     "timeStr": "1:17.775",
     "seconds": 77.775,
-    "weather": "☀️ Altitudine"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2023,
@@ -898,7 +898,7 @@
     "team": "Ferrari",
     "timeStr": "1:15.946",
     "seconds": 75.946,
-    "weather": "☀️ Splendido"
+    "weather": "☀️ Sereno"
   },
   {
     "year": 2025,
@@ -916,7 +916,7 @@
     "team": "Mercedes",
     "timeStr": "1:07.934",
     "seconds": 67.934,
-    "weather": "☀️ Soleggiato"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2022,
@@ -925,7 +925,7 @@
     "team": "Haas",
     "timeStr": "1:11.674",
     "seconds": 71.674,
-    "weather": "🌧️ Pioggia improvvisa!"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2023,
@@ -934,7 +934,7 @@
     "team": "Red Bull",
     "timeStr": "1:10.725",
     "seconds": 70.725,
-    "weather": "⛈️ Tempesta imminente"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2024,
@@ -943,7 +943,7 @@
     "team": "McLaren",
     "timeStr": "1:23.405",
     "seconds": 83.405,
-    "weather": "🌧️ Pioggia estrema"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2025,
@@ -952,7 +952,7 @@
     "team": "McLaren",
     "timeStr": "1:09.511",
     "seconds": 69.511,
-    "weather": "☀️ Sereno"
+    "weather": "🌧️ Pioggia"
   },
   {
     "year": 2023,
@@ -961,7 +961,7 @@
     "team": "Ferrari",
     "timeStr": "1:34.054",
     "seconds": 94.054,
-    "weather": "🌙 Freddo Notturno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2024,
@@ -970,7 +970,7 @@
     "team": "Mercedes",
     "timeStr": "1:32.312",
     "seconds": 92.312,
-    "weather": "🌙 Notturno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2025,
@@ -979,7 +979,7 @@
     "team": "McLaren",
     "timeStr": "1:47.934",
     "seconds": 107.934,
-    "weather": "🌙 Notturno Sereno"
+    "weather": "🌧️ Notturno Umido"
   },
   {
     "year": 2021,
@@ -997,7 +997,7 @@
     "team": "Red Bull",
     "timeStr": "1:23.778",
     "seconds": 83.778,
-    "weather": "🌙 Caldo afoso"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2024,
@@ -1006,7 +1006,7 @@
     "team": "Red Bull",
     "timeStr": "1:20.520",
     "seconds": 80.52,
-    "weather": "🌙 Notturno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2025,
@@ -1015,7 +1015,7 @@
     "team": "McLaren",
     "timeStr": "1:19.387",
     "seconds": 79.387,
-    "weather": "🌙 Ventoso"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2021,
@@ -1024,7 +1024,7 @@
     "team": "Red Bull",
     "timeStr": "1:22.109",
     "seconds": 82.109,
-    "weather": "☀️ Notturno Sereno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2022,
@@ -1033,7 +1033,7 @@
     "team": "Red Bull",
     "timeStr": "1:23.824",
     "seconds": 83.824,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2023,
@@ -1042,7 +1042,7 @@
     "team": "Red Bull",
     "timeStr": "1:24.008",
     "seconds": 84.008,
-    "weather": "☀️ Sereno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2024,
@@ -1051,7 +1051,7 @@
     "team": "McLaren",
     "timeStr": "1:22.595",
     "seconds": 82.595,
-    "weather": "☀️ Sereno"
+    "weather": "🌙 Notturno Sereno"
   },
   {
     "year": 2025,
@@ -1060,7 +1060,7 @@
     "team": "Red Bull",
     "timeStr": "1:22.207",
     "seconds": 82.207,
-    "weather": "☀️ Asciutto"
+    "weather": "☁️ Notturno Nuvoloso"
   },
   {
     "year": 2021,
@@ -1069,7 +1069,7 @@
     "team": "Red Bull",
     "timeStr": "1:29.990",
     "seconds": 89.99,
-    "weather": "☀️ Soleggiato"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2022,
@@ -1078,7 +1078,7 @@
     "team": "Ferrari",
     "timeStr": "1:30.872",
     "seconds": 90.872,
-    "weather": "☀️ Caldo Torrido"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -1087,7 +1087,7 @@
     "team": "McLaren",
     "timeStr": "1:41.993",
     "seconds": 101.993,
-    "weather": "🌧️ Pioggia / Umido"
+    "weather": "🌧️ Pioggia Battente"
   },
   {
     "year": 2021,
@@ -1096,7 +1096,7 @@
     "team": "Mercedes",
     "timeStr": "1:18.348",
     "seconds": 78.348,
-    "weather": "☀️ Sereno"
+    "weather": "☁️ Nuvoloso"
   },
   {
     "year": 2021,
@@ -1105,7 +1105,7 @@
     "team": "Mercedes",
     "timeStr": "1:22.868",
     "seconds": 82.868,
-    "weather": "🌧️ Umido bagnato",
+    "weather": "🌧️ Pioggia",
     "penaltyNote": "Pole in qualifica, ma partito P11 per una penalità sul cambio motore: il via al palo è stato di Valtteri Bottas."
   }
 ]

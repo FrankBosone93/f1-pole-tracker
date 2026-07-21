@@ -4,9 +4,11 @@
 - `index.html` — il sito. Carica i dati da `data.json` (fetch). Se `data.json` non è raggiungibile, mostra un messaggio d'errore esplicito invece di dati incorporati nel codice (rimossi: erano solo un fallback statico, mai sincronizzato con `data.json`).
 - `data.json` — i dati "ufficiali" delle pole position. È la fonte di verità. Ogni entry ha `year`, `circuit`, `driver`, `team`, `timeStr`, `seconds`, `weather`, e opzionalmente `penaltyNote` (vedi sotto).
 - `scripts/lib/f1-mapping.js` — mappature condivise (circuito, team, parsing tempi) usate dagli script sotto.
-- `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
+- `scripts/lib/weather.js` — meteo storico reale via [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave, dati ERA5 dal 1940), usato sia per il backfill che per gli aggiornamenti futuri.
+- `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev, calcola il meteo reale del giorno di qualifica, e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
 - `scripts/check-pole-penalty.js` — gira dopo la gara (domenica): controlla se il polista è partito davvero P1 in griglia. Se una penalità l'ha retrocesso, aggiunge un `penaltyNote` alla entry (senza cambiare il polista registrato).
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
+- `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
 - `.github/workflows/update-poles.yml` — automazione GitHub Actions che esegue `update-poles.js` ogni sabato sera.
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 
@@ -20,7 +22,9 @@
    scripts/update-poles.js
    scripts/check-pole-penalty.js
    scripts/verify-data.js
+   scripts/backfill-weather.js
    scripts/lib/f1-mapping.js
+   scripts/lib/weather.js
    .github/workflows/update-poles.yml
    .github/workflows/check-pole-penalty.yml
    ```
@@ -42,6 +46,15 @@ Ci sono due automazioni distinte, perché qualifica e gara di un weekend F1 non 
 3. Se sono persone diverse (il polista ha preso una penalità post-qualifica), aggiunge un campo `penaltyNote` alla entry — il polista registrato NON cambia, si aggiunge solo un avviso visibile nel box dei dettagli sul sito.
 
 Puoi lanciare entrambe manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
+
+## Meteo
+
+Il campo `weather` di ogni entry viene da dati meteo storici reali ([Open-Meteo](https://open-meteo.com), basati sulle coordinate del circuito e sulla data di qualifica), non da un placeholder inventato come in origine. La classificazione (`scripts/lib/weather.js`) usa la precipitazione giornaliera in mm per decidere tra sereno/nuvoloso/pioggia/pioggia battente, più un flag "notturno" per i circuiti che corrono tipicamente in notturna (Bahrain, Jeddah, Singapore, Qatar, Abu Dhabi, Las Vegas).
+
+Limiti da tenere presenti:
+- È un dato aggregato sull'intera giornata, non sull'ora esatta della sessione — resta una buona approssimazione, non una ricostruzione minuto per minuto.
+- Le coordinate dei circuiti in `CIRCUIT_INFO` sono approssimative (posizione del tracciato, non del meteo esatto sul rettilineo).
+- Se vuoi rivedere i criteri di classificazione, modifica `describeWeather()` in `scripts/lib/weather.js` e rilancia `node scripts/backfill-weather.js` per ricalcolare tutto lo storico.
 
 ## Controllo periodico di tutti i dati
 

@@ -17,6 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mapping');
+const { fetchWeatherForCircuit } = require('./lib/weather');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const API_URL = 'https://f1api.dev/api/current/last/qualy';
@@ -83,11 +84,31 @@ async function main() {
 
     console.log(`Pole rilevata: ${year} - ${mappedCircuit} - ${driverFullName} (${mappedTeam}) - ${parsedTime.timeStr}`);
 
+    // --- Meteo reale (Open-Meteo) del giorno di qualifica, non un placeholder ---
+    const qualyDate = racesNode.qualyDate;
+    let weatherDescription = null;
+    if (qualyDate) {
+        try {
+            const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate);
+            if (weather) {
+                weatherDescription = weather.description;
+                console.log(`Meteo (${qualyDate}): ${weather.description} [wc=${weather.raw.weathercode} precip=${weather.raw.precipSum}mm tmax=${weather.raw.tempMax}°C]`);
+            } else {
+                console.warn(`⚠️  Nessuna coordinata nota per "${mappedCircuit}", impossibile calcolare il meteo.`);
+            }
+        } catch (err) {
+            console.warn(`⚠️  Errore nel recupero meteo: ${err.message}`);
+        }
+    } else {
+        console.warn('⚠️  Nessuna data di qualifica nella risposta API, impossibile calcolare il meteo.');
+    }
+
     // --- Aggiornamento data.json ---
     const currentData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
 
     const existingIndex = currentData.findIndex(d => d.year === year && d.circuit === mappedCircuit);
     const existingWeather = existingIndex > -1 ? currentData[existingIndex].weather : '☀️ Sereno';
+    const finalWeather = weatherDescription || existingWeather;
 
     const newEntry = {
         year,
@@ -96,7 +117,7 @@ async function main() {
         team: mappedTeam,
         timeStr: parsedTime.timeStr,
         seconds: parsedTime.seconds,
-        weather: existingWeather,
+        weather: finalWeather,
     };
 
     let changed = false;
@@ -104,7 +125,8 @@ async function main() {
         const existing = currentData[existingIndex];
         const isSame = existing.driver === newEntry.driver &&
             existing.team === newEntry.team &&
-            existing.timeStr === newEntry.timeStr;
+            existing.timeStr === newEntry.timeStr &&
+            existing.weather === newEntry.weather;
         if (!isSame) {
             currentData[existingIndex] = newEntry;
             changed = true;
