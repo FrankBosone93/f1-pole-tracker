@@ -57,8 +57,6 @@ Stampa un report delle discrepanze trovate ma **non modifica mai `data.json` da 
 
 ## Aggiornamenti manuali / correzioni
 
-Il pannello "🔧 Aggiornamento Live" nel sito resta disponibile per chiunque lo visiti, ma scrive solo nel **localStorage del browser di chi lo usa** — non modifica mai il `data.json` condiviso. Quindi:
-- Ogni visitatore può "giocare" col pannello e vedere modifiche solo nella propria sessione, senza alcun impatto su ciò che vedono gli altri.
-- Per aggiornare davvero il sito per tutti, l'unico modo è modificare `data.json` nel repository GitHub (a mano, o lasciando fare all'automazione) — cosa che richiede le tue credenziali GitHub.
+Il sito non ha (più) alcun pannello di inserimento dati lato client: `data.json` nel repository è l'unica fonte di verità, per tutti i visitatori.
 
-Se vuoi correggere un dato a mano: modifica direttamente `data.json` nel repository (anche dall'editor web di GitHub, senza bisogno di git in locale) e salva/commit — il sito lo rifletterà al prossimo caricamento.
+Se vuoi correggere un dato a mano: modifica direttamente `data.json` nel repository (anche dall'editor web di GitHub, senza bisogno di git in locale) e salva/commit — il sito lo rifletterà al prossimo caricamento. Richiede le tue credenziali GitHub.
