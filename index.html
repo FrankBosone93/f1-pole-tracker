@@ -36,54 +36,6 @@
         </div>
     </div>
 
-    <!-- Pulsante per aprire il Pannello Admin -->
-    <button onclick="toggleAdminPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
-        🔧 Apri Pannello Aggiornamento Live (2026)
-    </button>
-
-    <!-- Pannello Inserimento Nuovi Dati 2026 (Nascosto di default) -->
-    <div id="adminPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-[#E10600] mb-6 space-y-3">
-        <h3 class="text-sm font-bold text-[#E10600]">AGGIORNA POLE POSITION 2026</h3>
-        
-        <div>
-            <label class="block text-xs text-gray-400 mb-1">Circuito da aggiornare</label>
-            <select id="adminCircuit" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700"></select>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-2">
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Pilota</label>
-                <input type="text" id="adminDriver" placeholder="Es. Charles Leclerc" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
-            </div>
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Scuderia</label>
-                <input type="text" id="adminTeam" placeholder="Es. Ferrari" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Tempo (MIN:SEC.ms)</label>
-                <input type="text" id="adminTime" placeholder="Es. 1:12.345" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
-            </div>
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Meteo + Emoji</label>
-                <input type="text" id="adminWeather" placeholder="Es. ☀️ Sereno" class="w-full bg-gray-900 text-white text-sm p-2 rounded border border-gray-700">
-            </div>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-            <button onclick="saveNewPole()" class="flex-1 bg-[#E10600] hover:bg-red-700 text-white font-bold text-xs py-2 rounded transition-colors cursor-pointer">Salva nei Dati 2026</button>
-            <button onclick="resetToDefault()" class="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-3 rounded transition-colors cursor-pointer" title="Ripristina database originale">Reset</button>
-        </div>
-
-        <div class="flex gap-2 pt-1 border-t border-gray-700 mt-2">
-            <button onclick="exportData()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs py-2 rounded transition-colors cursor-pointer mt-2" title="Scarica un backup di tutti i dati in formato JSON">💾 Esporta JSON</button>
-            <button onclick="document.getElementById('importFileInput').click()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs py-2 rounded transition-colors cursor-pointer mt-2" title="Carica un backup JSON precedentemente esportato">📂 Importa JSON</button>
-            <input type="file" id="importFileInput" accept="application/json" class="hidden" onchange="importData(event)">
-        </div>
-    </div>
-
     <!-- Pulsante Vista Classifica -->
     <button onclick="toggleClassificaPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
         🏆 Apri Vista Classifica
@@ -114,22 +66,16 @@
         let poleData = [];
 
         const select = document.getElementById('circuitSelect');
-        const adminCircuit = document.getElementById('adminCircuit');
         const detailsList = document.getElementById('detailsList');
         const dataSourceBadge = document.getElementById('dataSourceBadge');
         let currentChart = null;
 
         function populateCircuitSelectors(circuits) {
             select.innerHTML = '';
-            adminCircuit.innerHTML = '';
             circuits.forEach(c => {
-                const opt1 = document.createElement('option');
-                opt1.value = c; opt1.innerText = c;
-                select.appendChild(opt1);
-
-                const opt2 = document.createElement('option');
-                opt2.value = c; opt2.innerText = c;
-                adminCircuit.appendChild(opt2);
+                const opt = document.createElement('option');
+                opt.value = c; opt.innerText = c;
+                select.appendChild(opt);
             });
         }
 
@@ -151,10 +97,7 @@
                 return;
             }
 
-            // Le modifiche fatte in locale dal pannello Aggiornamento Live restano
-            // salvate solo nel browser di chi le fa (localStorage), sopra ai dati ufficiali.
-            const localOverride = JSON.parse(localStorage.getItem('f1_pole_data') || 'null');
-            poleData = localOverride || [...baseData];
+            poleData = [...baseData];
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
             populateCircuitSelectors(uniqueCircuits);
@@ -168,177 +111,6 @@
             const secs = Math.floor(totalSeconds % 60);
             const ms = Math.round((totalSeconds % 1) * 1000);
             return mins + ':' + secs.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
-        }
-
-        function parseTimeToSeconds(timeStr) {
-            try {
-                const parts = timeStr.split(':');
-                const mins = parseInt(parts[0], 10);
-                const secs = parseFloat(parts[1]);
-                return (mins * 60) + secs;
-            } catch(e) {
-                return null;
-            }
-        }
-
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        // --- VALIDAZIONE INPUT (più severa) ---
-        // Nomi: lettere (anche accentate), spazi, apostrofi e trattini, 2-40 caratteri
-        const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,40}$/;
-        // Tempo pole: M:SS.mmm con minuti 0-9, secondi 00-59, millisecondi 000-999
-        const TIME_REGEX = /^([0-9]):([0-5][0-9])\.([0-9]{3})$/;
-
-        function validatePoleEntry(circuit, driver, team, timeStr, weather) {
-            const errors = [];
-
-            if(!circuit) {
-                errors.push("Seleziona un circuito.");
-            }
-            if(!driver || !NAME_REGEX.test(driver)) {
-                errors.push("Il nome del Pilota non è valido (usa solo lettere, spazi, apostrofi o trattini, 2-40 caratteri).");
-            }
-            if(!team || !NAME_REGEX.test(team)) {
-                errors.push("Il nome della Scuderia non è valido (usa solo lettere, spazi, apostrofi o trattini, 2-40 caratteri).");
-            }
-            if(!timeStr || !TIME_REGEX.test(timeStr)) {
-                errors.push("Formato tempo non valido. Usa MINUTI:SECONDI.MILLISECONDI, es. 1:12.345 (secondi 00-59, millisecondi a 3 cifre).");
-            }
-            if(weather && weather.length > 40) {
-                errors.push("La descrizione Meteo è troppo lunga (max 40 caratteri).");
-            }
-
-            return errors;
-        }
-
-        function saveNewPole() {
-            const circuit = adminCircuit.value;
-            const driver = document.getElementById('adminDriver').value.trim();
-            const team = document.getElementById('adminTeam').value.trim();
-            const timeStr = document.getElementById('adminTime').value.trim();
-            const weather = document.getElementById('adminWeather').value.trim();
-
-            const errors = validatePoleEntry(circuit, driver, team, timeStr, weather);
-            if(errors.length > 0) {
-                alert("Impossibile salvare:\n\n- " + errors.join("\n- "));
-                return;
-            }
-
-            const seconds = parseTimeToSeconds(timeStr);
-            if(seconds === null || isNaN(seconds)) {
-                alert("Formato tempo non valido! Usa MINUTI:SECONDI.MILLISECONDI (es. 1:12.530)");
-                return;
-            }
-
-            const existingIndex = poleData.findIndex(d => d.circuit === circuit && d.year === 2026);
-            const newEntry = { year: 2026, circuit, driver, team, timeStr, seconds, weather: weather || "☀️ Sereno" };
-
-            if(existingIndex > -1) {
-                poleData[existingIndex] = newEntry;
-            } else {
-                poleData.push(newEntry);
-            }
-
-            localStorage.setItem('f1_pole_data', JSON.stringify(poleData));
-            select.value = circuit; 
-            updateApp(circuit);
-            
-            document.getElementById('adminDriver').value = "";
-            document.getElementById('adminTeam').value = "";
-            document.getElementById('adminTime').value = "";
-            document.getElementById('adminWeather').value = "";
-            alert(`Pole del 2026 per ${circuit} salvata con successo!`);
-        }
-
-        function resetToDefault() {
-            if(confirm("Vuoi cancellare tutte le modifiche locali e ripristinare i dati ufficiali (data.json)?")) {
-                localStorage.removeItem('f1_pole_data');
-                poleData = [...baseData];
-                const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
-                populateCircuitSelectors(uniqueCircuits);
-                updateApp(select.value && uniqueCircuits.includes(select.value) ? select.value : uniqueCircuits[0]);
-            }
-        }
-
-        // --- BACKUP / RIPRISTINO TRAMITE FILE JSON ---
-        function exportData() {
-            const payload = {
-                exportedAt: new Date().toISOString(),
-                source: "F1 Pole Tracker",
-                data: poleData
-            };
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const dateStr = new Date().toISOString().slice(0,10);
-            a.href = url;
-            a.download = `f1_pole_data_backup_${dateStr}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function isValidPoleDataArray(arr) {
-            if(!Array.isArray(arr)) return false;
-            return arr.every(d =>
-                d && typeof d.year === 'number' &&
-                typeof d.circuit === 'string' && d.circuit.length > 0 &&
-                typeof d.driver === 'string' && NAME_REGEX.test(d.driver) &&
-                typeof d.team === 'string' && NAME_REGEX.test(d.team) &&
-                typeof d.timeStr === 'string' && TIME_REGEX.test(d.timeStr) &&
-                typeof d.seconds === 'number' && !isNaN(d.seconds) &&
-                typeof d.weather === 'string'
-            );
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    const importedArray = Array.isArray(parsed) ? parsed : parsed.data;
-
-                    if(!isValidPoleDataArray(importedArray)) {
-                        alert("Il file JSON non è valido o contiene dati mal formattati. Import annullato.");
-                        return;
-                    }
-
-                    if(!confirm(`Trovate ${importedArray.length} pole position nel file. Vuoi sostituire tutti i dati attuali con questi importati?`)) {
-                        return;
-                    }
-
-                    poleData = importedArray;
-                    localStorage.setItem('f1_pole_data', JSON.stringify(poleData));
-
-                    // Ricostruisce la select dei circuiti nel caso siano stati importati nuovi circuiti
-                    const importedCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
-                    select.innerHTML = '';
-                    adminCircuit.innerHTML = '';
-                    importedCircuits.forEach(c => {
-                        const opt1 = document.createElement('option');
-                        opt1.value = c; opt1.innerText = c;
-                        select.appendChild(opt1);
-                        const opt2 = document.createElement('option');
-                        opt2.value = c; opt2.innerText = c;
-                        adminCircuit.appendChild(opt2);
-                    });
-
-                    updateApp(importedCircuits[0]);
-                    alert("Import completato con successo!");
-                } catch(err) {
-                    alert("Errore nella lettura del file JSON: " + err.message);
-                } finally {
-                    event.target.value = "";
-                }
-            };
-            reader.readAsText(file);
         }
 
         // --- VISTA CLASSIFICA ---
