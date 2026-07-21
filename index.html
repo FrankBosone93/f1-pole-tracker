@@ -23,7 +23,7 @@
     <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
 
         <!-- Colonna sinistra (desktop, 2/3 dello schermo di default, trascinabile): selettore, grafico, classifica. Su mobile è semplicemente in cima. -->
-        <div class="md:sticky md:top-8">
+        <div id="leftColumn" class="md:sticky md:top-8">
             <!-- Selettore Circuito -->
             <div class="mb-6 md:max-w-sm">
                 <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
@@ -33,7 +33,7 @@
             </div>
 
             <!-- Contenitore Grafico -->
-            <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
+            <div id="chartCard" class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="text-xs text-gray-400 mb-2 text-right">In basso = Più Veloce ⚡</div>
                 <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
@@ -64,8 +64,10 @@
             </div>
         </div>
 
-        <!-- Divisore trascinabile (solo desktop) per ridimensionare le due colonne -->
-        <div id="resizeHandle" class="hidden md:flex md:self-stretch items-center justify-center cursor-col-resize group">
+        <!-- Divisore trascinabile (solo desktop) per ridimensionare le due colonne.
+             Ancorato verticalmente al centro del grafico (non a tutta l'altezza
+             della colonna), così non si sposta quando si apre il pannello classifica. -->
+        <div id="resizeHandle" class="hidden md:flex items-center justify-center cursor-col-resize group h-24">
             <div class="w-1 h-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
         </div>
 
@@ -131,6 +133,7 @@
 
             select.addEventListener('change', (e) => updateApp(e.target.value));
             updateApp(uniqueCircuits[0]);
+            applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
         }
 
         // --- DIVISORE TRASCINABILE (solo desktop) tra grafico e dettagli ---
@@ -169,11 +172,27 @@
         // --- DIVISORE TRASCINABILE (solo desktop) per l'altezza del grafico ---
         const chartContainer = document.getElementById('chartContainer');
         const vResizeHandle = document.getElementById('vResizeHandle');
+        const leftColumn = document.getElementById('leftColumn');
+        const chartCard = document.getElementById('chartCard');
         const MIN_CHART_HEIGHT = 200, MAX_CHART_HEIGHT = 700;
         let chartHeight = 440; // deve combaciare con "md:h-[440px]" di partenza
 
+        // Il divisore orizzontale (resizeHandle) deve restare centrato sul
+        // grafico, non su tutta la colonna sinistra: se no, aprendo il
+        // pannello classifica (che sta sotto) la maniglia si sposterebbe in
+        // basso insieme a lui. Lo posizioniamo quindi con un marginTop
+        // calcolato sulla posizione reale della card del grafico.
+        function positionResizeHandle() {
+            if (window.innerWidth < 768) return;
+            const colRect = leftColumn.getBoundingClientRect();
+            const cardRect = chartCard.getBoundingClientRect();
+            const centerY = (cardRect.top - colRect.top) + cardRect.height / 2;
+            resizeHandle.style.marginTop = Math.max(0, centerY - resizeHandle.offsetHeight / 2) + 'px';
+        }
+
         function applyChartHeight() {
             chartContainer.style.height = window.innerWidth >= 768 ? chartHeight + 'px' : '';
+            positionResizeHandle();
         }
 
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
