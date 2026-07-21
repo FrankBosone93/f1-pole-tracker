@@ -34,7 +34,7 @@
 
             <!-- Contenitore Grafico -->
             <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
-                <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
+                <div class="text-xs text-gray-400 mb-2 text-right">In basso = Più Veloce ⚡</div>
                 <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
                 </div>
@@ -268,7 +268,6 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            reverse: true,
                             grid: { color: '#2a2a2a' },
                             ticks: { 
                                 color: '#a0aec0',
