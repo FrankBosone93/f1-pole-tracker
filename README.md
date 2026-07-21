@@ -3,14 +3,17 @@
 ## Struttura dei file
 - `index.html` — il sito. Carica i dati da `data.json` (fetch). Se `data.json` non è raggiungibile, mostra un messaggio d'errore esplicito invece di dati incorporati nel codice (rimossi: erano solo un fallback statico, mai sincronizzato con `data.json`).
 - `data.json` — i dati "ufficiali" delle pole position. È la fonte di verità. Ogni entry ha `year`, `circuit`, `driver`, `team`, `timeStr`, `seconds`, `weather`, e opzionalmente `penaltyNote` (vedi sotto).
+- `standings.json` — classifica REALE del campionato piloti e costruttori della stagione in corso (posizione, punti, vittorie), mostrata nel pannello "Vista Classifica" del sito.
 - `scripts/lib/f1-mapping.js` — mappature condivise (circuito, team, parsing tempi) usate dagli script sotto.
 - `scripts/lib/weather.js` — meteo storico reale via [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave, dati ERA5 dal 1940), usato sia per il backfill che per gli aggiornamenti futuri.
 - `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev, calcola il meteo reale del giorno di qualifica, e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
 - `scripts/check-pole-penalty.js` — gira dopo la gara (domenica): controlla se il polista è partito davvero P1 in griglia. Se una penalità l'ha retrocesso, aggiunge un `penaltyNote` alla entry (senza cambiare il polista registrato).
+- `scripts/update-standings.js` — gira dopo la gara (domenica): scarica la classifica piloti/costruttori aggiornata da f1api.dev e aggiorna `standings.json`.
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
 - `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
 - `.github/workflows/update-poles.yml` — automazione GitHub Actions che esegue `update-poles.js` ogni sabato sera.
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
+- `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
 
 ## Come pubblicare il sito online (GitHub Pages)
 
@@ -19,14 +22,17 @@
    ```
    index.html
    data.json
+   standings.json
    scripts/update-poles.js
    scripts/check-pole-penalty.js
+   scripts/update-standings.js
    scripts/verify-data.js
    scripts/backfill-weather.js
    scripts/lib/f1-mapping.js
    scripts/lib/weather.js
    .github/workflows/update-poles.yml
    .github/workflows/check-pole-penalty.yml
+   .github/workflows/update-standings.yml
    ```
 3. Vai su **Settings → Pages** del repository, e in "Build and deployment" seleziona come source il branch principale (es. `main`), cartella `/ (root)`.
 4. Dopo un paio di minuti il sito sarà raggiungibile su `https://<tuo-utente>.github.io/<nome-repo>/`.
@@ -40,12 +46,11 @@ Ci sono due automazioni distinte, perché qualifica e gara di un weekend F1 non 
 2. Estrae pilota, team e tempo del più veloce in qualifica (= la pole, per definizione, a prescindere da eventuali penalità che verranno applicate dopo).
 3. Se il dato non è già presente (o è cambiato) in `data.json`, lo aggiorna e fa un commit automatico al repository.
 
-**2. Dopo la gara (domenica)** — `check-pole-penalty.yml` esegue `scripts/check-pole-penalty.js`, che:
-1. Interroga l'API per i risultati della gara, che includono la griglia di partenza reale (campo `grid`).
-2. Confronta il polista registrato il giorno prima con chi è partito davvero P1.
-3. Se sono persone diverse (il polista ha preso una penalità post-qualifica), aggiunge un campo `penaltyNote` alla entry — il polista registrato NON cambia, si aggiunge solo un avviso visibile nel box dei dettagli sul sito.
+**2. Dopo la gara (domenica)** — girano due workflow separati, entrambi sullo stesso orario:
+- `check-pole-penalty.yml` esegue `scripts/check-pole-penalty.js`: interroga l'API per i risultati di gara (che includono la griglia di partenza reale, campo `grid`), confronta il polista registrato con chi è partito davvero P1, e se sono persone diverse (penalità post-qualifica) aggiunge un `penaltyNote` alla entry — il polista registrato NON cambia.
+- `update-standings.yml` esegue `scripts/update-standings.js`: scarica la classifica piloti e costruttori aggiornata e la scrive in `standings.json`, mostrata nel pannello "🏆 Apri Vista Classifica" del sito.
 
-Puoi lanciare entrambe manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
+Puoi lanciare tutti e tre manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
 
 ## Meteo
 

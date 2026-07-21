@@ -53,11 +53,11 @@
             <!-- Pannello Classifica (Nascosto di default) -->
             <div id="classificaPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
                 <div>
-                    <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Piloti (n° Pole Position)</h3>
+                    <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
                     <div id="driverRanking" class="space-y-1 text-sm"></div>
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Team (n° Pole Position)</h3>
+                    <h3 class="text-sm font-bold text-[#E10600] mb-2" id="teamRankingTitle">🏆 Classifica Costruttori</h3>
                     <div id="teamRanking" class="space-y-1 text-sm"></div>
                 </div>
                 <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
@@ -83,6 +83,7 @@
         // baseData = fonte di verità "ufficiale", caricata da data.json con fetch() più sotto.
         let baseData = [];
         let poleData = [];
+        let standingsData = null; // classifica piloti/costruttori reale, da standings.json
 
         const select = document.getElementById('circuitSelect');
         const detailsList = document.getElementById('detailsList');
@@ -117,6 +118,13 @@
             }
 
             poleData = [...baseData];
+
+            try {
+                const standingsResponse = await fetch('standings.json', { cache: 'no-store' });
+                if (standingsResponse.ok) standingsData = await standingsResponse.json();
+            } catch (err) {
+                console.warn('Impossibile caricare standings.json (classifica campionato):', err);
+            }
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
             populateCircuitSelectors(uniqueCircuits);
@@ -208,37 +216,38 @@
         }
 
         function renderClassifica() {
-            const driverCounts = {};
-            const teamCounts = {};
+            const driverRanking = document.getElementById('driverRanking');
+            const teamRanking = document.getElementById('teamRanking');
+            const classificaMeta = document.getElementById('classificaMeta');
 
-            poleData.forEach(d => {
-                driverCounts[d.driver] = (driverCounts[d.driver] || 0) + 1;
-                teamCounts[d.team] = (teamCounts[d.team] || 0) + 1;
-            });
-
-            const sortedDrivers = Object.entries(driverCounts).sort((a,b) => b[1] - a[1]);
-            const sortedTeams = Object.entries(teamCounts).sort((a,b) => b[1] - a[1]);
+            if (!standingsData) {
+                driverRanking.innerHTML = '';
+                teamRanking.innerHTML = '';
+                classificaMeta.innerText = '⚠️ Classifica non disponibile (standings.json non raggiungibile).';
+                return;
+            }
 
             const medal = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
 
-            const driverRanking = document.getElementById('driverRanking');
-            driverRanking.innerHTML = sortedDrivers.map(([name, count], i) => `
+            document.getElementById('driverRankingTitle').innerText = `🏆 Classifica Piloti ${standingsData.season}`;
+            document.getElementById('teamRankingTitle').innerText = `🏆 Classifica Costruttori ${standingsData.season}`;
+
+            driverRanking.innerHTML = standingsData.drivers.map((d, i) => `
                 <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
-                    <span>${medal(i)} ${name}</span>
-                    <span class="font-bold text-[#E10600]">${count}</span>
+                    <span>${medal(i)} ${d.driver} <span class="text-gray-500">(${d.team})</span></span>
+                    <span class="font-bold text-[#E10600]">${d.points} pt</span>
                 </div>
             `).join('');
 
-            const teamRanking = document.getElementById('teamRanking');
-            teamRanking.innerHTML = sortedTeams.map(([name, count], i) => `
+            teamRanking.innerHTML = standingsData.constructors.map((c, i) => `
                 <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
-                    <span>${medal(i)} ${name}</span>
-                    <span class="font-bold text-[#E10600]">${count}</span>
+                    <span>${medal(i)} ${c.team}</span>
+                    <span class="font-bold text-[#E10600]">${c.points} pt</span>
                 </div>
             `).join('');
 
-            document.getElementById('classificaMeta').innerText =
-                `Totale pole position registrate: ${poleData.length} · Circuiti: ${new Set(poleData.map(d=>d.circuit)).size}`;
+            const updatedDate = new Date(standingsData.updatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+            classificaMeta.innerText = `Aggiornato al ${updatedDate}`;
         }
 
         function updateApp(circuitName) {
