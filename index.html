@@ -20,12 +20,12 @@
         <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
     </header>
 
-    <div class="md:grid md:grid-cols-[360px_1fr] md:gap-8 md:items-start">
+    <div class="md:grid md:grid-cols-[2fr_1fr] md:gap-8 md:items-start">
 
-        <!-- Colonna sinistra (desktop): selettore, grafico, classifica. Su mobile è semplicemente in cima. -->
+        <!-- Colonna sinistra (desktop, 2/3 dello schermo): selettore, grafico, classifica. Su mobile è semplicemente in cima. -->
         <div class="md:sticky md:top-8">
             <!-- Selettore Circuito -->
-            <div class="mb-6">
+            <div class="mb-6 md:max-w-sm">
                 <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
                 <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-[#E10600]">
                     <!-- Inseriti automaticamente dallo script -->
@@ -35,18 +35,18 @@
             <!-- Contenitore Grafico -->
             <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
                 <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
-                <div style="position: relative; height: 200px; max-height: 200px; width: 100%; overflow: hidden;">
+                <div class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
                 </div>
             </div>
 
             <!-- Pulsante Vista Classifica -->
-            <button onclick="toggleClassificaPanel()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
+            <button onclick="toggleClassificaPanel()" class="w-full md:max-w-sm bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
                 🏆 Apri Vista Classifica
             </button>
 
             <!-- Pannello Classifica (Nascosto di default) -->
-            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
+            <div id="classificaPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
                 <div>
                     <h3 class="text-sm font-bold text-[#E10600] mb-2">🏆 Classifica Piloti (n° Pole Position)</h3>
                     <div id="driverRanking" class="space-y-1 text-sm"></div>
@@ -59,10 +59,10 @@
             </div>
         </div>
 
-        <!-- Colonna destra (desktop): lista dettagli, in griglia su schermi larghi invece che impilata. -->
+        <!-- Colonna destra (desktop, 1/3 dello schermo): lista dettagli, impilata verticalmente. -->
         <div>
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
-            <div id="detailsList" class="space-y-3 md:space-y-0 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-3">
+            <div id="detailsList" class="space-y-3">
                 <!-- I dettagli compariranno qui -->
             </div>
         </div>
