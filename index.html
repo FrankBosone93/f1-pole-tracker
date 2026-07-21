@@ -45,10 +45,15 @@
                 <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
             </div>
 
-            <!-- Pulsante Vista Classifica -->
-            <button onclick="toggleClassificaPanel()" class="w-full md:max-w-sm bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-4 rounded-lg mb-6 border border-gray-700 transition-colors cursor-pointer">
-                🏆 Apri Vista Classifica
-            </button>
+            <!-- Pulsanti Vista Classifica / Calendario -->
+            <div class="flex gap-2 mb-6 md:max-w-sm">
+                <button onclick="toggleClassificaPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                    🏆 Classifica
+                </button>
+                <button onclick="toggleCalendarPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                    📅 <span id="calendarButtonLabel">Calendario</span>
+                </button>
+            </div>
 
             <!-- Pannello Classifica (Nascosto di default) -->
             <div id="classificaPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
@@ -61,6 +66,13 @@
                     <div id="teamRanking" class="space-y-1 text-sm"></div>
                 </div>
                 <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
+            </div>
+
+            <!-- Pannello Calendario (Nascosto di default) -->
+            <div id="calendarPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3">
+                <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
+                <div id="calendarList" class="space-y-1 text-sm"></div>
+                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="calendarMeta"></div>
             </div>
         </div>
 
@@ -86,6 +98,7 @@
         let baseData = [];
         let poleData = [];
         let standingsData = null; // classifica piloti/costruttori reale, da standings.json
+        let calendarData = null; // calendario stagione in corso, da calendar.json
 
         const select = document.getElementById('circuitSelect');
         const detailsList = document.getElementById('detailsList');
@@ -126,6 +139,17 @@
                 if (standingsResponse.ok) standingsData = await standingsResponse.json();
             } catch (err) {
                 console.warn('Impossibile caricare standings.json (classifica campionato):', err);
+            }
+
+            try {
+                const calendarResponse = await fetch('calendar.json', { cache: 'no-store' });
+                if (calendarResponse.ok) {
+                    calendarData = await calendarResponse.json();
+                    const calendarButtonLabel = document.getElementById('calendarButtonLabel');
+                    if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario ${calendarData.season}`;
+                }
+            } catch (err) {
+                console.warn('Impossibile caricare calendar.json:', err);
             }
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
@@ -267,6 +291,39 @@
 
             const updatedDate = new Date(standingsData.updatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
             classificaMeta.innerText = `Aggiornato al ${updatedDate}`;
+        }
+
+        function toggleCalendarPanel() {
+            const panel = document.getElementById('calendarPanel');
+            panel.classList.toggle('hidden');
+            if(!panel.classList.contains('hidden')) {
+                renderCalendar();
+            }
+        }
+
+        function renderCalendar() {
+            const calendarList = document.getElementById('calendarList');
+            const calendarMeta = document.getElementById('calendarMeta');
+
+            if (!calendarData) {
+                calendarList.innerHTML = '';
+                calendarMeta.innerText = '⚠️ Calendario non disponibile (calendar.json non raggiungibile).';
+                return;
+            }
+
+            document.getElementById('calendarPanelTitle').innerText = `📅 Calendario ${calendarData.season}`;
+
+            calendarList.innerHTML = calendarData.races.map(r => `
+                <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5 gap-2">
+                    <span class="text-gray-400 shrink-0">${r.round}. ${r.circuit}</span>
+                    <span class="text-right ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
+                        ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
+                    </span>
+                </div>
+            `).join('');
+
+            const updatedDate = new Date(calendarData.updatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+            calendarMeta.innerText = `Aggiornato al ${updatedDate}`;
         }
 
         function updateApp(circuitName) {

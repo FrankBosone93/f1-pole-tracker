@@ -1,0 +1,190 @@
+{
+  "season": 2026,
+  "updatedAt": "2026-07-21T22:08:34.880Z",
+  "races": [
+    {
+      "round": 1,
+      "circuit": "Melbourne (Australia)",
+      "raceName": "Formula 1 Qatar Airways Australian Grand Prix",
+      "date": "2026-03-08",
+      "winner": {
+        "driver": "George Russell",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 2,
+      "circuit": "Shanghai (Cina)",
+      "raceName": "Formula 1 Heineken Chinese Grand Prix 2026",
+      "date": "2026-03-15",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 3,
+      "circuit": "Suzuka",
+      "raceName": "Formula 1 Aramco Japanese Grand Prix 2026",
+      "date": "2026-03-29",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 4,
+      "circuit": "Miami",
+      "raceName": "Formula 1 Crypto.com Miami Grand Prix 2026",
+      "date": "2026-05-03",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 5,
+      "circuit": "Montreal (Canada)",
+      "raceName": "Formula 1 Lenovo Grand Prix Du Canada 2026",
+      "date": "2026-05-24",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 6,
+      "circuit": "Monaco",
+      "raceName": "Formula 1 Louis Vuitton Grand Prix de Monaco 2026",
+      "date": "2026-06-07",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 7,
+      "circuit": "Barcellona",
+      "raceName": "Formula 1 MSC Cruises Gran Premio de Barcelona-Catalunya 2026",
+      "date": "2026-06-14",
+      "winner": {
+        "driver": "Lewis Hamilton",
+        "team": "Ferrari"
+      }
+    },
+    {
+      "round": 8,
+      "circuit": "Red Bull Ring",
+      "raceName": "Formula 1 Lenovo Austrian Grand Prix 2026",
+      "date": "2026-06-28",
+      "winner": {
+        "driver": "George Russell",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 9,
+      "circuit": "Silverstone",
+      "raceName": "Formula 1 Pirelli British Grand Prix 2026",
+      "date": "2026-07-05",
+      "winner": {
+        "driver": "Charles Leclerc",
+        "team": "Ferrari"
+      }
+    },
+    {
+      "round": 10,
+      "circuit": "Spa-Francorchamps",
+      "raceName": "Formula 1 Belgian Grand Prix 2026",
+      "date": "2026-07-19",
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      }
+    },
+    {
+      "round": 11,
+      "circuit": "Hungaroring",
+      "raceName": "Formula 1 AWS Hungarian Grand Prix 2026",
+      "date": "2026-07-26",
+      "winner": null
+    },
+    {
+      "round": 12,
+      "circuit": "Zandvoort",
+      "raceName": "Formula 1 Heineken Dutch Grand Prix 2026",
+      "date": "2026-08-23",
+      "winner": null
+    },
+    {
+      "round": 13,
+      "circuit": "Monza",
+      "raceName": "Formula 1 Pirelli Gran D'Italia 2026",
+      "date": "2026-09-06",
+      "winner": null
+    },
+    {
+      "round": 14,
+      "circuit": "Madrid",
+      "raceName": "Formula 1 Tag Heuer Gran Premio de España 2026",
+      "date": "2026-09-13",
+      "winner": null
+    },
+    {
+      "round": 15,
+      "circuit": "Baku (Azerbaijan)",
+      "raceName": "Formula 1 Qatar Airways Azerbaijan Grand Prix 2026",
+      "date": "2026-09-26",
+      "winner": null
+    },
+    {
+      "round": 16,
+      "circuit": "Singapore",
+      "raceName": "Formula 1 Singapore Airlanes Singapore Grand Prix 2026",
+      "date": "2026-10-11",
+      "winner": null
+    },
+    {
+      "round": 17,
+      "circuit": "Austin (COTA)",
+      "raceName": "Formula 1 MSC Cruises United States Grand Prix 2026",
+      "date": "2026-10-25",
+      "winner": null
+    },
+    {
+      "round": 18,
+      "circuit": "Città del Messico",
+      "raceName": "Formula 1 Gran Premio de La Ciudad de México 2026",
+      "date": "2026-11-01",
+      "winner": null
+    },
+    {
+      "round": 19,
+      "circuit": "Interlagos (San Paolo)",
+      "raceName": "Formula 1 MSC Cruises Grande Premio de Sao Paulo 2026",
+      "date": "2026-11-08",
+      "winner": null
+    },
+    {
+      "round": 20,
+      "circuit": "Las Vegas",
+      "raceName": "Formula 1 Heineken Las Vegas Grand Prix 2026",
+      "date": "2026-11-22",
+      "winner": null
+    },
+    {
+      "round": 21,
+      "circuit": "Qatar (Lusail)",
+      "raceName": "Formula 1 Qatar Airways Qatar Grand Prix 2026",
+      "date": "2026-11-29",
+      "winner": null
+    },
+    {
+      "round": 22,
+      "circuit": "Abu Dhabi (Yas Marina)",
+      "raceName": "Formula 1 Etihad Airways Abu Dhabi Grand Prix 2026",
+      "date": "2026-12-06",
+      "winner": null
+    }
+  ]
+}
