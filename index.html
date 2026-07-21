@@ -33,15 +33,16 @@
             </div>
 
             <!-- Contenitore Grafico -->
-            <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
+            <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
                 <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
                 </div>
-                <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico -->
-                <div id="vResizeHandle" class="hidden md:flex w-full items-center justify-center cursor-row-resize group pt-2 -mb-1">
-                    <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
-                </div>
+            </div>
+
+            <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico -->
+            <div id="vResizeHandle" class="hidden md:flex w-full items-center justify-center cursor-row-resize group py-3 mb-3">
+                <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
             </div>
 
             <!-- Pulsante Vista Classifica -->
