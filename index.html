@@ -35,8 +35,12 @@
             <!-- Contenitore Grafico -->
             <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
                 <div class="text-xs text-gray-400 mb-2 text-right">In alto = Più Veloce ⚡</div>
-                <div class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
+                <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
+                </div>
+                <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico -->
+                <div id="vResizeHandle" class="hidden md:flex w-full items-center justify-center cursor-row-resize group pt-2 -mb-1">
+                    <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
                 </div>
             </div>
 
@@ -152,6 +156,39 @@
             document.body.style.cursor = '';
             document.body.style.userSelect = '';
         });
+
+        // --- DIVISORE TRASCINABILE (solo desktop) per l'altezza del grafico ---
+        const chartContainer = document.getElementById('chartContainer');
+        const vResizeHandle = document.getElementById('vResizeHandle');
+        const MIN_CHART_HEIGHT = 200, MAX_CHART_HEIGHT = 700;
+        let chartHeight = 440; // deve combaciare con "md:h-[440px]" di partenza
+
+        function applyChartHeight() {
+            chartContainer.style.height = window.innerWidth >= 768 ? chartHeight + 'px' : '';
+        }
+
+        let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
+        vResizeHandle.addEventListener('mousedown', (e) => {
+            vDragging = true;
+            vStartY = e.clientY;
+            vStartHeight = chartHeight;
+            document.body.style.cursor = 'row-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!vDragging) return;
+            const delta = e.clientY - vStartY;
+            chartHeight = Math.min(MAX_CHART_HEIGHT, Math.max(MIN_CHART_HEIGHT, vStartHeight + delta));
+            applyChartHeight();
+        });
+        window.addEventListener('mouseup', () => {
+            if (!vDragging) return;
+            vDragging = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        });
+        window.addEventListener('resize', applyChartHeight);
 
         function formatSecondsToTime(totalSeconds) {
             const mins = Math.floor(totalSeconds / 60);
