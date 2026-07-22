@@ -386,7 +386,10 @@
         // --- VISTA CLASSIFICA ---
         function toggleClassificaPanel() {
             const panel = document.getElementById('classificaPanel');
-            panel.classList.toggle('hidden');
+            const wasHidden = panel.classList.contains('hidden');
+            // I due pannelli sono mutuamente esclusivi: aprirne uno chiude l'altro.
+            document.getElementById('calendarPanel').classList.add('hidden');
+            panel.classList.toggle('hidden', !wasHidden);
             if(!panel.classList.contains('hidden')) {
                 renderClassifica();
                 applyClassificaPanelWidth();
@@ -431,7 +434,10 @@
 
         function toggleCalendarPanel() {
             const panel = document.getElementById('calendarPanel');
-            panel.classList.toggle('hidden');
+            const wasHidden = panel.classList.contains('hidden');
+            // I due pannelli sono mutuamente esclusivi: aprirne uno chiude l'altro.
+            document.getElementById('classificaPanel').classList.add('hidden');
+            panel.classList.toggle('hidden', !wasHidden);
             if(!panel.classList.contains('hidden')) {
                 renderCalendar();
             }
