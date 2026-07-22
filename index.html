@@ -57,17 +57,21 @@
                 </button>
             </div>
 
-            <!-- Pannello Classifica (Nascosto di default) -->
-            <div id="classificaPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-4">
-                <div>
-                    <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
-                    <div id="driverRanking" class="space-y-1 text-sm"></div>
+            <!-- Pannello Classifica (Nascosto di default). Larghezza impostata via
+                 JS pari al 2/3 di default del grafico (vedi applyClassificaPanelWidth),
+                 indipendente da un eventuale ridimensionamento live del grafico stesso. -->
+            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
+                <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
+                    <div>
+                        <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
+                        <div id="driverRanking" class="space-y-1 text-sm"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-[#E10600] mb-2" id="teamRankingTitle">🏆 Classifica Costruttori</h3>
+                        <div id="teamRanking" class="space-y-1 text-sm"></div>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-[#E10600] mb-2" id="teamRankingTitle">🏆 Classifica Costruttori</h3>
-                    <div id="teamRanking" class="space-y-1 text-sm"></div>
-                </div>
-                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="classificaMeta"></div>
+                <div class="text-xs text-gray-500 pt-2 mt-4 border-t border-gray-700" id="classificaMeta"></div>
             </div>
 
             <!-- Pannello Calendario (Nascosto di default) -->
@@ -188,7 +192,8 @@
         const mainGrid = document.getElementById('mainGrid');
         const resizeHandle = document.getElementById('resizeHandle');
         const MIN_RATIO = 0.3, MAX_RATIO = 0.78;
-        let leftRatio = 2 / 3; // deve combaciare con "2fr 12px 1fr" di partenza
+        const DEFAULT_LEFT_RATIO = 2 / 3; // larghezza "di default" del grafico, fissa
+        let leftRatio = DEFAULT_LEFT_RATIO; // deve combaciare con "2fr 12px 1fr" di partenza
 
         function applyGridColumns() {
             const leftPct = (leftRatio * 100).toFixed(2);
@@ -196,6 +201,21 @@
             mainGrid.style.gridTemplateColumns = `${leftPct}% 12px ${rightPct}%`;
             scheduleReposition();
         }
+
+        // Il pannello Classifica ha una larghezza FISSA pari al 2/3 di default
+        // del grafico, indipendente da un eventuale ridimensionamento live del
+        // grafico stesso (leftRatio può cambiare col drag, DEFAULT_LEFT_RATIO no).
+        const classificaPanel = document.getElementById('classificaPanel');
+        function applyClassificaPanelWidth() {
+            if (window.innerWidth < 768) {
+                classificaPanel.style.width = '';
+                return;
+            }
+            const totalWidth = mainGrid.getBoundingClientRect().width;
+            const width = (totalWidth - 12) * DEFAULT_LEFT_RATIO;
+            classificaPanel.style.width = width + 'px';
+        }
+        window.addEventListener('resize', applyClassificaPanelWidth);
 
         let dragging = false;
         resizeHandle.addEventListener('mousedown', (e) => {
@@ -339,6 +359,7 @@
             panel.classList.toggle('hidden');
             if(!panel.classList.contains('hidden')) {
                 renderClassifica();
+                applyClassificaPanelWidth();
             }
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
