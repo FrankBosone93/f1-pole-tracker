@@ -40,8 +40,10 @@
                 </div>
             </div>
 
-            <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico -->
-            <div id="vResizeHandle" class="hidden md:flex w-full items-center justify-center cursor-row-resize group py-3 mb-3">
+            <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico.
+                 Il pillolo interno viene centrato via JS sull'asse X reale del grafico (non
+                 sulla larghezza della card), quindi qui niente justify-center. -->
+            <div id="vResizeHandle" class="hidden md:flex w-full items-center cursor-row-resize group py-3 mb-3">
                 <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
             </div>
 
@@ -192,6 +194,7 @@
             const leftPct = (leftRatio * 100).toFixed(2);
             const rightPct = ((1 - leftRatio) * 100).toFixed(2);
             mainGrid.style.gridTemplateColumns = `${leftPct}% 12px ${rightPct}%`;
+            scheduleReposition();
         }
 
         let dragging = false;
@@ -223,22 +226,69 @@
         const MIN_CHART_HEIGHT = 200, MAX_CHART_HEIGHT = 700;
         let chartHeight = 440; // deve combaciare con "md:h-[440px]" di partenza
 
-        // Il divisore orizzontale (resizeHandle) deve restare centrato sul
-        // grafico, non su tutta la colonna sinistra: se no, aprendo il
-        // pannello classifica (che sta sotto) la maniglia si sposterebbe in
-        // basso insieme a lui. Lo posizioniamo quindi con un marginTop
-        // calcolato sulla posizione reale della card del grafico.
+        // Le due maniglie devono restare ancorate all'area di disegno REALE
+        // del grafico (gli assi X/Y calcolati da Chart.js), non al bordo
+        // della card (che include padding/etichetta) né tantomeno alla
+        // colonna dei dettagli qualifiche. chartArea è la zona di plot vera
+        // e propria, esclusi assi ed etichette.
+        function getChartAreaRect() {
+            if (!currentChart || !currentChart.chartArea) return null;
+            const canvasRect = document.getElementById('poleChart').getBoundingClientRect();
+            const a = currentChart.chartArea;
+            return {
+                top: canvasRect.top + a.top,
+                bottom: canvasRect.top + a.bottom,
+                left: canvasRect.left + a.left,
+                right: canvasRect.left + a.right,
+            };
+        }
+
+        // Maniglia larghezza (verticale): centrata sull'asse Y del grafico.
         function positionResizeHandle() {
             if (window.innerWidth < 768) return;
             const colRect = leftColumn.getBoundingClientRect();
-            const cardRect = chartCard.getBoundingClientRect();
-            const centerY = (cardRect.top - colRect.top) + cardRect.height / 2;
+            const area = getChartAreaRect();
+            let centerY;
+            if (area) {
+                centerY = (area.top + area.bottom) / 2 - colRect.top;
+            } else {
+                // Il grafico non è ancora pronto: fallback sul centro della card.
+                const cardRect = chartCard.getBoundingClientRect();
+                centerY = (cardRect.top - colRect.top) + cardRect.height / 2;
+            }
             resizeHandle.style.marginTop = Math.max(0, centerY - resizeHandle.offsetHeight / 2) + 'px';
+        }
+
+        // Maniglia altezza (orizzontale): centrata sull'asse X del grafico.
+        function positionVResizeHandle() {
+            if (window.innerWidth < 768) return;
+            const area = getChartAreaRect();
+            if (!area) return;
+            const handleRect = vResizeHandle.getBoundingClientRect();
+            const pill = vResizeHandle.firstElementChild;
+            const centerX = (area.left + area.right) / 2 - handleRect.left;
+            pill.style.marginLeft = Math.max(0, centerX - pill.offsetWidth / 2) + 'px';
+        }
+
+        function repositionHandles() {
+            positionResizeHandle();
+            positionVResizeHandle();
+        }
+
+        // Chart.js si ridimensiona già da solo (ResizeObserver sul contenitore)
+        // quando cambiano le dimensioni della card: chiamare chart.resize() a
+        // mano qui interferisce con quel meccanismo e può azzerare la
+        // larghezza del canvas. Si aspetta invece che Chart.js finisca il suo
+        // resize automatico prima di leggere chartArea aggiornata (setTimeout
+        // invece di requestAnimationFrame, che si è rivelato inaffidabile in
+        // alcuni ambienti di test).
+        function scheduleReposition() {
+            setTimeout(repositionHandles, 50);
         }
 
         function applyChartHeight() {
             chartContainer.style.height = window.innerWidth >= 768 ? chartHeight + 'px' : '';
-            positionResizeHandle();
+            scheduleReposition();
         }
 
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
@@ -398,6 +448,7 @@
                     }
                 }
             });
+            scheduleReposition();
 
             // Record storico del circuito = tempo più basso tra tutti gli anni disponibili
             const recordSeconds = filtered.length > 0 ? Math.min(...filtered.map(d => d.seconds)) : null;
