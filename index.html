@@ -81,8 +81,8 @@
         <!-- Divisore trascinabile (solo desktop) per ridimensionare le due colonne.
              Ancorato verticalmente al centro del grafico (non a tutta l'altezza
              della colonna), così non si sposta quando si apre il pannello classifica. -->
-        <div id="resizeHandle" class="hidden md:flex items-center justify-center cursor-col-resize group h-24">
-            <div class="w-1 h-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
+        <div id="resizeHandle" class="hidden md:flex md:sticky md:top-8 relative cursor-col-resize group">
+            <div class="absolute left-1/2 -translate-x-1/2 w-1 h-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
         </div>
 
         <!-- Colonna destra (desktop): lista dettagli, impilata verticalmente. -->
@@ -244,19 +244,31 @@
         }
 
         // Maniglia larghezza (verticale): centrata sull'asse Y del grafico.
+        // Il pallino interno è posizionato con "top" assoluto (non margin-top):
+        // un margin-top sull'elemento sticky ne altererebbe anche la soglia di
+        // aggancio dello scroll, facendolo restare "sticky" in un momento
+        // diverso rispetto alla colonna del grafico (bug osservato scorrendo
+        // la pagina). Con "top" assoluto sul figlio, l'elemento sticky esterno
+        // non ha margini e resta perfettamente sincronizzato con leftColumn.
         function positionResizeHandle() {
             if (window.innerWidth < 768) return;
-            const colRect = leftColumn.getBoundingClientRect();
+            // L'altezza "naturale" di resizeHandle deve combaciare con quella
+            // di leftColumn (non con l'intera riga della griglia, che segue
+            // anche la colonna dei dettagli molto più alta): altrimenti i due
+            // elementi "sticky" si sganciano dallo scroll in punti diversi.
+            resizeHandle.style.height = leftColumn.offsetHeight + 'px';
+            const handleRect = resizeHandle.getBoundingClientRect();
+            const pill = resizeHandle.firstElementChild;
             const area = getChartAreaRect();
             let centerY;
             if (area) {
-                centerY = (area.top + area.bottom) / 2 - colRect.top;
+                centerY = (area.top + area.bottom) / 2 - handleRect.top;
             } else {
                 // Il grafico non è ancora pronto: fallback sul centro della card.
                 const cardRect = chartCard.getBoundingClientRect();
-                centerY = (cardRect.top - colRect.top) + cardRect.height / 2;
+                centerY = (cardRect.top - handleRect.top) + cardRect.height / 2;
             }
-            resizeHandle.style.marginTop = Math.max(0, centerY - resizeHandle.offsetHeight / 2) + 'px';
+            pill.style.top = Math.max(0, centerY - pill.offsetHeight / 2) + 'px';
         }
 
         // Maniglia altezza (orizzontale): centrata sull'asse X del grafico.
@@ -328,6 +340,7 @@
             if(!panel.classList.contains('hidden')) {
                 renderClassifica();
             }
+            scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
         function renderClassifica() {
@@ -371,6 +384,7 @@
             if(!panel.classList.contains('hidden')) {
                 renderCalendar();
             }
+            scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
         function renderCalendar() {
