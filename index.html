@@ -345,6 +345,14 @@
         // invece di requestAnimationFrame, che si è rivelato inaffidabile in
         // alcuni ambienti di test).
         function scheduleReposition() {
+            // Riposiziona subito (sincrono): l'altezza di leftColumn è già
+            // nota non appena cambia il DOM (es. apertura/chiusura pannelli),
+            // e aspettare solo i 50ms sotto lascerebbe la maniglia sbagliata
+            // (altezza vecchia) visibile per un istante, con un salto brusco
+            // quando poi scatta alla misura giusta. Il setTimeout resta per
+            // catturare l'assestamento asincrono di Chart.js (il suo resize
+            // interno, che invece richiede tempo).
+            repositionHandles();
             setTimeout(repositionHandles, 50);
         }
 
