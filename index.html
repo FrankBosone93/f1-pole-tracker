@@ -89,8 +89,14 @@
             <div class="absolute left-1/2 -translate-x-1/2 w-1 h-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
         </div>
 
-        <!-- Colonna destra (desktop): lista dettagli, impilata verticalmente. -->
-        <div>
+        <!-- Colonna destra (desktop): lista dettagli, impilata verticalmente.
+             Larghezza limitata via JS al massimo alla misura "di default" (vedi
+             applyDetailsColumnWidth): il ridimensionamento del grafico può farla
+             restringere (se il grafico si allarga oltre il default) ma mai
+             allargare oltre la dimensione di default. È ancorata al bordo destro
+             (margin-left: auto), così resta sempre nella stessa posizione e non
+             si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
+        <div id="detailsColumn">
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
             <div id="detailsList" class="space-y-3">
                 <!-- I dettagli compariranno qui -->
@@ -168,6 +174,7 @@
             select.value = initialCircuit;
             updateApp(initialCircuit);
             applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
+            applyDetailsColumnWidth();
         }
 
         // Circuito da mostrare di default all'apertura del sito: quello
@@ -199,6 +206,7 @@
             const leftPct = (leftRatio * 100).toFixed(2);
             const rightPct = ((1 - leftRatio) * 100).toFixed(2);
             mainGrid.style.gridTemplateColumns = `${leftPct}% 12px ${rightPct}%`;
+            applyDetailsColumnWidth();
             scheduleReposition();
         }
 
@@ -216,6 +224,28 @@
             classificaPanel.style.width = width + 'px';
         }
         window.addEventListener('resize', applyClassificaPanelWidth);
+
+        // La colonna "Dettagli Qualifiche" ha una larghezza massima FISSA pari
+        // al 2/3 di default del grafico (stessa base della classifica): il
+        // drag della maniglia può solo restringerla (se il grafico si allarga
+        // oltre il default), mai allargarla oltre il default. Ancorata al
+        // bordo destro con margin-left:auto, così la sua posizione non
+        // dipende mai da leftRatio e non si sovrappone mai al pannello
+        // Classifica quando il grafico si restringe.
+        const detailsColumn = document.getElementById('detailsColumn');
+        function applyDetailsColumnWidth() {
+            if (window.innerWidth < 768) {
+                detailsColumn.style.width = '';
+                detailsColumn.style.marginLeft = '';
+                return;
+            }
+            const totalWidth = mainGrid.getBoundingClientRect().width;
+            const defaultWidth = (totalWidth - 12) * (1 - DEFAULT_LEFT_RATIO);
+            const liveWidth = (totalWidth - 12) * (1 - leftRatio);
+            detailsColumn.style.width = Math.min(defaultWidth, liveWidth) + 'px';
+            detailsColumn.style.marginLeft = 'auto';
+        }
+        window.addEventListener('resize', applyDetailsColumnWidth);
 
         let dragging = false;
         resizeHandle.addEventListener('mousedown', (e) => {
