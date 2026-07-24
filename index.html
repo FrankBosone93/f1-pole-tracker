@@ -452,6 +452,27 @@
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
+        const ITALIAN_MONTHS = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+
+        // Formatta l'intervallo del weekend di gara (es. "6-8 Marzo", o
+        // "28 Febbraio - 1 Marzo" se il weekend attraversa due mesi). Il
+        // suffisso "T00:00:00" forza il parsing come data locale invece che
+        // UTC: senza, in alcuni fusi orari la data mostrata potrebbe
+        // retrocedere di un giorno (stesso tipo di bug già corretto per il
+        // meteo, vedi weather.js).
+        function formatRaceDateRange(weekendStart, date) {
+            if (!date) return '';
+            const end = new Date(date + 'T00:00:00');
+            if (!weekendStart || weekendStart === date) {
+                return `${end.getDate()} ${ITALIAN_MONTHS[end.getMonth()]}`;
+            }
+            const start = new Date(weekendStart + 'T00:00:00');
+            if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+                return `${start.getDate()}-${end.getDate()} ${ITALIAN_MONTHS[end.getMonth()]}`;
+            }
+            return `${start.getDate()} ${ITALIAN_MONTHS[start.getMonth()]} - ${end.getDate()} ${ITALIAN_MONTHS[end.getMonth()]}`;
+        }
+
         function renderCalendar() {
             const calendarList = document.getElementById('calendarList');
             const calendarMeta = document.getElementById('calendarMeta');
@@ -466,7 +487,10 @@
 
             calendarList.innerHTML = calendarData.races.map(r => `
                 <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5 gap-2">
-                    <span class="text-gray-400 shrink-0">${r.round}. ${r.circuit}</span>
+                    <span class="text-gray-400 shrink-0">
+                        <span class="block">${r.round}. ${r.circuit}</span>
+                        <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
+                    </span>
                     <span class="text-right ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
                         ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
                     </span>
