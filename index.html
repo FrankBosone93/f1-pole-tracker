@@ -681,19 +681,26 @@
                 if (!formatted) return '';
                 const status = getSessionStatus(session, SESSION_DURATION_MIN[key]);
                 const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
+                // Etichetta e orario usano lo stesso colore in base allo
+                // stato: sessione non ancora disputata o in corso devono
+                // "accendersi" insieme (nome + orario), non solo l'orario.
                 const textClass = status === 'live' ? 'text-green-400 font-bold' : status === 'past' ? 'text-gray-500' : 'text-white';
                 const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
                 return `<span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
-                    <span class="text-gray-400 truncate">${label}</span>
+                    <span class="${textClass} truncate">${label}</span>
                     <span class="${textClass} text-right whitespace-nowrap">${formatted}${liveTag}</span>`;
             }).join('') || '<span class="col-span-3 text-gray-500 italic">Orari non disponibili.</span>';
 
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
                 <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
 
+            // Colonna orario "1fr": pallino ed etichetta restano alla loro
+            // dimensione naturale (ancorati al bordo sinistro del riquadro),
+            // mentre la data/ora viene spinta verso il bordo destro invece
+            // di restare subito dopo l'etichetta.
             const contentHtml = `
                 <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
-                <div class="grid grid-cols-[auto_1fr_auto] gap-x-2 gap-y-1 text-[11px] items-center w-max max-w-full">${sessionsHtml}</div>
+                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-[11px] items-center">${sessionsHtml}</div>
             `;
 
             // Versione mobile: stesso riquadro (bordo/sfondo) usato altrove
