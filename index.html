@@ -473,6 +473,62 @@
             return `${start.getDate()} ${ITALIAN_MONTHS[start.getMonth()]} - ${end.getDate()} ${ITALIAN_MONTHS[end.getMonth()]}`;
         }
 
+        const SESSION_LABELS = [
+            ['fp1', 'Prove Libere 1'],
+            ['fp2', 'Prove Libere 2'],
+            ['fp3', 'Prove Libere 3'],
+            ['sprintQualy', 'Qualifiche Sprint'],
+            ['sprintRace', 'Sprint'],
+            ['qualy', 'Qualifiche'],
+            ['race', 'Gara'],
+        ];
+
+        // Converte data+ora UTC di una sessione (come forniti da f1api.dev,
+        // es. {date:"2026-03-06", time:"01:30:00Z"}) nell'orario italiano
+        // locale. Intl gestisce da solo il cambio ora legale (CET/CEST) per
+        // il fuso "Europe/Rome" - non serve calcolarlo a mano.
+        function formatSessionTime(session) {
+            if (!session || !session.date || !session.time) return null;
+            const d = new Date(`${session.date}T${session.time}`);
+            if (isNaN(d)) return null;
+            const formatted = d.toLocaleString('it-IT', {
+                weekday: 'short', day: 'numeric', month: 'short',
+                hour: '2-digit', minute: '2-digit',
+                timeZone: 'Europe/Rome',
+            });
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+
+        function renderSessionSchedule(schedule) {
+            const rows = SESSION_LABELS
+                .map(([key, label]) => {
+                    const formatted = formatSessionTime(schedule && schedule[key]);
+                    if (!formatted) return null;
+                    return `<div class="flex justify-between gap-2 py-0.5">
+                        <span class="text-gray-400">${label}</span>
+                        <span class="text-gray-200">${formatted}</span>
+                    </div>`;
+                })
+                .filter(Boolean);
+            if (rows.length === 0) {
+                return '<div class="text-gray-500 italic">Orari non ancora disponibili.</div>';
+            }
+            return rows.join('');
+        }
+
+        // Espande/richiude gli orari (ora italiana) di un singolo weekend di
+        // gara. Il contenuto è già renderizzato in renderCalendar() insieme
+        // alla riga stessa: qui si toglie/aggiunge solo la classe "hidden".
+        function toggleRaceSchedule(round) {
+            const detail = document.getElementById(`raceSchedule-${round}`);
+            const chevron = document.getElementById(`raceChevron-${round}`);
+            if (!detail) return;
+            const wasHidden = detail.classList.contains('hidden');
+            detail.classList.toggle('hidden', !wasHidden);
+            if (chevron) chevron.classList.toggle('rotate-180', wasHidden);
+            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        }
+
         function renderCalendar() {
             const calendarList = document.getElementById('calendarList');
             const calendarMeta = document.getElementById('calendarMeta');
@@ -486,14 +542,22 @@
             document.getElementById('calendarPanelTitle').innerText = `📅 Calendario ${calendarData.season}`;
 
             calendarList.innerHTML = calendarData.races.map(r => `
-                <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5 gap-2">
-                    <span class="text-gray-400 shrink-0">
-                        <span class="block">${r.round}. ${r.circuit}</span>
-                        <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
-                    </span>
-                    <span class="text-right ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
-                        ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
-                    </span>
+                <div class="bg-gray-900 rounded overflow-hidden">
+                    <div class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule(${r.round})">
+                        <span class="text-gray-400 shrink-0">
+                            <span class="block">${r.round}. ${r.circuit}</span>
+                            <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
+                        </span>
+                        <span class="flex items-center gap-1.5 min-w-0">
+                            <span class="text-right truncate ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
+                                ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
+                            </span>
+                            <span id="raceChevron-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform">▾</span>
+                        </span>
+                    </div>
+                    <div id="raceSchedule-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
+                        ${renderSessionSchedule(r.schedule)}
+                    </div>
                 </div>
             `).join('');
 

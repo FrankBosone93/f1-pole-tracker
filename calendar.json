@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-07-21T22:24:55.354Z",
+  "updatedAt": "2026-07-25T10:26:23.777Z",
   "races": [
     {
       "round": 1,
@@ -11,6 +11,30 @@
       "winner": {
         "driver": "George Russell",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-03-06",
+          "time": "01:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-03-06",
+          "time": "05:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-03-07",
+          "time": "01:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-03-07",
+          "time": "05:00:00Z"
+        },
+        "race": {
+          "date": "2026-03-08",
+          "time": "04:00:00Z"
+        }
       }
     },
     {
@@ -22,6 +46,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-03-13",
+          "time": "03:30:00Z"
+        },
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
+          "date": "2026-03-13",
+          "time": "07:30:00Z"
+        },
+        "sprintRace": {
+          "date": "2026-03-14",
+          "time": "03:00:00Z"
+        },
+        "qualy": {
+          "date": "2026-03-14",
+          "time": "07:00:00Z"
+        },
+        "race": {
+          "date": "2026-03-15",
+          "time": "07:00:00Z"
+        }
       }
     },
     {
@@ -33,6 +81,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-03-27",
+          "time": "02:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-03-27",
+          "time": "06:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-03-28",
+          "time": "02:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-03-28",
+          "time": "06:00:00Z"
+        },
+        "race": {
+          "date": "2026-03-29",
+          "time": "05:00:00Z"
+        }
       }
     },
     {
@@ -44,6 +116,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-05-01",
+          "time": "16:30:00Z"
+        },
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
+          "date": "2026-05-01",
+          "time": "20:30:00Z"
+        },
+        "sprintRace": {
+          "date": "2026-05-02",
+          "time": "16:00:00Z"
+        },
+        "qualy": {
+          "date": "2026-05-02",
+          "time": "20:00:00Z"
+        },
+        "race": {
+          "date": "2026-05-03",
+          "time": "20:00:00Z"
+        }
       }
     },
     {
@@ -55,6 +151,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-05-22",
+          "time": "17:30:00Z"
+        },
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
+          "date": "2026-05-22",
+          "time": "21:00:00Z"
+        },
+        "sprintRace": {
+          "date": "2026-05-23",
+          "time": "16:30:00Z"
+        },
+        "qualy": {
+          "date": "2026-05-23",
+          "time": "20:00:00Z"
+        },
+        "race": {
+          "date": "2026-05-24",
+          "time": "18:00:00Z"
+        }
       }
     },
     {
@@ -66,6 +186,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-06-05",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-06-05",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-06-06",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-06-06",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-06-07",
+          "time": "13:00:00Z"
+        }
       }
     },
     {
@@ -77,6 +221,30 @@
       "winner": {
         "driver": "Lewis Hamilton",
         "team": "Ferrari"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-06-12",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-06-12",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-06-13",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-06-13",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-06-14",
+          "time": "13:00:00Z"
+        }
       }
     },
     {
@@ -88,6 +256,30 @@
       "winner": {
         "driver": "George Russell",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-06-26",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-06-26",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-06-27",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-06-27",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-06-28",
+          "time": "13:00:00Z"
+        }
       }
     },
     {
@@ -99,6 +291,30 @@
       "winner": {
         "driver": "Charles Leclerc",
         "team": "Ferrari"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-07-03",
+          "time": "11:30:00Z"
+        },
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
+          "date": "2026-07-03",
+          "time": "15:30:00Z"
+        },
+        "sprintRace": {
+          "date": "2026-07-04",
+          "time": "10:30:00Z"
+        },
+        "qualy": {
+          "date": "2026-07-04",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-07-05",
+          "time": "14:00:00Z"
+        }
       }
     },
     {
@@ -110,6 +326,30 @@
       "winner": {
         "driver": "Andrea Kimi Antonelli",
         "team": "Mercedes"
+      },
+      "schedule": {
+        "fp1": {
+          "date": "2026-07-17",
+          "time": "10:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-07-17",
+          "time": "14:30:00Z"
+        },
+        "fp3": {
+          "date": "2026-07-18",
+          "time": "10:00:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-07-18",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-07-19",
+          "time": "13:00:00Z"
+        }
       }
     },
     {
@@ -118,7 +358,31 @@
       "raceName": "Formula 1 AWS Hungarian Grand Prix 2026",
       "date": "2026-07-26",
       "weekendStart": "2026-07-24",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-07-24",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-07-24",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-07-25",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-07-25",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-07-26",
+          "time": "13:00:00Z"
+        }
+      }
     },
     {
       "round": 12,
@@ -126,7 +390,31 @@
       "raceName": "Formula 1 Heineken Dutch Grand Prix 2026",
       "date": "2026-08-23",
       "weekendStart": "2026-08-21",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-08-21",
+          "time": "10:30:00Z"
+        },
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
+          "date": "2026-08-21",
+          "time": "14:00:00Z"
+        },
+        "sprintRace": {
+          "date": "2026-08-22",
+          "time": "09:30:00Z"
+        },
+        "qualy": {
+          "date": "2026-08-22",
+          "time": "13:00:00Z"
+        },
+        "race": {
+          "date": "2026-08-23",
+          "time": "13:00:00Z"
+        }
+      }
     },
     {
       "round": 13,
@@ -134,7 +422,31 @@
       "raceName": "Formula 1 Pirelli Gran D'Italia 2026",
       "date": "2026-09-06",
       "weekendStart": "2026-09-04",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-09-04",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-09-04",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-09-05",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-09-05",
+          "time": "13:00:00Z"
+        },
+        "race": {
+          "date": "2026-09-06",
+          "time": "13:00:00Z"
+        }
+      }
     },
     {
       "round": 14,
@@ -142,7 +454,31 @@
       "raceName": "Formula 1 Tag Heuer Gran Premio de España 2026",
       "date": "2026-09-13",
       "weekendStart": "2026-09-11",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-09-11",
+          "time": "11:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-09-11",
+          "time": "15:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-09-12",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-09-12",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-09-13",
+          "time": "13:00:00Z"
+        }
+      }
     },
     {
       "round": 15,
@@ -150,7 +486,31 @@
       "raceName": "Formula 1 Qatar Airways Azerbaijan Grand Prix 2026",
       "date": "2026-09-26",
       "weekendStart": "2026-09-24",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-09-24",
+          "time": "08:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-09-24",
+          "time": "12:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-09-25",
+          "time": "08:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-09-25",
+          "time": "12:00:00Z"
+        },
+        "race": {
+          "date": "2026-09-26",
+          "time": "11:00:00Z"
+        }
+      }
     },
     {
       "round": 16,
@@ -158,7 +518,31 @@
       "raceName": "Formula 1 Singapore Airlanes Singapore Grand Prix 2026",
       "date": "2026-10-11",
       "weekendStart": "2026-10-09",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-10-09",
+          "time": "09:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-10-09",
+          "time": "13:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-10-10",
+          "time": "09:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-10-10",
+          "time": "13:00:00Z"
+        },
+        "race": {
+          "date": "2026-10-11",
+          "time": "12:00:00Z"
+        }
+      }
     },
     {
       "round": 17,
@@ -166,7 +550,31 @@
       "raceName": "Formula 1 MSC Cruises United States Grand Prix 2026",
       "date": "2026-10-25",
       "weekendStart": "2026-10-23",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-10-23",
+          "time": "17:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-10-23",
+          "time": "21:30:00Z"
+        },
+        "fp3": {
+          "date": "2026-10-24",
+          "time": "17:00:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-10-24",
+          "time": "21:00:00Z"
+        },
+        "race": {
+          "date": "2026-10-25",
+          "time": "19:00:00Z"
+        }
+      }
     },
     {
       "round": 18,
@@ -174,7 +582,31 @@
       "raceName": "Formula 1 Gran Premio de La Ciudad de México 2026",
       "date": "2026-11-01",
       "weekendStart": "2026-10-30",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-10-30",
+          "time": "18:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-10-30",
+          "time": "22:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-10-31",
+          "time": "17:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-10-31",
+          "time": "21:00:00Z"
+        },
+        "race": {
+          "date": "2026-11-01",
+          "time": "20:00:00Z"
+        }
+      }
     },
     {
       "round": 19,
@@ -182,7 +614,31 @@
       "raceName": "Formula 1 MSC Cruises Grande Premio de Sao Paulo 2026",
       "date": "2026-11-08",
       "weekendStart": "2026-11-06",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-11-06",
+          "time": "14:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-11-06",
+          "time": "18:30:00Z"
+        },
+        "fp3": {
+          "date": "2026-11-07",
+          "time": "14:00:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-11-07",
+          "time": "18:00:00Z"
+        },
+        "race": {
+          "date": "2026-11-08",
+          "time": "17:00:00Z"
+        }
+      }
     },
     {
       "round": 20,
@@ -190,7 +646,31 @@
       "raceName": "Formula 1 Heineken Las Vegas Grand Prix 2026",
       "date": "2026-11-22",
       "weekendStart": "2026-11-20",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-11-20",
+          "time": "00:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-11-20",
+          "time": "04:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-11-21",
+          "time": "00:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-11-21",
+          "time": "04:00:00Z"
+        },
+        "race": {
+          "date": "2026-11-22",
+          "time": "04:00:00Z"
+        }
+      }
     },
     {
       "round": 21,
@@ -198,7 +678,31 @@
       "raceName": "Formula 1 Qatar Airways Qatar Grand Prix 2026",
       "date": "2026-11-29",
       "weekendStart": "2026-11-27",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-11-27",
+          "time": "13:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-11-27",
+          "time": "17:30:00Z"
+        },
+        "fp3": {
+          "date": "2026-11-28",
+          "time": "14:00:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-11-28",
+          "time": "18:00:00Z"
+        },
+        "race": {
+          "date": "2026-11-29",
+          "time": "16:00:00Z"
+        }
+      }
     },
     {
       "round": 22,
@@ -206,7 +710,31 @@
       "raceName": "Formula 1 Etihad Airways Abu Dhabi Grand Prix 2026",
       "date": "2026-12-06",
       "weekendStart": "2026-12-04",
-      "winner": null
+      "winner": null,
+      "schedule": {
+        "fp1": {
+          "date": "2026-12-04",
+          "time": "09:30:00Z"
+        },
+        "fp2": {
+          "date": "2026-12-04",
+          "time": "13:00:00Z"
+        },
+        "fp3": {
+          "date": "2026-12-05",
+          "time": "10:30:00Z"
+        },
+        "sprintQualy": null,
+        "sprintRace": null,
+        "qualy": {
+          "date": "2026-12-05",
+          "time": "14:00:00Z"
+        },
+        "race": {
+          "date": "2026-12-06",
+          "time": "13:00:00Z"
+        }
+      }
     }
   ]
 }

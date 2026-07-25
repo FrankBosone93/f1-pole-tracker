@@ -47,6 +47,19 @@ async function main() {
         // dell'ultimo GP disputato.
         const weekendStart = race.schedule?.fp1?.date || race.schedule?.qualy?.date || date;
 
+        // Orario di ogni sessione del weekend (UTC, come fornito dall'API):
+        // la conversione al fuso orario italiano (con cambio ora legale
+        // gestito automaticamente) avviene lato client in index.html.
+        const schedule = {
+            fp1: race.schedule?.fp1?.date ? race.schedule.fp1 : null,
+            fp2: race.schedule?.fp2?.date ? race.schedule.fp2 : null,
+            fp3: race.schedule?.fp3?.date ? race.schedule.fp3 : null,
+            sprintQualy: race.schedule?.sprintQualy?.date ? race.schedule.sprintQualy : null,
+            sprintRace: race.schedule?.sprintRace?.date ? race.schedule.sprintRace : null,
+            qualy: race.schedule?.qualy?.date ? race.schedule.qualy : null,
+            race: race.schedule?.race?.date ? race.schedule.race : null,
+        };
+
         let winner = null;
         try {
             const racePayload = await fetchJson(`https://f1api.dev/api/${season}/${round}/race`, { allow404: true });
@@ -62,7 +75,7 @@ async function main() {
             console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore nel recupero risultati - ${err.message}`);
         }
 
-        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner });
+        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule });
         console.log(`Round ${round} - ${mappedCircuit}: ${winner ? `${winner.driver} (${winner.team})` : 'da disputare'}`);
 
         await sleep(150); // rate limit gentile
