@@ -25,19 +25,26 @@
          bisogno di correzioni via JS. Su mobile l'ordine visivo resta
          identico a prima (titolo, poi selettore, poi grafico), dato che
          l'header precede comunque mainGrid nel flusso del documento. -->
-    <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:flex md:items-start md:justify-between md:gap-6">
+    <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:relative md:flex md:items-start md:justify-between md:gap-6">
         <div class="text-center md:text-left">
             <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
             <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
             <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
             <div class="mt-4 md:mt-6 mb-6 md:mb-0 md:w-96 text-left">
                 <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
-                <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-[#E10600]">
+                <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-lg border border-gray-700 rounded-lg p-4 focus:outline-none focus:border-[#E10600]">
                     <!-- Inseriti automaticamente dallo script -->
                 </select>
             </div>
         </div>
-        <div id="featuredRaceWidgetDesktop" class="hidden md:block shrink-0 text-left pt-1"></div>
+        <!-- Posizionato in assoluto (non più nel flusso flex) apposta: se
+             fosse un normale figlio flex, l'header prenderebbe l'altezza del
+             lato più alto (di solito titolo+selettore) e lascerebbe uno
+             spazio vuoto visibile sotto il widget quando è lui il più corto
+             (segnalato dall'utente). Così l'header si alza solo quanto serve
+             al titolo+selettore, e il widget resta ancorato in alto a
+             destra senza influenzare quell'altezza. -->
+        <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-0 md:right-0 text-left pt-1"></div>
     </header>
 
     <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
@@ -202,6 +209,14 @@
             applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
             applyDetailsColumnWidth();
             applyFeaturedWidgetWidth();
+            // In quest'ordine e solo ora: applyFeaturedWidgetWidth() ha
+            // appena fissato la larghezza del widget, che può farne
+            // ricalcolare l'altezza (il testo si dispone diversamente).
+            // Calcolare l'allineamento PRIMA di questo punto userebbe
+            // un'altezza del widget non definitiva (bug osservato: un
+            // valore corretto al primo giro, sbagliato pochi istanti dopo).
+            alignDetailsColumnTop();
+            alignChartTop();
         }
 
         // Circuito da mostrare di default all'apertura del sito: quello
@@ -449,7 +464,36 @@
             const delta = desiredTop - naturalTop;
             chartCard.style.marginTop = delta + 'px';
         }
-        window.addEventListener('resize', alignChartTop);
+
+        // Il widget "Prossimo GP" (in alto a destra, ancorato al titolo) è
+        // più corto del titolo+selettore a sinistra, quindi sotto di lui
+        // restava uno spazio vuoto ben visibile prima che iniziasse
+        // "Dettagli Qualifiche" (segnalato dall'utente). Si tira su
+        // detailsColumn di conseguenza, mai più in basso della sua
+        // posizione naturale (solo per "chiudere" lo spazio in eccesso, non
+        // per spingere i dettagli più giù del normale).
+        function alignDetailsColumnTop() {
+            if (window.innerWidth < 768) {
+                detailsColumn.style.marginTop = '';
+                return;
+            }
+            detailsColumn.style.marginTop = '0px';
+            const widget = document.getElementById('featuredRaceWidgetDesktop');
+            if (!widget || !widget.firstElementChild) {
+                detailsColumn.style.marginTop = '';
+                return;
+            }
+            const naturalTop = detailsColumn.getBoundingClientRect().top;
+            const targetTop = widget.getBoundingClientRect().bottom + 8;
+            const delta = Math.min(targetTop - naturalTop, 0);
+            detailsColumn.style.marginTop = delta + 'px';
+        }
+        // L'ordine conta: detailsColumn deve essere già riposizionato prima
+        // che alignChartTop() ne legga la nuova posizione del primo riquadro.
+        window.addEventListener('resize', () => {
+            alignDetailsColumnTop();
+            alignChartTop();
+        });
 
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
         vResizeHandle.addEventListener('mousedown', (e) => {
