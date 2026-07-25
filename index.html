@@ -414,6 +414,26 @@
             scheduleReposition();
         }
 
+        // Allinea il bordo superiore del grafico a quello del primo riquadro
+        // di "Dettagli Qualifiche": il selettore circuito sopra il grafico è
+        // più alto (label + select) della sola intestazione "Dettagli
+        // Qualifiche" sopra il primo riquadro, quindi di default il grafico
+        // parte più in basso. Calcolato a runtime (non un valore fisso)
+        // perché l'altezza del primo riquadro varia da circuito a circuito
+        // (una entry con penaltyNote ha una riga in più).
+        function alignChartTop() {
+            if (window.innerWidth < 768) {
+                chartCard.style.marginTop = '';
+                return;
+            }
+            chartCard.style.marginTop = '0px';
+            const firstDetailCard = detailsList.firstElementChild;
+            if (!firstDetailCard) return;
+            const delta = firstDetailCard.getBoundingClientRect().top - chartCard.getBoundingClientRect().top;
+            chartCard.style.marginTop = delta + 'px';
+        }
+        window.addEventListener('resize', alignChartTop);
+
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
         vResizeHandle.addEventListener('mousedown', (e) => {
             vDragging = true;
@@ -790,6 +810,8 @@
                 `;
                 detailsList.appendChild(card);
             });
+
+            alignChartTop();
         }
 
         initApp();
