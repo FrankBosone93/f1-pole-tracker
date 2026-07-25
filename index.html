@@ -105,13 +105,14 @@
              (margin-left: auto), così resta sempre nella stessa posizione e non
              si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
         <div id="detailsColumn">
-            <!-- Widget "Prossimo GP" (versione MOBILE, riquadro con bordo):
-                 sempre visibile, subito dopo i pulsanti Classifica/Calendario
-                 e prima di "Dettagli Qualifiche" (essendo il primo elemento
-                 di questa colonna, che su mobile segue leftColumn nel
-                 flusso). Su desktop è nascosto: la versione desktop vive
-                 invece nell'header, allineata al titolo (vedi
-                 #featuredRaceWidgetDesktop), senza riquadro. -->
+            <!-- Widget "Prossimo GP" (versione MOBILE): sempre visibile,
+                 subito dopo i pulsanti Classifica/Calendario e prima di
+                 "Dettagli Qualifiche" (essendo il primo elemento di questa
+                 colonna, che su mobile segue leftColumn nel flusso). Su
+                 desktop è nascosto: la versione desktop vive invece
+                 nell'header, allineata al titolo (vedi
+                 #featuredRaceWidgetDesktop) - stesso riquadro, stessa
+                 funzione di rendering condivisa. -->
             <div id="featuredRaceWidget" class="mb-4 md:hidden"></div>
 
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
@@ -196,6 +197,7 @@
             updateApp(initialCircuit);
             applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
             applyDetailsColumnWidth();
+            applyFeaturedWidgetWidth();
         }
 
         // Circuito da mostrare di default all'apertura del sito: quello
@@ -267,6 +269,22 @@
             detailsColumn.style.marginLeft = 'auto';
         }
         window.addEventListener('resize', applyDetailsColumnWidth);
+
+        // Il riquadro "Prossimo GP" nell'header deve avere la stessa
+        // larghezza (di default, non quella live trascinabile) dei riquadri
+        // di "Dettagli Qualifiche" - vive in un contenitore diverso
+        // (l'header, non mainGrid) quindi va calcolata a parte con la
+        // stessa formula usata per detailsColumn.
+        const featuredRaceWidgetDesktop = document.getElementById('featuredRaceWidgetDesktop');
+        function applyFeaturedWidgetWidth() {
+            if (window.innerWidth < 768) {
+                featuredRaceWidgetDesktop.style.width = '';
+                return;
+            }
+            const totalWidth = mainGrid.getBoundingClientRect().width;
+            featuredRaceWidgetDesktop.style.width = ((totalWidth - 12) * (1 - DEFAULT_LEFT_RATIO)) + 'px';
+        }
+        window.addEventListener('resize', applyFeaturedWidgetWidth);
 
         let dragging = false;
         resizeHandle.addEventListener('mousedown', (e) => {
@@ -586,37 +604,9 @@
             calendarMeta.innerText = `Aggiornato al ${updatedDate}`;
         }
 
-        // --- WIDGET "PROSSIMO GP": mini mappa circuito + orari sessioni ---
-
-        // Tracciati stilizzati e semplificati (disegnati a mano, non a scala
-        // e non copiati da fonti reali) solo per dare un colpo d'occhio
-        // riconoscibile del tipo di circuito - non sono planimetrie precise.
-        // viewBox comune: "0 0 200 130".
-        const CIRCUIT_TRACK_PATHS = {
-            'Melbourne (Australia)': 'M25,70 C25,42 55,20 95,20 C130,20 160,28 172,48 C180,62 170,74 152,70 C168,80 168,98 148,106 C120,116 78,116 50,104 C30,96 25,88 25,70 Z',
-            'Shanghai (Cina)': 'M95,22 C75,22 62,34 66,48 C69,58 82,60 87,51 C91,44 85,39 79,43 C60,32 34,44 30,68 C26,94 48,110 76,110 L148,110 C172,110 184,94 176,76 C170,62 152,60 146,72 C141,82 153,90 163,82',
-            'Suzuka': 'M110,65 C110,40 90,22 65,24 C40,26 24,46 30,66 C36,86 58,96 76,84 C90,74 84,58 68,60 C90,54 108,66 108,65 C108,90 128,108 155,104 C178,100 188,80 178,62 C170,48 152,46 144,58 C138,68 148,80 162,74',
-            'Miami': 'M22,55 L145,44 C168,42 182,56 178,72 C176,82 164,84 156,78 C170,78 180,90 172,100 C164,110 148,108 142,98 C136,88 122,90 120,100 C118,110 130,116 144,112 L60,112 C30,110 20,90 22,68 Z',
-            'Montreal (Canada)': 'M20,66 C20,40 50,22 90,22 C130,22 168,28 180,48 C186,60 176,68 164,62 C176,72 176,88 162,92 C150,95 144,84 152,76 C140,74 132,84 142,94 C126,104 96,110 66,108 C34,106 20,92 20,66 Z',
-            'Monaco': 'M70,24 C90,18 106,26 100,38 C96,46 84,44 84,36 C104,30 118,42 110,56 C104,66 90,64 90,54 C110,56 122,70 112,84 C104,94 90,90 92,80 C78,92 60,90 54,78 C48,66 40,66 36,78 C32,90 44,98 56,92 C40,100 24,92 24,74 C24,58 34,46 48,44 C40,36 44,26 58,26 C50,34 56,42 66,38 C58,32 60,26 70,24 Z',
-            'Barcellona': 'M28,58 C26,34 50,18 78,20 C98,22 102,34 90,40 C108,42 122,50 122,66 L122,90 C122,104 108,112 94,104 C84,98 88,88 100,88 L100,66 C100,56 92,50 80,52 C58,56 34,68 28,58 Z',
-            'Red Bull Ring': 'M96,22 C112,16 124,24 116,36 L158,60 C170,66 170,76 158,82 C168,88 166,98 154,96 C146,94 146,86 154,84 L108,104 C98,109 88,106 86,96 L44,74 C34,68 34,56 44,50 L90,25 C92,23 94,22 96,22 Z',
-            'Silverstone': 'M26,70 C26,44 48,24 78,24 C92,24 88,36 76,38 C90,32 104,40 98,52 C94,60 82,58 80,48 C92,58 90,72 76,74 C88,70 100,76 98,88 C96,98 84,98 82,88 C100,100 130,104 152,94 C172,85 180,68 168,54 C160,44 146,48 146,60 C146,48 158,36 174,40 C188,44 190,62 178,74 C186,88 178,104 160,108 C130,115 90,113 62,100 C38,89 26,90 26,70 Z',
-            'Spa-Francorchamps': 'M24,86 C20,66 30,48 48,44 C60,42 64,52 56,58 C48,64 52,74 64,70 C88,62 84,36 112,26 C130,20 148,24 154,38 C160,52 148,60 138,52 C130,46 120,52 124,64 C128,78 148,80 158,68 C168,56 184,62 184,78 C184,94 168,104 152,98 C160,108 154,118 140,118 L60,116 C34,113 26,104 24,86 Z',
-            'Hungaroring': 'M60,22 C80,16 96,24 92,36 C110,30 128,38 128,54 C128,68 116,76 104,70 C112,82 106,96 90,98 C76,100 66,90 70,78 C56,84 42,78 38,64 C34,50 42,38 56,38 C46,32 48,24 60,22 Z',
-            'Zandvoort': 'M60,20 C50,16 42,24 48,32 C52,38 62,36 60,28 C90,18 124,20 144,36 C160,48 158,66 142,74 C150,84 144,96 128,94 C114,92 114,80 126,76 C110,70 96,78 100,90 C90,100 68,96 56,84 C42,70 40,44 60,20 Z',
-            'Monza': 'M24,60 L146,56 C146,44 158,42 162,52 C166,62 158,68 150,64 C158,70 160,80 150,84 C142,87 136,80 140,72 C120,74 120,86 138,88 C154,90 154,100 138,102 L44,104 C44,94 54,92 54,84 C54,76 42,76 40,66 L24,68 Z',
-            'Madrid': 'M28,64 C28,38 54,20 88,20 C114,20 118,34 100,40 C112,46 128,44 134,58 L160,54 C180,51 188,66 174,76 C162,84 162,94 176,98 C184,100 182,110 168,111 L56,110 C32,107 22,90 28,64 Z',
-            'Baku (Azerbaijan)': 'M16,100 L156,92 L156,58 C156,48 148,44 142,48 C136,52 140,58 146,56 C140,64 130,62 128,52 C126,42 136,32 148,30 L152,20',
-            'Singapore': 'M26,46 L128,42 L130,60 L96,62 L96,80 L150,78 L150,58 L172,58 L172,100 L58,104 L56,86 L38,88 L36,60 L26,62 Z',
-            'Austin (COTA)': 'M26,42 C40,24 62,20 74,34 C82,44 72,52 62,46 C52,40 42,50 50,58 C60,68 76,58 82,44 C90,26 114,20 130,32 C142,41 136,54 122,54 C144,56 162,68 160,84 C158,98 142,106 124,102 C108,98 106,86 120,82 C104,86 88,84 78,92 C64,102 40,100 30,84 C22,72 20,54 26,42 Z',
-            'Città del Messico': 'M24,66 L140,60 C140,42 158,36 170,48 C180,58 172,70 158,66 C168,80 168,96 152,102 C138,107 126,98 132,88 C120,92 108,92 100,84 C92,76 100,66 112,68 C96,68 84,78 78,90 C70,104 46,106 32,92 C24,84 22,76 24,66 Z',
-            'Interlagos (San Paolo)': 'M40,30 C56,22 70,30 64,42 C60,50 48,48 48,40 C64,36 76,46 70,58 C90,50 112,52 122,68 C132,84 118,100 98,98 C108,90 104,78 88,78 C72,78 68,92 80,100 C64,110 40,104 32,86 C26,72 30,50 40,30 Z',
-            'Las Vegas': 'M20,64 L20,42 L176,40 L176,60 L58,62 L58,82 L176,80 L176,102 L20,104 Z',
-            'Qatar (Lusail)': 'M40,38 C64,22 100,20 128,30 C154,39 168,54 160,70 C152,86 128,90 108,82 C122,78 128,66 116,58 C102,49 82,58 84,74 C86,90 68,100 48,92 C28,85 22,58 40,38 Z',
-            'Abu Dhabi (Yas Marina)': 'M26,50 C30,28 56,16 84,20 C104,23 104,38 88,42 C104,46 120,40 128,26 C138,10 168,16 170,36 C172,52 156,58 146,48 C156,64 152,82 134,88 C122,92 114,82 122,72 C102,84 74,88 54,80 C30,70 22,66 26,50 Z',
-        };
-        const DEFAULT_TRACK_PATH = 'M30,65 C30,36 58,18 96,18 C134,18 170,36 170,65 C170,94 134,112 96,112 C58,112 30,94 30,65 Z';
+        // --- WIDGET "PROSSIMO GP": orari sessioni del weekend in evidenza ---
+        // (la mini mappa del circuito è stata provata e poi rimossa: i
+        // tracciati stilizzati non risultavano abbastanza coerenti/fedeli)
 
         // Ordine cronologico delle sessioni con relativa etichetta e durata
         // stimata in minuti (l'API non fornisce l'orario di fine sessione,
@@ -665,6 +655,12 @@
                 return;
             }
 
+            // Griglia a 3 colonne (pallino, etichetta, orario) invece di
+            // righe flex indipendenti: così la colonna degli orari si
+            // allinea sempre alla stessa posizione su ogni riga, qualunque
+            // sia la lunghezza dell'etichetta (con flex indipendenti ogni
+            // riga si allargava per conto proprio e gli orari finivano
+            // disallineati tra loro - bug segnalato dall'utente).
             const sessionsHtml = SESSION_LABELS.map(([key, label]) => {
                 const session = race.schedule && race.schedule[key];
                 const formatted = formatSessionTime(session);
@@ -673,36 +669,21 @@
                 const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
                 const textClass = status === 'live' ? 'text-green-400 font-bold' : status === 'past' ? 'text-gray-500' : 'text-white';
                 const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
-                return `<div class="flex items-center justify-between gap-2 text-[11px] py-0.5">
-                    <span class="flex items-center gap-1.5 min-w-0">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}"></span>
-                        <span class="text-gray-400 truncate">${label}</span>
-                    </span>
-                    <span class="${textClass} shrink-0">${formatted}${liveTag}</span>
-                </div>`;
-            }).join('') || '<div class="text-gray-500 italic text-[11px]">Orari non disponibili.</div>';
+                return `<span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
+                    <span class="text-gray-400 truncate">${label}</span>
+                    <span class="${textClass} text-right whitespace-nowrap">${formatted}${liveTag}</span>`;
+            }).join('') || '<span class="col-span-3 text-gray-500 italic">Orari non disponibili.</span>';
 
-            const trackPath = CIRCUIT_TRACK_PATHS[race.circuit] || DEFAULT_TRACK_PATH;
-            const svg = `<svg viewBox="0 0 200 130" class="w-16 h-14 shrink-0" aria-hidden="true">
-                <path d="${trackPath}" fill="none" stroke="#E10600" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>`;
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
                 <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
 
             // Stesso riquadro (bordo/sfondo) usato altrove nel sito per
             // questo tipo di informazioni, sia su mobile che su desktop.
-            // Il testo (nome circuito + orari) sta a sinistra, allineato
-            // come il resto del testo della card; la mini mappa sta a
-            // destra.
+            // Niente mini mappa (rimossa: non risultava coerente/leggibile).
             const widgetHtml = `
                 <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
-                    <div class="flex gap-3 items-start justify-between">
-                        <div class="min-w-0">
-                            <div class="text-[11px] text-gray-500 mb-1">${headerHtml}</div>
-                            <div class="space-y-0.5">${sessionsHtml}</div>
-                        </div>
-                        ${svg}
-                    </div>
+                    <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
+                    <div class="grid grid-cols-[auto_1fr_auto] gap-x-2 gap-y-1 text-[11px] items-center">${sessionsHtml}</div>
                 </div>
             `;
 
