@@ -279,10 +279,24 @@
         function applyFeaturedWidgetWidth() {
             if (window.innerWidth < 768) {
                 featuredRaceWidgetDesktop.style.width = '';
+                featuredRaceWidgetDesktop.style.marginRight = '';
                 return;
             }
-            const totalWidth = mainGrid.getBoundingClientRect().width;
-            featuredRaceWidgetDesktop.style.width = ((totalWidth - 12) * (1 - DEFAULT_LEFT_RATIO)) + 'px';
+            // Copia larghezza e bordo destro REALI di detailsColumn (misurati,
+            // non ricalcolati con la stessa formula): detailsColumn vive
+            // dentro mainGrid, la cui griglia (colonne percentuali + gap-4)
+            // trabocca oltre il bordo destro di mainGrid stesso di una
+            // quantità fissa (l'handle da 12px + i due gap da 16px = 44px),
+            // quindi calcolare la larghezza con la stessa formula ma
+            // ancorarla nell'header (un contenitore diverso, senza lo stesso
+            // "trabocco") lasciava il riquadro spostato di quei 44px rispetto
+            // ai riquadri di "Dettagli Qualifiche". Misurando direttamente
+            // detailsColumn il risultato resta corretto anche se gap/misure
+            // cambiassero in futuro.
+            const detailsRect = detailsColumn.getBoundingClientRect();
+            const parentRect = featuredRaceWidgetDesktop.parentElement.getBoundingClientRect();
+            featuredRaceWidgetDesktop.style.width = detailsRect.width + 'px';
+            featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - detailsRect.right) + 'px';
         }
         window.addEventListener('resize', applyFeaturedWidgetWidth);
 
