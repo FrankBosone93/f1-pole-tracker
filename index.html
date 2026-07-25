@@ -14,10 +14,18 @@
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12">
 
-    <header class="text-center my-6 md:my-8">
-        <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
-        <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
-        <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
+    <!-- Su desktop l'header diventa una riga: titolo a sinistra, widget
+         "Prossimo GP" allineato in alto a destra (stesso livello del
+         titolo). Su mobile resta semplicemente centrato come prima:
+         il widget vero e proprio per mobile vive altrove nel markup
+         (vedi #featuredRaceWidget dentro detailsColumn). -->
+    <header class="my-6 md:my-8 md:flex md:items-start md:justify-between md:gap-6">
+        <div class="text-center md:text-left">
+            <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
+            <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
+            <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
+        </div>
+        <div id="featuredRaceWidgetDesktop" class="hidden md:block shrink-0 text-left pt-1"></div>
     </header>
 
     <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
@@ -97,14 +105,14 @@
              (margin-left: auto), così resta sempre nella stessa posizione e non
              si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
         <div id="detailsColumn">
-            <!-- Widget "Prossimo GP": sempre visibile (non un pannello apribile/
-                 chiudibile), mini mappa stilizzata del circuito + orari italiani
-                 di tutte le sessioni del weekend. Su mobile appare qui, cioè
-                 subito dopo i pulsanti Classifica/Calendario e prima di
-                 "Dettagli Qualifiche" (essendo il primo elemento di questa
-                 colonna, che su mobile segue leftColumn nel flusso). Su desktop
-                 resta "sticky" in alto a destra insieme al resto della colonna. -->
-            <div id="featuredRaceWidget" class="mb-4 md:sticky md:top-8"></div>
+            <!-- Widget "Prossimo GP" (versione MOBILE, riquadro con bordo):
+                 sempre visibile, subito dopo i pulsanti Classifica/Calendario
+                 e prima di "Dettagli Qualifiche" (essendo il primo elemento
+                 di questa colonna, che su mobile segue leftColumn nel
+                 flusso). Su desktop è nascosto: la versione desktop vive
+                 invece nell'header, allineata al titolo (vedi
+                 #featuredRaceWidgetDesktop), senza riquadro. -->
+            <div id="featuredRaceWidget" class="mb-4 md:hidden"></div>
 
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
             <div id="detailsList" class="space-y-3">
@@ -585,28 +593,28 @@
         // riconoscibile del tipo di circuito - non sono planimetrie precise.
         // viewBox comune: "0 0 200 130".
         const CIRCUIT_TRACK_PATHS = {
-            'Melbourne (Australia)': 'M22,62 C22,32 55,16 92,16 C128,16 152,10 172,26 C186,37 180,56 163,60 C184,70 183,92 162,101 C138,115 98,116 68,110 C38,104 22,90 22,62 Z',
-            'Shanghai (Cina)': 'M32,72 C32,42 56,22 90,22 L148,22 C170,22 180,36 174,50 C168,64 148,63 139,54 C130,45 114,49 115,64 C116,79 132,84 146,79 L168,80 C185,85 185,106 168,110 L62,110 C36,110 22,96 32,72 Z',
-            'Suzuka': 'M42,102 C22,72 32,36 66,26 C100,16 140,30 150,55 C160,80 130,90 111,76 C96,64 100,96 130,101 C155,105 176,86 171,60 C167,38 148,26 128,28',
-            'Miami': 'M24,50 L150,42 C172,41 186,54 182,72 C179,86 164,86 154,78 C144,70 128,72 128,86 C128,98 142,100 156,96 L182,92 C182,104 170,112 154,112 L40,108 C22,107 18,90 24,74 Z',
-            'Montreal (Canada)': 'M20,66 C20,40 46,22 82,22 C120,22 168,26 180,46 C188,60 176,68 164,64 C152,60 144,70 154,80 C164,90 178,86 178,72 C186,90 172,108 148,110 L50,108 C26,106 20,92 20,66 Z',
-            'Monaco': 'M60,30 C80,22 100,26 98,40 C96,52 82,50 80,40 C104,36 118,48 112,62 C108,72 94,70 92,60 C112,64 118,80 104,90 C92,98 78,92 80,80 C64,96 42,94 38,76 C34,58 46,44 62,48 C50,44 48,32 60,30 Z',
-            'Barcellona': 'M26,58 C26,34 48,18 78,18 C104,18 112,32 100,42 C90,50 92,62 106,62 L168,62 C184,62 186,78 172,84 C158,90 158,100 172,102 C182,104 182,114 168,114 L60,112 C34,110 20,94 26,58 Z',
-            'Red Bull Ring': 'M40,100 C24,80 30,48 58,30 C78,18 96,26 92,42 C88,56 104,58 116,44 C132,26 158,32 164,54 C170,76 152,92 128,96 C100,101 62,104 40,100 Z',
-            'Silverstone': 'M30,50 C30,28 54,16 84,18 C110,20 108,36 92,40 C112,36 140,20 160,32 C176,41 172,58 156,60 C176,64 186,82 172,96 C158,110 128,112 102,106 C118,100 116,86 100,84 C84,82 78,96 90,108 C68,112 40,104 30,84 C24,72 26,60 30,50 Z',
-            'Spa-Francorchamps': 'M26,90 C22,66 34,46 54,44 C68,43 70,54 60,60 C50,66 54,78 68,74 C96,66 92,34 124,26 C148,20 168,32 170,52 C172,68 158,72 150,60 C144,50 132,54 134,66 C136,82 158,86 170,74 C176,92 164,108 142,110 L58,108 C36,106 28,102 26,90 Z',
-            'Hungaroring': 'M50,26 C74,18 92,28 86,42 C82,52 92,58 102,50 C116,40 134,44 136,58 C138,70 124,74 116,66 C108,58 96,64 100,76 C104,88 122,88 128,76 C138,90 128,106 108,108 C84,110 58,104 46,86 C36,70 38,50 50,26 Z',
-            'Zandvoort': 'M40,66 C40,38 66,20 100,20 C134,20 160,38 160,66 C160,92 136,110 100,110 C76,110 58,102 48,88 C64,98 88,100 104,92 C120,84 122,64 106,58 C90,52 78,66 88,78 C74,80 62,72 60,58 C58,46 48,54 40,66 Z',
-            'Monza': 'M24,60 L150,58 C174,58 174,74 156,76 C140,78 140,88 156,90 C172,92 172,100 154,102 L40,102 C40,94 52,92 52,84 C52,76 40,76 40,68 L24,68 Z',
-            'Madrid': 'M28,64 C28,38 54,20 88,20 C118,20 128,34 114,44 C102,52 108,64 124,62 L160,58 C180,56 186,72 170,80 C156,87 156,97 172,100 C182,102 180,112 166,112 L56,110 C32,107 22,90 28,64 Z',
-            'Baku (Azerbaijan)': 'M18,96 L150,92 C150,72 132,70 116,74 C102,78 90,70 92,58 C94,44 112,40 128,44 C144,48 156,40 154,26 L150,18',
-            'Singapore': 'M26,48 L126,44 L128,60 L94,62 L94,78 L150,76 L150,96 L60,100 L58,84 L40,86 L38,60 L26,62 Z',
-            'Austin (COTA)': 'M26,40 C48,24 70,20 84,34 C94,44 84,54 72,50 C60,46 52,56 62,64 C76,74 96,60 100,42 C106,22 132,18 148,32 C160,42 154,56 140,58 C168,60 184,78 176,96 C168,112 140,114 112,110 C74,105 30,96 26,68 C24,58 20,48 26,40 Z',
-            'Città del Messico': 'M22,72 L146,66 C146,46 170,42 178,58 C184,70 172,80 160,74 C170,88 168,102 150,106 L54,110 C30,109 20,96 22,72 Z',
-            'Interlagos (San Paolo)': 'M40,32 C60,24 76,34 68,46 C62,54 70,64 82,58 C102,48 128,50 138,68 C148,86 130,102 108,100 C120,94 118,80 100,78 C82,76 76,92 90,102 C68,110 42,102 34,82 C28,66 32,48 40,32 Z',
-            'Las Vegas': 'M20,64 L20,44 L176,42 L176,60 L60,62 L60,84 L176,82 L176,100 L20,102 Z',
-            'Qatar (Lusail)': 'M40,40 C64,24 100,22 128,32 C154,41 168,56 160,72 C152,88 126,92 104,84 C120,80 128,66 114,58 C98,49 78,58 82,74 C86,90 68,100 48,92 C28,84 22,58 40,40 Z',
-            'Abu Dhabi (Yas Marina)': 'M26,52 C30,30 56,18 84,22 C104,25 104,40 88,44 C104,48 122,42 132,28 C144,12 172,20 172,40 C172,54 156,58 148,48 C160,64 156,82 138,88 C124,93 116,82 126,72 C104,86 74,90 52,80 C30,70 22,66 26,52 Z',
+            'Melbourne (Australia)': 'M25,70 C25,42 55,20 95,20 C130,20 160,28 172,48 C180,62 170,74 152,70 C168,80 168,98 148,106 C120,116 78,116 50,104 C30,96 25,88 25,70 Z',
+            'Shanghai (Cina)': 'M95,22 C75,22 62,34 66,48 C69,58 82,60 87,51 C91,44 85,39 79,43 C60,32 34,44 30,68 C26,94 48,110 76,110 L148,110 C172,110 184,94 176,76 C170,62 152,60 146,72 C141,82 153,90 163,82',
+            'Suzuka': 'M110,65 C110,40 90,22 65,24 C40,26 24,46 30,66 C36,86 58,96 76,84 C90,74 84,58 68,60 C90,54 108,66 108,65 C108,90 128,108 155,104 C178,100 188,80 178,62 C170,48 152,46 144,58 C138,68 148,80 162,74',
+            'Miami': 'M22,55 L145,44 C168,42 182,56 178,72 C176,82 164,84 156,78 C170,78 180,90 172,100 C164,110 148,108 142,98 C136,88 122,90 120,100 C118,110 130,116 144,112 L60,112 C30,110 20,90 22,68 Z',
+            'Montreal (Canada)': 'M20,66 C20,40 50,22 90,22 C130,22 168,28 180,48 C186,60 176,68 164,62 C176,72 176,88 162,92 C150,95 144,84 152,76 C140,74 132,84 142,94 C126,104 96,110 66,108 C34,106 20,92 20,66 Z',
+            'Monaco': 'M70,24 C90,18 106,26 100,38 C96,46 84,44 84,36 C104,30 118,42 110,56 C104,66 90,64 90,54 C110,56 122,70 112,84 C104,94 90,90 92,80 C78,92 60,90 54,78 C48,66 40,66 36,78 C32,90 44,98 56,92 C40,100 24,92 24,74 C24,58 34,46 48,44 C40,36 44,26 58,26 C50,34 56,42 66,38 C58,32 60,26 70,24 Z',
+            'Barcellona': 'M28,58 C26,34 50,18 78,20 C98,22 102,34 90,40 C108,42 122,50 122,66 L122,90 C122,104 108,112 94,104 C84,98 88,88 100,88 L100,66 C100,56 92,50 80,52 C58,56 34,68 28,58 Z',
+            'Red Bull Ring': 'M96,22 C112,16 124,24 116,36 L158,60 C170,66 170,76 158,82 C168,88 166,98 154,96 C146,94 146,86 154,84 L108,104 C98,109 88,106 86,96 L44,74 C34,68 34,56 44,50 L90,25 C92,23 94,22 96,22 Z',
+            'Silverstone': 'M26,70 C26,44 48,24 78,24 C92,24 88,36 76,38 C90,32 104,40 98,52 C94,60 82,58 80,48 C92,58 90,72 76,74 C88,70 100,76 98,88 C96,98 84,98 82,88 C100,100 130,104 152,94 C172,85 180,68 168,54 C160,44 146,48 146,60 C146,48 158,36 174,40 C188,44 190,62 178,74 C186,88 178,104 160,108 C130,115 90,113 62,100 C38,89 26,90 26,70 Z',
+            'Spa-Francorchamps': 'M24,86 C20,66 30,48 48,44 C60,42 64,52 56,58 C48,64 52,74 64,70 C88,62 84,36 112,26 C130,20 148,24 154,38 C160,52 148,60 138,52 C130,46 120,52 124,64 C128,78 148,80 158,68 C168,56 184,62 184,78 C184,94 168,104 152,98 C160,108 154,118 140,118 L60,116 C34,113 26,104 24,86 Z',
+            'Hungaroring': 'M50,26 C76,16 96,26 88,42 C82,54 96,58 106,48 C118,36 138,42 138,58 C138,70 124,74 118,64 C112,72 122,82 134,78 C144,96 128,110 106,108 C82,106 58,98 46,80 C36,64 38,44 50,26 Z',
+            'Zandvoort': 'M60,20 C50,16 42,24 48,32 C52,38 62,36 60,28 C90,18 124,20 144,36 C160,48 158,66 142,74 C150,84 144,96 128,94 C114,92 114,80 126,76 C110,70 96,78 100,90 C90,100 68,96 56,84 C42,70 40,44 60,20 Z',
+            'Monza': 'M24,60 L146,56 C146,44 158,42 162,52 C166,62 158,68 150,64 C158,70 160,80 150,84 C142,87 136,80 140,72 C120,74 120,86 138,88 C154,90 154,100 138,102 L44,104 C44,94 54,92 54,84 C54,76 42,76 40,66 L24,68 Z',
+            'Madrid': 'M28,64 C28,38 54,20 88,20 C114,20 118,34 100,40 C112,46 128,44 134,58 L160,54 C180,51 188,66 174,76 C162,84 162,94 176,98 C184,100 182,110 168,111 L56,110 C32,107 22,90 28,64 Z',
+            'Baku (Azerbaijan)': 'M16,100 L156,92 L156,58 C156,48 148,44 142,48 C136,52 140,58 146,56 C140,64 130,62 128,52 C126,42 136,32 148,30 L152,20',
+            'Singapore': 'M26,46 L128,42 L130,60 L96,62 L96,80 L150,78 L150,58 L172,58 L172,100 L58,104 L56,86 L38,88 L36,60 L26,62 Z',
+            'Austin (COTA)': 'M26,42 C40,24 62,20 74,34 C82,44 72,52 62,46 C52,40 42,50 50,58 C60,68 76,58 82,44 C90,26 114,20 130,32 C142,41 136,54 122,54 C144,56 162,68 160,84 C158,98 142,106 124,102 C108,98 106,86 120,82 C104,86 88,84 78,92 C64,102 40,100 30,84 C22,72 20,54 26,42 Z',
+            'Città del Messico': 'M24,66 L140,60 C140,42 158,36 170,48 C180,58 172,70 158,66 C168,80 168,96 152,102 C138,107 126,98 132,88 C120,92 108,92 100,84 C92,76 100,66 112,68 C96,68 84,78 78,90 C70,104 46,106 32,92 C24,84 22,76 24,66 Z',
+            'Interlagos (San Paolo)': 'M40,30 C56,22 70,30 64,42 C60,50 48,48 48,40 C64,36 76,46 70,58 C90,50 112,52 122,68 C132,84 118,100 98,98 C108,90 104,78 88,78 C72,78 68,92 80,100 C64,110 40,104 32,86 C26,72 30,50 40,30 Z',
+            'Las Vegas': 'M20,64 L20,42 L176,40 L176,60 L58,62 L58,82 L176,80 L176,102 L20,104 Z',
+            'Qatar (Lusail)': 'M40,38 C64,22 100,20 128,30 C154,39 168,54 160,70 C152,86 128,90 108,82 C122,78 128,66 116,58 C102,49 82,58 84,74 C86,90 68,100 48,92 C28,85 22,58 40,38 Z',
+            'Abu Dhabi (Yas Marina)': 'M26,50 C30,28 56,16 84,20 C104,23 104,38 88,42 C104,46 120,40 128,26 C138,10 168,16 170,36 C172,52 156,58 146,48 C156,64 152,82 134,88 C122,92 114,82 122,72 C102,84 74,88 54,80 C30,70 22,66 26,50 Z',
         };
         const DEFAULT_TRACK_PATH = 'M30,65 C30,36 58,18 96,18 C134,18 170,36 170,65 C170,94 134,112 96,112 C58,112 30,94 30,65 Z';
 
@@ -648,11 +656,12 @@
         }
 
         function renderFeaturedRace() {
-            const container = document.getElementById('featuredRaceWidget');
-            if (!container) return;
+            const mobileContainer = document.getElementById('featuredRaceWidget');
+            const desktopContainer = document.getElementById('featuredRaceWidgetDesktop');
             const race = determineFeaturedRace();
             if (!race) {
-                container.innerHTML = '';
+                if (mobileContainer) mobileContainer.innerHTML = '';
+                if (desktopContainer) desktopContainer.innerHTML = '';
                 return;
             }
 
@@ -671,24 +680,43 @@
                     </span>
                     <span class="${textClass} shrink-0">${formatted}${liveTag}</span>
                 </div>`;
-            }).join('');
+            }).join('') || '<div class="text-gray-500 italic text-[11px]">Orari non disponibili.</div>';
 
             const trackPath = CIRCUIT_TRACK_PATHS[race.circuit] || DEFAULT_TRACK_PATH;
+            const svg = `<svg viewBox="0 0 200 130" class="w-16 h-14 shrink-0" aria-hidden="true">
+                <path d="${trackPath}" fill="none" stroke="#E10600" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+            const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
+                <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
 
-            container.innerHTML = `
-                <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
-                    <div class="text-[11px] text-gray-500 mb-2">
-                        <span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
-                        <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>
+            // Versione mobile: riquadro con bordo (invariata), mappa a
+            // sinistra dei soli orari, intestazione sopra a tutta larghezza.
+            if (mobileContainer) {
+                mobileContainer.innerHTML = `
+                    <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
+                        <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
+                        <div class="flex gap-3 items-center">
+                            ${svg}
+                            <div class="flex-1 min-w-0 space-y-0.5">${sessionsHtml}</div>
+                        </div>
                     </div>
-                    <div class="flex gap-3 items-center">
-                        <svg viewBox="0 0 200 130" class="w-16 h-12 shrink-0" aria-hidden="true">
-                            <path d="${trackPath}" fill="none" stroke="#E10600" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <div class="flex-1 min-w-0 space-y-0.5">${sessionsHtml || '<div class="text-gray-500 italic text-[11px]">Orari non disponibili.</div>'}</div>
+                `;
+            }
+
+            // Versione desktop: niente riquadro (scritta direttamente sullo
+            // sfondo), mappa a sinistra di TUTTO il blocco (nome circuito +
+            // orari), che restano allineati fra loro nella stessa colonna.
+            if (desktopContainer) {
+                desktopContainer.innerHTML = `
+                    <div class="flex gap-3 items-start">
+                        ${svg}
+                        <div class="min-w-0">
+                            <div class="text-[11px] text-gray-500 mb-1">${headerHtml}</div>
+                            <div class="space-y-0.5">${sessionsHtml}</div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         function updateApp(circuitName) {
