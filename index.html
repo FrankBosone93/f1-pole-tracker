@@ -97,6 +97,15 @@
              (margin-left: auto), così resta sempre nella stessa posizione e non
              si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
         <div id="detailsColumn">
+            <!-- Widget "Prossimo GP": sempre visibile (non un pannello apribile/
+                 chiudibile), mini mappa stilizzata del circuito + orari italiani
+                 di tutte le sessioni del weekend. Su mobile appare qui, cioè
+                 subito dopo i pulsanti Classifica/Calendario e prima di
+                 "Dettagli Qualifiche" (essendo il primo elemento di questa
+                 colonna, che su mobile segue leftColumn nel flusso). Su desktop
+                 resta "sticky" in alto a destra insieme al resto della colonna. -->
+            <div id="featuredRaceWidget" class="mb-4 md:sticky md:top-8"></div>
+
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
             <div id="detailsList" class="space-y-3">
                 <!-- I dettagli compariranno qui -->
@@ -159,6 +168,10 @@
                     calendarData = await calendarResponse.json();
                     const calendarButtonLabel = document.getElementById('calendarButtonLabel');
                     if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario ${calendarData.season}`;
+                    renderFeaturedRace();
+                    // Aggiorna lo stato "live"/"passata"/"da disputare" delle
+                    // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
+                    setInterval(renderFeaturedRace, 60000);
                 }
             } catch (err) {
                 console.warn('Impossibile caricare calendar.json:', err);
@@ -563,6 +576,119 @@
 
             const updatedDate = new Date(calendarData.updatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
             calendarMeta.innerText = `Aggiornato al ${updatedDate}`;
+        }
+
+        // --- WIDGET "PROSSIMO GP": mini mappa circuito + orari sessioni ---
+
+        // Tracciati stilizzati e semplificati (disegnati a mano, non a scala
+        // e non copiati da fonti reali) solo per dare un colpo d'occhio
+        // riconoscibile del tipo di circuito - non sono planimetrie precise.
+        // viewBox comune: "0 0 200 130".
+        const CIRCUIT_TRACK_PATHS = {
+            'Melbourne (Australia)': 'M22,62 C22,32 55,16 92,16 C128,16 152,10 172,26 C186,37 180,56 163,60 C184,70 183,92 162,101 C138,115 98,116 68,110 C38,104 22,90 22,62 Z',
+            'Shanghai (Cina)': 'M32,72 C32,42 56,22 90,22 L148,22 C170,22 180,36 174,50 C168,64 148,63 139,54 C130,45 114,49 115,64 C116,79 132,84 146,79 L168,80 C185,85 185,106 168,110 L62,110 C36,110 22,96 32,72 Z',
+            'Suzuka': 'M42,102 C22,72 32,36 66,26 C100,16 140,30 150,55 C160,80 130,90 111,76 C96,64 100,96 130,101 C155,105 176,86 171,60 C167,38 148,26 128,28',
+            'Miami': 'M24,50 L150,42 C172,41 186,54 182,72 C179,86 164,86 154,78 C144,70 128,72 128,86 C128,98 142,100 156,96 L182,92 C182,104 170,112 154,112 L40,108 C22,107 18,90 24,74 Z',
+            'Montreal (Canada)': 'M20,66 C20,40 46,22 82,22 C120,22 168,26 180,46 C188,60 176,68 164,64 C152,60 144,70 154,80 C164,90 178,86 178,72 C186,90 172,108 148,110 L50,108 C26,106 20,92 20,66 Z',
+            'Monaco': 'M60,30 C80,22 100,26 98,40 C96,52 82,50 80,40 C104,36 118,48 112,62 C108,72 94,70 92,60 C112,64 118,80 104,90 C92,98 78,92 80,80 C64,96 42,94 38,76 C34,58 46,44 62,48 C50,44 48,32 60,30 Z',
+            'Barcellona': 'M26,58 C26,34 48,18 78,18 C104,18 112,32 100,42 C90,50 92,62 106,62 L168,62 C184,62 186,78 172,84 C158,90 158,100 172,102 C182,104 182,114 168,114 L60,112 C34,110 20,94 26,58 Z',
+            'Red Bull Ring': 'M40,100 C24,80 30,48 58,30 C78,18 96,26 92,42 C88,56 104,58 116,44 C132,26 158,32 164,54 C170,76 152,92 128,96 C100,101 62,104 40,100 Z',
+            'Silverstone': 'M30,50 C30,28 54,16 84,18 C110,20 108,36 92,40 C112,36 140,20 160,32 C176,41 172,58 156,60 C176,64 186,82 172,96 C158,110 128,112 102,106 C118,100 116,86 100,84 C84,82 78,96 90,108 C68,112 40,104 30,84 C24,72 26,60 30,50 Z',
+            'Spa-Francorchamps': 'M26,90 C22,66 34,46 54,44 C68,43 70,54 60,60 C50,66 54,78 68,74 C96,66 92,34 124,26 C148,20 168,32 170,52 C172,68 158,72 150,60 C144,50 132,54 134,66 C136,82 158,86 170,74 C176,92 164,108 142,110 L58,108 C36,106 28,102 26,90 Z',
+            'Hungaroring': 'M50,26 C74,18 92,28 86,42 C82,52 92,58 102,50 C116,40 134,44 136,58 C138,70 124,74 116,66 C108,58 96,64 100,76 C104,88 122,88 128,76 C138,90 128,106 108,108 C84,110 58,104 46,86 C36,70 38,50 50,26 Z',
+            'Zandvoort': 'M40,66 C40,38 66,20 100,20 C134,20 160,38 160,66 C160,92 136,110 100,110 C76,110 58,102 48,88 C64,98 88,100 104,92 C120,84 122,64 106,58 C90,52 78,66 88,78 C74,80 62,72 60,58 C58,46 48,54 40,66 Z',
+            'Monza': 'M24,60 L150,58 C174,58 174,74 156,76 C140,78 140,88 156,90 C172,92 172,100 154,102 L40,102 C40,94 52,92 52,84 C52,76 40,76 40,68 L24,68 Z',
+            'Madrid': 'M28,64 C28,38 54,20 88,20 C118,20 128,34 114,44 C102,52 108,64 124,62 L160,58 C180,56 186,72 170,80 C156,87 156,97 172,100 C182,102 180,112 166,112 L56,110 C32,107 22,90 28,64 Z',
+            'Baku (Azerbaijan)': 'M18,96 L150,92 C150,72 132,70 116,74 C102,78 90,70 92,58 C94,44 112,40 128,44 C144,48 156,40 154,26 L150,18',
+            'Singapore': 'M26,48 L126,44 L128,60 L94,62 L94,78 L150,76 L150,96 L60,100 L58,84 L40,86 L38,60 L26,62 Z',
+            'Austin (COTA)': 'M26,40 C48,24 70,20 84,34 C94,44 84,54 72,50 C60,46 52,56 62,64 C76,74 96,60 100,42 C106,22 132,18 148,32 C160,42 154,56 140,58 C168,60 184,78 176,96 C168,112 140,114 112,110 C74,105 30,96 26,68 C24,58 20,48 26,40 Z',
+            'Città del Messico': 'M22,72 L146,66 C146,46 170,42 178,58 C184,70 172,80 160,74 C170,88 168,102 150,106 L54,110 C30,109 20,96 22,72 Z',
+            'Interlagos (San Paolo)': 'M40,32 C60,24 76,34 68,46 C62,54 70,64 82,58 C102,48 128,50 138,68 C148,86 130,102 108,100 C120,94 118,80 100,78 C82,76 76,92 90,102 C68,110 42,102 34,82 C28,66 32,48 40,32 Z',
+            'Las Vegas': 'M20,64 L20,44 L176,42 L176,60 L60,62 L60,84 L176,82 L176,100 L20,102 Z',
+            'Qatar (Lusail)': 'M40,40 C64,24 100,22 128,32 C154,41 168,56 160,72 C152,88 126,92 104,84 C120,80 128,66 114,58 C98,49 78,58 82,74 C86,90 68,100 48,92 C28,84 22,58 40,40 Z',
+            'Abu Dhabi (Yas Marina)': 'M26,52 C30,30 56,18 84,22 C104,25 104,40 88,44 C104,48 122,42 132,28 C144,12 172,20 172,40 C172,54 156,58 148,48 C160,64 156,82 138,88 C124,93 116,82 126,72 C104,86 74,90 52,80 C30,70 22,66 26,52 Z',
+        };
+        const DEFAULT_TRACK_PATH = 'M30,65 C30,36 58,18 96,18 C134,18 170,36 170,65 C170,94 134,112 96,112 C58,112 30,94 30,65 Z';
+
+        // Ordine cronologico delle sessioni con relativa etichetta e durata
+        // stimata in minuti (l'API non fornisce l'orario di fine sessione,
+        // quindi la durata è solo una stima ragionevole, usata unicamente per
+        // capire se una sessione è "in corso" adesso).
+        const SESSION_DURATION_MIN = {
+            fp1: 60, fp2: 60, fp3: 60,
+            sprintQualy: 60, sprintRace: 45,
+            qualy: 60, race: 130,
+        };
+
+        // 'past' | 'live' | 'upcoming', in base all'orario UTC reale adesso.
+        function getSessionStatus(session, durationMin) {
+            if (!session || !session.date || !session.time) return null;
+            const start = new Date(`${session.date}T${session.time}`);
+            if (isNaN(start)) return null;
+            const now = new Date();
+            const end = new Date(start.getTime() + durationMin * 60000);
+            if (now < start) return 'upcoming';
+            if (now > end) return 'past';
+            return 'live';
+        }
+
+        // Il GP "in evidenza": resta quello del weekend in corso/prossimo
+        // fino alla domenica (data di gara), poi da lunedì passa al
+        // successivo - a differenza di determineDefaultCircuit() (che cambia
+        // già dal venerdì delle prove libere), qui il cambio è legato
+        // esplicitamente alla domenica di gara, su richiesta esplicita.
+        function determineFeaturedRace() {
+            if (!calendarData) return null;
+            const now = new Date();
+            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const upcoming = calendarData.races.find(r => r.date && r.date >= todayStr);
+            if (upcoming) return upcoming;
+            const past = calendarData.races.filter(r => r.date).sort((a, b) => b.date.localeCompare(a.date));
+            return past.length > 0 ? past[0] : null;
+        }
+
+        function renderFeaturedRace() {
+            const container = document.getElementById('featuredRaceWidget');
+            if (!container) return;
+            const race = determineFeaturedRace();
+            if (!race) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const sessionsHtml = SESSION_LABELS.map(([key, label]) => {
+                const session = race.schedule && race.schedule[key];
+                const formatted = formatSessionTime(session);
+                if (!formatted) return '';
+                const status = getSessionStatus(session, SESSION_DURATION_MIN[key]);
+                const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
+                const textClass = status === 'live' ? 'text-green-400 font-bold' : status === 'past' ? 'text-gray-500' : 'text-white';
+                const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
+                return `<div class="flex items-center justify-between gap-2 text-[11px] py-0.5">
+                    <span class="flex items-center gap-1.5 min-w-0">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}"></span>
+                        <span class="text-gray-400 truncate">${label}</span>
+                    </span>
+                    <span class="${textClass} shrink-0">${formatted}${liveTag}</span>
+                </div>`;
+            }).join('');
+
+            const trackPath = CIRCUIT_TRACK_PATHS[race.circuit] || DEFAULT_TRACK_PATH;
+
+            container.innerHTML = `
+                <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
+                    <div class="text-[11px] text-gray-500 mb-2">
+                        <span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
+                        <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <svg viewBox="0 0 200 130" class="w-16 h-12 shrink-0" aria-hidden="true">
+                            <path d="${trackPath}" fill="none" stroke="#E10600" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="flex-1 min-w-0 space-y-0.5">${sessionsHtml || '<div class="text-gray-500 italic text-[11px]">Orari non disponibili.</div>'}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function updateApp(circuitName) {
