@@ -603,7 +603,7 @@
             'Red Bull Ring': 'M96,22 C112,16 124,24 116,36 L158,60 C170,66 170,76 158,82 C168,88 166,98 154,96 C146,94 146,86 154,84 L108,104 C98,109 88,106 86,96 L44,74 C34,68 34,56 44,50 L90,25 C92,23 94,22 96,22 Z',
             'Silverstone': 'M26,70 C26,44 48,24 78,24 C92,24 88,36 76,38 C90,32 104,40 98,52 C94,60 82,58 80,48 C92,58 90,72 76,74 C88,70 100,76 98,88 C96,98 84,98 82,88 C100,100 130,104 152,94 C172,85 180,68 168,54 C160,44 146,48 146,60 C146,48 158,36 174,40 C188,44 190,62 178,74 C186,88 178,104 160,108 C130,115 90,113 62,100 C38,89 26,90 26,70 Z',
             'Spa-Francorchamps': 'M24,86 C20,66 30,48 48,44 C60,42 64,52 56,58 C48,64 52,74 64,70 C88,62 84,36 112,26 C130,20 148,24 154,38 C160,52 148,60 138,52 C130,46 120,52 124,64 C128,78 148,80 158,68 C168,56 184,62 184,78 C184,94 168,104 152,98 C160,108 154,118 140,118 L60,116 C34,113 26,104 24,86 Z',
-            'Hungaroring': 'M50,26 C76,16 96,26 88,42 C82,54 96,58 106,48 C118,36 138,42 138,58 C138,70 124,74 118,64 C112,72 122,82 134,78 C144,96 128,110 106,108 C82,106 58,98 46,80 C36,64 38,44 50,26 Z',
+            'Hungaroring': 'M60,22 C80,16 96,24 92,36 C110,30 128,38 128,54 C128,68 116,76 104,70 C112,82 106,96 90,98 C76,100 66,90 70,78 C56,84 42,78 38,64 C34,50 42,38 56,38 C46,32 48,24 60,22 Z',
             'Zandvoort': 'M60,20 C50,16 42,24 48,32 C52,38 62,36 60,28 C90,18 124,20 144,36 C160,48 158,66 142,74 C150,84 144,96 128,94 C114,92 114,80 126,76 C110,70 96,78 100,90 C90,100 68,96 56,84 C42,70 40,44 60,20 Z',
             'Monza': 'M24,60 L146,56 C146,44 158,42 162,52 C166,62 158,68 150,64 C158,70 160,80 150,84 C142,87 136,80 140,72 C120,74 120,86 138,88 C154,90 154,100 138,102 L44,104 C44,94 54,92 54,84 C54,76 42,76 40,66 L24,68 Z',
             'Madrid': 'M28,64 C28,38 54,20 88,20 C114,20 118,34 100,40 C112,46 128,44 134,58 L160,54 C180,51 188,66 174,76 C162,84 162,94 176,98 C184,100 182,110 168,111 L56,110 C32,107 22,90 28,64 Z',
@@ -689,34 +689,25 @@
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
                 <span class="block">${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
 
-            // Versione mobile: riquadro con bordo (invariata), mappa a
-            // sinistra dei soli orari, intestazione sopra a tutta larghezza.
-            if (mobileContainer) {
-                mobileContainer.innerHTML = `
-                    <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
-                        <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
-                        <div class="flex gap-3 items-center">
-                            ${svg}
-                            <div class="flex-1 min-w-0 space-y-0.5">${sessionsHtml}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Versione desktop: niente riquadro (scritta direttamente sullo
-            // sfondo), mappa a sinistra di TUTTO il blocco (nome circuito +
-            // orari), che restano allineati fra loro nella stessa colonna.
-            if (desktopContainer) {
-                desktopContainer.innerHTML = `
-                    <div class="flex gap-3 items-start">
-                        ${svg}
+            // Stesso riquadro (bordo/sfondo) usato altrove nel sito per
+            // questo tipo di informazioni, sia su mobile che su desktop.
+            // Il testo (nome circuito + orari) sta a sinistra, allineato
+            // come il resto del testo della card; la mini mappa sta a
+            // destra.
+            const widgetHtml = `
+                <div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
+                    <div class="flex gap-3 items-start justify-between">
                         <div class="min-w-0">
                             <div class="text-[11px] text-gray-500 mb-1">${headerHtml}</div>
                             <div class="space-y-0.5">${sessionsHtml}</div>
                         </div>
+                        ${svg}
                     </div>
-                `;
-            }
+                </div>
+            `;
+
+            if (mobileContainer) mobileContainer.innerHTML = widgetHtml;
+            if (desktopContainer) desktopContainer.innerHTML = widgetHtml;
         }
 
         function updateApp(circuitName) {
