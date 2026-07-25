@@ -429,7 +429,20 @@
             chartCard.style.marginTop = '0px';
             const firstDetailCard = detailsList.firstElementChild;
             if (!firstDetailCard) return;
-            const delta = firstDetailCard.getBoundingClientRect().top - chartCard.getBoundingClientRect().top;
+            const naturalTop = chartCard.getBoundingClientRect().top;
+            const targetTop = firstDetailCard.getBoundingClientRect().top;
+            // Il selettore circuito (label + select) sopra il grafico è più
+            // alto dell'intestazione "Dettagli Qualifiche" sopra il primo
+            // riquadro: allineare del tutto i due bordi superiori
+            // spingerebbe il grafico dentro lo spazio del selettore
+            // (sovrapposizione segnalata dall'utente). Non si sale mai più
+            // in alto del bordo inferiore del selettore (+8px di margine
+            // minimo): l'allineamento è quindi "il più vicino possibile
+            // senza sovrapporsi", non necessariamente perfetto.
+            const selectorBottom = select.closest('div').getBoundingClientRect().bottom;
+            const minTop = selectorBottom + 8;
+            const desiredTop = Math.max(targetTop, minTop);
+            const delta = desiredTop - naturalTop;
             chartCard.style.marginTop = delta + 'px';
         }
         window.addEventListener('resize', alignChartTop);
