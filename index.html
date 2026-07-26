@@ -77,13 +77,19 @@
                 <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
             </div>
 
-            <!-- Pulsanti Vista Classifica / Calendario -->
-            <div class="flex gap-2 mb-6 md:max-w-sm">
+            <!-- Pulsanti Vista Classifica / Calendario / Stagioni precedenti.
+                 Su mobile: griglia 2 colonne (Stagioni precedenti finisce sotto
+                 Classifica, riga 2 colonna 1). Su desktop: riga unica,
+                 Stagioni precedenti a destra di Calendario. -->
+            <div class="grid grid-cols-2 gap-2 mb-6 md:flex md:max-w-md">
                 <button onclick="toggleClassificaPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
                     🏆 Classifica
                 </button>
                 <button onclick="toggleCalendarPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    📅 <span id="calendarButtonLabel">Calendario</span>
+                    📅 <span id="calendarButtonLabel">Calendario & Risultati</span>
+                </button>
+                <button onclick="togglePreviousYearsPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                    🕰️ Stagioni precedenti
                 </button>
             </div>
 
@@ -109,6 +115,17 @@
                 <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
                 <div id="calendarList" class="space-y-1 text-sm"></div>
                 <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="calendarMeta"></div>
+            </div>
+
+            <!-- Pannello Stagioni precedenti (Nascosto di default): prima l'elenco
+                 degli anni, poi (cliccandone uno) l'elenco gare/risultati di
+                 quella stagione, con lo stesso stile del pannello Calendario. -->
+            <div id="previousYearsPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3">
+                <div class="flex items-center gap-3">
+                    <button id="prevYearsBackBtn" onclick="showPreviousYearsList()" class="hidden text-gray-400 hover:text-white text-xs cursor-pointer">← Anni</button>
+                    <h3 class="text-sm font-bold text-[#E10600]" id="previousYearsTitle">🕰️ Stagioni precedenti</h3>
+                </div>
+                <div id="previousYearsBody" class="space-y-1 text-sm"></div>
             </div>
         </div>
 
@@ -241,7 +258,7 @@
                 if (calendarResponse.ok) {
                     calendarData = await calendarResponse.json();
                     const calendarButtonLabel = document.getElementById('calendarButtonLabel');
-                    if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario ${calendarData.season}`;
+                    if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario & Risultati ${calendarData.season}`;
                     renderFeaturedRace();
                     // Aggiorna lo stato "live"/"passata"/"da disputare" delle
                     // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
@@ -584,8 +601,9 @@
         function toggleClassificaPanel() {
             const panel = document.getElementById('classificaPanel');
             const wasHidden = panel.classList.contains('hidden');
-            // I due pannelli sono mutuamente esclusivi: aprirne uno chiude l'altro.
+            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('calendarPanel').classList.add('hidden');
+            document.getElementById('previousYearsPanel').classList.add('hidden');
             panel.classList.toggle('hidden', !wasHidden);
             if(!panel.classList.contains('hidden')) {
                 renderClassifica();
@@ -632,8 +650,9 @@
         function toggleCalendarPanel() {
             const panel = document.getElementById('calendarPanel');
             const wasHidden = panel.classList.contains('hidden');
-            // I due pannelli sono mutuamente esclusivi: aprirne uno chiude l'altro.
+            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('classificaPanel').classList.add('hidden');
+            document.getElementById('previousYearsPanel').classList.add('hidden');
             panel.classList.toggle('hidden', !wasHidden);
             if(!panel.classList.contains('hidden')) {
                 renderCalendar();
@@ -770,16 +789,45 @@
         }
 
         // Espande/richiude gli orari (ora italiana) di un singolo weekend di
-        // gara. Il contenuto è già renderizzato in renderCalendar() insieme
+        // gara. Il contenuto è già renderizzato in renderRaceList() insieme
         // alla riga stessa: qui si toglie/aggiunge solo la classe "hidden".
-        function toggleRaceSchedule(round) {
-            const detail = document.getElementById(`raceSchedule-${round}`);
-            const chevron = document.getElementById(`raceChevron-${round}`);
+        // idPrefix distingue le gare della stagione in corso ("cal") da
+        // quelle di un anno precedente ("hist2025", ecc.): senza, due gare
+        // con lo stesso round in liste diverse avrebbero id duplicati.
+        function toggleRaceSchedule(idPrefix, round) {
+            const detail = document.getElementById(`raceSchedule-${idPrefix}-${round}`);
+            const chevron = document.getElementById(`raceChevron-${idPrefix}-${round}`);
             if (!detail) return;
             const wasHidden = detail.classList.contains('hidden');
             detail.classList.toggle('hidden', !wasHidden);
             if (chevron) chevron.classList.toggle('rotate-180', wasHidden);
             scheduleReposition(); // l'altezza di leftColumn è cambiata
+        }
+
+        // Elenco gare (round, circuito, date weekend, vincitore) condiviso
+        // tra il pannello Calendario (stagione in corso) e il pannello Anni
+        // precedenti (una stagione storica alla volta): stesso stile,
+        // stesso comportamento di espansione per ogni gara.
+        function renderRaceList(races, idPrefix) {
+            return races.map(r => `
+                <div class="bg-gray-900 rounded overflow-hidden">
+                    <div class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule('${idPrefix}', ${r.round})">
+                        <span class="text-gray-400 shrink-0">
+                            <span class="block">${r.round}. ${r.circuit}</span>
+                            <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
+                        </span>
+                        <span class="flex items-center gap-1.5 min-w-0">
+                            <span class="text-right truncate ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
+                                ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
+                            </span>
+                            <span id="raceChevron-${idPrefix}-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform">▾</span>
+                        </span>
+                    </div>
+                    <div id="raceSchedule-${idPrefix}-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
+                        ${renderSessionsBlock(r, idPrefix)}
+                    </div>
+                </div>
+            `).join('');
         }
 
         function renderCalendar() {
@@ -792,30 +840,76 @@
                 return;
             }
 
-            document.getElementById('calendarPanelTitle').innerText = `📅 Calendario ${calendarData.season}`;
-
-            calendarList.innerHTML = calendarData.races.map(r => `
-                <div class="bg-gray-900 rounded overflow-hidden">
-                    <div class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule(${r.round})">
-                        <span class="text-gray-400 shrink-0">
-                            <span class="block">${r.round}. ${r.circuit}</span>
-                            <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
-                        </span>
-                        <span class="flex items-center gap-1.5 min-w-0">
-                            <span class="text-right truncate ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
-                                ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
-                            </span>
-                            <span id="raceChevron-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform">▾</span>
-                        </span>
-                    </div>
-                    <div id="raceSchedule-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
-                        ${renderSessionsBlock(r, 'cal')}
-                    </div>
-                </div>
-            `).join('');
+            document.getElementById('calendarPanelTitle').innerText = `📅 Calendario & Risultati ${calendarData.season}`;
+            calendarList.innerHTML = renderRaceList(calendarData.races, 'cal');
 
             const updatedDate = new Date(calendarData.updatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
             calendarMeta.innerText = `Aggiornato al ${updatedDate}`;
+        }
+
+        // --- PANNELLO ANNI PRECEDENTI ---
+        // Stagioni storiche disponibili (solo queste per ora): ogni stagione
+        // viene scaricata da history/{anno}.json solo al primo click su
+        // quell'anno (non tutte insieme al caricamento della pagina), e
+        // tenuta in cache in memoria per i click successivi.
+        const PREVIOUS_YEARS = [2025, 2024, 2023, 2022, 2021];
+        const historyCache = {};
+        let currentHistoryYear = null;
+
+        function togglePreviousYearsPanel() {
+            const panel = document.getElementById('previousYearsPanel');
+            const wasHidden = panel.classList.contains('hidden');
+            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
+            document.getElementById('classificaPanel').classList.add('hidden');
+            document.getElementById('calendarPanel').classList.add('hidden');
+            panel.classList.toggle('hidden', !wasHidden);
+            if (!panel.classList.contains('hidden')) {
+                showPreviousYearsList();
+            }
+            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        }
+
+        function showPreviousYearsList() {
+            currentHistoryYear = null;
+            document.getElementById('prevYearsBackBtn').classList.add('hidden');
+            document.getElementById('previousYearsTitle').innerText = '🕰️ Stagioni precedenti';
+            const body = document.getElementById('previousYearsBody');
+            body.innerHTML = PREVIOUS_YEARS.map(y => `
+                <button onclick="selectPreviousYear(${y})" class="w-full text-left bg-gray-900 hover:bg-gray-800 transition-colors rounded px-3 py-2 cursor-pointer">
+                    ${y}
+                </button>
+            `).join('');
+            scheduleReposition();
+        }
+
+        async function selectPreviousYear(year) {
+            currentHistoryYear = year;
+            document.getElementById('prevYearsBackBtn').classList.remove('hidden');
+            document.getElementById('previousYearsTitle').innerText = `🕰️ Stagione ${year}`;
+            const body = document.getElementById('previousYearsBody');
+            body.innerHTML = '<div class="text-gray-500 italic">Caricamento...</div>';
+            scheduleReposition();
+
+            if (!historyCache[year]) {
+                try {
+                    const res = await fetch(`history/${year}.json`, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`status ${res.status}`);
+                    historyCache[year] = await res.json();
+                } catch (err) {
+                    console.error(`Impossibile caricare history/${year}.json:`, err);
+                    // L'utente potrebbe aver selezionato un altro anno nel
+                    // frattempo: non sovrascrivere una vista già cambiata.
+                    if (currentHistoryYear === year) {
+                        body.innerHTML = `<div class="text-gray-500 italic">⚠️ Dati non disponibili per il ${year}.</div>`;
+                        scheduleReposition();
+                    }
+                    return;
+                }
+            }
+            if (currentHistoryYear !== year) return; // vedi commento sopra
+
+            body.innerHTML = renderRaceList(historyCache[year].races, `hist${year}`);
+            scheduleReposition();
         }
 
         // --- WIDGET "PROSSIMO GP": orari sessioni del weekend in evidenza ---

@@ -4,8 +4,10 @@
 - `index.html` — il sito. Carica i dati da `data.json` (fetch). Se `data.json` non è raggiungibile, mostra un messaggio d'errore esplicito invece di dati incorporati nel codice (rimossi: erano solo un fallback statico, mai sincronizzato con `data.json`). Include anche il widget "Prossimo GP" (sempre visibile, in alto a destra su desktop, allineato in larghezza ai riquadri di "Dettagli Qualifiche" / sotto i pulsanti Classifica-Calendario su mobile): orari di tutte le sessioni del weekend in ora italiana, con indicatore live per la sessione in corso. Resta sul weekend corrente/prossimo fino alla domenica di gara, poi passa al successivo da lunedì. Sia nel widget che nel pannello "Calendario", ogni sessione già disputata mostra "Risultati" (bianco, cliccabile) al posto della data: espande la classifica completa di quella sessione (posizione, pilota, scuderia, tempo/distacco), letta da `calendar.json`.
 - `data.json` — i dati "ufficiali" delle pole position. È la fonte di verità. Ogni entry ha `year`, `circuit`, `driver`, `team`, `timeStr`, `seconds`, `weather`, e opzionalmente `penaltyNote` (vedi sotto).
 - `standings.json` — classifica REALE del campionato piloti e costruttori della stagione in corso (posizione, punti, vittorie), mostrata nel pannello "Classifica" del sito.
-- `calendar.json` — calendario della stagione IN CORSO (rilevata automaticamente, quindi passa da sola alla stagione successiva ogni anno), con il vincitore di ogni gara già disputata, la data di inizio weekend (`weekendStart`, prove libere del venerdì), l'orario UTC di ogni sessione (`schedule`: fp1/fp2/fp3/sprintQualy/sprintRace/qualy/race) e, per le sessioni già disputate, i risultati completi (`results`: fp1/fp2/fp3/qualy/race, ognuno un array di `{position, driver, team, time}` o `null` se non ancora disponibili — niente risultati sprint, l'API non li espone). Usato per il pannello "Calendario", che mostra anche l'intervallo di date del weekend (es. "6-8 Marzo") e, cliccando su una gara, gli orari di tutte le sessioni convertiti in ora italiana (cambio CET/CEST gestito automaticamente) con "Risultati" al posto della data per le sessioni già disputate; e per decidere quale circuito mostrare di default all'apertura del sito (l'ultimo GP disputato, oppure quello del weekend in corso se le prove libere sono già iniziate).
+- `calendar.json` — calendario della stagione IN CORSO (rilevata automaticamente, quindi passa da sola alla stagione successiva ogni anno), con il vincitore di ogni gara già disputata, la data di inizio weekend (`weekendStart`, prove libere del venerdì), l'orario UTC di ogni sessione (`schedule`: fp1/fp2/fp3/sprintQualy/sprintRace/qualy/race) e, per le sessioni già disputate, i risultati completi (`results`: fp1/fp2/fp3/qualy/race, ognuno un array di `{position, driver, team, time}` o `null` se non ancora disponibili — niente risultati sprint, l'API non li espone). Usato per il pannello "Calendario & Risultati", che mostra anche l'intervallo di date del weekend (es. "6-8 Marzo") e, cliccando su una gara, gli orari di tutte le sessioni convertiti in ora italiana (cambio CET/CEST gestito automaticamente) con "Risultati" al posto della data per le sessioni già disputate; e per decidere quale circuito mostrare di default all'apertura del sito (l'ultimo GP disputato, oppure quello del weekend in corso se le prove libere sono già iniziate).
+- `history/{anno}.json` (2021-2025) — stesso formato di `calendar.json`, ma per una stagione PASSATA e SOLO con qualifiche e gara (niente prove libere né sprint, a differenza della stagione in corso): non cambia più una volta scritto, quindi non è schedulato/aggiornato dai workflow automatici. Scaricato da `scripts/build-history.js` e usato dal pannello "Stagioni precedenti" del sito, che carica un anno solo al primo click su quell'anno (non tutti insieme).
 - `scripts/lib/f1-mapping.js` — mappature condivise (circuito, team, parsing tempi) usate dagli script sotto.
+- `scripts/lib/session-results.js` — normalizzazione dei risultati di sessione (prove libere, qualifiche, gara) dal formato f1api.dev al formato del sito. Condivisa tra `update-calendar.js` e `build-history.js`.
 - `scripts/lib/weather.js` — meteo storico reale via [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave, dati ERA5 dal 1940), usato sia per il backfill che per gli aggiornamenti futuri.
 - `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev, calcola il meteo reale del giorno di qualifica, e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
 - `scripts/check-pole-penalty.js` — gira dopo la gara (domenica): controlla se il polista è partito davvero P1 in griglia. Se una penalità l'ha retrocesso, aggiunge un `penaltyNote` alla entry (senza cambiare il polista registrato).
@@ -13,6 +15,7 @@
 - `scripts/update-calendar.js` — gira dopo la gara (domenica): scarica il calendario della stagione in corso con i vincitori e i risultati completi di prove libere/qualifiche/gara delle sessioni già disputate, e aggiorna `calendar.json`. I risultati già scaricati in run precedenti vengono riusati (non ridownload ogni volta), quindi ogni run fa solo le richieste per le sessioni nuove.
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
 - `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
+- `scripts/build-history.js` — strumento una tantum (`node scripts/build-history.js [anno...]`) che scarica calendario, vincitori e risultati di qualifiche e gara (solo queste due sessioni, su richiesta esplicita) di una o più stagioni PASSATE e scrive `history/{anno}.json`. Le gare di una stagione vengono processate in parallelo (l'API è lenta, farlo in sequenza richiederebbe ore) con scrittura incrementale, quindi un'interruzione a metà non fa perdere le gare già scaricate. Se `history/{anno}.json` esiste già viene saltato; cancellarlo per rigenerare quell'anno.
 - `.github/workflows/update-poles.yml` — automazione GitHub Actions che esegue `update-poles.js` ogni sabato sera.
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
@@ -28,14 +31,17 @@
    data.json
    standings.json
    calendar.json
+   history/2021.json ... history/2025.json
    scripts/update-poles.js
    scripts/check-pole-penalty.js
    scripts/update-standings.js
    scripts/update-calendar.js
    scripts/verify-data.js
    scripts/backfill-weather.js
+   scripts/build-history.js
    scripts/lib/f1-mapping.js
    scripts/lib/weather.js
+   scripts/lib/session-results.js
    .github/workflows/update-poles.yml
    .github/workflows/check-pole-penalty.yml
    .github/workflows/update-standings.yml
