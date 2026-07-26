@@ -17,6 +17,7 @@
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni domenica sera / lunedì mattina.
+- `.github/workflows/update-all.yml` — solo manuale (nessuno schedule proprio): esegue in sequenza tutti e quattro gli script sopra in un unico run, per aggiornare tutto con un solo "Run workflow" invece di lanciarli uno alla volta.
 
 ## Come pubblicare il sito online (GitHub Pages)
 
@@ -39,6 +40,7 @@
    .github/workflows/check-pole-penalty.yml
    .github/workflows/update-standings.yml
    .github/workflows/update-calendar.yml
+   .github/workflows/update-all.yml
    ```
 3. Vai su **Settings → Pages** del repository, e in "Build and deployment" seleziona come source il branch principale (es. `main`), cartella `/ (root)`.
 4. Dopo un paio di minuti il sito sarà raggiungibile su `https://<tuo-utente>.github.io/<nome-repo>/`.
@@ -57,7 +59,9 @@ Ci sono due automazioni distinte, perché qualifica e gara di un weekend F1 non 
 - `update-standings.yml` esegue `scripts/update-standings.js`: scarica la classifica piloti e costruttori aggiornata e la scrive in `standings.json`, mostrata nel pannello "🏆 Classifica" del sito.
 - `update-calendar.yml` esegue `scripts/update-calendar.js`: scarica il calendario della stagione in corso (rilevata automaticamente tramite `/api/current`, quindi non serve aggiornare l'anno a mano ogni stagione) con il vincitore di ogni gara già disputata, e lo scrive in `calendar.json`, mostrato nel pannello "📅 Calendario" del sito.
 
-Puoi lanciare tutti e quattro manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
+Puoi lanciare ciascuno manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
+
+Per lanciarli tutti e quattro insieme senza ripetere l'operazione quattro volte, c'è un quinto workflow, `update-all.yml` ("Aggiorna tutto"), **solo manuale** (nessuno schedule proprio): esegue gli stessi quattro script in sequenza in un unico run. È anche il workflow a cui punta il tasto "🔄 Update" in fondo al sito.
 
 ## Meteo
 
@@ -86,4 +90,4 @@ Il sito non ha (più) alcun pannello di inserimento dati lato client: `data.json
 
 Se vuoi correggere un dato a mano: modifica direttamente `data.json` nel repository (anche dall'editor web di GitHub, senza bisogno di git in locale) e salva/commit — il sito lo rifletterà al prossimo caricamento. Richiede le tue credenziali GitHub.
 
-In fondo alla colonna "Dettagli Qualifiche" (sotto l'ultima card, sia su mobile che su desktop) c'è un tasto **🔄 Update** che apre la pagina Actions del repository, da dove puoi lanciare a mano una qualsiasi delle quattro automazioni schedulate senza aspettare l'orario previsto. Il sito è statico (GitHub Pages, nessun backend): il tasto è solo un collegamento diretto alla pagina Actions, non lancia nulla automaticamente — non contiene (e non potrebbe contenere in sicurezza) alcun token GitHub.
+In fondo alla colonna "Dettagli Qualifiche" (sotto l'ultima card, sia su mobile che su desktop) c'è un tasto **🔄 Update** che apre la pagina del workflow combinato `update-all.yml` su GitHub Actions, pronta per il "Run workflow": un solo click da lì aggiorna pole position, penalità, classifica e calendario in sequenza, senza aspettare l'orario schedulato. Il sito è statico (GitHub Pages, nessun backend): il tasto è solo un collegamento diretto alla pagina Actions, non lancia nulla automaticamente — non contiene (e non potrebbe contenere in sicurezza) alcun token GitHub.

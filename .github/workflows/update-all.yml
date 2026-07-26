@@ -1,0 +1,81 @@
+name: Aggiorna tutto (pole, penalità, classifica, calendario)
+
+# Solo manuale: le 4 automazioni singole (update-poles.yml,
+# check-pole-penalty.yml, update-standings.yml, update-calendar.yml)
+# restano schedulate separatamente come prima. Questo workflow esegue gli
+# stessi 4 script in sequenza in un unico run, per non doverli lanciare uno
+# alla volta da GitHub quando si vuole aggiornare tutto subito.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configura identità git per i commit automatici
+        run: |
+          git config user.name "F1 Pole Tracker Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+      - name: Aggiorna pole position
+        run: node scripts/update-poles.js
+
+      - name: Commit pole position (se cambiato)
+        run: |
+          if git diff --quiet -- data.json; then
+            echo "Nessuna modifica a data.json (pole position)."
+          else
+            git add data.json
+            git commit -m "🏎️ Aggiornamento automatico pole position"
+            git push
+          fi
+
+      - name: Controlla penalità pole position
+        run: node scripts/check-pole-penalty.js
+
+      - name: Commit penalità (se cambiato)
+        run: |
+          if git diff --quiet -- data.json; then
+            echo "Nessuna modifica a data.json (penalità)."
+          else
+            git add data.json
+            git commit -m "🚩 Aggiornamento automatico avviso penalità pole"
+            git push
+          fi
+
+      - name: Aggiorna classifica campionato
+        run: node scripts/update-standings.js
+
+      - name: Commit classifica (se cambiato)
+        run: |
+          if git diff --quiet -- standings.json; then
+            echo "Nessuna modifica a standings.json."
+          else
+            git add standings.json
+            git commit -m "🏆 Aggiornamento automatico classifica campionato"
+            git push
+          fi
+
+      - name: Aggiorna calendario
+        run: node scripts/update-calendar.js
+
+      - name: Commit calendario (se cambiato)
+        run: |
+          if git diff --quiet -- calendar.json; then
+            echo "Nessuna modifica a calendar.json."
+          else
+            git add calendar.json
+            git commit -m "📅 Aggiornamento automatico calendario"
+            git push
+          fi
