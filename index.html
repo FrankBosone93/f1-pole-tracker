@@ -62,10 +62,10 @@
             <!-- Contenitore Grafico -->
             <div id="chartCard" class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="flex items-center justify-end gap-2 mb-2">
-                    <span class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
-                    <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-400 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
+                    <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
+                    <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
                 </div>
-                <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden">
+                <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
                     <canvas id="poleChart"></canvas>
                 </div>
             </div>
@@ -172,20 +172,32 @@
 
         function updateChartViewToggleIcon() {
             const btn = document.getElementById('chartViewToggle');
+            const caption = document.getElementById('chartCaption');
             if (!btn) return;
             if (chartViewMode === 'line') {
                 btn.innerHTML = ICON_BARS;
                 btn.title = 'Vedi il delta anno su anno';
+                if (caption) caption.innerText = 'In basso = Più Veloce ⚡';
             } else {
                 btn.innerHTML = ICON_CURVE;
                 btn.title = "Torna all'andamento dei tempi";
+                if (caption) caption.innerText = 'Delta';
             }
         }
 
         function toggleChartView() {
             chartViewMode = chartViewMode === 'line' ? 'delta' : 'line';
             updateChartViewToggleIcon();
-            renderChart();
+            // Dissolvenza gestita a mano invece di affidarsi all'animazione
+            // d'ingresso di Chart.js: quest'ultima può completarsi quasi
+            // istantaneamente (osservato su desktop) a seconda di quando il
+            // browser consegna il primo frame, rendendo il cambio di vista
+            // uguale su tutti i dispositivi.
+            chartContainer.style.opacity = '0';
+            setTimeout(() => {
+                renderChart();
+                chartContainer.style.opacity = '1';
+            }, 200);
         }
 
         function populateCircuitSelectors(circuits) {
