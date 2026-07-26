@@ -130,6 +130,22 @@
             <div id="detailsList" class="space-y-3">
                 <!-- I dettagli compariranno qui -->
             </div>
+
+            <!-- Tasto "Update": sempre subito dopo #detailsList (non
+                 all'interno), quindi resta sempre sotto l'ultimo riquadro
+                 qualsiasi sia il numero di anni presenti (aumenta di uno
+                 ogni stagione) - nessuna posizione da ricalcolare via JS.
+                 Apre la pagina Actions di GitHub, dove si lancia a mano
+                 ciascuna automazione: il sito è statico, non può contenere
+                 un token per lanciarle direttamente senza esporlo a
+                 chiunque lo visiti. -->
+            <div class="mt-6 mb-2 text-center md:text-left">
+                <a href="https://github.com/FrankBosone93/f1-pole-tracker/actions" target="_blank" rel="noopener noreferrer"
+                   class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                    🔄 Update
+                </a>
+                <p class="text-xs text-gray-600 mt-1">Apre GitHub Actions per lanciare a mano le automazioni schedulate</p>
+            </div>
         </div>
 
     </div>
