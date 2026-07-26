@@ -688,21 +688,85 @@
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
 
-        function renderSessionSchedule(schedule) {
-            const rows = SESSION_LABELS
-                .map(([key, label]) => {
-                    const formatted = formatSessionTime(schedule && schedule[key]);
-                    if (!formatted) return null;
-                    return `<div class="flex justify-between gap-2 py-0.5">
-                        <span class="text-gray-400">${label}</span>
-                        <span class="text-gray-200">${formatted}</span>
-                    </div>`;
-                })
-                .filter(Boolean);
-            if (rows.length === 0) {
-                return '<div class="text-gray-500 italic">Orari non ancora disponibili.</div>';
-            }
-            return rows.join('');
+        // Tabella compatta dei risultati di una sessione (prove libere,
+        // qualifiche o gara): posizione, pilota, scuderia, tempo. In gara un
+        // ritiro mostra il motivo al posto del distacco.
+        function renderResultsTable(results, key) {
+            const rows = results.map(r => {
+                const timeCell = r.retired
+                    ? `<span class="text-orange-400 italic">${r.retired}</span>`
+                    : `<span class="text-gray-300">${r.time || '-'}</span>`;
+                return `<tr class="border-t border-gray-800">
+                    <td class="py-1 pl-2 pr-1 text-gray-500 text-right">${r.position}</td>
+                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${r.driver}</td>
+                    <td class="py-1 px-1 text-gray-500 truncate max-w-[90px]">${r.team}</td>
+                    <td class="py-1 pl-1 pr-2 text-right whitespace-nowrap">${timeCell}</td>
+                </tr>`;
+            }).join('');
+            return `<div class="mt-1 mb-2 max-h-56 overflow-y-auto rounded border border-gray-800 bg-black/20">
+                <table class="w-full text-[11px]"><tbody>${rows}</tbody></table>
+            </div>`;
+        }
+
+        // Espande/richiude i risultati completi di una singola sessione
+        // (prove libere, qualifiche o gara), già disputata. Il contenuto è
+        // già renderizzato (non serve richiesta di rete: i dati sono già in
+        // calendarData), qui si toglie/aggiunge solo la classe "hidden".
+        function toggleSessionResults(panelId) {
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+            scheduleReposition(); // l'altezza del contenitore è cambiata
+        }
+
+        // Griglia a 3 colonne (pallino, etichetta, orario) condivisa tra il
+        // pannello Calendario (una per ogni gara, espandibile) e il widget
+        // "Prossimo GP" (una sola gara, sempre visibile): stesso identico
+        // comportamento in entrambi i posti, come richiesto esplicitamente.
+        // idPrefix rende univoci gli id dei pannelli "Risultati" quando la
+        // stessa gara compare in più punti della pagina contemporaneamente
+        // (es. widget mobile + widget desktop, entrambi nel DOM).
+        function renderSessionsBlock(race, idPrefix) {
+            const rows = SESSION_LABELS.map(([key, label]) => {
+                const session = race.schedule && race.schedule[key];
+                const formatted = formatSessionTime(session);
+                if (!formatted) return '';
+                const status = getSessionStatus(session, SESSION_DURATION_MIN[key]);
+                const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
+                // Etichetta e orario usano lo stesso colore in base allo
+                // stato: sessione non ancora disputata o in corso devono
+                // "accendersi" insieme (nome + orario), non solo l'orario.
+                const textClass = status === 'past' ? 'text-gray-500' : 'text-white';
+                const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
+
+                const results = race.results && race.results[key];
+                const hasResults = Array.isArray(results) && results.length > 0;
+                const panelId = `${idPrefix}-results-${race.round}-${key}`;
+
+                // Sessione già disputata e con risultati disponibili: "Risultati"
+                // (bianco, per leggerlo meglio rispetto ai colori di stato)
+                // al posto della data, cliccabile per espandere la tabella.
+                const timeCell = (status === 'past' && hasResults)
+                    ? `<span class="text-white underline decoration-dotted cursor-pointer" onclick="toggleSessionResults('${panelId}')">Risultati</span>`
+                    : `${formatted}${liveTag}`;
+
+                const resultsPanel = hasResults
+                    ? `<div id="${panelId}" class="hidden col-span-3">${renderResultsTable(results, key)}</div>`
+                    : '';
+
+                // "contents" toglie il wrapper dal flusso: i suoi figli (le 3
+                // celle + l'eventuale pannello risultati) diventano celle
+                // dirette della griglia del genitore, così il pannello si
+                // apre esattamente sotto la riga della sessione cliccata.
+                return `<div class="contents">
+                    <span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
+                    <span class="${textClass} truncate">${label}</span>
+                    <span class="${textClass} text-right whitespace-nowrap">${timeCell}</span>
+                    ${resultsPanel}
+                </div>`;
+            }).join('') || '<span class="col-span-3 text-gray-500 italic">Orari non disponibili.</span>';
+
+            return `<div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-[11px] items-center">${rows}</div>`;
         }
 
         // Espande/richiude gli orari (ora italiana) di un singolo weekend di
@@ -745,7 +809,7 @@
                         </span>
                     </div>
                     <div id="raceSchedule-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
-                        ${renderSessionSchedule(r.schedule)}
+                        ${renderSessionsBlock(r, 'cal')}
                     </div>
                 </div>
             `).join('');
@@ -805,54 +869,27 @@
                 return;
             }
 
-            // Griglia a 3 colonne (pallino, etichetta, orario) invece di
-            // righe flex indipendenti: così la colonna degli orari si
-            // allinea sempre alla stessa posizione su ogni riga, qualunque
-            // sia la lunghezza dell'etichetta (con flex indipendenti ogni
-            // riga si allargava per conto proprio e gli orari finivano
-            // disallineati tra loro - bug segnalato dall'utente).
-            const sessionsHtml = SESSION_LABELS.map(([key, label]) => {
-                const session = race.schedule && race.schedule[key];
-                const formatted = formatSessionTime(session);
-                if (!formatted) return '';
-                const status = getSessionStatus(session, SESSION_DURATION_MIN[key]);
-                const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
-                // Etichetta e orario usano lo stesso colore in base allo
-                // stato: sessione non ancora disputata o in corso devono
-                // "accendersi" insieme (nome + orario), non solo l'orario.
-                const textClass = status === 'past' ? 'text-gray-500' : 'text-white';
-                const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
-                return `<span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
-                    <span class="${textClass} truncate">${label}</span>
-                    <span class="${textClass} text-right whitespace-nowrap">${formatted}${liveTag}</span>`;
-            }).join('') || '<span class="col-span-3 text-gray-500 italic">Orari non disponibili.</span>';
-
             // Data del weekend affiancata al nome del circuito (non più su
             // una riga a parte sotto): riduce l'altezza del riquadro di una
             // riga.
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
                 <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
 
-            // Colonna orario "1fr": pallino ed etichetta restano alla loro
-            // dimensione naturale (ancorati al bordo sinistro del riquadro),
-            // mentre la data/ora viene spinta verso il bordo destro invece
-            // di restare subito dopo l'etichetta.
-            const contentHtml = `
-                <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
-                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-[11px] items-center">${sessionsHtml}</div>
-            `;
-
-            // Versione mobile: stesso riquadro (bordo/sfondo) usato altrove
-            // nel sito per questo tipo di informazioni - qui resta coerente
-            // con le altre card impilate (Dettagli Qualifiche, Calendario).
+            // idPrefix diverso per mobile/desktop: la stessa gara compare in
+            // entrambi i contenitori contemporaneamente (uno nascosto via CSS,
+            // non rimosso dal DOM), quindi senza un prefisso diverso gli id dei
+            // pannelli "Risultati" sarebbero duplicati sulla pagina.
             if (mobileContainer) {
-                mobileContainer.innerHTML = `<div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">${contentHtml}</div>`;
+                mobileContainer.innerHTML = `<div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
+                    <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
+                    ${renderSessionsBlock(race, 'widget-mobile')}
+                </div>`;
             }
-            // Versione desktop: niente riquadro, scritta direttamente sullo
-            // sfondo della pagina (stesse posizioni di testo, solo senza
-            // bordo/sfondo della card).
             if (desktopContainer) {
-                desktopContainer.innerHTML = contentHtml;
+                desktopContainer.innerHTML = `
+                    <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
+                    ${renderSessionsBlock(race, 'widget-desktop')}
+                `;
             }
         }
 
