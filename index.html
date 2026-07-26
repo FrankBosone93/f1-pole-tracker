@@ -880,6 +880,13 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        // Il ResizeObserver interno di Chart.js scatta anche alla
+                        // creazione del chart e, su desktop, il riposizionamento
+                        // delle maniglie (scheduleReposition, subito dopo) forza un
+                        // reflow che lo fa scattare troppo presto: senza questo
+                        // ritardo Chart.js annulla l'animazione d'ingresso quasi
+                        // subito (osservato: si completava in ~10ms invece di 1s).
+                        resizeDelay: 200,
                         scales: {
                             y: {
                                 grid: { color: '#2a2a2a' },
@@ -924,6 +931,13 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        // Il ResizeObserver interno di Chart.js scatta anche alla
+                        // creazione del chart e, su desktop, il riposizionamento
+                        // delle maniglie (scheduleReposition, subito dopo) forza un
+                        // reflow che lo fa scattare troppo presto: senza questo
+                        // ritardo Chart.js annulla l'animazione d'ingresso quasi
+                        // subito (osservato: si completava in ~10ms invece di 1s).
+                        resizeDelay: 200,
                         scales: {
                             y: {
                                 grid: { color: '#2a2a2a' },
