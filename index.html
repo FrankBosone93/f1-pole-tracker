@@ -820,7 +820,7 @@
                 // Etichetta e orario usano lo stesso colore in base allo
                 // stato: sessione non ancora disputata o in corso devono
                 // "accendersi" insieme (nome + orario), non solo l'orario.
-                const textClass = status === 'live' ? 'text-green-400 font-bold' : status === 'past' ? 'text-gray-500' : 'text-white';
+                const textClass = status === 'past' ? 'text-gray-500' : 'text-white';
                 const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
                 return `<span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
                     <span class="${textClass} truncate">${label}</span>
