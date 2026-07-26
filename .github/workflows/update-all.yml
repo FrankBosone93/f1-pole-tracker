@@ -28,10 +28,18 @@ jobs:
           git config user.name "F1 Pole Tracker Bot"
           git config user.email "actions@users.noreply.github.com"
 
+      # continue-on-error su ognuno dei 4 script: se uno fallisce (es. l'API
+      # esterna f1api.dev momentaneamente non ha ancora i dati di un round,
+      # 404 osservato in un test reale), gli altri tre vanno comunque
+      # avanti invece di essere saltati tutti insieme - punto centrale di
+      # questo workflow rispetto a lanciarli singolarmente.
       - name: Aggiorna pole position
+        id: poles
+        continue-on-error: true
         run: node scripts/update-poles.js
 
       - name: Commit pole position (se cambiato)
+        if: steps.poles.outcome == 'success'
         run: |
           if git diff --quiet -- data.json; then
             echo "Nessuna modifica a data.json (pole position)."
@@ -42,9 +50,12 @@ jobs:
           fi
 
       - name: Controlla penalità pole position
+        id: penalty
+        continue-on-error: true
         run: node scripts/check-pole-penalty.js
 
       - name: Commit penalità (se cambiato)
+        if: steps.penalty.outcome == 'success'
         run: |
           if git diff --quiet -- data.json; then
             echo "Nessuna modifica a data.json (penalità)."
@@ -55,9 +66,12 @@ jobs:
           fi
 
       - name: Aggiorna classifica campionato
+        id: standings
+        continue-on-error: true
         run: node scripts/update-standings.js
 
       - name: Commit classifica (se cambiato)
+        if: steps.standings.outcome == 'success'
         run: |
           if git diff --quiet -- standings.json; then
             echo "Nessuna modifica a standings.json."
@@ -68,9 +82,12 @@ jobs:
           fi
 
       - name: Aggiorna calendario
+        id: calendar
+        continue-on-error: true
         run: node scripts/update-calendar.js
 
       - name: Commit calendario (se cambiato)
+        if: steps.calendar.outcome == 'success'
         run: |
           if git diff --quiet -- calendar.json; then
             echo "Nessuna modifica a calendar.json."
@@ -79,3 +96,21 @@ jobs:
             git commit -m "📅 Aggiornamento automatico calendario"
             git push
           fi
+
+      - name: Riepilogo
+        if: always()
+        run: |
+          echo "## Riepilogo aggiornamento" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Automazione | Esito |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Pole position | ${{ steps.poles.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Penalità | ${{ steps.penalty.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Classifica | ${{ steps.standings.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Calendario | ${{ steps.calendar.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+
+      # Se anche solo uno script è fallito, il run resta segnato come
+      # fallito (X rosso su GitHub) pur avendo lasciato provare tutti gli
+      # altri - così un fallimento non passa inosservato.
+      - name: Fallisci il run se qualche automazione è fallita
+        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success'
+        run: exit 1
