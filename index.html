@@ -96,7 +96,7 @@
             <!-- Pannello Classifica (Nascosto di default). Larghezza impostata via
                  JS pari al 2/3 di default del grafico (vedi applyClassificaPanelWidth),
                  indipendente da un eventuale ridimensionamento live del grafico stesso. -->
-            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6">
+            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 transition-opacity duration-200">
                 <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
                     <div>
                         <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
@@ -111,7 +111,7 @@
             </div>
 
             <!-- Pannello Calendario (Nascosto di default) -->
-            <div id="calendarPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3">
+            <div id="calendarPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3 transition-opacity duration-200">
                 <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
                 <div id="calendarList" class="space-y-1 text-sm"></div>
                 <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="calendarMeta"></div>
@@ -598,16 +598,23 @@
         }
 
         // --- VISTA CLASSIFICA ---
-        function toggleClassificaPanel() {
+        async function toggleClassificaPanel() {
             const panel = document.getElementById('classificaPanel');
             const wasHidden = panel.classList.contains('hidden');
             // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('calendarPanel').classList.add('hidden');
             document.getElementById('previousYearsPanel').classList.add('hidden');
-            panel.classList.toggle('hidden', !wasHidden);
-            if(!panel.classList.contains('hidden')) {
-                renderClassifica();
-                applyClassificaPanelWidth();
+            if (wasHidden) {
+                // Stessa dissolvenza in apertura usata per gli altri due
+                // pannelli (Calendario, Stagioni precedenti): coerenza tra
+                // tutti e tre i tasti, come richiesto esplicitamente.
+                panel.classList.remove('hidden');
+                await fadeSwap(panel, () => {
+                    renderClassifica();
+                    applyClassificaPanelWidth();
+                });
+            } else {
+                panel.classList.add('hidden');
             }
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
@@ -647,15 +654,21 @@
             classificaMeta.innerText = `Aggiornato al ${updatedDate}`;
         }
 
-        function toggleCalendarPanel() {
+        async function toggleCalendarPanel() {
             const panel = document.getElementById('calendarPanel');
             const wasHidden = panel.classList.contains('hidden');
             // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('classificaPanel').classList.add('hidden');
             document.getElementById('previousYearsPanel').classList.add('hidden');
-            panel.classList.toggle('hidden', !wasHidden);
-            if(!panel.classList.contains('hidden')) {
-                renderCalendar();
+            if (wasHidden) {
+                // Stessa dissolvenza in apertura usata per gli altri due
+                // pannelli (Classifica, Stagioni precedenti).
+                panel.classList.remove('hidden');
+                await fadeSwap(panel, () => {
+                    renderCalendar();
+                });
+            } else {
+                panel.classList.add('hidden');
             }
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
