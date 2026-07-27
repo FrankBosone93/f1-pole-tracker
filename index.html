@@ -172,21 +172,22 @@
                 <!-- I dettagli compariranno qui -->
             </div>
 
-            <!-- Tasto "Update": sempre subito dopo #detailsList (non
+            <!-- Tasto "Full Update": sempre subito dopo #detailsList (non
                  all'interno), quindi resta sempre sotto l'ultimo riquadro
                  qualsiasi sia il numero di anni presenti (aumenta di uno
                  ogni stagione) - nessuna posizione da ricalcolare via JS.
                  Apre la pagina del workflow combinato "Aggiorna tutto" su
                  GitHub Actions (un solo "Run workflow" esegue in sequenza
-                 pole position, penalità, classifica e calendario): il sito
-                 è statico, non può contenere un token per lanciarlo
-                 direttamente senza esporlo a chiunque lo visiti. -->
+                 pole position, penalità, classifica, calendario e
+                 telemetria): il sito è statico, non può contenere un token
+                 per lanciarlo direttamente senza esporlo a chiunque lo
+                 visiti. -->
             <div class="mt-6 mb-2 text-center md:text-left">
                 <a href="https://github.com/FrankBosone93/f1-pole-tracker/actions/workflows/update-all.yml" target="_blank" rel="noopener noreferrer"
                    class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    🔄 Update
+                    🔄 Full Update
                 </a>
-                <p class="text-xs text-gray-600 mt-1">Aggiornamento manuale database</p>
+                <p class="text-xs text-gray-600 mt-1">Aggiornamento Dati completo</p>
             </div>
         </div>
 

@@ -17,12 +17,13 @@
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
 - `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
 - `scripts/build-history.js` — strumento una tantum (`node scripts/build-history.js [anno...]`) che scarica calendario, vincitori e risultati di qualifiche e gara (solo queste due sessioni, su richiesta esplicita) di una o più stagioni PASSATE e scrive `history/{anno}.json`. Le gare di una stagione vengono processate in parallelo (l'API è lenta, farlo in sequenza richiederebbe ore) con scrittura incrementale, quindi un'interruzione a metà non fa perdere le gare già scaricate. Se `history/{anno}.json` esiste già viene saltato; cancellarlo per rigenerare quell'anno.
-- `scripts/build-telemetry.js` — strumento una tantum (`node scripts/build-telemetry.js` per 2025+2026, `node scripts/build-telemetry.js 2026` per una sola stagione) che scarica da OpenF1 la telemetria del giro di pole in qualifica di ogni GP già disputato delle stagioni 2025 e 2026, e scrive `telemetry.json`. Il giro di pole viene identificato incrociando il pilota poleman reale da `data.json` (non il giro più veloce in assoluto: quest'ultimo può essere stato cancellato per track limits, promuovendo un giro più lento a pole — successo davvero all'Ungheria 2025) e prendendo il suo giro più veloce valido. Scrittura incrementale (una stagione/circuito alla volta) e retry con backoff sui 429 di OpenF1, così un'interruzione a metà non fa perdere i circuiti già scaricati; da rilanciare per aggiungere i round successivi mano a mano che si disputano.
+- `scripts/build-telemetry.js` — gira dopo la qualifica (sabato, via `update-telemetry.yml`), ma è anche uno strumento richiamabile a mano (`node scripts/build-telemetry.js` per 2025+2026, `node scripts/build-telemetry.js 2026` per una sola stagione): scarica da OpenF1 la telemetria del giro di pole in qualifica di ogni GP già disputato delle stagioni 2025 e 2026, e scrive `telemetry.json`. Il giro di pole viene identificato incrociando il pilota poleman reale da `data.json` (non il giro più veloce in assoluto: quest'ultimo può essere stato cancellato per track limits, promuovendo un giro più lento a pole — successo davvero all'Ungheria 2025) e prendendo il suo giro più veloce valido. Scrittura incrementale (una stagione/circuito alla volta) e retry con backoff sui 429 di OpenF1, così un'interruzione a metà non fa perdere i circuiti già scaricati; già scaricati vengono saltati, quindi ogni run fa solo le richieste per i round nuovi.
 - `.github/workflows/update-poles.yml` — automazione GitHub Actions che esegue `update-poles.js` ogni sabato sera.
+- `.github/workflows/update-telemetry.yml` — automazione GitHub Actions che esegue `build-telemetry.js` ogni sabato sera (stesso orario di `update-poles.yml`, essendo la telemetria dello stesso giro di pole).
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni domenica sera / lunedì mattina.
-- `.github/workflows/update-all.yml` — solo manuale (nessuno schedule proprio): esegue in sequenza tutti e quattro gli script sopra in un unico run, per aggiornare tutto con un solo "Run workflow" invece di lanciarli uno alla volta.
+- `.github/workflows/update-all.yml` — solo manuale (nessuno schedule proprio): esegue in sequenza tutti e cinque gli script sopra in un unico run, per aggiornare tutto con un solo "Run workflow" invece di lanciarli uno alla volta. È il workflow a cui punta il tasto "🔄 Full Update" del sito.
 
 ## Come pubblicare il sito online (GitHub Pages)
 
@@ -47,6 +48,7 @@
    scripts/lib/weather.js
    scripts/lib/session-results.js
    .github/workflows/update-poles.yml
+   .github/workflows/update-telemetry.yml
    .github/workflows/check-pole-penalty.yml
    .github/workflows/update-standings.yml
    .github/workflows/update-calendar.yml
@@ -59,10 +61,12 @@
 
 Ci sono due automazioni distinte, perché qualifica e gara di un weekend F1 non finiscono mai nello stesso momento:
 
-**1. Dopo la qualifica (sabato)** — `update-poles.yml` esegue `scripts/update-poles.js`, che:
-1. Interroga l'API pubblica e gratuita [f1api.dev](https://f1api.dev) per l'ultima qualifica disputata.
-2. Estrae pilota, team e tempo del più veloce in qualifica (= la pole, per definizione, a prescindere da eventuali penalità che verranno applicate dopo).
-3. Se il dato non è già presente (o è cambiato) in `data.json`, lo aggiorna e fa un commit automatico al repository.
+**1. Dopo la qualifica (sabato)** — girano due workflow, allo stesso orario:
+- `update-poles.yml` esegue `scripts/update-poles.js`:
+  1. Interroga l'API pubblica e gratuita [f1api.dev](https://f1api.dev) per l'ultima qualifica disputata.
+  2. Estrae pilota, team e tempo del più veloce in qualifica (= la pole, per definizione, a prescindere da eventuali penalità che verranno applicate dopo).
+  3. Se il dato non è già presente (o è cambiato) in `data.json`, lo aggiorna e fa un commit automatico al repository.
+- `update-telemetry.yml` esegue `scripts/build-telemetry.js`: scarica da OpenF1 la telemetria del giro di pole appena disputato e aggiorna `telemetry.json` (vedi sopra).
 
 **2. Dopo la gara (domenica)** — girano tre workflow separati, tutti sullo stesso orario:
 - `check-pole-penalty.yml` esegue `scripts/check-pole-penalty.js`: interroga l'API per i risultati di gara (che includono la griglia di partenza reale, campo `grid`), confronta il polista registrato con chi è partito davvero P1, e se sono persone diverse (penalità post-qualifica) aggiunge un `penaltyNote` alla entry — il polista registrato NON cambia.
@@ -71,7 +75,7 @@ Ci sono due automazioni distinte, perché qualifica e gara di un weekend F1 non 
 
 Puoi lanciare ciascuno manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
 
-Per lanciarli tutti e quattro insieme senza ripetere l'operazione quattro volte, c'è un quinto workflow, `update-all.yml` ("Aggiorna tutto"), **solo manuale** (nessuno schedule proprio): esegue gli stessi quattro script in sequenza in un unico run. È anche il workflow a cui punta il tasto "🔄 Update" in fondo al sito.
+Per lanciarli tutti e cinque insieme senza ripetere l'operazione volta per volta, c'è un sesto workflow, `update-all.yml` ("Aggiorna tutto"), **solo manuale** (nessuno schedule proprio): esegue gli stessi cinque script in sequenza in un unico run. È anche il workflow a cui punta il tasto "🔄 Full Update" in fondo al sito.
 
 ## Meteo
 
@@ -100,4 +104,4 @@ Il sito non ha (più) alcun pannello di inserimento dati lato client: `data.json
 
 Se vuoi correggere un dato a mano: modifica direttamente `data.json` nel repository (anche dall'editor web di GitHub, senza bisogno di git in locale) e salva/commit — il sito lo rifletterà al prossimo caricamento. Richiede le tue credenziali GitHub.
 
-In fondo alla colonna "Dettagli Qualifiche" (sotto l'ultima card, sia su mobile che su desktop) c'è un tasto **🔄 Update** che apre la pagina del workflow combinato `update-all.yml` su GitHub Actions, pronta per il "Run workflow": un solo click da lì aggiorna pole position, penalità, classifica e calendario in sequenza, senza aspettare l'orario schedulato. Il sito è statico (GitHub Pages, nessun backend): il tasto è solo un collegamento diretto alla pagina Actions, non lancia nulla automaticamente — non contiene (e non potrebbe contenere in sicurezza) alcun token GitHub.
+In fondo alla colonna "Dettagli Qualifiche" (sotto l'ultima card, sia su mobile che su desktop) c'è un tasto **🔄 Full Update** ("Aggiornamento Dati completo") che apre la pagina del workflow combinato `update-all.yml` su GitHub Actions, pronta per il "Run workflow": un solo click da lì aggiorna pole position, penalità, classifica, calendario e telemetria in sequenza, senza aspettare l'orario schedulato. Il sito è statico (GitHub Pages, nessun backend): il tasto è solo un collegamento diretto alla pagina Actions, non lancia nulla automaticamente — non contiene (e non potrebbe contenere in sicurezza) alcun token GitHub.
