@@ -125,7 +125,7 @@
                     <button id="prevYearsBackBtn" onclick="showPreviousYearsList()" class="hidden text-gray-400 hover:text-white text-xs cursor-pointer">← Anni</button>
                     <h3 class="text-sm font-bold text-[#E10600]" id="previousYearsTitle">🕰️ Stagioni precedenti</h3>
                 </div>
-                <div id="previousYearsBody" class="space-y-1 text-sm"></div>
+                <div id="previousYearsBody" class="space-y-1 text-sm transition-opacity duration-200"></div>
             </div>
         </div>
 
@@ -869,17 +869,31 @@
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
-        function showPreviousYearsList() {
+        async function showPreviousYearsList() {
             currentHistoryYear = null;
             document.getElementById('prevYearsBackBtn').classList.add('hidden');
             document.getElementById('previousYearsTitle').innerText = '🕰️ Stagioni precedenti';
             const body = document.getElementById('previousYearsBody');
-            body.innerHTML = PREVIOUS_YEARS.map(y => `
-                <button onclick="selectPreviousYear(${y})" class="w-full text-left bg-gray-900 hover:bg-gray-800 transition-colors rounded px-3 py-2 cursor-pointer">
-                    ${y}
-                </button>
-            `).join('');
-            scheduleReposition();
+            await fadeSwap(body, () => {
+                body.innerHTML = PREVIOUS_YEARS.map(y => `
+                    <button onclick="selectPreviousYear(${y})" class="w-full text-left bg-gray-900 hover:bg-gray-800 transition-colors rounded px-3 py-2 cursor-pointer">
+                        ${y}
+                    </button>
+                `).join('');
+                scheduleReposition();
+            });
+        }
+
+        // Dissolvenza in uscita/entrata attorno a un cambio di contenuto,
+        // stesso pattern già usato per il cambio vista del grafico principale
+        // (toggleChartView): senza, il pannello passava istantaneamente da
+        // "Caricamento..." (poche decine di px) all'elenco completo delle
+        // gare (oltre 1000px), uno scatto secco segnalato dall'utente.
+        async function fadeSwap(el, updateFn, fadeMs = 150) {
+            el.style.opacity = '0';
+            await new Promise(r => setTimeout(r, fadeMs));
+            updateFn();
+            el.style.opacity = '1';
         }
 
         async function selectPreviousYear(year) {
@@ -887,10 +901,12 @@
             document.getElementById('prevYearsBackBtn').classList.remove('hidden');
             document.getElementById('previousYearsTitle').innerText = `🕰️ Stagione ${year}`;
             const body = document.getElementById('previousYearsBody');
-            body.innerHTML = '<div class="text-gray-500 italic">Caricamento...</div>';
-            scheduleReposition();
 
             if (!historyCache[year]) {
+                await fadeSwap(body, () => {
+                    body.innerHTML = '<div class="text-gray-500 italic">Caricamento...</div>';
+                    scheduleReposition();
+                });
                 try {
                     const res = await fetch(`history/${year}.json`, { cache: 'no-store' });
                     if (!res.ok) throw new Error(`status ${res.status}`);
@@ -900,16 +916,20 @@
                     // L'utente potrebbe aver selezionato un altro anno nel
                     // frattempo: non sovrascrivere una vista già cambiata.
                     if (currentHistoryYear === year) {
-                        body.innerHTML = `<div class="text-gray-500 italic">⚠️ Dati non disponibili per il ${year}.</div>`;
-                        scheduleReposition();
+                        await fadeSwap(body, () => {
+                            body.innerHTML = `<div class="text-gray-500 italic">⚠️ Dati non disponibili per il ${year}.</div>`;
+                            scheduleReposition();
+                        });
                     }
                     return;
                 }
+                if (currentHistoryYear !== year) return; // vedi commento sopra
             }
-            if (currentHistoryYear !== year) return; // vedi commento sopra
 
-            body.innerHTML = renderRaceList(historyCache[year].races, `hist${year}`);
-            scheduleReposition();
+            await fadeSwap(body, () => {
+                body.innerHTML = renderRaceList(historyCache[year].races, `hist${year}`);
+                scheduleReposition();
+            });
         }
 
         // --- WIDGET "PROSSIMO GP": orari sessioni del weekend in evidenza ---
