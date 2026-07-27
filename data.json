@@ -1107,5 +1107,14 @@
     "seconds": 82.868,
     "weather": "🌧️ Pioggia",
     "penaltyNote": "Pole in qualifica, ma partito P11 per una penalità sul cambio motore: il via al palo è stato di Valtteri Bottas."
+  },
+  {
+    "year": 2026,
+    "circuit": "Hungaroring",
+    "driver": "Lando Norris",
+    "team": "McLaren",
+    "timeStr": "1:17.207",
+    "seconds": 77.207,
+    "weather": "☁️ Nuvoloso"
   }
 ]

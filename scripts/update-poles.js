@@ -20,21 +20,51 @@ const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mappin
 const { fetchWeatherForCircuit } = require('./lib/weather');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
-const API_URL = 'https://f1api.dev/api/current/last/qualy';
+
+async function fetchJson(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
+    return res.json();
+}
 
 async function main() {
-    console.log(`Richiesta a ${API_URL} ...`);
-    const response = await fetch(API_URL);
-    if (!response.ok) {
-        throw new Error(`Risposta API non valida: ${response.status} ${response.statusText}`);
+    // Non usiamo /api/current/last/qualy: si è rivelato inaffidabile in
+    // pratica (rimasto 404 per giorni dopo una qualifica reale, mentre
+    // l'endpoint diretto per il round aveva già i dati completi - visto sul
+    // GP Ungheria 2026, round 11). Troviamo noi l'ultimo round con qualifica
+    // già disputata dal calendario, e chiediamo i suoi risultati per round
+    // esplicito (stesso approccio, già affidabile, usato da
+    // update-calendar.js e build-history.js).
+    console.log('Richiesta a https://f1api.dev/api/current ...');
+    const currentPayload = await fetchJson('https://f1api.dev/api/current');
+    const season = currentPayload.season;
+    const races = currentPayload.races || [];
+    if (!season || races.length === 0) {
+        throw new Error('Calendario stagione corrente vuoto o senza campo "season".');
     }
-    const payload = await response.json();
+
+    const now = new Date();
+    const pastQualyRaces = races.filter(r => {
+        const q = r.schedule?.qualy;
+        if (!q?.date || !q?.time) return false;
+        const qualyStart = new Date(`${q.date}T${q.time}`);
+        return !isNaN(qualyStart) && qualyStart <= now;
+    });
+    if (pastQualyRaces.length === 0) {
+        throw new Error('Nessuna qualifica già disputata trovata nel calendario della stagione corrente.');
+    }
+    const lastRace = pastQualyRaces.reduce((latest, r) => r.schedule.qualy.date > latest.schedule.qualy.date ? r : latest);
+    const round = lastRace.round;
+
+    console.log(`Ultima qualifica rilevata: round ${round} (${lastRace.raceName || lastRace.circuit?.circuitName || 'sconosciuto'}).`);
+    const API_URL = `https://f1api.dev/api/${season}/${round}/qualy`;
+    console.log(`Richiesta a ${API_URL} ...`);
+    const payload = await fetchJson(API_URL);
 
     // Log completo per debug: se la struttura reale differisce da quella attesa,
     // questo output nei log della GitHub Action aiuta a correggere lo script.
     console.log('Struttura risposta ricevuta (troncata):', JSON.stringify(payload).slice(0, 2000));
 
-    const season = payload.season || payload?.races?.season;
     const racesNode = payload.races;
     if (!racesNode) {
         throw new Error('Campo "races" non trovato nella risposta API. Controllare i log sopra per la struttura reale.');
