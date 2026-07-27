@@ -61,12 +61,27 @@
         <div id="leftColumn" class="md:sticky md:top-8">
             <!-- Contenitore Grafico -->
             <div id="chartCard" class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
-                <div class="flex items-center justify-end gap-2 mb-2">
-                    <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
-                    <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 py-1 px-2 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                        🏎️ Telemetria
+                    </button>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
+                        <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
+                    </div>
                 </div>
                 <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
                     <canvas id="poleChart"></canvas>
+                    <!-- Pannelli telemetria (nascosti finché non si attiva la
+                         vista "Telemetria"): velocità, acceleratore/freno,
+                         marcia impilati in colonna, stessa area del grafico
+                         principale (position:absolute inset-0) così condividono
+                         lo stesso ridimensionamento senza calcoli separati. -->
+                    <div id="telemetryPanels" class="hidden absolute inset-0 flex flex-col gap-2">
+                        <div class="flex-[3] relative min-h-0"><canvas id="telemetrySpeedChart"></canvas></div>
+                        <div class="flex-[2] relative min-h-0"><canvas id="telemetryThrottleBrakeChart"></canvas></div>
+                        <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
+                    </div>
                 </div>
             </div>
 
@@ -175,11 +190,15 @@
         let poleData = [];
         let standingsData = null; // classifica piloti/costruttori reale, da standings.json
         let calendarData = null; // calendario stagione in corso, da calendar.json
+        let telemetryData = null; // telemetria giro di pole 2026 (solo qualifiche), da telemetry.json
 
         const select = document.getElementById('circuitSelect');
         const detailsList = document.getElementById('detailsList');
         const dataSourceBadge = document.getElementById('dataSourceBadge');
         let currentChart = null;
+        let telemetrySpeedChart = null;
+        let telemetryThrottleBrakeChart = null;
+        let telemetryGearChart = null;
         let currentFiltered = [];
         // 'line' = andamento dei tempi (attuale), 'delta' = variazione anno su anno.
         let chartViewMode = 'line';
@@ -191,14 +210,14 @@
             const btn = document.getElementById('chartViewToggle');
             const caption = document.getElementById('chartCaption');
             if (!btn) return;
-            if (chartViewMode === 'line') {
-                btn.innerHTML = ICON_BARS;
-                btn.title = 'Vedi il delta anno su anno';
-                if (caption) caption.innerText = 'In basso = Più Veloce ⚡';
-            } else {
+            if (chartViewMode === 'delta') {
                 btn.innerHTML = ICON_CURVE;
                 btn.title = "Torna all'andamento dei tempi";
                 if (caption) caption.innerText = 'Delta';
+            } else {
+                btn.innerHTML = ICON_BARS;
+                btn.title = 'Vedi il delta anno su anno';
+                if (caption) caption.innerText = 'In basso = Più Veloce ⚡';
             }
         }
 
@@ -215,6 +234,115 @@
                 renderChart();
                 chartContainer.style.opacity = '1';
             }, 200);
+        }
+
+        // Il tasto "Telemetria" appare solo se il circuito scelto ha dati
+        // telemetrici (solo 2026, solo qualifiche - vedi telemetry.json);
+        // la visibilità viene aggiornata da updateApp() ad ogni cambio
+        // circuito, non qui.
+        function updateTelemetryToggleLabel() {
+            const btn = document.getElementById('telemetryToggle');
+            if (!btn) return;
+            btn.innerText = chartViewMode === 'telemetry' ? '📈 Torna al grafico' : '🏎️ Telemetria';
+        }
+
+        function toggleTelemetryView() {
+            chartViewMode = chartViewMode === 'telemetry' ? 'line' : 'telemetry';
+            updateTelemetryToggleLabel();
+            // Stessa dissolvenza usata dal toggle linea/delta, per coerenza.
+            chartContainer.style.opacity = '0';
+            setTimeout(() => {
+                renderChart();
+                chartContainer.style.opacity = '1';
+            }, 200);
+        }
+
+        // Tabella compatta con posizione/pilota/scuderia non serve qui: la
+        // telemetria è di un solo pilota (il poleman) per circuito, quindi
+        // niente confronto tra piloti per ora.
+        function renderTelemetryCharts() {
+            const poleCanvas = document.getElementById('telemetrySpeedChart');
+            const tbCanvas = document.getElementById('telemetryThrottleBrakeChart');
+            const gearCanvas = document.getElementById('telemetryGearChart');
+            if (telemetrySpeedChart) telemetrySpeedChart.destroy();
+            if (telemetryThrottleBrakeChart) telemetryThrottleBrakeChart.destroy();
+            if (telemetryGearChart) telemetryGearChart.destroy();
+
+            const entry = telemetryData && telemetryData.circuits && telemetryData.circuits[select.value];
+            const caption = document.getElementById('chartCaption');
+            if (!entry) {
+                // Non dovrebbe succedere (il tasto resta nascosto in questo
+                // caso), ma per sicurezza non lasciamo grafici vuoti rotti.
+                if (caption) caption.innerText = 'Telemetria non disponibile';
+                return;
+            }
+            if (caption) caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
+
+            const speedPoints = entry.samples.map(s => ({ x: s.t, y: s.speed }));
+            const throttlePoints = entry.samples.map(s => ({ x: s.t, y: s.throttle }));
+            const brakePoints = entry.samples.map(s => ({ x: s.t, y: s.brake }));
+            const gearPoints = entry.samples.map(s => ({ x: s.t, y: s.gear }));
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                resizeDelay: 200,
+                animation: { duration: 400 },
+                interaction: { mode: 'index', intersect: false },
+            };
+
+            telemetrySpeedChart = new Chart(poleCanvas.getContext('2d'), {
+                type: 'line',
+                data: { datasets: [{ data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        x: { type: 'linear', grid: { display: false }, ticks: { display: false } },
+                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + ' km/h' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => ' Velocità: ' + c.parsed.y + ' km/h' } }
+                    }
+                }
+            });
+
+            telemetryThrottleBrakeChart = new Chart(tbCanvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'Acceleratore', data: throttlePoints, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.3)', borderWidth: 1, pointRadius: 0, fill: true, tension: 0 },
+                        { label: 'Freno', data: brakePoints, borderColor: '#E10600', backgroundColor: 'rgba(225,6,0,0.3)', borderWidth: 1, pointRadius: 0, fill: true, stepped: true }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        x: { type: 'linear', grid: { display: false }, ticks: { display: false } },
+                        y: { min: 0, max: 100, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + '%' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.parsed.y + '%' } }
+                    }
+                }
+            });
+
+            telemetryGearChart = new Chart(gearCanvas.getContext('2d'), {
+                type: 'line',
+                data: { datasets: [{ data: gearPoints, borderColor: '#a0aec0', borderWidth: 1.5, pointRadius: 0, stepped: true }] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        x: { type: 'linear', grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 0, callback: v => v.toFixed(0) + 's' } },
+                        y: { min: 1, max: 8, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', stepSize: 1 } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => ' Marcia: ' + c.parsed.y } }
+                    }
+                }
+            });
         }
 
         function populateCircuitSelectors(circuits) {
@@ -266,6 +394,13 @@
                 }
             } catch (err) {
                 console.warn('Impossibile caricare calendar.json:', err);
+            }
+
+            try {
+                const telemetryResponse = await fetch('telemetry.json', { cache: 'no-store' });
+                if (telemetryResponse.ok) telemetryData = await telemetryResponse.json();
+            } catch (err) {
+                console.warn('Impossibile caricare telemetry.json:', err);
             }
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
@@ -1021,9 +1156,35 @@
         }
 
         function renderChart() {
+            const poleCanvas = document.getElementById('poleChart');
+            const telemetryPanels = document.getElementById('telemetryPanels');
+            const toggleIconBtn = document.getElementById('chartViewToggle');
+
+            if (chartViewMode === 'telemetry') {
+                // Il grafico principale e il toggle linea/delta non si
+                // applicano qui: nascosti finché non si torna indietro.
+                poleCanvas.style.display = 'none';
+                telemetryPanels.classList.remove('hidden');
+                toggleIconBtn.classList.add('hidden');
+                if (currentChart) { currentChart.destroy(); currentChart = null; }
+                // Su mobile l'altezza normale (200px, dal CSS) è troppo
+                // stretta per 3 pannelli leggibili: qui serve più spazio,
+                // ripristinato quando si torna alla vista normale sotto.
+                if (window.innerWidth < 768) chartContainer.style.height = '380px';
+                renderTelemetryCharts();
+                scheduleReposition();
+                return;
+            }
+
+            if (window.innerWidth < 768) chartContainer.style.height = '';
+            poleCanvas.style.display = '';
+            telemetryPanels.classList.add('hidden');
+            toggleIconBtn.classList.remove('hidden');
+            updateChartViewToggleIcon();
+
             const filtered = currentFiltered;
             if (currentChart) currentChart.destroy();
-            const ctx = document.getElementById('poleChart').getContext('2d');
+            const ctx = poleCanvas.getContext('2d');
 
             if (chartViewMode === 'delta') {
                 // Delta rispetto all'anno precedente per lo stesso circuito: null per il
@@ -1133,6 +1294,18 @@
 
         function updateApp(circuitName) {
             currentFiltered = poleData.filter(d => d.circuit === circuitName).sort((a,b) => a.year - b.year);
+
+            // Il tasto "Telemetria" è visibile solo se questo circuito ha
+            // dati telemetrici (per ora solo 2026, solo qualifiche). Se si
+            // cambia circuito mentre si è in modalità telemetria e il nuovo
+            // circuito non ne ha, si torna automaticamente alla vista normale.
+            const telemetryBtn = document.getElementById('telemetryToggle');
+            const hasTelemetry = !!(telemetryData && telemetryData.circuits && telemetryData.circuits[circuitName]);
+            if (telemetryBtn) telemetryBtn.classList.toggle('hidden', !hasTelemetry);
+            if (!hasTelemetry && chartViewMode === 'telemetry') {
+                chartViewMode = 'line';
+                updateTelemetryToggleLabel();
+            }
 
             renderChart();
 
