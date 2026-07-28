@@ -100,11 +100,9 @@
                 <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
             </div>
 
-            <!-- Pulsanti Vista Classifica / Calendario / Stagioni precedenti.
-                 Su mobile: griglia 2 colonne (Stagioni precedenti finisce sotto
-                 Classifica, riga 2 colonna 1). Su desktop: riga unica,
-                 Stagioni precedenti a destra di Calendario. -->
-            <div class="grid grid-cols-2 gap-2 mb-6 md:flex md:max-w-md">
+            <!-- Pulsanti Vista Classifica / Calendario / Stagioni precedenti / News.
+                 Su mobile: griglia 2x2. Su desktop: riga unica. -->
+            <div class="grid grid-cols-2 gap-2 mb-6 md:flex md:max-w-lg">
                 <button onclick="toggleClassificaPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
                     🏆 Classifica
                 </button>
@@ -113,6 +111,9 @@
                 </button>
                 <button onclick="togglePreviousYearsPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
                     🕰️ Stagioni precedenti
+                </button>
+                <button onclick="toggleNewsPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
+                    📰 News
                 </button>
             </div>
 
@@ -149,6 +150,14 @@
                     <h3 class="text-sm font-bold text-[#E10600]" id="previousYearsTitle">🕰️ Stagioni precedenti</h3>
                 </div>
                 <div id="previousYearsBody" class="space-y-1 text-sm transition-opacity duration-200"></div>
+            </div>
+
+            <!-- Pannello News (Nascosto di default): ultime 5 notizie F1 da
+                 FormulaPassion.it (news.json, scaricato da update-news.js). -->
+            <div id="newsPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3 transition-opacity duration-200">
+                <h3 class="text-sm font-bold text-[#E10600]">📰 News</h3>
+                <div id="newsList" class="space-y-3 text-sm"></div>
+                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="newsMeta"></div>
             </div>
         </div>
 
@@ -201,6 +210,7 @@
         let calendarData = null; // calendario stagione in corso, da calendar.json
         let telemetryData = null; // telemetria giro di pole per stagione (solo qualifiche), da telemetry.json
         let telemetryCompareEnabled = false; // sovrapposizione 2025 attiva/disattiva
+        let newsData = null; // ultime notizie F1 da FormulaPassion.it, da news.json
 
         // Legge il giro di pole di una stagione+circuito da telemetryData,
         // null se non disponibile (stagione non scaricata o circuito senza
@@ -486,6 +496,13 @@
                 if (telemetryResponse.ok) telemetryData = await telemetryResponse.json();
             } catch (err) {
                 console.warn('Impossibile caricare telemetry.json:', err);
+            }
+
+            try {
+                const newsResponse = await fetch('news.json', { cache: 'no-store' });
+                if (newsResponse.ok) newsData = await newsResponse.json();
+            } catch (err) {
+                console.warn('Impossibile caricare news.json:', err);
             }
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
@@ -821,13 +838,14 @@
         async function toggleClassificaPanel() {
             const panel = document.getElementById('classificaPanel');
             const wasHidden = panel.classList.contains('hidden');
-            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
+            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('calendarPanel').classList.add('hidden');
             document.getElementById('previousYearsPanel').classList.add('hidden');
+            document.getElementById('newsPanel').classList.add('hidden');
             if (wasHidden) {
-                // Stessa dissolvenza in apertura usata per gli altri due
-                // pannelli (Calendario, Stagioni precedenti): coerenza tra
-                // tutti e tre i tasti, come richiesto esplicitamente.
+                // Stessa dissolvenza in apertura usata per gli altri
+                // pannelli (Calendario, Stagioni precedenti, News): coerenza
+                // tra tutti i tasti, come richiesto esplicitamente.
                 panel.classList.remove('hidden');
                 await fadeSwap(panel, () => {
                     renderClassifica();
@@ -877,12 +895,13 @@
         async function toggleCalendarPanel() {
             const panel = document.getElementById('calendarPanel');
             const wasHidden = panel.classList.contains('hidden');
-            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
+            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('classificaPanel').classList.add('hidden');
             document.getElementById('previousYearsPanel').classList.add('hidden');
+            document.getElementById('newsPanel').classList.add('hidden');
             if (wasHidden) {
-                // Stessa dissolvenza in apertura usata per gli altri due
-                // pannelli (Classifica, Stagioni precedenti).
+                // Stessa dissolvenza in apertura usata per gli altri
+                // pannelli (Classifica, Stagioni precedenti, News).
                 panel.classList.remove('hidden');
                 await fadeSwap(panel, () => {
                     renderCalendar();
@@ -1092,14 +1111,79 @@
         function togglePreviousYearsPanel() {
             const panel = document.getElementById('previousYearsPanel');
             const wasHidden = panel.classList.contains('hidden');
-            // I tre pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
+            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
             document.getElementById('classificaPanel').classList.add('hidden');
             document.getElementById('calendarPanel').classList.add('hidden');
+            document.getElementById('newsPanel').classList.add('hidden');
             panel.classList.toggle('hidden', !wasHidden);
             if (!panel.classList.contains('hidden')) {
                 showPreviousYearsList();
             }
             scheduleReposition(); // l'altezza di leftColumn è cambiata
+        }
+
+        async function toggleNewsPanel() {
+            const panel = document.getElementById('newsPanel');
+            const wasHidden = panel.classList.contains('hidden');
+            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
+            document.getElementById('classificaPanel').classList.add('hidden');
+            document.getElementById('calendarPanel').classList.add('hidden');
+            document.getElementById('previousYearsPanel').classList.add('hidden');
+            if (wasHidden) {
+                panel.classList.remove('hidden');
+                await fadeSwap(panel, () => {
+                    renderNews();
+                });
+            } else {
+                panel.classList.add('hidden');
+            }
+            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        }
+
+        // Titolo/autore/link/immagine vengono dal feed RSS esterno di
+        // FormulaPassion.it, non dal nostro data.json: li trattiamo come
+        // contenuto non fidato ed eseguiamo l'escape prima di inserirli via
+        // innerHTML, per sicurezza (a differenza degli altri pannelli, i cui
+        // dati arrivano tutti dai nostri script/API già validati).
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderNews() {
+            const list = document.getElementById('newsList');
+            const meta = document.getElementById('newsMeta');
+            if (!newsData || !newsData.items || newsData.items.length === 0) {
+                list.innerHTML = '';
+                meta.innerText = '⚠️ News non disponibili (news.json non raggiungibile).';
+                return;
+            }
+            list.innerHTML = newsData.items.map(item => `
+                <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="flex gap-3 bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg p-2">
+                    ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="w-20 h-14 object-cover rounded shrink-0">` : ''}
+                    <div class="min-w-0">
+                        <p class="text-gray-200 font-medium leading-snug">${escapeHtml(item.title)}</p>
+                        <p class="text-xs text-gray-500 mt-1">${formatNewsDate(item.date)}${item.author ? ` · ${escapeHtml(item.author)}` : ''}</p>
+                    </div>
+                </a>
+            `).join('');
+            meta.innerText = `Fonte: ${newsData.source}`;
+        }
+
+        function formatNewsDate(isoDate) {
+            if (!isoDate) return '';
+            const d = new Date(isoDate);
+            if (isNaN(d)) return '';
+            const formatted = d.toLocaleString('it-IT', {
+                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                timeZone: 'Europe/Rome',
+            });
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
 
         async function showPreviousYearsList() {

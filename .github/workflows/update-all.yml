@@ -1,11 +1,12 @@
-name: Aggiorna tutto (pole, penalità, classifica, calendario, telemetria)
+name: Aggiorna tutto (pole, penalità, classifica, calendario, telemetria, news)
 
-# Solo manuale: le 5 automazioni singole (update-poles.yml,
+# Solo manuale: le 6 automazioni singole (update-poles.yml,
 # check-pole-penalty.yml, update-standings.yml, update-calendar.yml,
-# update-telemetry.yml) restano schedulate separatamente come prima. Questo
-# workflow esegue gli stessi 5 script in sequenza in un unico run, per non
-# doverli lanciare uno alla volta da GitHub quando si vuole aggiornare tutto
-# subito (è il workflow collegato al tasto "Full Update" del sito).
+# update-telemetry.yml, update-news.yml) restano schedulate separatamente
+# come prima. Questo workflow esegue gli stessi 6 script in sequenza in un
+# unico run, per non doverli lanciare uno alla volta da GitHub quando si
+# vuole aggiornare tutto subito (è il workflow collegato al tasto
+# "Full Update" del sito).
 on:
   workflow_dispatch: {}
 
@@ -114,6 +115,22 @@ jobs:
             git push
           fi
 
+      - name: Aggiorna news
+        id: news
+        continue-on-error: true
+        run: node scripts/update-news.js
+
+      - name: Commit news (se cambiato)
+        if: steps.news.outcome == 'success'
+        run: |
+          if git diff --quiet -- news.json; then
+            echo "Nessuna modifica a news.json."
+          else
+            git add news.json
+            git commit -m "📰 Aggiornamento automatico news"
+            git push
+          fi
+
       - name: Riepilogo
         if: always()
         run: |
@@ -125,10 +142,11 @@ jobs:
           echo "| Classifica | ${{ steps.standings.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Calendario | ${{ steps.calendar.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Telemetria | ${{ steps.telemetry.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| News | ${{ steps.news.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
 
       # Se anche solo uno script è fallito, il run resta segnato come
       # fallito (X rosso su GitHub) pur avendo lasciato provare tutti gli
       # altri - così un fallimento non passa inosservato.
       - name: Fallisci il run se qualche automazione è fallita
-        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.telemetry.outcome != 'success'
+        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.telemetry.outcome != 'success' || steps.news.outcome != 'success'
         run: exit 1
