@@ -67,11 +67,13 @@
                             Telemetria
                         </button>
                         <!-- Visibile solo in modalità telemetria, e solo se il
-                             circuito ha anche il giro di pole 2025: sovrappone
-                             le due tracce (attivo = testo rosso). -->
-                        <button id="telemetryCompareToggle" onclick="toggleTelemetryCompare()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
-                            vs 2025
-                        </button>
+                             circuito ha dati anche per almeno un'altra
+                             stagione oltre alla 2026: le opzioni (una per
+                             stagione disponibile) sono popolate via JS da
+                             updateTelemetryButtonsVisibility(). Sovrappone
+                             la stagione scelta (attivo = testo rosso). -->
+                        <select id="telemetryCompareSelect" onchange="onTelemetryCompareChange()" class="hidden text-xs bg-transparent text-gray-300 hover:text-white transition-colors cursor-pointer border-none outline-none appearance-none">
+                        </select>
                     </div>
                     <div class="flex items-center gap-2 ml-auto">
                         <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
@@ -209,7 +211,8 @@
         let standingsData = null; // classifica piloti/costruttori reale, da standings.json
         let calendarData = null; // calendario stagione in corso, da calendar.json
         let telemetryData = null; // telemetria giro di pole per stagione (solo qualifiche), da telemetry.json
-        let telemetryCompareEnabled = false; // sovrapposizione 2025 attiva/disattiva
+        const PRIMARY_TELEMETRY_SEASON = '2026'; // stagione di default mostrata in vista Telemetria
+        let telemetryCompareYear = null; // stagione scelta per il confronto (es. '2025'), o null se nessuna
         let newsData = null; // ultime notizie F1 da FormulaPassion.it, da news.json
 
         // Legge il giro di pole di una stagione+circuito da telemetryData,
@@ -274,25 +277,31 @@
             btn.innerText = chartViewMode === 'telemetry' ? 'Torna al grafico' : 'Telemetria';
         }
 
-        // Il tasto "vs 2025" (sovrapposizione confronto) appare solo in vista
-        // telemetria e solo se il circuito ha anche dati 2025; lo stile
-        // riflette se il confronto è attivo (testo rosso) o no.
-        function updateTelemetryCompareToggleState() {
-            const btn = document.getElementById('telemetryCompareToggle');
-            if (!btn) return;
-            btn.classList.toggle('text-red-400', telemetryCompareEnabled);
-            btn.classList.toggle('text-gray-300', !telemetryCompareEnabled);
+        // Ultime due cifre di un anno (stringa o numero), per le etichette
+        // brevi tipo "'25" già usate sul grafico.
+        function yy(year) {
+            return String(year).slice(-2);
         }
 
-        // Centralizza la logica di visibilità dei due tasti telemetria,
+        // Il select di confronto (sovrapposizione) appare solo in vista
+        // telemetria e solo se il circuito ha dati anche per almeno un'altra
+        // stagione oltre a quella primaria (2026); lo stile riflette se un
+        // confronto è attivo (testo rosso) o no.
+        function updateTelemetryCompareSelectStyle() {
+            const sel = document.getElementById('telemetryCompareSelect');
+            if (!sel) return;
+            sel.classList.toggle('text-red-400', !!telemetryCompareYear);
+            sel.classList.toggle('text-gray-300', !telemetryCompareYear);
+        }
+
+        // Centralizza la logica di visibilità dei due controlli telemetria,
         // richiamata sia al cambio circuito (updateApp) sia al cambio vista
         // (toggleTelemetryView), così restano sempre coerenti tra loro.
         function updateTelemetryButtonsVisibility() {
             const circuitName = select.value;
             const telemetryBtn = document.getElementById('telemetryToggle');
-            const compareBtn = document.getElementById('telemetryCompareToggle');
-            const hasTelemetry = !!getTelemetryEntry('2026', circuitName);
-            const hasCompareData = !!getTelemetryEntry('2025', circuitName);
+            const compareSelect = document.getElementById('telemetryCompareSelect');
+            const hasTelemetry = !!getTelemetryEntry(PRIMARY_TELEMETRY_SEASON, circuitName);
 
             if (telemetryBtn) telemetryBtn.classList.toggle('hidden', !hasTelemetry);
             if (!hasTelemetry && chartViewMode === 'telemetry') {
@@ -300,11 +309,31 @@
                 updateTelemetryToggleLabel();
             }
 
-            const showCompareBtn = hasTelemetry && hasCompareData && chartViewMode === 'telemetry';
-            if (compareBtn) compareBtn.classList.toggle('hidden', !showCompareBtn);
-            if (!hasCompareData && telemetryCompareEnabled) {
-                telemetryCompareEnabled = false;
-                updateTelemetryCompareToggleState();
+            // Tutte le stagioni con dati per questo circuito, esclusa quella
+            // primaria - più recenti prima, così le prime opzioni del select
+            // sono quelle più probabilmente interessanti da confrontare.
+            const availableYears = telemetryData && telemetryData.seasons
+                ? Object.keys(telemetryData.seasons)
+                    .filter(season => season !== PRIMARY_TELEMETRY_SEASON && getTelemetryEntry(season, circuitName))
+                    .sort((a, b) => b.localeCompare(a))
+                : [];
+
+            const showCompareSelect = hasTelemetry && availableYears.length > 0 && chartViewMode === 'telemetry';
+            if (compareSelect) {
+                compareSelect.classList.toggle('hidden', !showCompareSelect);
+                if (showCompareSelect) {
+                    // Mantiene la stagione già scelta se ancora disponibile
+                    // per il nuovo circuito, altrimenti torna a "nessuna".
+                    if (!availableYears.includes(telemetryCompareYear)) telemetryCompareYear = null;
+                    compareSelect.innerHTML = `<option value="">vs...</option>` +
+                        availableYears.map(y => `<option value="${y}">vs ${y}</option>`).join('');
+                    compareSelect.value = telemetryCompareYear || '';
+                    updateTelemetryCompareSelectStyle();
+                }
+            }
+            if (!showCompareSelect && telemetryCompareYear) {
+                telemetryCompareYear = null;
+                updateTelemetryCompareSelectStyle();
             }
         }
 
@@ -320,9 +349,10 @@
             }, 200);
         }
 
-        function toggleTelemetryCompare() {
-            telemetryCompareEnabled = !telemetryCompareEnabled;
-            updateTelemetryCompareToggleState();
+        function onTelemetryCompareChange() {
+            const sel = document.getElementById('telemetryCompareSelect');
+            telemetryCompareYear = sel.value || null;
+            updateTelemetryCompareSelectStyle();
             renderTelemetryCharts();
         }
 
@@ -339,8 +369,8 @@
             if (telemetryThrottleBrakeChart) telemetryThrottleBrakeChart.destroy();
             if (telemetryGearChart) telemetryGearChart.destroy();
 
-            const entry = getTelemetryEntry('2026', select.value);
-            const compareEntry = telemetryCompareEnabled ? getTelemetryEntry('2025', select.value) : null;
+            const entry = getTelemetryEntry(PRIMARY_TELEMETRY_SEASON, select.value);
+            const compareEntry = telemetryCompareYear ? getTelemetryEntry(telemetryCompareYear, select.value) : null;
             const caption = document.getElementById('chartCaption');
             if (!entry) {
                 // Non dovrebbe succedere (il tasto resta nascosto in questo
@@ -350,8 +380,8 @@
             }
             if (caption) {
                 if (compareEntry) {
-                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '26 — ${formatSecondsToTime(entry.lapTime)}</span>`
-                        + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${compareEntry.driver} '25 — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
+                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)} — ${formatSecondsToTime(entry.lapTime)}</span>`
+                        + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${compareEntry.driver} '${yy(telemetryCompareYear)} — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
                 } else {
                     caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
                 }
@@ -373,10 +403,10 @@
             };
 
             const speedDatasets = [
-                { label: `${entry.driver} '26`, data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }
+                { label: `${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)}`, data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }
             ];
             if (compareEntry) {
-                speedDatasets.push({ label: `${compareEntry.driver} '25`, data: compareSpeedPoints, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.15, borderDash: [5, 3] });
+                speedDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareSpeedPoints, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.15, borderDash: [5, 3] });
             }
 
             telemetrySpeedChart = new Chart(poleCanvas.getContext('2d'), {
@@ -417,10 +447,10 @@
             });
 
             const gearDatasets = [
-                { label: `${entry.driver} '26`, data: gearPoints, borderColor: '#a0aec0', borderWidth: 1.5, pointRadius: 0, stepped: true }
+                { label: `${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)}`, data: gearPoints, borderColor: '#a0aec0', borderWidth: 1.5, pointRadius: 0, stepped: true }
             ];
             if (compareEntry) {
-                gearDatasets.push({ label: `${compareEntry.driver} '25`, data: compareGearPoints, borderColor: '#3b82f6', borderWidth: 1.5, pointRadius: 0, stepped: true, borderDash: [5, 3] });
+                gearDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareGearPoints, borderColor: '#3b82f6', borderWidth: 1.5, pointRadius: 0, stepped: true, borderDash: [5, 3] });
             }
 
             telemetryGearChart = new Chart(gearCanvas.getContext('2d'), {
