@@ -123,6 +123,7 @@
                  JS pari al 2/3 di default del grafico (vedi applyClassificaPanelWidth),
                  indipendente da un eventuale ridimensionamento live del grafico stesso. -->
             <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 transition-opacity duration-200">
+                <div class="text-xs text-gray-500 pb-2 mb-4 border-b border-gray-700" id="classificaMeta"></div>
                 <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
                     <div>
                         <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
@@ -133,14 +134,13 @@
                         <div id="teamRanking" class="space-y-1 text-sm"></div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 pt-2 mt-4 border-t border-gray-700" id="classificaMeta"></div>
             </div>
 
             <!-- Pannello Calendario (Nascosto di default) -->
             <div id="calendarPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3 transition-opacity duration-200">
                 <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
+                <div class="text-xs text-gray-500 pb-2 border-b border-gray-700" id="calendarMeta"></div>
                 <div id="calendarList" class="space-y-1 text-sm"></div>
-                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="calendarMeta"></div>
             </div>
 
             <!-- Pannello Stagioni precedenti (Nascosto di default): prima l'elenco
@@ -355,15 +355,23 @@
             }, 200);
         }
 
-        // Evidenzia (bordo rosso) il box "Anno YYYY" corrispondente alla
-        // stagione attualmente mostrata come principale nel grafico
-        // Telemetria, così è chiaro a colpo d'occhio quale anno si sta
-        // guardando. Nessun box evidenziato se non si è in vista Telemetria.
+        // Evidenzia i box "Anno YYYY" coinvolti nel grafico Telemetria, con
+        // gli stessi colori/tratti usati lì: bordo pieno rosso per l'anno
+        // principale, bordo tratteggiato blu per l'anno di confronto (se
+        // scelto) - stessa combinazione delle due tracce sul grafico, così è
+        // chiaro a colpo d'occhio quali due anni si stanno confrontando.
+        // Nessun box evidenziato se non si è in vista Telemetria.
         function updateActiveYearCardHighlight() {
             document.querySelectorAll('#detailsList > div[data-year]').forEach(card => {
-                const isActive = chartViewMode === 'telemetry' && card.dataset.year === telemetryPrimarySeason;
-                card.classList.toggle('ring-2', isActive);
-                card.classList.toggle('ring-[#E10600]', isActive);
+                const isPrimary = chartViewMode === 'telemetry' && card.dataset.year === telemetryPrimarySeason;
+                const isCompare = chartViewMode === 'telemetry' && !!telemetryCompareYear && card.dataset.year === telemetryCompareYear;
+                card.classList.toggle('ring-2', isPrimary);
+                card.classList.toggle('ring-[#E10600]', isPrimary);
+                card.classList.toggle('outline', isCompare);
+                card.classList.toggle('outline-2', isCompare);
+                card.classList.toggle('outline-dashed', isCompare);
+                card.classList.toggle('outline-[#3b82f6]', isCompare);
+                card.classList.toggle('outline-offset-2', isCompare);
             });
         }
 
@@ -371,6 +379,7 @@
             const sel = document.getElementById('telemetryCompareSelect');
             telemetryCompareYear = sel.value || null;
             updateTelemetryCompareSelectStyle();
+            updateActiveYearCardHighlight();
             renderTelemetryCharts();
         }
 
@@ -442,6 +451,15 @@
                 interaction: { mode: 'index', intersect: false },
             };
 
+            // I tre grafici hanno etichette sull'asse Y di larghezza diversa
+            // ("350 km/h" vs "100%" vs "5"): Chart.js dimensiona ogni asse
+            // in base al proprio contenuto, quindi senza questo fix le aree
+            // di disegno (e con esse l'inizio del giro, t=0) non partirebbero
+            // allineate verticalmente tra i tre pannelli. Forzando la stessa
+            // larghezza fissa su tutti e tre, i tre assi X restano allineati.
+            const Y_AXIS_WIDTH = 70;
+            const fixedYAxisWidth = { afterFit: scale => { scale.width = Y_AXIS_WIDTH; } };
+
             const speedDatasets = [
                 { label: `${entry.driver} '${yy(telemetryPrimarySeason)}`, data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }
             ];
@@ -456,7 +474,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', grid: { display: false }, ticks: { display: false } },
-                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + ' km/h' } }
+                        y: { ...fixedYAxisWidth, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + ' km/h' } }
                     },
                     plugins: {
                         legend: { display: false },
@@ -477,7 +495,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', grid: { display: false }, ticks: { display: false } },
-                        y: { min: 0, max: 100, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + '%' } }
+                        y: { ...fixedYAxisWidth, min: 0, max: 100, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + '%' } }
                     },
                     plugins: {
                         legend: { display: false },
@@ -500,7 +518,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 0, callback: v => v.toFixed(0) + 's' } },
-                        y: { min: 1, max: 8, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', stepSize: 1 } }
+                        y: { ...fixedYAxisWidth, min: 1, max: 8, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', stepSize: 1 } }
                     },
                     plugins: {
                         legend: { display: false },
