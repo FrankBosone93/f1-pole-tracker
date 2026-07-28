@@ -211,7 +211,12 @@
         let standingsData = null; // classifica piloti/costruttori reale, da standings.json
         let calendarData = null; // calendario stagione in corso, da calendar.json
         let telemetryData = null; // telemetria giro di pole per stagione (solo qualifiche), da telemetry.json
-        const PRIMARY_TELEMETRY_SEASON = '2026'; // stagione di default mostrata in vista Telemetria
+        const DEFAULT_TELEMETRY_SEASON = '2026'; // stagione mostrata di default in vista Telemetria
+        // Stagione mostrata come "principale" nel grafico Telemetria: di
+        // default 2026, ma diventa quella scelta cliccando su un box
+        // "Dettagli Qualifiche" con dati telemetrici (vedi showTelemetryForYear).
+        // Torna al default ad ogni cambio circuito (updateApp).
+        let telemetryPrimarySeason = DEFAULT_TELEMETRY_SEASON;
         let telemetryCompareYear = null; // stagione scelta per il confronto (es. '2025'), o null se nessuna
         let newsData = null; // ultime notizie F1 da FormulaPassion.it, da news.json
 
@@ -301,7 +306,7 @@
             const circuitName = select.value;
             const telemetryBtn = document.getElementById('telemetryToggle');
             const compareSelect = document.getElementById('telemetryCompareSelect');
-            const hasTelemetry = !!getTelemetryEntry(PRIMARY_TELEMETRY_SEASON, circuitName);
+            const hasTelemetry = !!getTelemetryEntry(telemetryPrimarySeason, circuitName);
 
             if (telemetryBtn) telemetryBtn.classList.toggle('hidden', !hasTelemetry);
             if (!hasTelemetry && chartViewMode === 'telemetry') {
@@ -314,7 +319,7 @@
             // sono quelle più probabilmente interessanti da confrontare.
             const availableYears = telemetryData && telemetryData.seasons
                 ? Object.keys(telemetryData.seasons)
-                    .filter(season => season !== PRIMARY_TELEMETRY_SEASON && getTelemetryEntry(season, circuitName))
+                    .filter(season => season !== telemetryPrimarySeason && getTelemetryEntry(season, circuitName))
                     .sort((a, b) => b.localeCompare(a))
                 : [];
 
@@ -356,6 +361,27 @@
             renderTelemetryCharts();
         }
 
+        // Cliccando un box "Dettagli Qualifiche" con telemetria disponibile
+        // (vedi updateApp): apre la vista Telemetria mostrando il giro di
+        // QUELL'anno specifico come principale, non il default 2026.
+        // Nessun confronto preimpostato: parte come vista singola pulita,
+        // l'utente può poi scegliere un confronto dal select "vs...".
+        function showTelemetryForYear(year) {
+            const circuitName = select.value;
+            if (!getTelemetryEntry(String(year), circuitName)) return;
+            telemetryPrimarySeason = String(year);
+            telemetryCompareYear = null;
+            chartViewMode = 'telemetry';
+            updateTelemetryToggleLabel();
+            updateTelemetryButtonsVisibility();
+            chartContainer.style.opacity = '0';
+            setTimeout(() => {
+                renderChart();
+                chartContainer.style.opacity = '1';
+            }, 200);
+            chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         // Tabella compatta con posizione/pilota/scuderia non serve qui: la
         // telemetria è di un solo pilota (il poleman) per circuito. Quando
         // il confronto è attivo, sovrapponiamo il giro di pole 2025 solo sui
@@ -369,7 +395,7 @@
             if (telemetryThrottleBrakeChart) telemetryThrottleBrakeChart.destroy();
             if (telemetryGearChart) telemetryGearChart.destroy();
 
-            const entry = getTelemetryEntry(PRIMARY_TELEMETRY_SEASON, select.value);
+            const entry = getTelemetryEntry(telemetryPrimarySeason, select.value);
             const compareEntry = telemetryCompareYear ? getTelemetryEntry(telemetryCompareYear, select.value) : null;
             const caption = document.getElementById('chartCaption');
             if (!entry) {
@@ -380,7 +406,7 @@
             }
             if (caption) {
                 if (compareEntry) {
-                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)} — ${formatSecondsToTime(entry.lapTime)}</span>`
+                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
                         + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${compareEntry.driver} '${yy(telemetryCompareYear)} — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
                 } else {
                     caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
@@ -403,7 +429,7 @@
             };
 
             const speedDatasets = [
-                { label: `${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)}`, data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }
+                { label: `${entry.driver} '${yy(telemetryPrimarySeason)}`, data: speedPoints, borderColor: '#E10600', borderWidth: 2, pointRadius: 0, tension: 0.15 }
             ];
             if (compareEntry) {
                 speedDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareSpeedPoints, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.15, borderDash: [5, 3] });
@@ -447,7 +473,7 @@
             });
 
             const gearDatasets = [
-                { label: `${entry.driver} '${yy(PRIMARY_TELEMETRY_SEASON)}`, data: gearPoints, borderColor: '#a0aec0', borderWidth: 1.5, pointRadius: 0, stepped: true }
+                { label: `${entry.driver} '${yy(telemetryPrimarySeason)}`, data: gearPoints, borderColor: '#a0aec0', borderWidth: 1.5, pointRadius: 0, stepped: true }
             ];
             if (compareEntry) {
                 gearDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareGearPoints, borderColor: '#3b82f6', borderWidth: 1.5, pointRadius: 0, stepped: true, borderDash: [5, 3] });
@@ -1543,6 +1569,11 @@
         function updateApp(circuitName) {
             currentFiltered = poleData.filter(d => d.circuit === circuitName).sort((a,b) => a.year - b.year);
 
+            // Cambiando circuito si torna alla stagione primaria di default:
+            // la vista su un anno specifico (showTelemetryForYear) è legata
+            // al box di quel circuito, non ha senso portarla su un altro.
+            telemetryPrimarySeason = DEFAULT_TELEMETRY_SEASON;
+
             // I tasti "Telemetria"/"2025" sono visibili solo se questo
             // circuito ha i rispettivi dati. Se si cambia circuito mentre si
             // è in modalità telemetria e il nuovo circuito non ne ha, si
@@ -1557,9 +1588,17 @@
             detailsList.innerHTML = '';
             [...currentFiltered].reverse().forEach(d => {
                 const isRecord = recordSeconds !== null && d.seconds === recordSeconds;
+                // Il box è cliccabile (apre la Telemetria su QUELL'anno) solo
+                // se esiste davvero il dato per questo anno+circuito.
+                const hasTelemetryForYear = !!getTelemetryEntry(String(d.year), circuitName);
                 const card = document.createElement('div');
                 card.className = "bg-[#1E1E1E] p-4 rounded-xl border flex flex-col gap-1 transition-all duration-200 hover:border-gray-700 " +
-                    (isRecord ? "border-yellow-500" : "border-gray-800");
+                    (isRecord ? "border-yellow-500" : "border-gray-800") +
+                    (hasTelemetryForYear ? " cursor-pointer" : "");
+                if (hasTelemetryForYear) {
+                    card.onclick = () => showTelemetryForYear(d.year);
+                    card.title = `Vedi la telemetria del giro di pole ${d.year}`;
+                }
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
@@ -1569,6 +1608,7 @@
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${d.team}</span></div>
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${d.weather}</div>
                     ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${d.penaltyNote}</span></div>` : ''}
+                    ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">🏎️ Clicca per la telemetria</div>' : ''}
                 `;
                 detailsList.appendChild(card);
             });
