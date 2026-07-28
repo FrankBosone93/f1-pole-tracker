@@ -346,12 +346,25 @@
             chartViewMode = chartViewMode === 'telemetry' ? 'line' : 'telemetry';
             updateTelemetryToggleLabel();
             updateTelemetryButtonsVisibility();
+            updateActiveYearCardHighlight();
             // Stessa dissolvenza usata dal toggle linea/delta, per coerenza.
             chartContainer.style.opacity = '0';
             setTimeout(() => {
                 renderChart();
                 chartContainer.style.opacity = '1';
             }, 200);
+        }
+
+        // Evidenzia (bordo rosso) il box "Anno YYYY" corrispondente alla
+        // stagione attualmente mostrata come principale nel grafico
+        // Telemetria, così è chiaro a colpo d'occhio quale anno si sta
+        // guardando. Nessun box evidenziato se non si è in vista Telemetria.
+        function updateActiveYearCardHighlight() {
+            document.querySelectorAll('#detailsList > div[data-year]').forEach(card => {
+                const isActive = chartViewMode === 'telemetry' && card.dataset.year === telemetryPrimarySeason;
+                card.classList.toggle('ring-2', isActive);
+                card.classList.toggle('ring-[#E10600]', isActive);
+            });
         }
 
         function onTelemetryCompareChange() {
@@ -374,6 +387,7 @@
             chartViewMode = 'telemetry';
             updateTelemetryToggleLabel();
             updateTelemetryButtonsVisibility();
+            updateActiveYearCardHighlight();
             chartContainer.style.opacity = '0';
             setTimeout(() => {
                 renderChart();
@@ -1592,6 +1606,7 @@
                 // se esiste davvero il dato per questo anno+circuito.
                 const hasTelemetryForYear = !!getTelemetryEntry(String(d.year), circuitName);
                 const card = document.createElement('div');
+                card.dataset.year = String(d.year);
                 card.className = "bg-[#1E1E1E] p-4 rounded-xl border flex flex-col gap-1 transition-all duration-200 hover:border-gray-700 " +
                     (isRecord ? "border-yellow-500" : "border-gray-800") +
                     (hasTelemetryForYear ? " cursor-pointer" : "");
@@ -1612,6 +1627,7 @@
                 `;
                 detailsList.appendChild(card);
             });
+            updateActiveYearCardHighlight();
 
             alignChartTop();
         }
