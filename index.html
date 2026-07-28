@@ -63,14 +63,14 @@
             <div id="chartCard" class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="flex items-center justify-between gap-2 mb-2">
                     <div class="flex items-center gap-2">
-                        <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 py-1 px-2 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                            🏎️ Telemetria
+                        <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
+                            Telemetria
                         </button>
                         <!-- Visibile solo in modalità telemetria, e solo se il
                              circuito ha anche il giro di pole 2025: sovrappone
-                             le due tracce (attivo = bordo rosso). -->
-                        <button id="telemetryCompareToggle" onclick="toggleTelemetryCompare()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 py-1 px-2 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                            🆚 2025
+                             le due tracce (attivo = testo rosso). -->
+                        <button id="telemetryCompareToggle" onclick="toggleTelemetryCompare()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
+                            vs 2025
                         </button>
                     </div>
                     <div class="flex items-center gap-2 ml-auto">
@@ -261,18 +261,16 @@
         function updateTelemetryToggleLabel() {
             const btn = document.getElementById('telemetryToggle');
             if (!btn) return;
-            btn.innerText = chartViewMode === 'telemetry' ? '📈 Torna al grafico' : '🏎️ Telemetria';
+            btn.innerText = chartViewMode === 'telemetry' ? 'Torna al grafico' : 'Telemetria';
         }
 
-        // Il tasto "2025" (sovrapposizione confronto) appare solo in vista
+        // Il tasto "vs 2025" (sovrapposizione confronto) appare solo in vista
         // telemetria e solo se il circuito ha anche dati 2025; lo stile
-        // riflette se il confronto è attivo (bordo/testo rossi) o no.
+        // riflette se il confronto è attivo (testo rosso) o no.
         function updateTelemetryCompareToggleState() {
             const btn = document.getElementById('telemetryCompareToggle');
             if (!btn) return;
-            btn.classList.toggle('border-red-600', telemetryCompareEnabled);
             btn.classList.toggle('text-red-400', telemetryCompareEnabled);
-            btn.classList.toggle('border-gray-700', !telemetryCompareEnabled);
             btn.classList.toggle('text-gray-300', !telemetryCompareEnabled);
         }
 
