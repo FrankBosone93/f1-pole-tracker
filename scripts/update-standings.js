@@ -10,6 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const { matchTeam } = require('./lib/f1-mapping');
+const { writeStatus } = require('./lib/status');
 
 const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
 const DRIVERS_URL = 'https://f1api.dev/api/current/drivers-championship';
@@ -81,7 +82,10 @@ async function main() {
     console.log('Top 3 costruttori:', constructors.slice(0, 3).map(c => `${c.team} (${c.points}pt)`).join(', '));
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante l\'aggiornamento classifiche:', err.message);
-    process.exit(1);
-});
+main()
+    .then(() => writeStatus('standings', true))
+    .catch(err => {
+        console.error('❌ Errore durante l\'aggiornamento classifiche:', err.message);
+        writeStatus('standings', false, err.message);
+        process.exit(1);
+    });

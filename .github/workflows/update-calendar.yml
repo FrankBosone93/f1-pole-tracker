@@ -26,17 +26,28 @@ jobs:
         with:
           node-version: '20'
 
+      # continue-on-error: lo script scrive comunque status/calendar.json
+      # (con ok:false e il messaggio d'errore) anche se fallisce - deve poter
+      # arrivare fino al commit qui sotto, altrimenti il sito non saprebbe
+      # mai che questa automazione è KO. Il job resta comunque segnato come
+      # fallito grazie all'ultimo step.
       - name: Esegui aggiornamento calendario
+        id: run
+        continue-on-error: true
         run: node scripts/update-calendar.js
 
-      - name: Commit e push se calendar.json è cambiato
+      - name: Commit e push se calendar.json o lo stato sono cambiati
         run: |
-          if git diff --quiet -- calendar.json; then
-            echo "Nessuna modifica a calendar.json, niente da committare."
+          if git diff --quiet -- calendar.json status/calendar.json; then
+            echo "Nessuna modifica, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add calendar.json
+            git add calendar.json status/calendar.json
             git commit -m "📅 Aggiornamento automatico calendario"
             git push
           fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

@@ -28,17 +28,28 @@ jobs:
         with:
           node-version: '20'
 
+      # continue-on-error: lo script scrive comunque status/penalty.json (con
+      # ok:false e il messaggio d'errore) anche se fallisce - deve poter
+      # arrivare fino al commit qui sotto, altrimenti il sito non saprebbe
+      # mai che questa automazione è KO. Il job resta comunque segnato come
+      # fallito grazie all'ultimo step.
       - name: Esegui controllo penalità pole position
+        id: run
+        continue-on-error: true
         run: node scripts/check-pole-penalty.js
 
-      - name: Commit e push se data.json è cambiato
+      - name: Commit e push se data.json o lo stato sono cambiati
         run: |
-          if git diff --quiet -- data.json; then
-            echo "Nessuna modifica a data.json, niente da committare."
+          if git diff --quiet -- data.json status/penalty.json; then
+            echo "Nessuna modifica, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add data.json
+            git add data.json status/penalty.json
             git commit -m "🚩 Aggiornamento automatico avviso penalità pole"
             git push
           fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

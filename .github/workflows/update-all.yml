@@ -40,13 +40,16 @@ jobs:
         continue-on-error: true
         run: node scripts/update-poles.js
 
+      # if: always() (non "solo se success"): status/poles.json va committato
+      # anche quando lo script fallisce, altrimenti il sito non vedrebbe mai
+      # l'indicatore rosso per questa automazione.
       - name: Commit pole position (se cambiato)
-        if: steps.poles.outcome == 'success'
+        if: always()
         run: |
-          if git diff --quiet -- data.json; then
-            echo "Nessuna modifica a data.json (pole position)."
+          if git diff --quiet -- data.json status/poles.json; then
+            echo "Nessuna modifica (pole position)."
           else
-            git add data.json
+            git add data.json status/poles.json
             git commit -m "🏎️ Aggiornamento automatico pole position"
             git push
           fi
@@ -57,12 +60,12 @@ jobs:
         run: node scripts/check-pole-penalty.js
 
       - name: Commit penalità (se cambiato)
-        if: steps.penalty.outcome == 'success'
+        if: always()
         run: |
-          if git diff --quiet -- data.json; then
-            echo "Nessuna modifica a data.json (penalità)."
+          if git diff --quiet -- data.json status/penalty.json; then
+            echo "Nessuna modifica (penalità)."
           else
-            git add data.json
+            git add data.json status/penalty.json
             git commit -m "🚩 Aggiornamento automatico avviso penalità pole"
             git push
           fi
@@ -73,12 +76,12 @@ jobs:
         run: node scripts/update-standings.js
 
       - name: Commit classifica (se cambiato)
-        if: steps.standings.outcome == 'success'
+        if: always()
         run: |
-          if git diff --quiet -- standings.json; then
-            echo "Nessuna modifica a standings.json."
+          if git diff --quiet -- standings.json status/standings.json; then
+            echo "Nessuna modifica (classifica)."
           else
-            git add standings.json
+            git add standings.json status/standings.json
             git commit -m "🏆 Aggiornamento automatico classifica campionato"
             git push
           fi
@@ -89,12 +92,12 @@ jobs:
         run: node scripts/update-calendar.js
 
       - name: Commit calendario (se cambiato)
-        if: steps.calendar.outcome == 'success'
+        if: always()
         run: |
-          if git diff --quiet -- calendar.json; then
-            echo "Nessuna modifica a calendar.json."
+          if git diff --quiet -- calendar.json status/calendar.json; then
+            echo "Nessuna modifica (calendario)."
           else
-            git add calendar.json
+            git add calendar.json status/calendar.json
             git commit -m "📅 Aggiornamento automatico calendario"
             git push
           fi
@@ -105,12 +108,12 @@ jobs:
         run: node scripts/build-telemetry.js
 
       - name: Commit telemetria (se cambiato)
-        if: steps.telemetry.outcome == 'success'
+        if: always()
         run: |
-          if git diff --quiet -- telemetry.json; then
-            echo "Nessuna modifica a telemetry.json."
+          if git diff --quiet -- telemetry.json status/telemetry.json; then
+            echo "Nessuna modifica (telemetria)."
           else
-            git add telemetry.json
+            git add telemetry.json status/telemetry.json
             git commit -m "🏎️ Aggiornamento automatico telemetria pole position"
             git push
           fi

@@ -23,6 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { writeStatus } = require('./lib/status');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -249,7 +250,10 @@ async function main() {
     console.log(`\n✅ telemetry.json scritto (${Object.keys(outputSeasons).length} stagioni, ${totalCircuits} circuiti totali).`);
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante la costruzione della telemetria:', err.message);
-    process.exit(1);
-});
+main()
+    .then(() => writeStatus('telemetry', true))
+    .catch(err => {
+        console.error('❌ Errore durante la costruzione della telemetria:', err.message);
+        writeStatus('telemetry', false, err.message);
+        process.exit(1);
+    });

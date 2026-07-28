@@ -440,6 +440,53 @@
             });
         }
 
+        // Un file di stato per automazione (status/{key}.json), scritto dal
+        // rispettivo script GitHub Action ad ogni esecuzione (successo o
+        // errore) - vedi scripts/lib/status.js. Il feed news è escluso di
+        // proposito: non riguarda le pole/telemetria/classifica/calendario
+        // che questo indicatore riassume.
+        const API_STATUS_SOURCES = [
+            { key: 'poles', label: 'Pole position' },
+            { key: 'penalty', label: 'Penalità pole' },
+            { key: 'standings', label: 'Classifica' },
+            { key: 'calendar', label: 'Calendario' },
+            { key: 'telemetry', label: 'Telemetria' },
+        ];
+
+        async function updateApiHealthBadge() {
+            if (!dataSourceBadge) return;
+            const results = await Promise.all(API_STATUS_SOURCES.map(async src => {
+                try {
+                    const res = await fetch(`status/${src.key}.json`, { cache: 'no-store' });
+                    if (!res.ok) return { ...src, ok: false, error: 'file di stato non trovato' };
+                    const data = await res.json();
+                    return { ...src, ok: !!data.ok, error: data.error, lastRun: data.lastRun };
+                } catch (err) {
+                    return { ...src, ok: false, error: 'file di stato non raggiungibile' };
+                }
+            }));
+
+            const failing = results.filter(r => !r.ok);
+            if (failing.length === 0) {
+                // Mostriamo la più vecchia delle 5 ultime esecuzioni riuscite:
+                // è il momento fino al quale possiamo dire con certezza che
+                // TUTTE le automazioni erano confermate funzionanti.
+                const oldestRun = results.reduce((oldest, r) => {
+                    const t = new Date(r.lastRun).getTime();
+                    return (oldest === null || t < oldest) ? t : oldest;
+                }, null);
+                const d = new Date(oldestRun);
+                const dateStr = `${d.getDate()} ${ITALIAN_MONTHS[d.getMonth()].toLowerCase()}`;
+                const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
+                dataSourceBadge.innerText = `🟢 Dati aggiornati al ${dateStr} alle ${timeStr}. API correttamente funzionanti.`;
+                dataSourceBadge.title = '';
+            } else {
+                const names = failing.map(f => f.label).join(', ');
+                dataSourceBadge.innerText = `🔴 ${names}: aggiornamento non riuscito.`;
+                dataSourceBadge.title = failing.map(f => `${f.label}: ${f.error || 'errore sconosciuto'}`).join(' | ');
+            }
+        }
+
         function populateCircuitSelectors(circuits) {
             select.innerHTML = '';
             circuits.forEach(c => {
@@ -454,7 +501,7 @@
                 const response = await fetch('data.json', { cache: 'no-store' });
                 if(!response.ok) throw new Error('data.json non raggiungibile (status ' + response.status + ')');
                 baseData = await response.json();
-                if(dataSourceBadge) dataSourceBadge.innerText = '🟢 Dati aggiornati da data.json';
+                if(dataSourceBadge) dataSourceBadge.innerText = '⏳ Verifica stato API...';
             } catch(err) {
                 // Probabile apertura del file in locale (file://) oppure data.json assente.
                 console.error('Impossibile caricare data.json:', err);
@@ -504,6 +551,8 @@
             } catch (err) {
                 console.warn('Impossibile caricare news.json:', err);
             }
+
+            await updateApiHealthBadge();
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
             populateCircuitSelectors(uniqueCircuits);

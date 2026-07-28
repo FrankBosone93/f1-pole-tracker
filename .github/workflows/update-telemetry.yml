@@ -24,17 +24,28 @@ jobs:
         with:
           node-version: '20'
 
+      # continue-on-error: lo script scrive comunque status/telemetry.json
+      # (con ok:false e il messaggio d'errore) anche se fallisce - deve poter
+      # arrivare fino al commit qui sotto, altrimenti il sito non saprebbe
+      # mai che questa automazione è KO. Il job resta comunque segnato come
+      # fallito grazie all'ultimo step.
       - name: Esegui script di aggiornamento telemetria
+        id: run
+        continue-on-error: true
         run: node scripts/build-telemetry.js
 
-      - name: Commit e push se telemetry.json è cambiato
+      - name: Commit e push se telemetry.json o lo stato sono cambiati
         run: |
-          if git diff --quiet -- telemetry.json; then
-            echo "Nessuna modifica a telemetry.json, niente da committare."
+          if git diff --quiet -- telemetry.json status/telemetry.json; then
+            echo "Nessuna modifica, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add telemetry.json
+            git add telemetry.json status/telemetry.json
             git commit -m "🏎️ Aggiornamento automatico telemetria pole position"
             git push
           fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

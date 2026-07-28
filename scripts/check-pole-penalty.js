@@ -13,6 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, normalize, driverFullName } = require('./lib/f1-mapping');
+const { writeStatus } = require('./lib/status');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const API_URL = 'https://f1api.dev/api/current/last/race';
@@ -104,7 +105,10 @@ async function main() {
     }
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante il controllo penalità:', err.message);
-    process.exit(1);
-});
+main()
+    .then(() => writeStatus('penalty', true))
+    .catch(err => {
+        console.error('❌ Errore durante il controllo penalità:', err.message);
+        writeStatus('penalty', false, err.message);
+        process.exit(1);
+    });

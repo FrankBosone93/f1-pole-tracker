@@ -18,6 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mapping');
 const { fetchWeatherForCircuit } = require('./lib/weather');
+const { writeStatus } = require('./lib/status');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 
@@ -177,7 +178,10 @@ async function main() {
     }
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante l\'aggiornamento:', err.message);
-    process.exit(1);
-});
+main()
+    .then(() => writeStatus('poles', true))
+    .catch(err => {
+        console.error('❌ Errore durante l\'aggiornamento:', err.message);
+        writeStatus('poles', false, err.message);
+        process.exit(1);
+    });

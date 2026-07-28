@@ -18,6 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
+const { writeStatus } = require('./lib/status');
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
 
@@ -151,7 +152,10 @@ async function main() {
     console.log(`✅ calendar.json aggiornato (stagione ${season}).`);
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante l\'aggiornamento calendario:', err.message);
-    process.exit(1);
-});
+main()
+    .then(() => writeStatus('calendar', true))
+    .catch(err => {
+        console.error('❌ Errore durante l\'aggiornamento calendario:', err.message);
+        writeStatus('calendar', false, err.message);
+        process.exit(1);
+    });
