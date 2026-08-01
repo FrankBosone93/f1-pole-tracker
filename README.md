@@ -5,7 +5,8 @@
 - `data.json` — i dati "ufficiali" delle pole position. È la fonte di verità. Ogni entry ha `year`, `circuit`, `driver`, `team`, `timeStr`, `seconds`, `weather`, e opzionalmente `penaltyNote` (vedi sotto).
 - `standings.json` — classifica REALE del campionato piloti e costruttori della stagione in corso (posizione, punti, vittorie), mostrata nel pannello "Classifica" del sito.
 - `calendar.json` — calendario della stagione IN CORSO (rilevata automaticamente, quindi passa da sola alla stagione successiva ogni anno), con il vincitore di ogni gara già disputata, la data di inizio weekend (`weekendStart`, prove libere del venerdì), l'orario UTC di ogni sessione (`schedule`: fp1/fp2/fp3/sprintQualy/sprintRace/qualy/race) e, per le sessioni già disputate, i risultati completi (`results`: fp1/fp2/fp3/qualy/race, ognuno un array di `{position, driver, team, time}` o `null` se non ancora disponibili — niente risultati sprint, l'API non li espone). Usato per il pannello "Calendario & Risultati", che mostra anche l'intervallo di date del weekend (es. "6-8 Marzo") e, cliccando su una gara, gli orari di tutte le sessioni convertiti in ora italiana (cambio CET/CEST gestito automaticamente) con "Risultati" al posto della data per le sessioni già disputate; e per decidere quale circuito mostrare di default all'apertura del sito (l'ultimo GP disputato, oppure quello del weekend in corso se le prove libere sono già iniziate).
-- `history/{anno}.json` (2021-2025) — stesso formato di `calendar.json`, ma per una stagione PASSATA e SOLO con qualifiche e gara (niente prove libere né sprint, a differenza della stagione in corso): non cambia più una volta scritto, quindi non è schedulato/aggiornato dai workflow automatici. Scaricato da `scripts/build-history.js` e usato dal pannello "Stagioni precedenti" del sito, che carica un anno solo al primo click su quell'anno (non tutti insieme).
+- `history/{anno}.json` (2021-2025, cresce da solo di un anno ogni fine mondiale) — stesso formato di `calendar.json`, ma per una stagione PASSATA e SOLO con qualifiche e gara (niente prove libere né sprint, a differenza della stagione in corso): non cambia più una volta scritto. Scaricato da `scripts/build-history.js` e usato dal pannello "Stagioni precedenti" del sito, che carica un anno solo al primo click su quell'anno (non tutti insieme).
+- `history/index.json` — manifest con l'elenco degli anni disponibili (`{"years": [2025, 2024, ...]}`), letto dal sito per popolare l'elenco cliccabile del pannello "Stagioni precedenti": niente più elenco fisso da aggiornare a mano, si aggiorna da solo quando `scripts/archive-finished-season.js` archivia una nuova stagione conclusa.
 - `telemetry.json` — telemetria (velocità, acceleratore, freno, marcia) del giro di pole in qualifica di ogni GP dal 2023 in poi già disputato, da [OpenF1](https://openf1.org) (API pubblica diversa da f1api.dev, usata solo per questa funzione). Solo qualifiche (niente prove libere, sprint o gara). Formato multi-stagione: `{updatedAt, seasons: {"2023": {...}, "2024": {...}, "2025": {...}, "2026": {...}}}`. **2021 e 2022 non sono ottenibili**: OpenF1 non ha alcun dato (nemmeno i metadati di sessione) per quei due anni — lacuna strutturale e permanente della fonte, non un gap da colmare in futuro. Scaricato da `scripts/build-telemetry.js`, usato dal tasto "🏎️ Telemetria" e dal select "vs..." del grafico principale.
 - `news.json` — le ultime 5 notizie F1 (titolo, link, data, autore, immagine) dal feed RSS di [FormulaPassion.it](https://www.formulapassion.it/f1/feed) (fonte scelta esplicitamente, nessuna chiave richiesta). Scaricato da `scripts/update-news.js`, mostrato nel pannello "📰 News".
 - `status/{poles,penalty,standings,calendar,telemetry}.json` — un file per automazione (il feed news escluso di proposito), scritto da `scripts/lib/status.js` ad ogni esecuzione del rispettivo script, successo o errore: `{ok, lastRun, error}`. Il sito li combina nell'indicatore in alto (vedi sezione dedicata).
@@ -19,7 +20,8 @@
 - `scripts/update-calendar.js` — gira dopo la gara (domenica): scarica il calendario della stagione in corso con i vincitori e i risultati completi di prove libere/qualifiche/gara delle sessioni già disputate, e aggiorna `calendar.json`. I risultati già scaricati in run precedenti vengono riusati (non ridownload ogni volta), quindi ogni run fa solo le richieste per le sessioni nuove.
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
 - `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
-- `scripts/build-history.js` — strumento una tantum (`node scripts/build-history.js [anno...]`) che scarica calendario, vincitori e risultati di qualifiche e gara (solo queste due sessioni, su richiesta esplicita) di una o più stagioni PASSATE e scrive `history/{anno}.json`. Le gare di una stagione vengono processate in parallelo (l'API è lenta, farlo in sequenza richiederebbe ore) con scrittura incrementale, quindi un'interruzione a metà non fa perdere le gare già scaricate. Se `history/{anno}.json` esiste già viene saltato; cancellarlo per rigenerare quell'anno.
+- `scripts/build-history.js` — scarica calendario, vincitori e risultati di qualifiche e gara (solo queste due sessioni, su richiesta esplicita) di una o più stagioni PASSATE e scrive `history/{anno}.json`. Le gare di una stagione vengono processate in parallelo (l'API è lenta, farlo in sequenza richiederebbe ore) con scrittura incrementale, quindi un'interruzione a metà non fa perdere le gare già scaricate. Se `history/{anno}.json` esiste già viene saltato; cancellarlo per rigenerare quell'anno. Richiamabile a mano (`node scripts/build-history.js [anno...]`), ma la sua funzione principale (`buildYear`) è anche importata ed eseguita in automatico da `scripts/archive-finished-season.js`.
+- `scripts/archive-finished-season.js` — gira ogni settimana (stessa schedulazione di `update-calendar.js`, dopo la gara): controlla se l'ultima gara del calendario in corso ha un risultato (= la stagione è appena finita) e, se sì e `history/{anno}.json` non esiste già, genera lo storico di quell'annata (riusando `build-history.js`) e aggiunge l'anno a `history/index.json`. Idempotente e no-op istantaneo per la stragrande maggioranza delle esecuzioni (stagione ancora in corso); scatta solo la settimana in cui l'ultima gara è stata disputata. Questo è il meccanismo che rende automatico l'aggiornamento di "Stagioni precedenti" a ogni fine mondiale, senza bisogno di lanciare nulla a mano.
 - `scripts/build-telemetry.js` — gira dopo la qualifica (sabato, via `update-telemetry.yml`), ma è anche uno strumento richiamabile a mano (`node scripts/build-telemetry.js` per 2023-2026, `node scripts/build-telemetry.js 2026` per una sola stagione): scarica da OpenF1 la telemetria del giro di pole in qualifica di ogni GP già disputato dal 2023 in poi, e scrive `telemetry.json`. Il giro di pole viene identificato incrociando sia il **pilota** che il **tempo** ufficiali da `data.json`: non il giro più veloce in assoluto della sessione (può essere stato cancellato per track limits, promuovendo un giro più lento a pole — successo davvero all'Ungheria 2025), e nemmeno semplicemente il giro più veloce del pilota giusto nell'intera sessione (in condizioni miste/in evoluzione un giro di Q1/Q2 può risultare più veloce del vero giro di pole senza esserlo — successo davvero a Montreal 2023, sessione bagnata); si cerca invece, tra i giri di quel pilota, quello con durata più vicina al tempo ufficiale. Scrittura incrementale (una stagione/circuito alla volta) e retry con backoff sui 429 di OpenF1, così un'interruzione a metà non fa perdere i circuiti già scaricati; già scaricati vengono saltati, quindi ogni run fa solo le richieste per i round nuovi.
 - `scripts/update-news.js` — gira ogni 4 ore (via `update-news.yml`), ma è anche richiamabile a mano (`node scripts/update-news.js`): scarica il feed RSS di FormulaPassion.it (solo categoria F1), prende i 5 articoli più recenti e scrive `news.json`. Nessuna libreria di parsing XML: il feed RSS ha una struttura semplice, estratta con regex e con decodifica delle entity HTML/numeriche più comuni.
 - `.github/workflows/update-poles.yml` — automazione GitHub Actions che esegue `update-poles.js` ogni sabato sera.
@@ -40,12 +42,14 @@
    standings.json
    calendar.json
    history/2021.json ... history/2025.json
+   history/index.json
    telemetry.json
    news.json
    status/poles.json
    status/penalty.json
    status/standings.json
    status/calendar.json
+   status/history.json
    status/telemetry.json
    scripts/update-poles.js
    scripts/check-pole-penalty.js
@@ -54,6 +58,7 @@
    scripts/verify-data.js
    scripts/backfill-weather.js
    scripts/build-history.js
+   scripts/archive-finished-season.js
    scripts/build-telemetry.js
    scripts/update-news.js
    scripts/lib/f1-mapping.js
@@ -65,6 +70,7 @@
    .github/workflows/check-pole-penalty.yml
    .github/workflows/update-standings.yml
    .github/workflows/update-calendar.yml
+   .github/workflows/archive-finished-season.yml
    .github/workflows/update-news.yml
    .github/workflows/update-all.yml
    ```
@@ -86,16 +92,17 @@ Ci sono tre momenti distinti, perché qualifica e gara di un weekend F1 non fini
 - `check-pole-penalty.yml` esegue `scripts/check-pole-penalty.js`: interroga l'API per i risultati di gara (che includono la griglia di partenza reale, campo `grid`), confronta il polista registrato con chi è partito davvero P1, e se sono persone diverse (penalità post-qualifica) aggiunge un `penaltyNote` alla entry — il polista registrato NON cambia.
 - `update-standings.yml` esegue `scripts/update-standings.js`: scarica la classifica piloti e costruttori aggiornata e la scrive in `standings.json`, mostrata nel pannello "🏆 Classifica" del sito.
 - `update-calendar.yml` esegue `scripts/update-calendar.js`: scarica il calendario della stagione in corso (rilevata automaticamente tramite `/api/current`, quindi non serve aggiornare l'anno a mano ogni stagione) con il vincitore di ogni gara già disputata, e lo scrive in `calendar.json`, mostrato nel pannello "📅 Calendario" del sito.
+- `archive-finished-season.yml` esegue `scripts/archive-finished-season.js`: controlla se l'ultima gara del calendario in corso ha appena avuto un risultato (= la stagione è finita) e, se sì, genera `history/{anno}.json` per quell'annata e lo aggiunge a `history/index.json` — questo è ciò che rende automatico l'aggiornamento del pannello "🕰️ Stagioni precedenti" a ogni fine mondiale, senza bisogno di lanciare nulla a mano. No-op istantaneo per il resto dell'anno.
 
 **3. Continuamente (ogni 4 ore)** — `update-news.yml` esegue `scripts/update-news.js`: scarica il feed RSS di FormulaPassion.it e aggiorna `news.json` con gli ultimi 5 articoli, mostrati nel pannello "📰 News".
 
 Puoi lanciare ciascuno manualmente in qualsiasi momento da GitHub: **Actions → (nome workflow) → Run workflow**.
 
-Per lanciarli tutti e sei insieme senza ripetere l'operazione volta per volta, c'è un settimo workflow, `update-all.yml` ("Aggiorna tutto"), **solo manuale** (nessuno schedule proprio): esegue gli stessi sei script in sequenza in un unico run. È anche il workflow a cui punta il tasto "🔄 Full Update" in fondo al sito.
+Per lanciarli tutti e sette insieme senza ripetere l'operazione volta per volta, c'è un ottavo workflow, `update-all.yml` ("Aggiorna tutto"), **solo manuale** (nessuno schedule proprio): esegue gli stessi sette script in sequenza in un unico run. È anche il workflow a cui punta il tasto "🔄 Full Update" in fondo al sito.
 
 ## Indicatore di stato API
 
-Il sito non chiama mai direttamente le API esterne (f1api.dev, OpenF1, Open-Meteo): è statico, quindi può solo riflettere l'esito dell'ultima volta che un nostro script le ha interrogate. Ognuno dei 5 script legati alle pole/classifica/calendario/telemetria (`update-poles.js`, `check-pole-penalty.js`, `update-standings.js`, `update-calendar.js`, `build-telemetry.js` — **non** `update-news.js`, escluso di proposito) scrive, tramite `scripts/lib/status.js`, un proprio file `status/{key}.json` ad ogni esecuzione:
+Il sito non chiama mai direttamente le API esterne (f1api.dev, OpenF1, Open-Meteo): è statico, quindi può solo riflettere l'esito dell'ultima volta che un nostro script le ha interrogate. Ognuno dei 6 script legati alle pole/classifica/calendario/storico/telemetria (`update-poles.js`, `check-pole-penalty.js`, `update-standings.js`, `update-calendar.js`, `archive-finished-season.js`, `build-telemetry.js` — **non** `update-news.js`, escluso di proposito) scrive, tramite `scripts/lib/status.js`, un proprio file `status/{key}.json` ad ogni esecuzione:
 ```json
 { "ok": true, "lastRun": "2026-07-28T18:23:11.979Z", "error": null }
 ```
@@ -103,8 +110,8 @@ Il sito non chiama mai direttamente le API esterne (f1api.dev, OpenF1, Open-Mete
 
 Un file per automazione (mai uno condiviso) evita che due workflow schedulati alla stessa ora (es. `update-poles.yml` e `update-telemetry.yml`, stesso cron) rischino di scontrarsi al push su git.
 
-Il sito scarica i 5 file all'avvio e li combina in un solo indicatore sotto il titolo:
-- 🟢 se tutti `ok:true` → "Dati aggiornati al [giorno] alle [ora]. API correttamente funzionanti." (l'orario mostrato è il più vecchio tra i 5 `lastRun`: il momento fino al quale TUTTE le automazioni sono confermate funzionanti).
+Il sito scarica i 6 file all'avvio e li combina in un solo indicatore sotto il titolo:
+- 🟢 se tutti `ok:true` → "Dati aggiornati al [giorno] alle [ora]. API correttamente funzionanti." (l'orario mostrato è il più vecchio tra i 6 `lastRun`: il momento fino al quale TUTTE le automazioni sono confermate funzionanti).
 - 🔴 se anche solo una è `ok:false` → mostra quale, col messaggio d'errore nel tooltip.
 
 Ogni workflow schedulato usa `continue-on-error` sullo step dello script e committa comunque il file di stato (con `ok:false` se lo script è fallito) prima di far fallire esplicitamente il run — altrimenti, in caso di errore, lo step del commit non verrebbe mai raggiunto e il sito non saprebbe mai che quell'automazione è KO.

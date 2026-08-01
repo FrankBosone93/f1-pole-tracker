@@ -1,0 +1,56 @@
+name: Archivia stagione conclusa
+
+on:
+  schedule:
+    # Stessa schedulazione di update-calendar.yml: domenica 18:00 e 22:00
+    # UTC, più un run di sicurezza lunedì mattina. Legge calendar.json, quindi
+    # in teoria potrebbe girare su una copia non ancora aggiornata dall'altro
+    # workflow nello stesso momento - non è un problema: lo script è
+    # idempotente e rigira comunque poche ore dopo (o al più al run di
+    # lunedì), quindi la finestra di ritardo è al massimo di poche ore.
+    - cron: '0 18 * * 0'
+    - cron: '0 22 * * 0'
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: write
+
+jobs:
+  archive-finished-season:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # continue-on-error: lo script scrive comunque status/history.json (con
+      # ok:false e il messaggio d'errore) anche se fallisce - deve poter
+      # arrivare fino al commit qui sotto, altrimenti il sito non saprebbe
+      # mai che questa automazione è KO. Il job resta comunque segnato come
+      # fallito grazie all'ultimo step. Per la stragrande maggioranza delle
+      # esecuzioni (stagione ancora in corso) lo script è un no-op istantaneo.
+      - name: Controlla ed eventualmente archivia la stagione appena conclusa
+        id: run
+        continue-on-error: true
+        run: node scripts/archive-finished-season.js
+
+      - name: Commit e push se è stato archiviato un nuovo anno o lo stato è cambiato
+        run: |
+          if git diff --quiet -- history/ status/history.json; then
+            echo "Nessuna modifica, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add history/ status/history.json
+            git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            git push
+          fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

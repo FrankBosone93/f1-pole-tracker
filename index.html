@@ -538,6 +538,7 @@
             { key: 'penalty', label: 'Penalità pole' },
             { key: 'standings', label: 'Classifica' },
             { key: 'calendar', label: 'Calendario' },
+            { key: 'history', label: 'Storico stagioni' },
             { key: 'telemetry', label: 'Telemetria' },
         ];
 
@@ -638,6 +639,18 @@
                 if (newsResponse.ok) newsData = await newsResponse.json();
             } catch (err) {
                 console.warn('Impossibile caricare news.json:', err);
+            }
+
+            try {
+                const historyIndexResponse = await fetch('history/index.json', { cache: 'no-store' });
+                if (historyIndexResponse.ok) {
+                    const historyIndex = await historyIndexResponse.json();
+                    if (Array.isArray(historyIndex.years) && historyIndex.years.length > 0) {
+                        PREVIOUS_YEARS = historyIndex.years;
+                    }
+                }
+            } catch (err) {
+                console.warn('Impossibile caricare history/index.json, uso l\'elenco di ripiego:', err);
             }
 
             await updateApiHealthBadge();
@@ -1257,7 +1270,13 @@
         // viene scaricata da history/{anno}.json solo al primo click su
         // quell'anno (non tutte insieme al caricamento della pagina), e
         // tenuta in cache in memoria per i click successivi.
-        const PREVIOUS_YEARS = [2025, 2024, 2023, 2022, 2021];
+        // Popolato da history/index.json (fetch in initApp) - il manifest
+        // scritto da scripts/archive-finished-season.js ad ogni stagione
+        // appena conclusa, così l'elenco si aggiorna da solo senza dover mai
+        // toccare questo file a mano. Valore di ripiego (stagioni note al
+        // momento di questo commit) solo se il manifest non fosse
+        // raggiungibile per qualche motivo.
+        let PREVIOUS_YEARS = [2025, 2024, 2023, 2022, 2021];
         const historyCache = {};
         let currentHistoryYear = null;
 

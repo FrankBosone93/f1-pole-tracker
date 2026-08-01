@@ -1,7 +1,6 @@
 // scripts/build-history.js
 //
-// Strumento una tantum (non schedulato, a differenza degli altri script):
-// scarica il calendario con vincitori e risultati di qualifiche e gara (SOLO
+// Scarica il calendario con vincitori e risultati di qualifiche e gara (SOLO
 // queste due sessioni per le stagioni passate: niente prove libere né
 // sprint, su richiesta esplicita - a differenza di calendar.json, che per la
 // stagione in corso include anche le prove libere) di una o più stagioni
@@ -9,10 +8,10 @@
 // Usato dal pannello "Stagioni precedenti" del sito, che li scarica uno alla
 // volta al primo click su quell'anno.
 //
-// A differenza di update-calendar.js (che gira automaticamente ogni
-// settimana sulla stagione in corso), qui i dati di una stagione passata non
-// cambiano più una volta scritti: non serve schedulazione, va lanciato a
-// mano quando si vuole aggiungere/ricostruire un anno.
+// buildYear() è anche importato da scripts/archive-finished-season.js, che
+// gira ogni settimana (stessa schedulazione di update-calendar.js) e la
+// richiama in automatico non appena la stagione in corso finisce - non serve
+// più lanciare questo script a mano quando termina un mondiale.
 //
 // L'API f1api.dev risponde piuttosto lenta (alcuni secondi a richiesta): le
 // gare di una stagione vengono quindi processate in parallelo (con un limite
@@ -147,7 +146,14 @@ async function main() {
     }
 }
 
-main().catch(err => {
-    console.error('❌ Errore durante la costruzione dello storico:', err.message);
-    process.exit(1);
-});
+module.exports = { buildYear, HISTORY_DIR };
+
+// require.main === module: esegue main() solo se lo script è lanciato
+// direttamente (node scripts/build-history.js), non quando viene importato
+// da archive-finished-season.js per riusare solo buildYear().
+if (require.main === module) {
+    main().catch(err => {
+        console.error('❌ Errore durante la costruzione dello storico:', err.message);
+        process.exit(1);
+    });
+}

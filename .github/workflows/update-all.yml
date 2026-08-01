@@ -1,12 +1,12 @@
-name: Aggiorna tutto (pole, penalità, classifica, calendario, telemetria, news)
+name: Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, news)
 
-# Solo manuale: le 6 automazioni singole (update-poles.yml,
+# Solo manuale: le 7 automazioni singole (update-poles.yml,
 # check-pole-penalty.yml, update-standings.yml, update-calendar.yml,
-# update-telemetry.yml, update-news.yml) restano schedulate separatamente
-# come prima. Questo workflow esegue gli stessi 6 script in sequenza in un
-# unico run, per non doverli lanciare uno alla volta da GitHub quando si
-# vuole aggiornare tutto subito (è il workflow collegato al tasto
-# "Full Update" del sito).
+# archive-finished-season.yml, update-telemetry.yml, update-news.yml)
+# restano schedulate separatamente come prima. Questo workflow esegue gli
+# stessi 7 script in sequenza in un unico run, per non doverli lanciare uno
+# alla volta da GitHub quando si vuole aggiornare tutto subito (è il
+# workflow collegato al tasto "Full Update" del sito).
 on:
   workflow_dispatch: {}
 
@@ -102,6 +102,27 @@ jobs:
             git push
           fi
 
+      # Legge la copia di calendar.json appena aggiornata dallo step sopra,
+      # nello stesso job: nessun rischio di leggerne una versione non
+      # aggiornata (a differenza del workflow standalone, che gira in un job
+      # separato). Per la stragrande maggioranza delle esecuzioni (stagione
+      # ancora in corso) è un no-op istantaneo.
+      - name: Controlla ed eventualmente archivia la stagione appena conclusa
+        id: history
+        continue-on-error: true
+        run: node scripts/archive-finished-season.js
+
+      - name: Commit storico (se è stato archiviato un nuovo anno)
+        if: always()
+        run: |
+          if git diff --quiet -- history/ status/history.json; then
+            echo "Nessuna modifica (storico)."
+          else
+            git add history/ status/history.json
+            git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            git push
+          fi
+
       - name: Aggiorna telemetria pole position
         id: telemetry
         continue-on-error: true
@@ -144,6 +165,7 @@ jobs:
           echo "| Penalità | ${{ steps.penalty.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Classifica | ${{ steps.standings.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Calendario | ${{ steps.calendar.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Storico | ${{ steps.history.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Telemetria | ${{ steps.telemetry.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| News | ${{ steps.news.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
 
@@ -151,5 +173,5 @@ jobs:
       # fallito (X rosso su GitHub) pur avendo lasciato provare tutti gli
       # altri - così un fallimento non passa inosservato.
       - name: Fallisci il run se qualche automazione è fallita
-        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.telemetry.outcome != 'success' || steps.news.outcome != 'success'
+        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.history.outcome != 'success' || steps.telemetry.outcome != 'success' || steps.news.outcome != 'success'
         run: exit 1
