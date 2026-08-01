@@ -2,6 +2,9 @@
 
 ## Struttura dei file
 - `index.html` — il sito. Carica i dati da `data.json` (fetch). Se `data.json` non è raggiungibile, mostra un messaggio d'errore esplicito invece di dati incorporati nel codice (rimossi: erano solo un fallback statico, mai sincronizzato con `data.json`). Sotto il titolo, un indicatore mostra lo stato di salute delle automazioni (vedi sezione dedicata più sotto): 🟢 "Dati aggiornati al [giorno] alle [ora]. API correttamente funzionanti." se tutte le automazioni hanno girato con successo, oppure 🔴 con il nome di quella in errore. Include anche il widget "Prossimo GP" (sempre visibile, in alto a destra su desktop, allineato in larghezza ai riquadri di "Dettagli Qualifiche" / sotto i pulsanti Classifica-Calendario su mobile): orari di tutte le sessioni del weekend in ora italiana, con indicatore live per la sessione in corso. Accanto alla data del weekend, un countdown (giorni/ore/minuti) fino all'orario esatto di partenza della gara, calcolato da `race.schedule.race` (UTC); scompare da solo una volta che la gara è iniziata, e si aggiorna ogni minuto insieme al resto del widget. Resta sul weekend corrente/prossimo fino alla domenica di gara, poi passa al successivo da lunedì. Sia nel widget che nel pannello "Calendario", ogni sessione già disputata mostra "Risultati" (bianco, cliccabile) al posto della data: espande la classifica completa di quella sessione (posizione, pilota, scuderia, tempo/distacco), letta da `calendar.json`. Il grafico principale ha un tasto "🏎️ Telemetria" (visibile solo se il circuito scelto ha dati in `telemetry.json` per la stagione 2026, quella di default) che sostituisce il grafico con 3 pannelli — velocità, acceleratore/freno, marcia — del giro di pole in qualifica, letti da OpenF1. In vista telemetria, se il circuito ha dati anche per almeno un'altra stagione (2023-2025), compare un select "vs..." con una voce per ogni stagione disponibile: sceglierne una sovrappone quel giro di pole alla stagione principale nei pannelli velocità e marcia (acceleratore/freno resta solo sulla principale, per non affollare il grafico con 4 tracce), colorati diversamente (rosso = principale, blu tratteggiato = confronto) con didascalia che mostra entrambi i piloti e tempi. La scelta resta valida cambiando circuito, finché quella stagione ha dati anche per il nuovo circuito. Cliccando su un box "Anno YYYY" in "Dettagli Qualifiche" che ha telemetria disponibile (segnalato da "🏎️ Clicca per la telemetria" in fondo al box) si apre direttamente la vista Telemetria con QUELL'anno come principale (non più fisso al 2026) — utile per rivedere il giro di pole di una stagione passata senza passare dal 2026. I box degli anni coinvolti nel grafico Telemetria restano evidenziati con lo stesso stile delle rispettive tracce - bordo pieno rosso per l'anno principale, bordo tratteggiato blu per l'anno di confronto (se scelto) - per essere sempre chiaro quali due anni si stanno guardando/confrontando. Cambiando circuito dal menu a tendina la stagione principale torna al default (2026). Quarto pannello "📰 News" (accanto a Classifica/Calendario/Stagioni precedenti, stesso stile e mutua esclusività): le ultime 5 notizie F1 da FormulaPassion.it, lette da `news.json`.
+- `manifest.json` — web app manifest per installare il sito come PWA (icona, nome, colori, modalità a schermo intero) su iOS/Android tramite "Aggiungi a Home" — vedi sezione dedicata più sotto.
+- `sw.js` — service worker minimo, usato solo per abilitare l'installazione PWA e dare una resilienza offline di base. Strategia sempre "network-first, mai cache-first": la cache scatta solo come ripiego quando la rete non risponde, mai come prima scelta mentre si è online, per non compromettere la freschezza di `data.json`/`calendar.json`/ecc.
+- `icons/` — icone dell'app (bandiera a scacchi bianco/nero su sfondo rosso, coerente con l'accento del sito): `icon-192.png`/`icon-512.png` generiche, `icon-512-maskable.png` per le icone adattive Android, `apple-touch-icon.png` per iOS, `favicon-32.png` per la scheda del browser. Generate da uno script Python una tantum (non nel repo, solo le immagini finali).
 - `data.json` — i dati "ufficiali" delle pole position. È la fonte di verità. Ogni entry ha `year`, `circuit`, `driver`, `team`, `timeStr`, `seconds`, `weather`, e opzionalmente `penaltyNote` (vedi sotto).
 - `standings.json` — classifica REALE del campionato piloti e costruttori della stagione in corso (posizione, punti, vittorie), mostrata nel pannello "Classifica" del sito.
 - `calendar.json` — calendario della stagione IN CORSO (rilevata automaticamente, quindi passa da sola alla stagione successiva ogni anno), con il vincitore di ogni gara già disputata, la data di inizio weekend (`weekendStart`, prove libere del venerdì), l'orario UTC di ogni sessione (`schedule`: fp1/fp2/fp3/sprintQualy/sprintRace/qualy/race) e, per le sessioni già disputate, i risultati completi (`results`: fp1/fp2/fp3/qualy/race, ognuno un array di `{position, driver, team, time}` o `null` se non ancora disponibili — niente risultati sprint, l'API non li espone). Usato per il pannello "Calendario & Risultati", che mostra anche l'intervallo di date del weekend (es. "6-8 Marzo") e, cliccando su una gara, gli orari di tutte le sessioni convertiti in ora italiana (cambio CET/CEST gestito automaticamente) con "Risultati" al posto della data per le sessioni già disputate; e per decidere quale circuito mostrare di default all'apertura del sito (l'ultimo GP disputato, oppure quello del weekend in corso se le prove libere sono già iniziate).
@@ -38,6 +41,13 @@
 2. Carica dentro tutti questi file mantenendo la stessa struttura di cartelle:
    ```
    index.html
+   manifest.json
+   sw.js
+   icons/icon-192.png
+   icons/icon-512.png
+   icons/icon-512-maskable.png
+   icons/apple-touch-icon.png
+   icons/favicon-32.png
    data.json
    standings.json
    calendar.json
@@ -76,6 +86,15 @@
    ```
 3. Vai su **Settings → Pages** del repository, e in "Build and deployment" seleziona come source il branch principale (es. `main`), cartella `/ (root)`.
 4. Dopo un paio di minuti il sito sarà raggiungibile su `https://<tuo-utente>.github.io/<nome-repo>/`.
+
+## Installazione come app (PWA)
+
+Il sito è installabile su iOS e Android come una vera app, senza passare dagli store:
+
+- **iOS (Safari)**: apri il sito → icona di condivisione → "Aggiungi a Home". A differenza di un semplice segnalibro, l'icona apre l'app a schermo intero (niente barra di Safari), con icona e nome propri e una schermata di avvio dedicata.
+- **Android (Chrome)**: Chrome può proporre da solo "Installa app" quando rileva il sito; in alternativa, menu ⋮ → "Installa app" / "Aggiungi a schermata Home".
+
+Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più `manifest.json` (nome, icone, colori, modalità a schermo intero) e `sw.js` (service worker minimo, solo per l'installabilità e una resilienza offline di base — vedi sopra). Nessuna build, nessun account sviluppatore, nessuna pubblicazione su App Store/Play Store: si aggiorna da sola ogni volta che il sito viene ripubblicato.
 
 ## Come funziona l'aggiornamento automatico
 

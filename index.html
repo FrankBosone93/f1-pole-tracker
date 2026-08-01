@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Pole Position Tracker Completo (2021-2026)</title>
+
+    <!-- PWA: installabile su home screen (iOS/Android) come app a schermo
+         intero, con icona e nome propri - vedi manifest.json e sw.js. -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Pole Tracker">
+
     <!-- Tailwind CSS per la grafica -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Chart.js per il grafico -->
@@ -1692,6 +1703,17 @@
         }
 
         initApp();
+
+        // Registra il service worker (sw.js) per l'installazione come PWA -
+        // vedi manifest.json. Non blocca né rallenta il caricamento della
+        // pagina: parte solo dopo che tutto il resto è già pronto.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.warn('Registrazione service worker fallita:', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
