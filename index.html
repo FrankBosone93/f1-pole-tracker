@@ -1070,6 +1070,22 @@
             return `${start.getDate()} ${ITALIAN_MONTHS[start.getMonth()]} - ${end.getDate()} ${ITALIAN_MONTHS[end.getMonth()]}`;
         }
 
+        // Countdown giorni/ore/minuti fino all'orario di partenza della gara
+        // (race.schedule.race, UTC). null se la gara è già iniziata/passata
+        // (il widget resta sulla stessa gara fino a domenica sera - vedi
+        // determineFeaturedRace) - in quel caso non ha senso mostrarlo.
+        // Si aggiorna da solo ogni minuto insieme al resto del widget
+        // (renderFeaturedRace è già richiamato ogni 60s).
+        function formatCountdown(raceStart) {
+            const diffMs = raceStart - new Date();
+            if (diffMs <= 0) return null;
+            const totalMinutes = Math.floor(diffMs / 60000);
+            const days = Math.floor(totalMinutes / 1440);
+            const hours = Math.floor((totalMinutes % 1440) / 60);
+            const minutes = totalMinutes % 60;
+            return `${days}g ${hours}h ${minutes}m`;
+        }
+
         const SESSION_LABELS = [
             ['fp1', 'Prove Libere 1'],
             ['fp2', 'Prove Libere 2'],
@@ -1440,8 +1456,14 @@
             // Data del weekend affiancata al nome del circuito (non più su
             // una riga a parte sotto): riduce l'altezza del riquadro di una
             // riga.
+            const raceStart = race.schedule && race.schedule.race && race.schedule.race.date && race.schedule.race.time
+                ? new Date(`${race.schedule.race.date}T${race.schedule.race.time}`)
+                : null;
+            const countdown = raceStart ? formatCountdown(raceStart) : null;
+
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
-                <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>`;
+                <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>` +
+                (countdown ? `<span class="text-gray-400"> · ⏳ ${countdown}</span>` : '');
 
             // idPrefix diverso per mobile/desktop: la stessa gara compare in
             // entrambi i contenitori contemporaneamente (uno nascosto via CSS,
