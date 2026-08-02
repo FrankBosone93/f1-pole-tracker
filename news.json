@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-02T07:54:21.127Z",
+  "updatedAt": "2026-08-02T11:45:22.542Z",
   "items": [
+    {
+      "title": "Ferrari regina dell’affidabilità: Hamilton unico pilota a pieni giri. McLaren da incubo",
+      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-regina-dellaffidabilita-hamilton-unico-pilota-a-pieni-giri-mclaren-da-incubo",
+      "date": "2026-08-02T09:42:18.000Z",
+      "author": "Matteo Senatore",
+      "excerpt": "L'inglese è l'unico pilota in griglia ad aver completato il 100% dei giri finora in stagione",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/07/lewis-hamilton-ferrari-f1-436x291.jpg"
+    },
+    {
+      "title": "Liberty Media: risarcimento multimilionario agli spettatori del GP di Las Vegas 2023",
+      "link": "https://www.formulapassion.it/f1/f1-news/liberty-media-risarcimento-multimilionario-spettatori-gp-las-vegas-2023",
+      "date": "2026-08-02T09:00:27.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "In occasione della FP1, la vettura di Sainz subì danni per l'allentamento di un tombino, con i lavori che portarono alla cancellazione della sessione e al ritardo della FP2",
+      "image": "https://storage.googleapis.com/fp-media/1/2023/11/LasVegas-F1-tombino-436x291.jpg"
+    },
     {
       "title": "La F1 secondo Briatore: “Voglio 24 Sprint. Il venerdì non deve essere solo per ingegneri”",
       "link": "https://www.formulapassion.it/f1/f1-news/f1-secondo-briatore-voglio-24-sprint-il-venerdi-non-deve-essere-solo-per-ingegneri",
@@ -25,22 +41,6 @@
       "author": "Alessandro Prada",
       "excerpt": "Dopo il caso Piastri-Sainz in Ungheria e le accuse dell'australiano. il campione del mondo 1996 ha espresso la sua opinione",
       "image": "https://storage.googleapis.com/fp-media/1/2026/07/sainz-piastri-436x291.jpg"
-    },
-    {
-      "title": "Norris: “La F1 pensa solo a come aumentare i guadagni”",
-      "link": "https://www.formulapassion.it/f1/f1-news/norris-f1-pensa-solo-a-come-aumentare-guadagni",
-      "date": "2026-08-02T06:00:00.000Z",
-      "author": "Stefano Ollanu",
-      "excerpt": "Il campione del mondo nei giorni scorsi ha duramente attaccato la gestione di FIA e Liberty Media",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/06/GettyImages-2281081632-1-436x291.jpg"
-    },
-    {
-      "title": "Antonelli, i complimenti (maliziosi) di Verstappen: “È il più forte nel team”. Norris si accoda: “L’unico che è sempre davanti”",
-      "link": "https://www.formulapassion.it/f1/f1-news/antonelli-i-complimenti-maliziosi-di-verstappen-e-il-piu-forte-nel-team-norris-si-accoda-lunico-che-e-sempre-davanti",
-      "date": "2026-08-01T16:00:53.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Kimi Antonelli si prende i meritati complimenti di Max Verstappen e Lando Norris dopo il podio dell'Hungaroring",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/Kimi-Antonelli-Max-Verstappen-La-436x291.jpg"
     }
   ]
 }
