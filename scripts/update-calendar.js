@@ -54,6 +54,21 @@ async function main() {
     }
 
     const now = new Date();
+    const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+
+    // GP in evidenza (stessa logica di determineFeaturedRace() in index.html):
+    // il prossimo GP con data >= oggi, oppure l'ultimo disputato se la
+    // stagione è finita. Solo per questa gara conserviamo i risultati delle
+    // prove libere (fp1/fp2/fp3) - il sito li mostra soltanto lì, per le gare
+    // precedenti non servono più a nessuno e appesantirebbero solo il file.
+    const racesWithDate = races.map(r => ({ round: r.round, date: r.schedule?.race?.date || null }));
+    const upcomingRace = racesWithDate.find(r => r.date && r.date >= todayStr);
+    let featuredRound = upcomingRace?.round;
+    if (featuredRound === undefined) {
+        const pastRaces = racesWithDate.filter(r => r.date).sort((a, b) => b.date.localeCompare(a.date));
+        featuredRound = pastRaces.length > 0 ? pastRaces[0].round : null;
+    }
+
     const calendarRaces = [];
 
     for (const race of races) {
@@ -114,6 +129,14 @@ async function main() {
         // già in cache e solo se la sessione è già passata (niente 404 inutili
         // per i weekend futuri).
         for (const key of ['fp1', 'fp2', 'fp3', 'qualy']) {
+            // I risultati delle prove libere si scartano (anche se già in
+            // cache da un run precedente) per ogni gara che non è più quella
+            // in evidenza: il sito li nasconde comunque, quindi non ha senso
+            // continuare a scaricarli/conservarli. Così calendar.json si
+            // alleggerisce da solo non appena un GP "passa il turno".
+            if ((key === 'fp1' || key === 'fp2' || key === 'fp3') && round !== featuredRound) {
+                continue;
+            }
             const cached = existingRace?.results?.[key];
             if (cached) {
                 results[key] = cached;
