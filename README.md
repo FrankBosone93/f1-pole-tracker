@@ -21,7 +21,7 @@
 - `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev, calcola il meteo reale del giorno di qualifica, e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
 - `scripts/check-pole-penalty.js` — gira dopo la gara (domenica): controlla se il polista è partito davvero P1 in griglia. Se una penalità l'ha retrocesso, aggiunge un `penaltyNote` alla entry (senza cambiare il polista registrato).
 - `scripts/update-standings.js` — gira dopo la gara (domenica): scarica la classifica piloti/costruttori aggiornata da f1api.dev e aggiorna `standings.json`.
-- `scripts/update-calendar.js` — gira dopo la gara (domenica): scarica il calendario della stagione in corso con i vincitori e i risultati completi di qualifiche/gara delle sessioni già disputate (e delle prove libere solo per il GP in evidenza, vedi sopra), e aggiorna `calendar.json`. I risultati già scaricati in run precedenti vengono riusati (non ridownload ogni volta), quindi ogni run fa solo le richieste per le sessioni nuove.
+- `scripts/update-calendar.js` — gira ogni 2 ore venerdì e sabato (prove libere, sprint, qualifiche) e dopo la gara la domenica sera: scarica il calendario della stagione in corso con i vincitori e i risultati completi di qualifiche/gara delle sessioni già disputate (e delle prove libere solo per il GP in evidenza, vedi sopra), e aggiorna `calendar.json`. I risultati già scaricati in run precedenti vengono riusati (non ridownload ogni volta), quindi ogni run fa solo le richieste per le sessioni nuove concluse dall'ultimo giro.
 - `scripts/verify-data.js` — strumento di controllo manuale (`node scripts/verify-data.js`): ricontrolla TUTTE le stagioni presenti in `data.json` contro l'API reale e segnala discrepanze da rivedere a mano. Non modifica mai `data.json` da solo.
 - `scripts/backfill-weather.js` — strumento una tantum (`node scripts/backfill-weather.js`) che ricalcola il meteo di TUTTE le entry storiche usando Open-Meteo. Usato per correggere il meteo originariamente inventato/segnaposto; da rilanciare solo se si vuole ricalcolare tutto lo storico (es. dopo una modifica ai criteri di classificazione).
 - `scripts/build-history.js` — scarica calendario, vincitori e risultati di qualifiche e gara (solo queste due sessioni, su richiesta esplicita) di una o più stagioni PASSATE e scrive `history/{anno}.json`. Le gare di una stagione vengono processate in parallelo (l'API è lenta, farlo in sequenza richiederebbe ore) con scrittura incrementale, quindi un'interruzione a metà non fa perdere le gare già scaricate. Se `history/{anno}.json` esiste già viene saltato; cancellarlo per rigenerare quell'anno. Richiamabile a mano (`node scripts/build-history.js [anno...]`), ma la sua funzione principale (`buildYear`) è anche importata ed eseguita in automatico da `scripts/archive-finished-season.js`.
@@ -32,7 +32,7 @@
 - `.github/workflows/update-telemetry.yml` — automazione GitHub Actions che esegue `build-telemetry.js` ogni sabato sera (stesso orario di `update-poles.yml`, essendo la telemetria dello stesso giro di pole).
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
-- `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni domenica sera / lunedì mattina.
+- `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni 2 ore venerdì e sabato, poi domenica sera / lunedì mattina.
 - `.github/workflows/update-news.yml` — automazione GitHub Actions che esegue `update-news.js` ogni 4 ore.
 - `.github/workflows/update-all.yml` — solo manuale (nessuno schedule proprio): esegue in sequenza tutti e sei gli script sopra in un unico run, per aggiornare tutto con un solo "Run workflow" invece di lanciarli uno alla volta. È il workflow a cui punta il tasto "🔄 Full Update" del sito.
 
@@ -100,7 +100,9 @@ Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più
 
 ## Come funziona l'aggiornamento automatico
 
-Ci sono tre momenti distinti, perché qualifica e gara di un weekend F1 non finiscono mai nello stesso momento, e le news escono in continuazione:
+Ci sono quattro momenti distinti, perché prove libere, qualifica e gara di un weekend F1 non finiscono mai nello stesso momento, e le news escono in continuazione:
+
+**0. Durante tutto il weekend di gara (venerdì e sabato, ogni 2 ore)** — `update-calendar.yml` esegue `scripts/update-calendar.js`. Gira a orario fisso tutto il giorno (non solo subito dopo ogni sessione) perché gli orari delle sessioni cambiano moltissimo da circuito a circuito (es. Melbourne alle prime ore UTC, Austin nel tardo pomeriggio UTC): non è possibile agganciarsi all'orario esatto di fine di ogni sessione per tutti i 22 GP con un cron fisso, quindi si accetta un ritardo massimo di circa 2 ore rispetto alla fine reale della sessione. Ogni run scarica solo le sessioni nuove già disputate dall'ultimo giro, quindi nei weekend senza gara è un no-op istantaneo.
 
 **1. Dopo la qualifica (sabato)** — girano due workflow, allo stesso orario:
 - `update-poles.yml` esegue `scripts/update-poles.js`:
@@ -109,10 +111,10 @@ Ci sono tre momenti distinti, perché qualifica e gara di un weekend F1 non fini
   3. Se il dato non è già presente (o è cambiato) in `data.json`, lo aggiorna e fa un commit automatico al repository.
 - `update-telemetry.yml` esegue `scripts/build-telemetry.js`: scarica da OpenF1 la telemetria del giro di pole appena disputato e aggiorna `telemetry.json` (vedi sopra).
 
-**2. Dopo la gara (domenica)** — girano tre workflow separati, tutti sullo stesso orario:
+**2. Dopo la gara (domenica)** — girano quattro workflow separati, tutti sullo stesso orario:
 - `check-pole-penalty.yml` esegue `scripts/check-pole-penalty.js`: interroga l'API per i risultati di gara (che includono la griglia di partenza reale, campo `grid`), confronta il polista registrato con chi è partito davvero P1, e se sono persone diverse (penalità post-qualifica) aggiunge un `penaltyNote` alla entry — il polista registrato NON cambia.
 - `update-standings.yml` esegue `scripts/update-standings.js`: scarica la classifica piloti e costruttori aggiornata e la scrive in `standings.json`, mostrata nel pannello "🏆 Classifica" del sito.
-- `update-calendar.yml` esegue `scripts/update-calendar.js`: scarica il calendario della stagione in corso (rilevata automaticamente tramite `/api/current`, quindi non serve aggiornare l'anno a mano ogni stagione) con il vincitore di ogni gara già disputata, e lo scrive in `calendar.json`, mostrato nel pannello "📅 Calendario" del sito.
+- `update-calendar.yml` esegue `scripts/update-calendar.js`: un ulteriore giro (oltre a quelli già fatti venerdì/sabato, vedi punto 0) per scaricare il vincitore e i risultati di gara appena disputata, e lo scrive in `calendar.json`, mostrato nel pannello "📅 Calendario" del sito. Il calendario della stagione in corso viene rilevato automaticamente tramite `/api/current`, quindi non serve aggiornare l'anno a mano ogni stagione.
 - `archive-finished-season.yml` esegue `scripts/archive-finished-season.js`: controlla se l'ultima gara del calendario in corso ha appena avuto un risultato (= la stagione è finita) e, se sì, genera `history/{anno}.json` per quell'annata e lo aggiunge a `history/index.json` — questo è ciò che rende automatico l'aggiornamento del pannello "🕰️ Stagioni precedenti" a ogni fine mondiale, senza bisogno di lanciare nulla a mano. No-op istantaneo per il resto dell'anno.
 
 **3. Continuamente (ogni 4 ore)** — `update-news.yml` esegue `scripts/update-news.js`: scarica il feed RSS di FormulaPassion.it e aggiorna `news.json` con gli ultimi 5 articoli, mostrati nel pannello "📰 News".

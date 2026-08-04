@@ -2,10 +2,19 @@ name: Aggiorna calendario F1
 
 on:
   schedule:
-    # Gira DOPO la gara (serve il vincitore), stesso orario di
-    # check-pole-penalty.yml e update-standings.yml: domenica 18:00 e 22:00
-    # UTC, più un run di sicurezza lunedì mattina per le gare che finiscono
-    # più tardi (es. Messico, Brasile, Las Vegas) o in caso di gare interrotte.
+    # Venerdì e sabato (prove libere, sprint, qualifiche): gira ogni 2 ore
+    # tutto il giorno, perché gli orari delle sessioni cambiano moltissimo da
+    # circuito a circuito (es. Melbourne FP1 alle 01:30 UTC, Austin alle
+    # 17:30 UTC) - non è possibile agganciarsi all'orario esatto di fine di
+    # ogni sessione per tutti i GP con un cron fisso. Ogni run scarica solo le
+    # sessioni nuove già disputate (vedi update-calendar.js), quindi nei
+    # weekend senza gara o fuori sessione è un no-op istantaneo.
+    - cron: '0 */2 * * 5'
+    - cron: '0 */2 * * 6'
+    # Domenica (gara) e lunedì: stesso orario di check-pole-penalty.yml e
+    # update-standings.yml: domenica 18:00 e 22:00 UTC, più un run di
+    # sicurezza lunedì mattina per le gare che finiscono più tardi (es.
+    # Messico, Brasile, Las Vegas) o in caso di gare interrotte.
     - cron: '0 18 * * 0'
     - cron: '0 22 * * 0'
     - cron: '0 6 * * 1'
