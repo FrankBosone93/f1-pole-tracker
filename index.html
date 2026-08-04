@@ -1174,8 +1174,17 @@
         // idPrefix rende univoci gli id dei pannelli "Risultati" quando la
         // stessa gara compare in più punti della pagina contemporaneamente
         // (es. widget mobile + widget desktop, entrambi nel DOM).
-        function renderSessionsBlock(race, idPrefix) {
-            const rows = SESSION_LABELS.map(([key, label]) => {
+        // hidePractice: nasconde le righe prove libere (fp1/fp2/fp3). Usato
+        // dall'elenco gare della stagione in corso per tutte le gare tranne
+        // quella in evidenza (l'ultimo GP disputato/in corso) - le prove
+        // libere restano visibili solo lì, su richiesta esplicita. Il widget
+        // "Prossimo GP" (che mostra sempre e solo quella gara) non lo passa
+        // mai, quindi non è mai affetto.
+        function renderSessionsBlock(race, idPrefix, { hidePractice = false } = {}) {
+            const labels = hidePractice
+                ? SESSION_LABELS.filter(([key]) => key !== 'fp1' && key !== 'fp2' && key !== 'fp3')
+                : SESSION_LABELS;
+            const rows = labels.map(([key, label]) => {
                 const session = race.schedule && race.schedule[key];
                 const formatted = formatSessionTime(session);
                 if (!formatted) return '';
@@ -1238,6 +1247,13 @@
         // precedenti (una stagione storica alla volta): stesso stile,
         // stesso comportamento di espansione per ogni gara.
         function renderRaceList(races, idPrefix) {
+            // Solo per la stagione in corso ('cal'): le prove libere restano
+            // visibili solo per il GP in evidenza (l'ultimo disputato/in
+            // corso, la stessa gara del widget "Prossimo GP"), nascoste per
+            // tutte le altre. Le stagioni storiche non hanno mai prove
+            // libere (già escluse a monte in history/{anno}.json), quindi
+            // per quelle il confronto sotto è ininfluente.
+            const featuredRound = idPrefix === 'cal' ? determineFeaturedRace()?.round : undefined;
             return races.map(r => `
                 <div class="bg-gray-900 rounded overflow-hidden">
                     <div class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule('${idPrefix}', ${r.round})">
@@ -1253,7 +1269,7 @@
                         </span>
                     </div>
                     <div id="raceSchedule-${idPrefix}-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
-                        ${renderSessionsBlock(r, idPrefix)}
+                        ${renderSessionsBlock(r, idPrefix, { hidePractice: featuredRound !== undefined && r.round !== featuredRound })}
                     </div>
                 </div>
             `).join('');
