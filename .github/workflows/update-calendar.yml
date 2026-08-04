@@ -45,7 +45,8 @@ jobs:
             git config user.email "actions@users.noreply.github.com"
             git add calendar.json status/calendar.json
             git commit -m "📅 Aggiornamento automatico calendario"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Fallisci il run se lo script è fallito

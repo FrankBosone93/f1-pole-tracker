@@ -48,7 +48,8 @@ jobs:
             git config user.email "actions@users.noreply.github.com"
             git add history/ status/history.json
             git commit -m "🕰️ Archiviazione automatica stagione conclusa"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Fallisci il run se lo script è fallito

@@ -12,11 +12,12 @@
 - `history/index.json` — manifest con l'elenco degli anni disponibili (`{"years": [2025, 2024, ...]}`), letto dal sito per popolare l'elenco cliccabile del pannello "Stagioni precedenti": niente più elenco fisso da aggiornare a mano, si aggiorna da solo quando `scripts/archive-finished-season.js` archivia una nuova stagione conclusa.
 - `telemetry.json` — telemetria (velocità, acceleratore, freno, marcia) del giro di pole in qualifica di ogni GP dal 2023 in poi già disputato, da [OpenF1](https://openf1.org) (API pubblica diversa da f1api.dev, usata solo per questa funzione). Solo qualifiche (niente prove libere, sprint o gara). Formato multi-stagione: `{updatedAt, seasons: {"2023": {...}, "2024": {...}, "2025": {...}, "2026": {...}}}`. **2021 e 2022 non sono ottenibili**: OpenF1 non ha alcun dato (nemmeno i metadati di sessione) per quei due anni — lacuna strutturale e permanente della fonte, non un gap da colmare in futuro. Scaricato da `scripts/build-telemetry.js`, usato dal tasto "🏎️ Telemetria" e dal select "vs..." del grafico principale.
 - `news.json` — le ultime 5 notizie F1 (titolo, link, data, autore, immagine) dal feed RSS di [FormulaPassion.it](https://www.formulapassion.it/f1/feed) (fonte scelta esplicitamente, nessuna chiave richiesta). Scaricato da `scripts/update-news.js`, mostrato nel pannello "📰 News".
-- `status/{poles,penalty,standings,calendar,telemetry}.json` — un file per automazione (il feed news escluso di proposito), scritto da `scripts/lib/status.js` ad ogni esecuzione del rispettivo script, successo o errore: `{ok, lastRun, error}`. Il sito li combina nell'indicatore in alto (vedi sezione dedicata).
+- `status/{poles,penalty,standings,calendar,history,telemetry}.json` — un file per automazione (il feed news escluso di proposito), scritto da `scripts/lib/status.js` ad ogni esecuzione del rispettivo script, successo o errore: `{ok, lastRun, error}`. Il sito li combina nell'indicatore in alto (vedi sezione dedicata).
 - `scripts/lib/f1-mapping.js` — mappature condivise (circuito, team, parsing tempi) usate dagli script sotto.
 - `scripts/lib/session-results.js` — normalizzazione dei risultati di sessione (prove libere, qualifiche, gara) dal formato f1api.dev al formato del sito. Condivisa tra `update-calendar.js` e `build-history.js`.
 - `scripts/lib/weather.js` — meteo storico reale via [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave, dati ERA5 dal 1940), usato sia per il backfill che per gli aggiornamenti futuri.
 - `scripts/lib/status.js` — scrive `status/{key}.json` per l'automazione corrente (successo o errore), ad ogni esecuzione. Usata da tutti gli script tranne `update-news.js` (vedi sezione "Indicatore di stato API").
+- `scripts/lib/push-with-retry.sh` — usata da ogni workflow (non da script Node, è bash) per il commit finale: se il `git push` viene respinto perché un altro workflow ha già pushato nello stesso momento (i cron di GitHub Actions possono ritardare molto e far scattare workflow diversi quasi in contemporanea - successo davvero in produzione), si riallinea da sola (fetch + rebase) e riprova fino a 5 volte invece di far fallire il run.
 - `scripts/update-poles.js` — gira dopo la qualifica (sabato): scarica l'ultima pole position da f1api.dev, calcola il meteo reale del giorno di qualifica, e aggiorna `data.json`. "Pole" = il più veloce in qualifica, a prescindere da eventuali penalità applicate dopo.
 - `scripts/check-pole-penalty.js` — gira dopo la gara (domenica): controlla se il polista è partito davvero P1 in griglia. Se una penalità l'ha retrocesso, aggiunge un `penaltyNote` alla entry (senza cambiare il polista registrato).
 - `scripts/update-standings.js` — gira dopo la gara (domenica): scarica la classifica piloti/costruttori aggiornata da f1api.dev e aggiorna `standings.json`.
@@ -75,6 +76,7 @@
    scripts/lib/weather.js
    scripts/lib/session-results.js
    scripts/lib/status.js
+   scripts/lib/push-with-retry.sh
    .github/workflows/update-poles.yml
    .github/workflows/update-telemetry.yml
    .github/workflows/check-pole-penalty.yml

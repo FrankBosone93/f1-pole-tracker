@@ -51,7 +51,8 @@ jobs:
           else
             git add data.json status/poles.json
             git commit -m "🏎️ Aggiornamento automatico pole position"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Controlla penalità pole position
@@ -67,7 +68,8 @@ jobs:
           else
             git add data.json status/penalty.json
             git commit -m "🚩 Aggiornamento automatico avviso penalità pole"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Aggiorna classifica campionato
@@ -83,7 +85,8 @@ jobs:
           else
             git add standings.json status/standings.json
             git commit -m "🏆 Aggiornamento automatico classifica campionato"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Aggiorna calendario
@@ -99,7 +102,8 @@ jobs:
           else
             git add calendar.json status/calendar.json
             git commit -m "📅 Aggiornamento automatico calendario"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       # Legge la copia di calendar.json appena aggiornata dallo step sopra,
@@ -120,7 +124,8 @@ jobs:
           else
             git add history/ status/history.json
             git commit -m "🕰️ Archiviazione automatica stagione conclusa"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Aggiorna telemetria pole position
@@ -136,7 +141,8 @@ jobs:
           else
             git add telemetry.json status/telemetry.json
             git commit -m "🏎️ Aggiornamento automatico telemetria pole position"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Aggiorna news
@@ -152,7 +158,8 @@ jobs:
           else
             git add news.json
             git commit -m "📰 Aggiornamento automatico news"
-            git push
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
           fi
 
       - name: Riepilogo
