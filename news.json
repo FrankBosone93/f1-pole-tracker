@@ -1,7 +1,31 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-10T15:31:58.857Z",
+  "updatedAt": "2026-08-11T10:37:48.171Z",
   "items": [
+    {
+      "title": "Raikkonen e lo scherzo della gamba rotta ad Arrivabene",
+      "link": "https://www.formulapassion.it/f1/f1-storia/raikkonen-scherzo-arrivabene-gamba-rotta-ferrari-marchionne",
+      "date": "2026-08-11T09:56:16.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Il racconto del memorabile scherzo dell'allora pilota Ferrari al suo team principal",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Raikkonen-Arrivabene-436x291.jpg"
+    },
+    {
+      "title": "Wolff: “La Ferrari continua a lamentarsi per il motore, ma è assolutamente competitivo”",
+      "link": "https://www.formulapassion.it/f1/f1-news/wolff-smonta-narrazione-ferrari-lamenta-motore-assolutamente-competitivo-power-unit",
+      "date": "2026-08-11T07:30:00.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Il manager austriaco continua a punzecchiare la Ferrari a mezzo stampa",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/06/Toto-Wolff-436x291.jpg"
+    },
+    {
+      "title": "Montoya: “Mercedes deve tenere Antonelli lontano dai duelli ruota a ruota, potrebbe fare incidenti solo per dimostrare di essere il n°1”",
+      "link": "https://www.formulapassion.it/f1/f1-news/montoya-antonelli-kimi-rischia-incidenti-ruota-a-ruota-dimostrare-che-e-numero-1-foga",
+      "date": "2026-08-11T07:00:00.000Z",
+      "author": "Marco Belloro",
+      "excerpt": "Secondo l'ex pilota colombiano il pilota italiano potrebbe farsi prendere un po' troppo dalla foga",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/05/GettyImages-2278019723-1200x800-1-436x291.jpg"
+    },
     {
       "title": "Ferrari lancia la sfida alla Mercedes: fondo nuovo a Zandvoort, ADUO-2 a Monza",
       "link": "https://www.formulapassion.it/f1/f1-news/aggiornamenti-ferrari-lancia-la-sfida-alla-mercedes-fondo-nuovo-a-zandvoort-aduo-2-a-monza",
@@ -17,30 +41,6 @@
       "author": "Stefano Ollanu",
       "excerpt": "Il team principal Ferrari ha lodato la collaborazione tra i propri piloti, nonostante l'ovvia rivalità",
       "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2284203641-436x291.jpg"
-    },
-    {
-      "title": "Montoya: “Aggiornamenti Mercedes? Me li aspetto a Madrid, a Zandvoort soffriranno, a Monza non servono”",
-      "link": "https://www.formulapassion.it/f1/f1-news/montoya-aggiornamenti-mercedes-madrid-zandvoort-antonelli-russell-soffriranno-monza-non-servono",
-      "date": "2026-08-10T07:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Secondo l'ex pilota la Mercedes può permettersi anche di guardare già con un occhio al 2027",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/Ferrari-Mercedes-McLaren-Red-Bull-436x291.jpg"
-    },
-    {
-      "title": "Montoya: “Verstappen-Red Bull è solo una questione di soldi, io non andrei a giocarmela con Antonelli o Norris”",
-      "link": "https://www.formulapassion.it/f1/f1-news/montoya-verstappen-mercedes-antonelli-kimi-cocco-wolff-non-ci-andrei-soldi-norris-mclaren",
-      "date": "2026-08-09T14:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "L'ex pilota ha analizzato così il 'tormentone' estivo legato alle trattative tra Verstappen e la Red Bull",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/Verstappen-RedBull-2-436x291.jpg"
-    },
-    {
-      "title": "La Ferrari non ha (più) paura di innovare e rischiare. Serra: “S’è innescato un circolo virtuoso”",
-      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-non-ha-piu-paura-innovare-rischiare-loic-serra-circolo-virtuoso-macarena-ftm",
-      "date": "2026-08-09T06:00:01.000Z",
-      "author": "Salvo Sardina",
-      "excerpt": "L'ingegnere francese racconta l'inversione di tendenza nel reparto tecnico del Cavallino",
-      "image": "https://storage.googleapis.com/fp-media/1/2024/12/loic-serra-ferrari-436x291.jpg"
     }
   ]
 }
