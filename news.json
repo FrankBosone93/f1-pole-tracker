@@ -1,11 +1,27 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-14T05:44:35.006Z",
+  "updatedAt": "2026-08-14T11:08:17.556Z",
   "items": [
+    {
+      "title": "1988, il telegramma del Presidente della Repubblica per la morte di Enzo Ferrari",
+      "link": "https://www.formulapassion.it/f1/f1-storia/ferrari-morte-telegramma-1988-presidente-repubblica-francesco-cossiga",
+      "date": "2026-08-14T09:57:09.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "38 anni fa la scomparsa del fondatore dell'azienda di Maranello",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Enzo-Ferrari-436x291.jpg"
+    },
+    {
+      "title": "ADUO, la FIA esclude che alcuni motoristi possano nascondersi",
+      "link": "https://www.formulapassion.it/f1/f1-news/aduo-per-fia-esclude-motoristi-possano-nascondersi",
+      "date": "2026-08-14T08:11:07.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Nikolas Tombazis ha riconosciuto che l'ADUO potrebbe essere rivisto in futuro, ma ha difeso le rilevazioni svolte sinora",
+      "image": "https://storage.googleapis.com/fp-media/1/2024/12/Bandiera-FIA-436x291.jpg"
+    },
     {
       "title": "Montoya: “La prima vera Aston Martin di Newey è stata quella di Budapest e si è visto”",
       "link": "https://www.formulapassion.it/f1/f1-news/montoya-prima-aston-martin-newey-budapest-si-e-visto-power-unit-honda",
-      "date": "2026-08-14T05:00:00.000Z",
+      "date": "2026-08-14T08:00:00.000Z",
       "author": "Marco Belloro",
       "excerpt": "L'ex pilota colombiano ha evidenziato i passi avanti della scuderia britannica",
       "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2286795257-1-436x291.jpg"
@@ -25,22 +41,6 @@
       "author": "Valerio Barretta",
       "excerpt": "Nelle competizioni internazionali FIA possono tornare l'inno e la bandiera della Russia. Rimane il divieto di organizzare competizioni internazionali",
       "image": "https://storage.googleapis.com/fp-media/1/2023/05/bandiera-russia-436x291.jpg"
-    },
-    {
-      "title": "Cadillac, Lowdon informato del licenziamento solo ieri mattina. Towriss: “Questa è la F1”",
-      "link": "https://www.formulapassion.it/f1/f1-news/cadillac-lowdon-informato-del-licenziamento-solo-ieri-mattina-towriss-questa-e-la-f1",
-      "date": "2026-08-13T16:40:00.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "La Cadillac ha comunicato a Graeme Lowdon il licenziamento pochissime ore prima dell'annuncio di Marcin Budkowski come nuovo team principal",
-      "image": "https://storage.googleapis.com/fp-media/1/2025/11/GettyImages-2248000313-1200x800-1-436x291.jpg"
-    },
-    {
-      "title": "Hadjar: “Verstappen impressionante in gara, è tutto un altro livello”",
-      "link": "https://www.formulapassion.it/f1/f1-news/hadjar-verstappen-impressionante-in-gara-e-tutto-un-altro-livello",
-      "date": "2026-08-13T15:40:55.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Max Verstappen ha ricevuto i complimenti del compagno di squadra Isack Hadjar, che sta mostrando umiltà nell'imparare dal campione olandese",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2286539658-1-436x291.jpg"
     }
   ]
 }
