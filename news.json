@@ -1,11 +1,19 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-15T05:00:21.983Z",
+  "updatedAt": "2026-08-15T08:59:55.412Z",
   "items": [
+    {
+      "title": "GP Olanda 2026: orari Sky/Now e TV8",
+      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-olanda-2026-zandvoort-sprint-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-sf26-leclerc-hamilton-antonelli",
+      "date": "2026-08-15T08:00:00.000Z",
+      "author": "Marco Belloro",
+      "excerpt": "I dettagli della programmazione televisiva dell'appuntamento di Zandvoort, torna il format Sprint",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-Olanda-f1-zandvoort-2025-436x291.jpg"
+    },
     {
       "title": "Turrini sulla Ferrari: “Con Domenicali per il post Marchionne le cose sarebbero andate decisamente meglio”",
       "link": "https://www.formulapassion.it/f1/f1-news/ferrari-turrini-dopo-marchionne-domenicali-cose-andate-meglio",
-      "date": "2026-08-15T05:00:00.000Z",
+      "date": "2026-08-15T06:00:00.000Z",
       "author": "Stefano Ollanu",
       "excerpt": "Il noto giornalista sassolese ha parlato del presidente della F1",
       "image": "https://storage.googleapis.com/fp-media/1/2025/12/domenicali-436x291.jpg"
@@ -13,7 +21,7 @@
     {
       "title": "Il retroscena: fu D’Ambrosio a proporsi a Vasseur per passare in Ferrari",
       "link": "https://www.formulapassion.it/f1/f1-news/ferrari-retroscena-fu-dambrosio-proporsi-a-vasseur-ferrari-lasciare-wolff-mercedes",
-      "date": "2026-08-15T05:00:00.000Z",
+      "date": "2026-08-15T06:00:00.000Z",
       "author": "Stefano Ollanu",
       "excerpt": "Dal 2024 l'ex pilota belga è il vice team principal, dopo l'addio alla Mercedes",
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/Vasseur-DAmbrosio-Ferrari-436x291.jpg"
@@ -21,7 +29,7 @@
     {
       "title": "Towriss chiude la porta alla Williams: “Perez rimarrà con noi”",
       "link": "https://www.formulapassion.it/f1/f1-news/towriss-perez-restera-in-cadillac-non-ci-lasciamo-distrarre-dalle-voci-su-possibile-passaggio-in-williams",
-      "date": "2026-08-15T05:00:00.000Z",
+      "date": "2026-08-15T06:00:00.000Z",
       "author": "Alessandro Prada",
       "excerpt": "Il proprietario e CEO del team americano ha negato le indiscrezioni relative a un possibile trasferimento di 'Checo' a Grove nel 2027",
       "image": "https://storage.googleapis.com/fp-media/1/2026/01/perez-cadillac-f1-436x291.jpg"
@@ -29,18 +37,10 @@
     {
       "title": "Montoya: “Se la vettura non migliorerà, Stroll se ne andrà dall’Aston Martin”",
       "link": "https://www.formulapassion.it/f1/f1-news/montoya-sicuro-se-la-vettura-non-migliorera-stroll-se-ne-andra-aston-martin",
-      "date": "2026-08-15T05:00:00.000Z",
+      "date": "2026-08-15T06:00:00.000Z",
       "author": "Alessandro Prada",
       "excerpt": "L'ex pilota colombiano ritiene improbabile la permanenza nel team del canadese senza un incremento della competitività della vettura",
       "image": "https://storage.googleapis.com/fp-media/1/2026/05/Lance-Stroll-436x291.jpg"
-    },
-    {
-      "title": "GP Olanda 2026: orari Sky/Now e TV8",
-      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-olanda-2026-zandvoort-sprint-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-sf26-leclerc-hamilton-antonelli",
-      "date": "2026-08-15T04:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "I dettagli della programmazione televisiva dell'appuntamento di Zandvoort, torna il format Sprint",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-Olanda-f1-zandvoort-2025-436x291.jpg"
     }
   ]
 }
