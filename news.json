@@ -1,11 +1,35 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-17T05:53:10.728Z",
+  "updatedAt": "2026-08-17T10:03:18.231Z",
   "items": [
+    {
+      "title": "Binotto: “L’Audi di oggi è come la Ferrari del 1995”",
+      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-1995-e-audi-tutti-i-punti-in-comune-secondo-mattia-binotto",
+      "date": "2026-08-17T08:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Il team principal dei Quattro Anelli ha riconosciuto alcuni aspetti del team tedesco che possono essere paragonati alla stagione 1995 della Rossa",
+      "image": "https://storage.googleapis.com/fp-media/1/2025/09/GettyImages-1215387-1-436x291.jpg"
+    },
+    {
+      "title": "Steiner boccia Bottas: “Ha mollato, Cadillac può sostituirlo”",
+      "link": "https://www.formulapassion.it/f1/f1-news/steiner-boccia-bottas-ha-mollato-cadillac-puo-sostituirlo",
+      "date": "2026-08-17T07:00:00.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Per Günther Steiner, Valtteri Bottas non merita il rinnovo di contratto con la Cadillac",
+      "image": "https://storage.googleapis.com/fp-media/1/2025/12/Screenshot_20251209_123122_Insta-436x291.jpg"
+    },
+    {
+      "title": "Hakkinen e Coulthard: una rivalità interna senza tensioni",
+      "link": "https://www.formulapassion.it/f1/f1-news/hakkinen-coulthard-una-rivalita-interna-senza-tensioni-mclaren-contatto-gp-austria-1999",
+      "date": "2026-08-17T07:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Il due volte iridato finlandese ha spiegato di non aver mai avuto attriti con il suo ex compagno di squadra, anche dopo contatti in pista",
+      "image": "https://storage.googleapis.com/fp-media/1/2024/12/XPB_1035_HiRes-436x291.jpg"
+    },
     {
       "title": "Russell: “Uno psicologo? Lavoro con uno specialista dal 2020”",
       "link": "https://www.formulapassion.it/f1/f1-news/ammissione-di-russell-lavoro-con-uno-psicologo-dello-sport-antonelli-kimi-mercedes-momenti-difficili",
-      "date": "2026-08-17T05:00:00.000Z",
+      "date": "2026-08-17T06:00:00.000Z",
       "author": "Alessandro Prada",
       "excerpt": "Il pilota della Mercedes ha ammesso di incontrare uno psicologo che possa aiutarlo in questo momento difficile, ma non solo",
       "image": "https://storage.googleapis.com/fp-media/1/2026/07/George-Russell-1-436x291.jpg"
@@ -13,34 +37,10 @@
     {
       "title": "GP Olanda 2026: orari Sky/Now e TV8",
       "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-olanda-2026-zandvoort-sprint-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-sf26-leclerc-hamilton-antonelli",
-      "date": "2026-08-17T05:00:00.000Z",
+      "date": "2026-08-17T06:00:00.000Z",
       "author": "Marco Belloro",
       "excerpt": "I dettagli della programmazione televisiva dell'appuntamento di Zandvoort, torna il format Sprint, domenica su TV8 il GP scatterà in differita alle 18:00",
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-Olanda-f1-zandvoort-2025-436x291.jpg"
-    },
-    {
-      "title": "Steiner boccia Bottas: “Ha mollato, Cadillac può sostituirlo”",
-      "link": "https://www.formulapassion.it/f1/f1-news/steiner-boccia-bottas-ha-mollato-cadillac-puo-sostituirlo",
-      "date": "2026-08-17T05:00:00.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Per Günther Steiner, Valtteri Bottas non merita il rinnovo di contratto con la Cadillac",
-      "image": "https://storage.googleapis.com/fp-media/1/2025/12/Screenshot_20251209_123122_Insta-436x291.jpg"
-    },
-    {
-      "title": "Sergio Perez e le ‘lezioni’ da Verstappen in Red Bull",
-      "link": "https://www.formulapassion.it/f1/f1-news/sergio-perez-le-lezioni-da-verstappen-in-red-bull-velocita-carisma-team-farsi-ascoltare",
-      "date": "2026-08-17T05:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Il messicano della Cadillac ha indicato le maggiori qualità del suo ex compagno di squadra che lo hanno aiutato a crescere",
-      "image": "https://storage.googleapis.com/fp-media/1/2024/07/Max-Verstappen-Sergio-Perez-436x291.jpg"
-    },
-    {
-      "title": "F1 sempre più vicina per Tsolov: primo test al volante della Racing Bulls",
-      "link": "https://www.formulapassion.it/f1/f1-news/f1-sempre-piu-vicina-per-tsolov-primo-test-al-volante-della-racing-bulls",
-      "date": "2026-08-17T05:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Il pilota bulgaro, leader del campionato di F2, effettuerà una prova con il team faentino a fine mese",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/06/GettyImages-2281513734-1-436x291.jpg"
     }
   ]
 }
