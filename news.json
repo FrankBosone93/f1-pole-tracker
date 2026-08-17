@@ -1,14 +1,38 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-17T10:03:18.231Z",
+  "updatedAt": "2026-08-17T13:55:31.858Z",
   "items": [
+    {
+      "title": "Steiner strizza l’occhio ad Antonelli: “A Mercedes non serve Verstappen. Wolff ha già il nuovo Max”",
+      "link": "https://www.formulapassion.it/f1/f1-news/steiner-strizza-locchio-ad-antonelli-a-mercedes-non-serve-verstappen-wolff-ha-gia-il-nuovo-max",
+      "date": "2026-08-17T13:40:00.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Parlando degli scenari di mercato relativi a Max Verstappen, Günther Steiner ha fatto un grande complimento a Kimi Antonelli",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2287447694-1-436x291.jpg"
+    },
+    {
+      "title": "GP d’Olanda: le gare più emblematiche a Zandvoort",
+      "link": "https://www.formulapassion.it/f1/f1-storia/gp-olanda-gare-piu-emblematiche-a-zandvoort",
+      "date": "2026-08-17T11:22:56.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Tutti i decenni che hanno regalato i GP più belli sul circuito che uscirà di scena dal prossimo calendario",
+      "image": "https://storage.googleapis.com/fp-media/1/2025/01/GettyImages-2159512281-1200x796-1-436x291.jpg"
+    },
     {
       "title": "Binotto: “L’Audi di oggi è come la Ferrari del 1995”",
       "link": "https://www.formulapassion.it/f1/f1-news/ferrari-1995-e-audi-tutti-i-punti-in-comune-secondo-mattia-binotto",
-      "date": "2026-08-17T08:00:00.000Z",
+      "date": "2026-08-17T10:00:00.000Z",
       "author": "Alessandro Prada",
       "excerpt": "Il team principal dei Quattro Anelli ha riconosciuto alcuni aspetti del team tedesco che possono essere paragonati alla stagione 1995 della Rossa",
       "image": "https://storage.googleapis.com/fp-media/1/2025/09/GettyImages-1215387-1-436x291.jpg"
+    },
+    {
+      "title": "Fondo, ali e FTM: ecco le modifiche aerodinamiche per il 2027",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/fondo-ali-ftm-ecco-modifiche-aerodinamiche-2027",
+      "date": "2026-08-17T09:00:00.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "Non solo power unit: i regolamenti per l’anno prossimo prevedono anche tante modifiche aerodinamiche. Ecco quali",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/07/Start-Silverstone-2026-F1-436x291.jpg"
     },
     {
       "title": "Steiner boccia Bottas: “Ha mollato, Cadillac può sostituirlo”",
@@ -17,30 +41,6 @@
       "author": "Valerio Barretta",
       "excerpt": "Per Günther Steiner, Valtteri Bottas non merita il rinnovo di contratto con la Cadillac",
       "image": "https://storage.googleapis.com/fp-media/1/2025/12/Screenshot_20251209_123122_Insta-436x291.jpg"
-    },
-    {
-      "title": "Hakkinen e Coulthard: una rivalità interna senza tensioni",
-      "link": "https://www.formulapassion.it/f1/f1-news/hakkinen-coulthard-una-rivalita-interna-senza-tensioni-mclaren-contatto-gp-austria-1999",
-      "date": "2026-08-17T07:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Il due volte iridato finlandese ha spiegato di non aver mai avuto attriti con il suo ex compagno di squadra, anche dopo contatti in pista",
-      "image": "https://storage.googleapis.com/fp-media/1/2024/12/XPB_1035_HiRes-436x291.jpg"
-    },
-    {
-      "title": "Russell: “Uno psicologo? Lavoro con uno specialista dal 2020”",
-      "link": "https://www.formulapassion.it/f1/f1-news/ammissione-di-russell-lavoro-con-uno-psicologo-dello-sport-antonelli-kimi-mercedes-momenti-difficili",
-      "date": "2026-08-17T06:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Il pilota della Mercedes ha ammesso di incontrare uno psicologo che possa aiutarlo in questo momento difficile, ma non solo",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/George-Russell-1-436x291.jpg"
-    },
-    {
-      "title": "GP Olanda 2026: orari Sky/Now e TV8",
-      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-olanda-2026-zandvoort-sprint-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-sf26-leclerc-hamilton-antonelli",
-      "date": "2026-08-17T06:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "I dettagli della programmazione televisiva dell'appuntamento di Zandvoort, torna il format Sprint, domenica su TV8 il GP scatterà in differita alle 18:00",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-Olanda-f1-zandvoort-2025-436x291.jpg"
     }
   ]
 }
