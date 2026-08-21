@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-07-27T15:57:42.968Z",
+  "updatedAt": "2026-08-21T03:31:43.148Z",
   "races": [
     {
       "round": 1,
@@ -3648,11 +3648,11 @@
         "fp3": null,
         "sprintQualy": {
           "date": "2026-08-21",
-          "time": "14:00:00Z"
+          "time": "13:30:00Z"
         },
         "sprintRace": {
           "date": "2026-08-22",
-          "time": "09:30:00Z"
+          "time": "09:00:00Z"
         },
         "qualy": {
           "date": "2026-08-22",
