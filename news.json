@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-23T08:14:31.679Z",
+  "updatedAt": "2026-08-23T12:12:09.690Z",
   "items": [
+    {
+      "title": "Strategie Pirelli: Ferrari e Verstappen con l’opzione della soft nuova",
+      "link": "https://www.formulapassion.it/f1/f1-news/olanda-strategie-ferrari-verstappen-opzione-soft-nuova",
+      "date": "2026-08-23T10:21:56.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "Le difficoltà di sorpasso indirizzano le strategie verso la sosta singola, ma la grande incognita sarà il rendimento della gomma dura",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-F1-zandvoort-436x291.jpg"
+    },
+    {
+      "title": "Hamilton, hai in mente una pazza idea? “La macchina c’è. La strategia sarà la chiave”",
+      "link": "https://www.formulapassion.it/f1/f1-news/hamilton-hai-in-mente-una-pazza-idea-la-macchina-ce-la-strategia-sara-la-chiave",
+      "date": "2026-08-23T09:27:06.000Z",
+      "author": "Matteo Senatore",
+      "excerpt": "L'inglese dopo le qualifiche è sembrato speranzoso in vista della gara di oggi pomeriggio: la gestione gomme sarà decisiva",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291026476-1-436x291.jpg"
+    },
     {
       "title": "GP Olanda 2026: orari Sky/Now e TV8",
       "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-olanda-2026-zandvoort-sprint-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-sf26-leclerc-hamilton-antonelli",
@@ -11,7 +27,7 @@
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2290903309-1-436x291.jpg"
     },
     {
-      "title": "Stella, occhi sulla Ferrari: “Ha il passo migliore, Leclerc era il più veloce nella Sprint",
+      "title": "Stella, occhi sulla Ferrari: “Ha il passo migliore, Leclerc era il più veloce nella Sprint”",
       "link": "https://www.formulapassion.it/f1/f1-news/gp-olanda-mclaren-stella-occhi-sulla-ferrari-ha-il-passo-migliore-leclerc-era-il-piu-veloce-nella-sprint",
       "date": "2026-08-23T08:00:00.000Z",
       "author": "Valerio Barretta",
@@ -25,22 +41,6 @@
       "author": "Marco Belloro",
       "excerpt": "Al momento la probabilità di pioggia nel pomeriggio si attesta per diverse ore allo 0%",
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-Olanda-Zandvoort-f1-436x291.jpg"
-    },
-    {
-      "title": "GP Olanda 2026, Gara: il via alle 15:00 – DIRETTA",
-      "link": "https://www.formulapassion.it/f1/f1-live/diretta-f1-gp-olanda-2026-zandvoort-rimonta-ferrari-hamilton-leclerc-antonelli-cronaca-aggiornamenti",
-      "date": "2026-08-23T08:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "La cronaca giro dopo giro della corsa di Zandvoort",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Start-F1-zandvoort-436x291.jpg"
-    },
-    {
-      "title": "Leclerc: “La Ferrari SF-26 è una macchina ‘da gara’ e su piste come questa non aiuta”",
-      "link": "https://www.formulapassion.it/f1/f1-news/leclerc-ferrari-sf26-macchina-gara-limite-zandvoort-gp-olanda-danza-pioggia-meteo",
-      "date": "2026-08-23T08:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il monegasco farà la danza della pioggia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Leclerc-Ferrari-2-436x291.jpg"
     }
   ]
 }
