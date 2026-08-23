@@ -1,5 +1,5 @@
 {
-  "ok": true,
-  "lastRun": "2026-08-17T08:07:09.092Z",
-  "error": null
+  "ok": false,
+  "lastRun": "2026-08-23T19:02:10.946Z",
+  "error": "Risposta API non valida: 404 Not Found"
 }
