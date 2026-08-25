@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-25T08:25:48.709Z",
+  "updatedAt": "2026-08-25T12:19:44.247Z",
   "items": [
+    {
+      "title": "Haas sempre più in difficoltà: doppio ritiro a Zandvoort",
+      "link": "https://www.formulapassion.it/f1/f1-news/haas-sempre-piu-in-difficolta-doppio-ritiro-a-zandvoort",
+      "date": "2026-08-25T11:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Bearman e Ocon si sono dovuti arrendere nel corso della gara a causa di problemi tecnici alla VF-26",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291148657-436x291.jpg"
+    },
+    {
+      "title": "Podio Gasly a Monaco, è il giorno della verità. Oggi la decisione sull’appello di McLaren e Red Bull",
+      "link": "https://www.formulapassion.it/f1/f1-news/podio-gasly-a-monaco-e-il-giorno-della-verita-oggi-la-decisione-sullappello-di-mclaren-e-red-bull",
+      "date": "2026-08-25T09:10:08.000Z",
+      "author": "Matteo Senatore",
+      "excerpt": "La questione verrà discussa dalla Corte Internazionale d'Appello e potrebbe sancire un precedente importante anche per il futuro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/03/GettyImages-2265165975-1-436x291.jpg"
+    },
     {
       "title": "Mercedes agli sgoccioli col budget cap, Wolff: “Non abbiamo speso troppo a inizio stagione, ma siamo un team numeroso”",
       "link": "https://www.formulapassion.it/f1/f1-news/mercedes-bolletta-budget-cap-wolff-non-abbiamo-speso-troppo-ma-siamo-team-numeroso-aggiornamenti",
@@ -25,22 +41,6 @@
       "author": "Matteo Senatore",
       "excerpt": "L'olandese ha vissuto un pessimo weekend nel suo ultimo GP di casa a Zandvoort, tra malori e incidenti",
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291183549-1-436x291.jpg"
-    },
-    {
-      "title": "Windsor: “Forse solo Vasseur può imporsi su Hamilton e Leclerc, ma non parla mai via radio”",
-      "link": "https://www.formulapassion.it/f1/f1-news/windsor-ferrari-regna-caos-nessuno-osa-dare-ordini-hamilton-leclerc-vasseur",
-      "date": "2026-08-25T06:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "La gestione di due 'prime guide' non è semplice per il muretto della Scuderia di Maranello",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Leclerc-Hamilton-Ferrari-436x291.jpg"
-    },
-    {
-      "title": "Antonelli non ha dubbi: “Mercedes non è più la macchina migliore”",
-      "link": "https://www.formulapassion.it/f1/f1-news/antonelli-non-ha-dubbi-mercedes-non-e-piu-la-macchina-migliore",
-      "date": "2026-08-25T06:00:00.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "L'italiano ha evidenziato senza giri di parole come dopo Zandvoort la W17 non sia più la monoposto di riferimento in griglia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291183702-1-436x291.jpg"
     }
   ]
 }
