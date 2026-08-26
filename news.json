@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-08-26T08:26:50.527Z",
+  "updatedAt": "2026-08-26T12:21:34.313Z",
   "items": [
+    {
+      "title": "Alla ricerca di luoghi perduti: Brooklands motor racing circuit",
+      "link": "https://www.formulapassion.it/f1/f1-storia/alla-scoperta-circuito-piu-antico-del-mondo-surrey-brooklands",
+      "date": "2026-08-26T11:00:00.000Z",
+      "author": "Andrea Pesaresi",
+      "excerpt": "Nel Surrey, Inghilterra, a 25 miglia a sud-ovest di Londra, c’è un posto tanto sconosciuto quanto importante per il motorismo, Brooklands: qui c’è, o meglio ci sono i resti dell’autodromo  più antico al mondo, fu inaugurato nel 1907",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Brooklands_1-436x291.jpg"
+    },
+    {
+      "title": "F1 lanciate in salita su… un palazzo di 20 piani: i lavori per la folle curva-1 di Qiddiya",
+      "link": "https://www.formulapassion.it/f1/f1-news/f1-lanciate-salita-palazzo-20-piani-video-lavori-folle-curva-1-qiddiya-gp-arabia-saudita-2028",
+      "date": "2026-08-26T10:00:00.000Z",
+      "author": "Salvo Sardina",
+      "excerpt": "Il complesso ospiterà il GP d'Arabia Saudita del 2028: un video mostra a che punto è l'avanzamento della realizzazione del nuovo, pazzesco, circuito",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Immagine-2026-08-26-113637-436x291.jpg"
+    },
     {
       "title": "Verstappen senza clausole d’uscita? No, ci sono ancora",
       "link": "https://www.formulapassion.it/f1/f1-news/verstappen-ha-ancora-clausole-di-uscita-da-redbull-nuovo-contratto-da-mezzo-miliardo",
@@ -25,22 +41,6 @@
       "author": "Marco Belloro",
       "excerpt": "A Milton Keynes attendono di poter intervenire sul motore",
       "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291523290-1-436x291.jpg"
-    },
-    {
-      "title": "Ferrari pronta a infiammare Monza con una livrea dedicata al 1996 e a Schumacher",
-      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-infiamma-monza-livrea-celebrativa-dedicata-schumacher-1996-f310",
-      "date": "2026-08-25T19:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Hamilton e Leclerc sfoggeranno due SF-26 sicuramente bellissime",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Schumacher-Ferrari-436x291.jpg"
-    },
-    {
-      "title": "Crisi Haas, Komatsu: “I ragazzi combattono con le mani legate. Le entrate sono poche ed è colpa mia”",
-      "link": "https://www.formulapassion.it/f1/f1-news/crisi-haas-komatsu-i-ragazzi-combattono-con-le-mani-legate-le-entrate-sono-poche-ed-e-colpa-mia",
-      "date": "2026-08-25T16:00:00.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Il team principal Haas Ayao Komatsu fa mea culpa sulla crisi della Haas, che dopo un avvio super si è arenata",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/05/ocon-f1-canada-1-436x291.jpg"
     }
   ]
 }
