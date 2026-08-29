@@ -1116,5 +1116,14 @@
     "timeStr": "1:17.207",
     "seconds": 77.207,
     "weather": "☁️ Nuvoloso"
+  },
+  {
+    "year": 2026,
+    "circuit": "Zandvoort",
+    "driver": "Lando Norris",
+    "team": "McLaren",
+    "timeStr": "1:11.163",
+    "seconds": 71.163,
+    "weather": "🌧️ Pioggia"
   }
 ]
