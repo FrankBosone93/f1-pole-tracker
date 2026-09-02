@@ -1,7 +1,31 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-09-02T15:24:53.911Z",
+  "updatedAt": "2026-09-02T18:59:29.924Z",
   "items": [
+    {
+      "title": "Monza, Hamilton ci crede: “Quest’anno la Ferrari può lottare”",
+      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-monza-hamilton-ci-crede-abbiamo-la-macchina-per-lottare",
+      "date": "2026-09-02T17:10:47.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Lewis Hamilton e Charles Leclerc hanno abbracciato i tifosi della Ferrari in vista del GP di Monza",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/GettyImages-2291462077-1200x800-1-436x291.jpg"
+    },
+    {
+      "title": "Leclerc abbraccia i tifosi: “Una vittoria a Monza sarebbe il top. Io e Lewis ce la metteremo tutta per una doppietta”",
+      "link": "https://www.formulapassion.it/f1/f1-news/leclerc-abbraccia-tifosi-ferrari-vittoria-monza-sarebbe-top-io-e-lewis-ce-la-metteremo-tutta-per-una-doppietta",
+      "date": "2026-09-02T16:51:10.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Charles Leclerc ha incontrato i tifosi a Milano, in piazza del Duomo: in vista del GP di Monza il monegasco promette una Ferrari battagliera",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/07/Charles-Leclerc-2-436x291.jpg"
+    },
+    {
+      "title": "Ferrari, McLaren, Mercedes: i motivi di ognuno per credere nella vittoria",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/monza-ferrari-mclaren-mercedes-perche-ognuno-puo-credere-vittoria",
+      "date": "2026-09-02T16:00:40.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "A Monza non sarà soltanto una questione di power unit: ecco perché tutti e tre i top team possono ambire alla vittoria",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Leclerc-Hamilton-Ferrari-1-436x291.jpg"
+    },
     {
       "title": "Verstappen: “Monza tra le mie piste preferite. E che bello rivedere i tifosi”. Iwasa lo sostituisce nelle FP1",
       "link": "https://www.formulapassion.it/f1/f1-news/verstappen-monza-tra-le-mie-piste-preferite-e-che-bello-rivedere-i-tifosi-iwasa-lo-sostituisce-nelle-fp1",
@@ -17,30 +41,6 @@
       "author": "Valerio Barretta",
       "excerpt": "Dopo aver saltato Zandvoort per l'infortunio al polso sinistro, Isack Hadjar non parteciperà nemmeno al weekend di Monza",
       "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2287038760-1-436x291.jpg"
-    },
-    {
-      "title": "Vasseur conferma: “A Monza con il motore aggiornato. Schumi, i tuoi valori sempre con noi”",
-      "link": "https://www.formulapassion.it/f1/f1-news/vasseur-conferma-a-monza-con-il-motore-aggiornato",
-      "date": "2026-09-02T12:35:01.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Frederic Vasseur ha confermato che la Ferrari porterà a Monza il motore aggiornato con il secondo \"gettone\" ADUO",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/08/Vasseur-Ferrari-1-436x291.jpg"
-    },
-    {
-      "title": "Haas, a Monza altri aggiornamenti contro la crisi",
-      "link": "https://www.formulapassion.it/f1/f1-news/haas-a-monza-altri-aggiornamenti-contro-la-crisi",
-      "date": "2026-09-02T12:00:00.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il team americano è apparso tra le squadre maggiormente in crisi nell'ultimo periodo di questa stagione",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/05/ocon-f1-canada-1-436x291.jpg"
-    },
-    {
-      "title": "Ludovico Scarfiotti: l’ultimo italiano vincitore a Monza",
-      "link": "https://www.formulapassion.it/f1/f1-storia/ludovico-scarfiotti-ultimo-italiano-vincitore-a-monza",
-      "date": "2026-09-02T11:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "In quasi 60 anni di storia nessun altro 'azzurro' è più salito sul gradino più alto del podio, fatta eccezione per piloti di origine italiana ma con un altro passaporto",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-1270073477-436x291.jpg"
     }
   ]
 }
