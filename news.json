@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-09-05T17:44:35.469Z",
+  "updatedAt": "2026-09-05T21:44:09.403Z",
   "items": [
+    {
+      "title": "Gasly l’unico perfetto nel caos di Monza, Ferrari in gioco grazie all’ADUO-2",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/telemetria-ferrari-monza-qualifiche-miracolata-no-salvata-aduo2-power-unit-dati-gasly-pole-position",
+      "date": "2026-09-05T18:55:00.000Z",
+      "author": "Federico Albano",
+      "excerpt": "La pole della Alpine arriva da pilota, PU e aggiornamenti. Tra gli errori generali le SF26 chiudono dove atteso, ancora in gioco grazie al nuovo motore",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Gasly-Alpine-2-436x291.jpg"
+    },
+    {
+      "title": "La pole di Gasly mostra cosa è mancato alla Ferrari",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/pole-gasly-mostra-cosa-mancato-ferrari",
+      "date": "2026-09-05T18:54:25.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "Gasly e l’Alpine fanno la differenza in una Formula 1 dove più che mai conta mettere tutto assieme, mentre la Ferrari paga i problemi e gli errori",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/pierre-gasly-leclerc-monza-436x291.jpg"
+    },
     {
       "title": "Russell, la pole sfuma sul più bello: “Ma tanto a Monza non conta…”",
       "link": "https://www.formulapassion.it/f1/f1-news/russell-la-pole-sfuma-sul-piu-bello-ma-tanto-a-monza-non-conta",
@@ -25,22 +41,6 @@
       "author": "Alessandro Prada",
       "excerpt": "L'amarezza del leader del mondiale per le qualifiche e la missione già programmata per la gara di domani",
       "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293629493-436x291.jpg"
-    },
-    {
-      "title": "Ufficiale: Piastri penalizzato per impeding, scala sesto, Ferrari entrambe in seconda fila",
-      "link": "https://www.formulapassion.it/f1/f1-news/ufficiale-piastri-penalizzato-gp-italia-monza-ferrari-seconda-fila-leclerc-hamilton-guadagnano-posizione",
-      "date": "2026-09-05T16:35:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il pilota della McLaren ha ostacolato Liam Lawson in Q2",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Piastri-McLaren-436x291.jpg"
-    },
-    {
-      "title": "Gasly non si accontenta della pole: “Domani darò tutto per vincere”",
-      "link": "https://www.formulapassion.it/f1/f1-news/gasly-non-si-accontenta-della-pole-domani-daro-tutto-per-vincere-alpine",
-      "date": "2026-09-05T16:26:29.000Z",
-      "author": "Gianluca Calvaresi",
-      "excerpt": "secondo Pierre la pole non è un fatto fortuito ma il risultato di un potenziale che può regalare anche la vittoria domani",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Gasly-Alpine-1-436x291.jpg"
     }
   ]
 }
