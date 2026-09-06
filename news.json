@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-09-06T17:47:57.460Z",
+  "updatedAt": "2026-09-06T21:46:51.599Z",
   "items": [
+    {
+      "title": "La cavalcata di Kimi: così ha fatto la differenza con la macchina migliore",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/monza-cavalcata-antonelli-fatto-differenza-macchina-migliore",
+      "date": "2026-09-06T19:44:11.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "Quella di Antonelli è stata una rimonta di passo e di decisione, a bordo di quella che resta l’auto migliore con il motore migliore",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/antonelli-gp-monza-f1-436x291.jpg"
+    },
+    {
+      "title": "Antonelli: “Vedevo i tifosi alzarsi, mi davano la carica. È la vittoria più speciale”",
+      "link": "https://www.formulapassion.it/f1/f1-news/monza-antonelli-vedevo-tifosi-alzarsi-mi-davano-carica-vittoria-speciale",
+      "date": "2026-09-06T18:36:42.000Z",
+      "author": "Carlo Platella",
+      "excerpt": "Antonelli condivide le emozioni di un’impresa storica. Vietato parlare di titolo, ma avverte: “È solo l’inizio”",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/kimi-antonelli-gp-italia-f1-monza-2026-436x291.jpg"
+    },
     {
       "title": "Insofferenza Hamilton: “Ho sempre corso pulito lasciando spazio, ma in Ferrari non ci sono regole d’ingaggio”",
       "link": "https://www.formulapassion.it/f1/f1-news/hamilton-io-corro-pulito-in-ferrari-non-ci-sono-regole-ingaggio-leclerc-monza",
@@ -16,7 +32,7 @@
       "date": "2026-09-06T17:00:59.000Z",
       "author": "Pino Allievi",
       "excerpt": "L'analisi del Gran Premio d'Italia magistralmente vinto da Andrea Kimi Antonelli",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/CaffeAllievi-Monza-Antonelli-Ferrari-436x291.png"
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/CaffeAllievi-Monza-Antonelli-Ferrari-1-436x291.png"
     },
     {
       "title": "Russell, la resa definitiva: “Antonelli merita di essere leader. Non penso al titolo, ha un grande vantaggio”",
@@ -25,22 +41,6 @@
       "author": "Matteo Senatore",
       "excerpt": "L'inglese, secondo a Monza, precipita a 66 punti di ritardo dal compagno di box; per lui la rimonta in campionato sembra ormai un miraggio",
       "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293827316-1-436x291.jpg"
-    },
-    {
-      "title": "Leclerc-Hamilton, è scontro aperto. Vasseur: “Dovremo discutere di quanto è successo”",
-      "link": "https://www.formulapassion.it/f1/f1-news/leclerc-hamilton-e-scontro-aperto-vasseur-dovremo-discutere-di-quanto-e-successo",
-      "date": "2026-09-06T16:22:20.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il team principal della Ferrari ha commentato l'esito di un GP d'Italia disastroso per il team di Maranello",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/leclerc-hamilton-monza-1-436x291.jpg"
-    },
-    {
-      "title": "Vasseur: “Sapevamo che avremmo sofferto a Monza, ma è andata peggio del previsto in gara, Madrid sarà una buona opportunità”",
-      "link": "https://www.formulapassion.it/f1/f1-news/catastrofe-ferrari-monza-vasseur-peggio-previsto-madrid-buona-opportunita-deficit-velocita-punta",
-      "date": "2026-09-06T16:10:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "La Ferrari è scesa a 122 punti di distacco dalla Mercedes",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Hamilton-Ferrari-McLaren-436x291.jpg"
     }
   ]
 }
