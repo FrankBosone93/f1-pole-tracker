@@ -1,7 +1,39 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-09-07T16:41:27.771Z",
+  "updatedAt": "2026-09-07T22:19:21.046Z",
   "items": [
+    {
+      "title": "Aston Martin, non c’è pace: doppio ritiro a Monza",
+      "link": "https://www.formulapassion.it/f1/f1-news/aston-martin-non-pace-doppio-ritiro-a-monza",
+      "date": "2026-09-07T18:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Mentre Alonso ha riscontrato un danno alla vettura, Stroll si è fermato a bordo pista per un problema idraulico",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293813457-436x291.jpg"
+    },
+    {
+      "title": "Ufficiale, Hadjar salta anche Madrid: altra chance per Lawson e Tsunoda",
+      "link": "https://www.formulapassion.it/f1/f1-news/ufficiale-hadjar-salta-anche-madrid-altra-chance-per-lawson-e-tsunoda",
+      "date": "2026-09-07T17:34:44.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Dopo aver saltato Zandvoort e Monz per l'infortunio al polso sinistro, Isack Hadjar non parteciperà nemmeno alla gara inaugurale di Madrid",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/03/GettyImages-2265364975-1-436x291.jpg"
+    },
+    {
+      "title": "Wolff: “Non c’è modo per fermare Antonelli. È un tutt’uno con la macchina”",
+      "link": "https://www.formulapassion.it/f1/f1-news/wolff-non-ce-modo-per-fermare-antonelli-e-un-tuttuno-con-la-macchina-gp-monza",
+      "date": "2026-09-07T17:00:27.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Il team principal Mercedes ha elogiato Kimi Antonelli dopo la clamorosa rimonta di Monza",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Antonelli-Mercedes-436x291.jpg"
+    },
+    {
+      "title": "Perez: “Frustrante vedere differenze così grandi sui rettilinei”",
+      "link": "https://www.formulapassion.it/f1/f1-news/perez-frustrante-vedere-differenze-cosi-grandi-sui-rettilinei",
+      "date": "2026-09-07T17:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Anche a Monza sono emerse le difficoltà della Cadillac, una in particolare evidenziata dal pilota messicano",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293767049-436x291.jpg"
+    },
     {
       "title": "Ferrari: Monza mette a nudo motore e piloti. Ma bocciare ora è troppo facile",
       "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/ferrari-monza-mette-a-nudo-motore-e-piloti-ma-bocciare-ora-e-troppo-facile-leclerc-hamilton-vasseur",
@@ -9,38 +41,6 @@
       "author": "Federico Albano",
       "excerpt": "Il motore è un ostacolo troppo grande e Monza lo ha esaltato in maniera evidente. La gestione piloti non può essere lasciata alla loro professionalità.",
       "image": "https://storage.googleapis.com/fp-media/1/2026/09/Hamilton-Ferrari-Monza-436x291.jpg"
-    },
-    {
-      "title": "Ecclestone ci ricasca: in aeroporto con il fucile, fermato in Portogallo",
-      "link": "https://www.formulapassion.it/f1/f1-news/bernie-ecclestone-ci-ricasca-in-aeroporto-con-il-fucile-fermato-in-portogallo-arresto",
-      "date": "2026-09-07T15:36:39.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Bernie Ecclestone è stato fermato all'aeroporto di Tires, nei pressi di Cascais (Portogallo) con l'accusa di porto abusivo di arma da fuoco",
-      "image": "https://storage.googleapis.com/fp-media/1/2025/06/Bernie-Ecclestone-436x291.jpg"
-    },
-    {
-      "title": "Sainz: “Sono felice di vedere Leclerc illeso dopo un incidente così grave”",
-      "link": "https://www.formulapassion.it/f1/f1-news/sainz-felice-di-vedere-leclerc-illeso-dopo-un-incidente-cosi-grave",
-      "date": "2026-09-07T15:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "13° a Monza, il pilota della Williams ha avuto parole di riguardo nei confronti del suo ex compagno di squadra in Ferrari",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Leclerc-Ferrari-Medical-Car-436x291.jpg"
-    },
-    {
-      "title": "Monza 2026, l’altro podio",
-      "link": "https://www.formulapassion.it/f1/f1-news/gp-monza-pagelle-leclerc-vasseur-ferrari-antonelli-verstappen-gasly-russell-hamilton",
-      "date": "2026-09-07T14:35:00.000Z",
-      "author": "Valerio Barretta",
-      "excerpt": "Le pagelle dei promossi e dei bocciati del GP di Monza",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293493242-1-436x291.jpg"
-    },
-    {
-      "title": "Bortoleto spera nella zona punti: “Ho dato tutto quello che avevo”",
-      "link": "https://www.formulapassion.it/f1/f1-news/bortoleto-spera-nella-zona-punti-ho-dato-tutto-quello-che-potevo",
-      "date": "2026-09-07T14:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Il brasiliano dell'Audi ha chiuso all'11° posto dietro Tsunoda, attualmente sotto la lente d'ingrandimento per un errore commesso prima della ripartenza",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293360141-436x291.jpg"
     }
   ]
 }
