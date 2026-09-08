@@ -1,7 +1,23 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-09-08T15:24:44.127Z",
+  "updatedAt": "2026-09-08T19:00:54.010Z",
   "items": [
+    {
+      "title": "Quando Schumacher interrogato dagli ingegneri rispondeva: “Decide Rubens”",
+      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-quando-schumacher-interrogato-ingegneri-diceva-decide-rubens-barrichello",
+      "date": "2026-09-08T17:00:00.000Z",
+      "author": "Gianluca Calvaresi",
+      "excerpt": "Barrichello ci ha raccontato lo splendido rapporto che lo legava a Michael Schumacher",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Schumacher-Barrichello-Ferrari-436x291.jpg"
+    },
+    {
+      "title": "Il Gran Premio Storico d’Italia presentato a Milano: Ferrari omaggia il decennio d’oro 1996-2006",
+      "link": "https://www.formulapassion.it/f1/f1-news/il-gran-premio-storico-ditalia-presentato-a-milano-ferrari-omaggia-il-decennio-doro-1996-2006-schumacher",
+      "date": "2026-09-08T16:06:35.000Z",
+      "author": "Valerio Barretta",
+      "excerpt": "Il Gran Premio Storico d'Italia si terrà al Mugello dal 2 al 4 ottobre: Ferrari omaggia l'epopea vincente di Schumacher",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/f399-schumacher-436x291.jpg"
+    },
     {
       "title": "Power unit ADUO-2 danneggiata nel botto di Monza: Leclerc a rischio penalità a Madrid",
       "link": "https://www.formulapassion.it/f1/f1-news/ferrari-danno-beffa-power-unit-leclerc-aduo2-danneggiata-incidente-rischio-penalita-madrid",
@@ -25,22 +41,6 @@
       "author": "Marco Belloro",
       "excerpt": "Tutti i dettagli della programmazione televisiva relativi al weekend del MadRing",
       "image": "https://storage.googleapis.com/fp-media/1/2026/09/Madrid-F1-pit-lane-box-436x291.jpg"
-    },
-    {
-      "title": "Rassegna stampa | Riflessioni in casa Ferrari: Vasseur è ora sotto osservazione",
-      "link": "https://www.formulapassion.it/f1/f1-news/rassegna-stampa-riflessioni-ferrari-vasseur-sotto-osservazione-elkann-monza",
-      "date": "2026-09-08T06:41:16.000Z",
-      "author": "Stefano Ollanu",
-      "excerpt": "La débâcle prestazionale e gestionale di Monza ha rimesso in bilico la posizione del team principal Ferrari",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/07/GettyImages-2284203523-1200x800-1-436x291.jpg"
-    },
-    {
-      "title": "Red Bull sempre al top nel marketing: “Red Bull e ICE, che (a)duo”",
-      "link": "https://www.formulapassion.it/f1/f1-news/redbull-geniale-sfotto-fia-aduo-power-unit-mercedes-best-ice",
-      "date": "2026-09-08T06:30:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il post social è geniale",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Verstappen-RedBull-436x291.jpg"
     }
   ]
 }
