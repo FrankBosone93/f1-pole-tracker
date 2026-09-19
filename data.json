@@ -1125,5 +1125,14 @@
     "timeStr": "1:11.163",
     "seconds": 71.163,
     "weather": "🌧️ Pioggia"
+  },
+  {
+    "year": 2026,
+    "circuit": "Madrid",
+    "driver": "Lando Norris",
+    "team": "McLaren",
+    "timeStr": "1:31.824",
+    "seconds": 91.824,
+    "weather": "☀️ Caldo"
   }
 ]

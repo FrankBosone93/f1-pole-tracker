@@ -1,5 +1,5 @@
 {
-  "ok": false,
-  "lastRun": "2026-09-12T23:37:14.084Z",
-  "error": "HTTP 404 per https://f1api.dev/api/2026/14/qualy"
+  "ok": true,
+  "lastRun": "2026-09-19T19:46:45.661Z",
+  "error": null
 }
