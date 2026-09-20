@@ -1,19 +1,19 @@
 {
   "season": 2026,
-  "updatedAt": "2026-09-13T20:19:36.040Z",
+  "updatedAt": "2026-09-20T20:19:56.948Z",
   "drivers": [
     {
       "position": 1,
       "driver": "Andrea Kimi Antonelli",
       "team": "Mercedes",
-      "points": 267,
-      "wins": 7
+      "points": 292,
+      "wins": 8
     },
     {
       "position": 2,
       "driver": "George Russell",
       "team": "Mercedes",
-      "points": 201,
+      "points": 211,
       "wins": 2
     },
     {
@@ -27,28 +27,28 @@
       "position": 4,
       "driver": "Lando Norris",
       "team": "McLaren",
-      "points": 171,
+      "points": 186,
       "wins": 2
     },
     {
       "position": 5,
       "driver": "Charles Leclerc",
       "team": "Ferrari",
-      "points": 155,
+      "points": 167,
       "wins": 1
     },
     {
       "position": 6,
       "driver": "Max Verstappen",
       "team": "Red Bull",
-      "points": 127,
+      "points": 145,
       "wins": 0
     },
     {
       "position": 7,
       "driver": "Oscar Piastri",
       "team": "McLaren",
-      "points": 116,
+      "points": 120,
       "wins": 0
     },
     {
@@ -62,7 +62,7 @@
       "position": 9,
       "driver": "Liam Lawson",
       "team": "RB",
-      "points": 51,
+      "points": 59,
       "wins": 0
     },
     {
@@ -76,14 +76,14 @@
       "position": 11,
       "driver": "Arvid Lindblad",
       "team": "RB",
-      "points": 29,
+      "points": 31,
       "wins": 0
     },
     {
       "position": 12,
       "driver": "Franco Colapinto",
       "team": "Alpine",
-      "points": 21,
+      "points": 27,
       "wins": 0
     },
     {
@@ -104,7 +104,7 @@
       "position": 15,
       "driver": "Nico Hulkenberg",
       "team": "Audi",
-      "points": 6,
+      "points": 7,
       "wins": 0
     },
     {
@@ -161,37 +161,37 @@
     {
       "position": 1,
       "team": "Mercedes",
-      "points": 468,
-      "wins": 9
+      "points": 503,
+      "wins": 10
     },
     {
       "position": 2,
       "team": "Ferrari",
-      "points": 346,
+      "points": 358,
       "wins": 2
     },
     {
       "position": 3,
       "team": "McLaren",
-      "points": 287,
+      "points": 306,
       "wins": 2
     },
     {
       "position": 4,
       "team": "Red Bull",
-      "points": 204,
+      "points": 230,
       "wins": 0
     },
     {
       "position": 5,
       "team": "RB",
-      "points": 75,
+      "points": 77,
       "wins": 0
     },
     {
       "position": 6,
       "team": "Alpine",
-      "points": 62,
+      "points": 68,
       "wins": 0
     },
     {
@@ -203,7 +203,7 @@
     {
       "position": 8,
       "team": "Audi",
-      "points": 16,
+      "points": 17,
       "wins": 0
     },
     {
