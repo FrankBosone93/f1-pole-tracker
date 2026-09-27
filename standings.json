@@ -1,26 +1,26 @@
 {
   "season": 2026,
-  "updatedAt": "2026-09-20T20:19:56.948Z",
+  "updatedAt": "2026-09-27T20:53:13.424Z",
   "drivers": [
     {
       "position": 1,
       "driver": "Andrea Kimi Antonelli",
       "team": "Mercedes",
-      "points": 292,
+      "points": 302,
       "wins": 8
     },
     {
       "position": 2,
       "driver": "George Russell",
       "team": "Mercedes",
-      "points": 211,
-      "wins": 2
+      "points": 236,
+      "wins": 3
     },
     {
       "position": 3,
       "driver": "Lewis Hamilton",
       "team": "Ferrari",
-      "points": 191,
+      "points": 199,
       "wins": 1
     },
     {
@@ -34,14 +34,14 @@
       "position": 5,
       "driver": "Charles Leclerc",
       "team": "Ferrari",
-      "points": 167,
+      "points": 179,
       "wins": 1
     },
     {
       "position": 6,
       "driver": "Max Verstappen",
       "team": "Red Bull",
-      "points": 145,
+      "points": 163,
       "wins": 0
     },
     {
@@ -55,7 +55,7 @@
       "position": 8,
       "driver": "Isack Hadjar",
       "team": "Red Bull",
-      "points": 71,
+      "points": 86,
       "wins": 0
     },
     {
@@ -76,7 +76,7 @@
       "position": 11,
       "driver": "Arvid Lindblad",
       "team": "RB",
-      "points": 31,
+      "points": 37,
       "wins": 0
     },
     {
@@ -90,7 +90,7 @@
       "position": 13,
       "driver": "Oliver Bearman",
       "team": "Haas",
-      "points": 18,
+      "points": 20,
       "wins": 0
     },
     {
@@ -109,23 +109,23 @@
     },
     {
       "position": 16,
-      "driver": "Carlos Sainz",
-      "team": "Williams",
-      "points": 6,
+      "driver": "Esteban Ocon",
+      "team": "Haas",
+      "points": 7,
       "wins": 0
     },
     {
       "position": 17,
-      "driver": "Alex Albon",
+      "driver": "Carlos Sainz",
       "team": "Williams",
-      "points": 5,
+      "points": 7,
       "wins": 0
     },
     {
       "position": 18,
-      "driver": "Esteban Ocon",
-      "team": "Haas",
-      "points": 3,
+      "driver": "Alex Albon",
+      "team": "Williams",
+      "points": 5,
       "wins": 0
     },
     {
@@ -161,13 +161,13 @@
     {
       "position": 1,
       "team": "Mercedes",
-      "points": 503,
-      "wins": 10
+      "points": 538,
+      "wins": 11
     },
     {
       "position": 2,
       "team": "Ferrari",
-      "points": 358,
+      "points": 378,
       "wins": 2
     },
     {
@@ -179,13 +179,13 @@
     {
       "position": 4,
       "team": "Red Bull",
-      "points": 230,
+      "points": 263,
       "wins": 0
     },
     {
       "position": 5,
       "team": "RB",
-      "points": 77,
+      "points": 83,
       "wins": 0
     },
     {
@@ -197,7 +197,7 @@
     {
       "position": 7,
       "team": "Haas",
-      "points": 21,
+      "points": 27,
       "wins": 0
     },
     {
@@ -209,7 +209,7 @@
     {
       "position": 9,
       "team": "Williams",
-      "points": 11,
+      "points": 12,
       "wins": 0
     },
     {
