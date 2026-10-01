@@ -1,7 +1,31 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-10-01T10:29:51.308Z",
+  "updatedAt": "2026-10-01T17:32:27.710Z",
   "items": [
+    {
+      "title": "GP Malesia 2026: orari Sky/Now e TV8",
+      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-malesia-2026-sepang-bahrain-televisione-sky-tv8-diretta-differita-programma-dove-vederla-ferrari-leclerc-hamilton-sf26-antonelli",
+      "date": "2026-10-01T17:00:00.000Z",
+      "author": "Marco Belloro",
+      "excerpt": "I dettagli della programmazione televisiva dell'appuntamento di Kuala Lumpur",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Start-Malesia-Partenza-F1-2017-436x291.jpg"
+    },
+    {
+      "title": "Deficit Ferrari: le risposte (diverse) di Hamilton, Leclerc e Vasseur",
+      "link": "https://www.formulapassion.it/f1/f1-news/deficit-ferrari-risposte-diverse-hamilton-leclerc-vasseur-solo-motore",
+      "date": "2026-10-01T12:06:06.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "È solo il motore a frenare la SF-26? Ecco cosa ne pensano i diretti interessati",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Hamilton-Leclerc-Ferrari-1-436x291.jpg"
+    },
+    {
+      "title": "Hamilton ha lasciato intendere che i problemi Ferrari potrebbero essere più in alto di Vasseur",
+      "link": "https://www.formulapassion.it/f1/f1-news/hamilton-lasciato-intendere-problemi-ferrari-piu-in-alto-vasseur",
+      "date": "2026-10-01T11:08:56.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Le parole del campione inglese (che auspica cambiamenti strutturali) sottintendono che Vasseur non abbia pieni poteri",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Vasseur-Hamilton-436x291.jpg"
+    },
     {
       "title": "Russell ci crede: “Manca un terzo di campionato, può succedere di tutto. Ora posso vincere sempre”",
       "link": "https://www.formulapassion.it/f1/f1-news/russell-ci-crede-manca-un-terzo-di-campionato-puo-succedere-di-tutto-ora-posso-vincere-sempre",
@@ -17,30 +41,6 @@
       "author": "Matteo Senatore",
       "excerpt": "L'italiano dopo il weekend altalenante di Baku è ancora leader del Mondiale con un margine di 66 punti sul compagno di squadra George Russell",
       "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298009118-1-436x291.jpg"
-    },
-    {
-      "title": "Hamilton: “Siamo secondi tra i Costruttori, è un risultato enorme”",
-      "link": "https://www.formulapassion.it/f1/f1-news/hamilton-siamo-secondi-tra-i-costruttori-e-un-risultato-enorme",
-      "date": "2026-10-01T08:52:09.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "L'inglese ha parlato del particolare momento che sta attraversando il team di Maranello, rivendicando i passi in avanti compiuti rispetto al 2025",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298012892-1-436x291.jpg"
-    },
-    {
-      "title": "Leclerc si schiera: “Con Vasseur ho rapporto speciale, lui è prezioso per il team. Queste voci sono irrispettose”",
-      "link": "https://www.formulapassion.it/f1/f1-news/leclerc-si-schiera-con-vasseur-ho-rapporto-speciale-lui-e-prezioso-per-il-team-queste-voci-sono-irrispettose",
-      "date": "2026-10-01T08:21:47.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il monegasco ha pronunciato parole molto forti in difesa del suo team principal durante il media-day in Malesia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298014275-1-436x291.jpg"
-    },
-    {
-      "title": "Gasly chiude il caso Colapinto: “Ha sbagliato, ma è tutto chiarito”",
-      "link": "https://www.formulapassion.it/f1/f1-news/gasly-chiude-il-caso-colapinto-ha-sbagliato-ma-e-tutto-chiarito",
-      "date": "2026-10-01T07:58:17.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il francese, coinvolto a Baku dall'errore del compagno di squadra, ha voluto chiudere le polemiche che sono divampate per tutta la settimana",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2297447222-1-436x291.jpg"
     }
   ]
 }
