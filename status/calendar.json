@@ -1,5 +1,5 @@
 {
-  "ok": false,
-  "lastRun": "2026-10-03T09:28:20.456Z",
-  "error": "HTTP 504 per https://f1api.dev/api/current"
+  "ok": true,
+  "lastRun": "2026-10-03T14:27:37.873Z",
+  "error": null
 }
