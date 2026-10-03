@@ -1134,5 +1134,14 @@
     "timeStr": "1:31.824",
     "seconds": 91.824,
     "weather": "☀️ Caldo"
+  },
+  {
+    "year": 2026,
+    "circuit": "Baku (Azerbaijan)",
+    "driver": "George Russell",
+    "team": "Mercedes",
+    "timeStr": "1:42.526",
+    "seconds": 102.526,
+    "weather": "🌧️ Pioggia"
   }
 ]
