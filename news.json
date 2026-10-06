@@ -1,7 +1,39 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-10-06T10:49:29.867Z",
+  "updatedAt": "2026-10-06T17:26:52.322Z",
   "items": [
+    {
+      "title": "GP Singapore 2026: orari Sky/Now e TV8",
+      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-singapore-2026-sprint-marina-bay-televisione-diretta-sky-differita-tv8-programmazione-dove-vederla-ferrari-leclerc-hamilton-sf26-antonelli",
+      "date": "2026-10-06T15:00:00.000Z",
+      "author": "Marco Belloro",
+      "excerpt": "Il weekend di Singapore sarà quasi tutto in diretta anche su TV8 a eccezione delle prove libere e del GP",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Start-Singapore-2025-F1-436x291.jpg"
+    },
+    {
+      "title": "Lewis Hamilton ha pubblicato un documentario sul restauro della sua Ferrari F40 – VIDEO",
+      "link": "https://www.formulapassion.it/f1/f1-news/lewis-hamilton-documentario-restauro-ferrari-f40-video",
+      "date": "2026-10-06T12:17:28.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Il campione inglese ha diffuso un documentario di 8 minuti in cui ha mostrato passo dopo passo il recupero dell'iconica auto",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Hamilton-Monza-F40-436x291.jpg"
+    },
+    {
+      "title": "Niente jolly per la Cadillac nel caos di Sepang: Perez chiude in P19, Bottas out",
+      "link": "https://www.formulapassion.it/f1/f1-news/niente-jolly-cadillac-caos-sepang-malesia-perez-p19-out-bottas-ritiro",
+      "date": "2026-10-06T12:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Weekend ancora una volta complesso per il team americano, l'unico che non ha ancora ottenuto punti in questa stagione",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298530638-436x291.jpg"
+    },
+    {
+      "title": "Williams: altro weekend da dimenticare in Malesia, al via solo un’illusione",
+      "link": "https://www.formulapassion.it/f1/f1-news/williams-weekend-da-dimenticare-in-malesia-via-solo-illusione-peccato-sainz-albon-ritiro",
+      "date": "2026-10-06T11:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Mentre Albon si è ritirato per un guasto al cambio, Sainz ha chiuso al 17° dopo essere stato tamponato da Bortoleto",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298494897-436x291.jpg"
+    },
     {
       "title": "Antonelli, residenza contesa tra Monte Carlo e San Marino",
       "link": "https://www.formulapassion.it/f1/f1-news/antonelli-residenza-contesa-monte-carlo-monaco-san-marino",
@@ -9,38 +41,6 @@
       "author": "Stefano Ollanu",
       "excerpt": "Il leader del mondiale negli ultimi giorni è stato al centro di un caso dopo le recenti dichiarazioni di Alberto di Monaco alla stampa italiana",
       "image": "https://storage.googleapis.com/fp-media/1/2026/09/GettyImages-2293373240-436x291.jpg"
-    },
-    {
-      "title": "Retroscena Ferrari: decisione sulle slick presa dopo aver visto gli onboard della Safety Car",
-      "link": "https://www.formulapassion.it/f1/f1-news/retroscena-ferrari-decisione-slick-presa-dopo-onboard-safety-car-hamilton-leclerc",
-      "date": "2026-10-06T08:00:58.000Z",
-      "author": "Stefano Ollanu",
-      "excerpt": "Lo scambio radio tra il muretto box e i piloti ha rivelato la ragione per cui la Ferrari è partita con gomme d'asciutto in Malesia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Hamilton-Ferrari-Malesia-436x291.jpg"
-    },
-    {
-      "title": "Russell, il team radio del ritiro da doppia penalità: “Controllate la power unit, si sta surriscaldando”",
-      "link": "https://www.formulapassion.it/f1/f1-news/russell-team-radio-ritiro-doppia-penalita-power-unit-griglia-partenza-mercedes",
-      "date": "2026-10-06T07:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il pilota inglese dovrà arretrare due volte sulla griglia di partenza nelle prossime gare",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Russell-Mercedes-436x291.jpg"
-    },
-    {
-      "title": "Hadjar chiede un ‘suggerimento’ sul restart di Verstappen, il team lo gela: “Non te lo possiamo dire in radio”",
-      "link": "https://www.formulapassion.it/f1/f1-news/hadjar-chiede-un-suggerimento-sul-restart-di-verstappen-il-team-lo-gela-non-te-lo-possiamo-dire-in-radio",
-      "date": "2026-10-06T06:35:08.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il canale social della F1 ha svelato un curioso retroscena occorso prima dell'ultima ripartenza di domenica in Malesia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298352292-1-436x291.jpg"
-    },
-    {
-      "title": "Allarme Leclerc: “Ci sono situazioni in cui non abbiamo il controllo della macchina”",
-      "link": "https://www.formulapassion.it/f1/f1-news/allarme-leclerc-ci-sono-situazioni-in-cui-non-abbiamo-il-controllo-della-macchina",
-      "date": "2026-10-06T06:00:00.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Le parole del monegasco dopo il GP di Malesia sono state piuttosto nette. FIA e F1 devono intervenire",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298358846-1-436x291.jpg"
     }
   ]
 }
