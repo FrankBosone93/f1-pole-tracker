@@ -1,46 +1,46 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-10-07T10:36:42.481Z",
+  "updatedAt": "2026-10-07T17:59:33.431Z",
   "items": [
     {
-      "title": "Verstappen: “Non ho mai vinto a Singapore. Ho un conto in sospeso con Marina Bay”",
-      "link": "https://www.formulapassion.it/f1/f1-news/verstappen-mai-vinto-a-singapore-ho-un-conto-in-sospeso-con-marina-bay",
-      "date": "2026-10-07T09:52:42.000Z",
+      "title": "Verstappen: “Rispetto molto la Ferrari. Ma che senso avrebbe andarci per fare 5° o 6°?”",
+      "link": "https://www.formulapassion.it/f1/f1-news/verstappen-ferrari-rispetto-ma-andare-per-quinto-sesto-che-senso-ha",
+      "date": "2026-10-07T16:36:16.000Z",
+      "author": "Stefano Ollanu",
+      "excerpt": "Il campione olandese ha parlato apertamente della prospettiva ipotetica di un trasferimento a Maranello",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Max-Verstappen-436x291.jpg"
+    },
+    {
+      "title": "Bearman sul 9° posto del 2025: “Felicissimo se riuscissi a ripetere quel risultato”",
+      "link": "https://www.formulapassion.it/f1/f1-news/bearman-9-posto-2025-felicissimo-se-riuscissi-a-ripetere-quel-risultato",
+      "date": "2026-10-07T14:00:00.000Z",
       "author": "Alessandro Prada",
-      "excerpt": "L'olandese, carico dall'ultimo successo a Sepang, proverà a conquistare la sua prima vittoria in F1 sul tracciato cittadino asiatico",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298355860-1-436x291.jpg"
+      "excerpt": "Il britannico della Haas si prepara al GP di Singapore, ritenendosi più pronto a lottare per la zona punti rispetto a metà stagione",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298463493-436x291.jpg"
     },
     {
-      "title": "Ferrari, Vasseur verso Singapore: “Occhio al format Sprint, daremo il massimo già dalle FP1”",
-      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-vasseur-verso-singapore-occhio-format-sprint-dare-massimo-gia-fp1",
-      "date": "2026-10-07T08:50:00.000Z",
-      "author": "Salvo Sardina",
-      "excerpt": "Le previsioni del team principal della scuderia di Maranello alla vigilia della sfida (con il nuovo format) sul circuito cittadino di Marina Bay",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298358190-1200x800-1-436x291.jpg"
+      "title": "Lawson: “Affrontiamo il weekend forti degli aspetti positivi emersi nell’ultima gara”",
+      "link": "https://www.formulapassion.it/f1/f1-news/lawson-affrontiamo-weekend-forti-degli-aspetti-positivi-emersi-ultima-gara",
+      "date": "2026-10-07T13:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Il neozelandese della Racing Bulls si avvicina fiducioso al GP di Singapore, dove Lindblad farà il suo esordio in una gara in notturna",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298460121-436x291.jpg"
     },
     {
-      "title": "Wolff: “Russell domenica a Singapore partirà dal fondo della griglia”",
-      "link": "https://www.formulapassion.it/f1/f1-news/toto-wolff-spoilera-penalita-russell-domenica-parte-fondo-griglia-gp-singapore-power-unit-nuova",
-      "date": "2026-10-07T08:15:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il team principal della Mercedes ha anticipato che il weekend di Russell è a dir poco in salita",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2298335003-1-436x291.jpg"
+      "title": "Formula 1 vicina all’annuncio ufficiale del ritorno in Africa",
+      "link": "https://www.formulapassion.it/f1/f1-news/f1-vicina-annuncio-ufficiale-ritorno-in-africa",
+      "date": "2026-10-07T12:27:54.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Secondo autorevoli fonti, il Circus potrebbe tornare nell'unico continente che, ad oggi, non ospita un GP",
+      "image": "https://storage.googleapis.com/fp-media/1/2025/12/GettyImages-944203142-1-436x291.jpg"
     },
     {
-      "title": "Marko: “F1 bloccata da un software per un’ora? Vergognoso, è già fatta per i V8 turbo dal 2030”",
-      "link": "https://www.formulapassion.it/f1/f1-news/marko-f1-ostaggio-software-gp-malesia-vergogna-v8-turbo-2030-decisione-gia-presa",
-      "date": "2026-10-07T08:00:00.000Z",
-      "author": "Marco Belloro",
-      "excerpt": "Il grande ex non ha avuto parole dolci nei confronti di quanto accaduto in Malesia",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Hamilton-Ferrari-1-1-436x291.jpg"
-    },
-    {
-      "title": "Allievi: “Il problema della Ferrari? La burocrazia dentro Maranello”",
-      "link": "https://www.formulapassion.it/f1/f1-news/allievi-il-problema-della-ferrari-la-burocrazia-dentro-maranello-vasseur-todt-elkann",
-      "date": "2026-10-07T06:00:00.000Z",
-      "author": "Simone Peluso",
-      "excerpt": "Per Pino Allievi la burocrazia di Maranello ha frenato anche figure di valore, che avrebbero potuto fare la fortuna della Ferrari",
-      "image": "https://storage.googleapis.com/fp-media/1/2025/02/Vasseur-Elkann-1-436x291.jpg"
+      "title": "Audi: missione zona punti a Singapore con una livrea speciale",
+      "link": "https://www.formulapassion.it/f1/f1-news/audi-missione-zona-punti-a-singapore-con-nuova-livrea",
+      "date": "2026-10-07T12:00:00.000Z",
+      "author": "Alessandro Prada",
+      "excerpt": "Il team tedesco proverà a entrare in top 10 a Marina Bay, dove prenderà parte al weekend di gara con nuovi colori",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/HT3OehMXEAEtsrh-436x291.jpg"
     }
   ]
 }
