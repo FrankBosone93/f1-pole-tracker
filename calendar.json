@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-09-27T20:39:21.843Z",
+  "updatedAt": "2026-10-09T03:52:56.878Z",
   "races": [
     {
       "round": 1,
@@ -4958,7 +4958,10 @@
       "raceName": "Formula 1 Gulf Air Bahrain Grand Prix in Malaysia 2026",
       "date": "2026-10-04",
       "weekendStart": "2026-10-02",
-      "winner": null,
+      "winner": {
+        "driver": "Max Verstappen",
+        "team": "Red Bull"
+      },
       "schedule": {
         "fp1": {
           "date": "2026-10-02",
@@ -4988,7 +4991,162 @@
         "fp2": null,
         "fp3": null,
         "qualy": null,
-        "race": null
+        "race": [
+          {
+            "position": 1,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "1:47:14.808",
+            "retired": null
+          },
+          {
+            "position": 2,
+            "driver": "Andrea Kimi Antonelli",
+            "team": "Mercedes",
+            "time": "+2.307",
+            "retired": null
+          },
+          {
+            "position": 3,
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": "+4.919",
+            "retired": null
+          },
+          {
+            "position": 4,
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": "+7.258",
+            "retired": null
+          },
+          {
+            "position": 5,
+            "driver": "Isack Hadjar",
+            "team": "Red Bull",
+            "time": "+8.571",
+            "retired": null
+          },
+          {
+            "position": 6,
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": "+9.454",
+            "retired": null
+          },
+          {
+            "position": 7,
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "+12.753",
+            "retired": null
+          },
+          {
+            "position": 8,
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": "+13.372",
+            "retired": null
+          },
+          {
+            "position": 9,
+            "driver": "Lando Norris",
+            "team": "McLaren",
+            "time": "+13.993",
+            "retired": null
+          },
+          {
+            "position": 10,
+            "driver": "Arvid Lindblad",
+            "team": "RB",
+            "time": "+15.928",
+            "retired": null
+          },
+          {
+            "position": 11,
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": "+17.404",
+            "retired": null
+          },
+          {
+            "position": 12,
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": "+18.052",
+            "retired": null
+          },
+          {
+            "position": 13,
+            "driver": "Franco Colapinto",
+            "team": "Alpine",
+            "time": "+18.997",
+            "retired": null
+          },
+          {
+            "position": 14,
+            "driver": "Oliver Bearman",
+            "team": "Haas",
+            "time": "+22.305",
+            "retired": null
+          },
+          {
+            "position": 15,
+            "driver": "Esteban Ocon",
+            "team": "Haas",
+            "time": "+22.532",
+            "retired": null
+          },
+          {
+            "position": 16,
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": "+23.315",
+            "retired": null
+          },
+          {
+            "position": 17,
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": "+25.431",
+            "retired": null
+          },
+          {
+            "position": 18,
+            "driver": "Gabriel Bortoleto",
+            "team": "Audi",
+            "time": "+28.233",
+            "retired": null
+          },
+          {
+            "position": 19,
+            "driver": "Sergio Pérez",
+            "team": "Cadillac",
+            "time": "+29.310",
+            "retired": null
+          },
+          {
+            "position": 20,
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": "DNF (55)",
+            "retired": null
+          },
+          {
+            "position": 21,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "DNF (55)",
+            "retired": null
+          },
+          {
+            "position": 22,
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": "DNF (55)",
+            "retired": null
+          }
+        ]
       }
     },
     {
@@ -5003,16 +5161,16 @@
           "date": "2026-10-09",
           "time": "09:30:00Z"
         },
-        "fp2": {
+        "fp2": null,
+        "fp3": null,
+        "sprintQualy": {
           "date": "2026-10-09",
-          "time": "13:00:00Z"
+          "time": "12:30:00Z"
         },
-        "fp3": {
+        "sprintRace": {
           "date": "2026-10-10",
           "time": "09:30:00Z"
         },
-        "sprintQualy": null,
-        "sprintRace": null,
         "qualy": {
           "date": "2026-10-10",
           "time": "13:00:00Z"
