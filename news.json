@@ -1,46 +1,41 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-10-12T11:22:12.886Z",
+  "updatedAt": "2026-10-12T20:36:14.988Z",
   "items": [
     {
-      "title": "Mekies: “La vettura potrà essere competitiva anche su altre piste, ma non è mai scontato”",
-      "link": "https://www.formulapassion.it/f1/f1-news/mekies-vettura-potra-essere-competitiva-anche-su-altre-piste-ma-non-e-mai-scontato",
-      "date": "2026-10-12T11:00:00.000Z",
+      "title": "Leclerc, team radio preoccupante al 46esimo giro: “La macchina ha frenato da sola, se capita di nuovo finisco a muro”",
+      "link": "https://www.formulapassion.it/f1/f1-news/paura-brivido-leclerc-macchina-iniziato-frenare-da-sola-che-accidenti-successo-ferrari-gp-singapore-bozzi",
+      "date": "2026-10-12T19:00:00.000Z",
+      "author": "Marco Belloro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/leclerc-f1-singapore-1-436x291.jpg"
+    },
+    {
+      "title": "Horner: “Ferrari il lavoro dei sogni? Parole estrapolate dal contesto, torno in F1 solo da azionista e a Maranello non vendono quote”",
+      "link": "https://www.formulapassion.it/f1/f1-news/horner-ritira-offerta-ferrari-frasi-decontestualizzate-voglio-quote-azionista-maranello-non-vende-vasseur",
+      "date": "2026-10-12T18:45:00.000Z",
+      "author": "Marco Belloro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/Horner-e-Vasseur-436x291.jpg"
+    },
+    {
+      "title": "Herbert: “Antonelli straordinario, non è arrogante, una ventata di freschezza molto diversa da quelle di Hamilton e Verstappen”",
+      "link": "https://www.formulapassion.it/f1/f1-news/herbert-pazzo-kimi-antonelli-umile-non-arrogante-ventata-freschezza-diversa-verstappen-hamilton",
+      "date": "2026-10-12T16:00:00.000Z",
+      "author": "Marco Belloro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Antonelli-Mercedes-4-436x291.jpg"
+    },
+    {
+      "title": "Singapore 2026, l’altro podio",
+      "link": "https://www.formulapassion.it/f1/f1-news/pagelle-singapore-2026-altro-podio-ferrari-antonelli-verstappen-hamilton-leclerc",
+      "date": "2026-10-12T14:30:00.000Z",
+      "author": "Valerio Barretta",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Verstappen-Antonelli-436x291.jpg"
+    },
+    {
+      "title": "Russell: “La VSC terminata mentre rientravo ai box è il riassunto della mia stagione”",
+      "link": "https://www.formulapassion.it/f1/f1-news/calimero-russell-vsc-terminata-mentre-rientravo-ai-box-riassume-sfortuna-questa-stagione",
+      "date": "2026-10-12T13:00:00.000Z",
       "author": "Alessandro Prada",
-      "excerpt": "La soddisfazione del team principal della Red Bull dopo la seconda vittoria consecutiva di Verstappen, anche se per la squadra non ci saranno più aggiornamenti",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2299254265-436x291.jpg"
-    },
-    {
-      "title": "Norris: “Al momento siamo chiaramente la quarta forza del campionato”",
-      "link": "https://www.formulapassion.it/f1/f1-news/norris-al-momento-siamo-chiaramente-quarta-forza-del-campionato",
-      "date": "2026-10-12T10:00:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "Per il campione del mondo in carica il 4° posto di Marina Bay era il massimo risultato che avrebbe potuto ottenere davanti al compagno di squadra",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2299665856-436x291.jpg"
-    },
-    {
-      "title": "Ritorno al Futuro e le altre storie da Singapore: I Doppiati F1 Podcast – VIDEO",
-      "link": "https://www.formulapassion.it/f1/f1-news/ritorno-al-futuro-analisi-singapore-i-doppiati-f1-podcast-video-verstappen-ferrari-leclerc-hamilton-antonelli",
-      "date": "2026-10-12T07:15:00.000Z",
-      "author": "Simone Peluso",
-      "excerpt": "Sventolate le bandiere blu, I Doppiati sono in diretta su YouTube, Spotify e Apple Podcast per commentare il GP di Singapore di F1",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Doppiati-F1-Podcast-Singapore-436x291.png"
-    },
-    {
-      "title": "Vittorie con lo stesso team: Verstappen supera Schumacher",
-      "link": "https://www.formulapassion.it/f1/f1-news/vittorie-con-lo-stesso-team-verstappen-supera-schumacher",
-      "date": "2026-10-12T06:45:00.000Z",
-      "author": "Alessandro Prada",
-      "excerpt": "In questa speciale classifica all-time l'olandese della Red Bull è ora in seconda posizione, alle spalle del solo Lewis Hamilton",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2299672559-436x291.jpg"
-    },
-    {
-      "title": "Troppa attenzione sulla strategia di Hamilton, Vasseur si arrabbia: “A McLaren avete fatto così tante domande?”",
-      "link": "https://www.formulapassion.it/f1/f1-news/troppa-attenzione-sulla-strategia-di-hamilton-vasseur-si-arrabbia-a-mclaren-avete-fatto-cosi-tante-domande",
-      "date": "2026-10-12T06:32:19.000Z",
-      "author": "Matteo Senatore",
-      "excerpt": "Il team principal francese ha ribadito più volte che l'intera responsabilità dell'errore strategico di Singapore è sulle spalle di Lewis Hamilton",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2299200689-1-436x291.jpg"
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2299522338-436x291.jpg"
     }
   ]
 }
