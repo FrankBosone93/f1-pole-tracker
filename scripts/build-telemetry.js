@@ -182,12 +182,19 @@ async function buildCircuitTelemetry(session, season) {
         return null;
     }
 
+    // OpenF1 restituisce a volte 104 (valore fuori scala, non una percentuale
+    // reale: osservato su Monza/Suzuka/Shanghai 2026 e Las Vegas 2023-24) per
+    // acceleratore/freno quando il dato non è valido. Va scartato (null =
+    // buco nel grafico): lasciato com'è, il grafico (max 100%) mostrava
+    // acceleratore e freno a 100% insieme per diversi secondi.
+    const validPercent = v => (typeof v === 'number' && v >= 0 && v <= 100) ? v : null;
+
     const samples = carData
         .map(d => ({
             t: Math.round((new Date(d.date) - lapStart) / 10) / 100, // secondi dall'inizio del giro, 2 decimali
             speed: d.speed,
-            throttle: d.throttle,
-            brake: d.brake,
+            throttle: validPercent(d.throttle),
+            brake: validPercent(d.brake),
             gear: d.n_gear,
         }))
         .filter(s => s.t >= 0 && s.t <= poleLap.lap_duration + 1);

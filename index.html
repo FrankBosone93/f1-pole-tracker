@@ -448,8 +448,12 @@
             }
 
             const speedPoints = entry.samples.map(s => ({ x: s.t, y: s.speed }));
-            const throttlePoints = entry.samples.map(s => ({ x: s.t, y: s.throttle }));
-            const brakePoints = entry.samples.map(s => ({ x: s.t, y: s.brake }));
+            // Percentuali non valide (null, o fuori da 0-100 come il 104
+            // restituito a volte da OpenF1) diventano buchi nel grafico invece
+            // di essere tagliate a 100%.
+            const pct = v => (typeof v === 'number' && v >= 0 && v <= 100) ? v : null;
+            const throttlePoints = entry.samples.map(s => ({ x: s.t, y: pct(s.throttle) }));
+            const brakePoints = entry.samples.map(s => ({ x: s.t, y: pct(s.brake) }));
             const gearPoints = entry.samples.map(s => ({ x: s.t, y: s.gear }));
             const compareSpeedPoints = compareEntry ? compareEntry.samples.map(s => ({ x: s.t, y: s.speed })) : null;
             const compareGearPoints = compareEntry ? compareEntry.samples.map(s => ({ x: s.t, y: s.gear })) : null;
@@ -460,6 +464,11 @@
                 resizeDelay: 200,
                 animation: { duration: 400 },
                 interaction: { mode: 'index', intersect: false },
+                // Padding destro uguale e sufficiente per l'etichetta "90s"
+                // dell'asse X (visibile solo nel grafico marce): senza, Chart.js
+                // restringe di ~12px l'area di disegno di quel solo pannello e
+                // la curva delle marce finisce prima delle altre due.
+                layout: { padding: { right: 20 } },
             };
 
             // I tre grafici hanno etichette sull'asse Y di larghezza diversa
