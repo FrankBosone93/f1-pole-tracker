@@ -2,7 +2,7 @@
 // PWA (icona a schermo intero su home screen) e una resilienza di base
 // offline. Strategia "network-first" per TUTTO, mai "cache-first": la
 // freschezza di data.json/calendar.json/telemetry.json/ecc. è fondamentale
-// per questo sito (già scaricati altrove con cache:'no-store'), quindi la
+// per questo sito (già scaricati altrove con cache:'no-cache', cioè sempre rivalidati), quindi la
 // cache scatta solo come ripiego quando la rete non risponde (offline), mai
 // come prima scelta mentre si è online - niente rischio di mostrare dati
 // vecchi mentre si è connessi.

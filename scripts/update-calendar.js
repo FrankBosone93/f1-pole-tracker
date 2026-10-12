@@ -48,9 +48,14 @@ async function main() {
     if (fs.existsSync(CALENDAR_JSON_PATH)) {
         existingCalendar = JSON.parse(fs.readFileSync(CALENDAR_JSON_PATH, 'utf-8'));
     }
-    const existingByRound = new Map();
+    // Chiave = circuito, NON numero di round: l'API può rinumerare il
+    // calendario a stagione in corso (successo nel 2026: Sepang inserita come
+    // round 16, Singapore passata da 16 a 17) e i risultati in cache
+    // finirebbero attribuiti alla gara sbagliata. Un circuito compare una
+    // sola volta per stagione, quindi è una chiave stabile.
+    const existingByCircuit = new Map();
     if (existingCalendar && Array.isArray(existingCalendar.races)) {
-        existingCalendar.races.forEach(r => existingByRound.set(r.round, r));
+        existingCalendar.races.forEach(r => existingByCircuit.set(r.circuit, r));
     }
 
     const now = new Date();
@@ -93,7 +98,7 @@ async function main() {
             race: race.schedule?.race?.date ? race.schedule.race : null,
         };
 
-        const existingRace = existingByRound.get(round);
+        const existingRace = existingByCircuit.get(mappedCircuit);
 
         let winner = null;
         const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
@@ -143,8 +148,10 @@ async function main() {
                 continue;
             }
             const sessionInfo = schedule[key];
-            if (!sessionInfo?.date || !sessionInfo?.time) continue; // sessione non prevista in questo weekend
-            const sessionStart = new Date(`${sessionInfo.date}T${sessionInfo.time}`);
+            // Orario assente ma data nota (visto su Sepang 2026, round 16):
+            // la sessione conta come disputata dal giorno dopo la sua data.
+            if (!sessionInfo?.date) continue; // sessione non prevista in questo weekend
+            const sessionStart = new Date(`${sessionInfo.date}T${sessionInfo.time || '23:59:59Z'}`);
             if (isNaN(sessionStart) || sessionStart > now) continue; // ancora da disputare
 
             try {

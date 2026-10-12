@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-12T14:24:01.041Z",
+  "updatedAt": "2026-10-12T19:30:17.498Z",
   "races": [
     {
       "round": 1,
@@ -4954,7 +4954,7 @@
     },
     {
       "round": 16,
-      "circuit": "Sepang International Circuit",
+      "circuit": "Sepang (Malesia)",
       "raceName": "Formula 1 Gulf Air Bahrain Grand Prix in Malaysia 2026",
       "date": "2026-10-04",
       "weekendStart": "2026-10-02",
@@ -4990,7 +4990,140 @@
         "fp1": null,
         "fp2": null,
         "fp3": null,
-        "qualy": null,
+        "qualy": [
+          {
+            "position": 1,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "1:35.130"
+          },
+          {
+            "position": 2,
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": "1:35.428"
+          },
+          {
+            "position": 3,
+            "driver": "Isack Hadjar",
+            "team": "Red Bull",
+            "time": "1:35.558"
+          },
+          {
+            "position": 4,
+            "driver": "Andrea Kimi Antonelli",
+            "team": "Mercedes",
+            "time": "1:35.631"
+          },
+          {
+            "position": 5,
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": "1:35.666"
+          },
+          {
+            "position": 6,
+            "driver": "Lando Norris",
+            "team": "McLaren",
+            "time": "1:35.757"
+          },
+          {
+            "position": 7,
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": "1:35.762"
+          },
+          {
+            "position": 8,
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": "1:35.871"
+          },
+          {
+            "position": 9,
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": "1:37.210"
+          },
+          {
+            "position": 10,
+            "driver": "Gabriel Bortoleto",
+            "team": "Audi",
+            "time": "1:37.673"
+          },
+          {
+            "position": 11,
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "1:37.023"
+          },
+          {
+            "position": 12,
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": "1:37.220"
+          },
+          {
+            "position": 13,
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": "1:37.527"
+          },
+          {
+            "position": 14,
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": "1:37.566"
+          },
+          {
+            "position": 15,
+            "driver": "Franco Colapinto",
+            "team": "Alpine",
+            "time": "1:37.179"
+          },
+          {
+            "position": 16,
+            "driver": "Arvid Lindblad",
+            "team": "RB",
+            "time": "1:37.883"
+          },
+          {
+            "position": 17,
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": "1:37.970"
+          },
+          {
+            "position": 18,
+            "driver": "Oliver Bearman",
+            "team": "Haas",
+            "time": "1:37.980"
+          },
+          {
+            "position": 19,
+            "driver": "Esteban Ocon",
+            "team": "Haas",
+            "time": "1:38.233"
+          },
+          {
+            "position": 20,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "1:38.600"
+          },
+          {
+            "position": 21,
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": "1:38.611"
+          },
+          {
+            "position": 22,
+            "driver": "Sergio Pérez",
+            "team": "Cadillac",
+            "time": "1:38.933"
+          }
+        ],
         "race": [
           {
             "position": 1,

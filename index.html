@@ -588,7 +588,7 @@
             if (!dataSourceBadge) return;
             const results = await Promise.all(API_STATUS_SOURCES.map(async src => {
                 try {
-                    const res = await fetch(`status/${src.key}.json`, { cache: 'no-store' });
+                    const res = await fetch(`status/${src.key}.json`, { cache: 'no-cache' });
                     if (!res.ok) return { ...src, ok: false, error: 'file di stato non trovato' };
                     const data = await res.json();
                     return { ...src, ok: !!data.ok, error: data.error, lastRun: data.lastRun };
@@ -629,7 +629,7 @@
 
         async function initApp() {
             try {
-                const response = await fetch('data.json', { cache: 'no-store' });
+                const response = await fetch('data.json', { cache: 'no-cache' });
                 if(!response.ok) throw new Error('data.json non raggiungibile (status ' + response.status + ')');
                 baseData = await response.json();
                 if(dataSourceBadge) dataSourceBadge.innerText = '⏳ Verifica stato API...';
@@ -647,55 +647,45 @@
 
             poleData = [...baseData];
 
-            try {
-                const standingsResponse = await fetch('standings.json', { cache: 'no-store' });
-                if (standingsResponse.ok) standingsData = await standingsResponse.json();
-            } catch (err) {
-                console.warn('Impossibile caricare standings.json (classifica campionato):', err);
-            }
-
-            try {
-                const calendarResponse = await fetch('calendar.json', { cache: 'no-store' });
-                if (calendarResponse.ok) {
-                    calendarData = await calendarResponse.json();
-                    const calendarButtonLabel = document.getElementById('calendarButtonLabel');
-                    if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario & Risultati ${calendarData.season}`;
-                    renderFeaturedRace();
-                    // Aggiorna lo stato "live"/"passata"/"da disputare" delle
-                    // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
-                    setInterval(renderFeaturedRace, 60000);
+            // Tutte le altre risorse partono insieme (prima erano 7 richieste
+            // in fila: con la latenza di rete reale ognuna aggiungeva un
+            // intero viaggio prima del primo render). Un file mancante non
+            // blocca gli altri: ognuno degrada da solo, come prima.
+            const loadJson = async (url) => {
+                try {
+                    const res = await fetch(url, { cache: 'no-cache' });
+                    return res.ok ? await res.json() : null;
+                } catch (err) {
+                    console.warn(`Impossibile caricare ${url}:`, err);
+                    return null;
                 }
-            } catch (err) {
-                console.warn('Impossibile caricare calendar.json:', err);
+            };
+            const [standings, calendar, telemetry, news, historyIndex] = await Promise.all([
+                loadJson('standings.json'),
+                loadJson('calendar.json'),
+                loadJson('telemetry.json'),
+                loadJson('news.json'),
+                loadJson('history/index.json'),
+                updateApiHealthBadge(),
+            ]);
+
+            standingsData = standings;
+            telemetryData = telemetry;
+            newsData = news;
+
+            if (calendar) {
+                calendarData = calendar;
+                const calendarButtonLabel = document.getElementById('calendarButtonLabel');
+                if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario & Risultati ${calendarData.season}`;
+                renderFeaturedRace();
+                // Aggiorna lo stato "live"/"passata"/"da disputare" delle
+                // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
+                setInterval(renderFeaturedRace, 60000);
             }
 
-            try {
-                const telemetryResponse = await fetch('telemetry.json', { cache: 'no-store' });
-                if (telemetryResponse.ok) telemetryData = await telemetryResponse.json();
-            } catch (err) {
-                console.warn('Impossibile caricare telemetry.json:', err);
+            if (historyIndex && Array.isArray(historyIndex.years) && historyIndex.years.length > 0) {
+                PREVIOUS_YEARS = historyIndex.years;
             }
-
-            try {
-                const newsResponse = await fetch('news.json', { cache: 'no-store' });
-                if (newsResponse.ok) newsData = await newsResponse.json();
-            } catch (err) {
-                console.warn('Impossibile caricare news.json:', err);
-            }
-
-            try {
-                const historyIndexResponse = await fetch('history/index.json', { cache: 'no-store' });
-                if (historyIndexResponse.ok) {
-                    const historyIndex = await historyIndexResponse.json();
-                    if (Array.isArray(historyIndex.years) && historyIndex.years.length > 0) {
-                        PREVIOUS_YEARS = historyIndex.years;
-                    }
-                }
-            } catch (err) {
-                console.warn('Impossibile caricare history/index.json, uso l\'elenco di ripiego:', err);
-            }
-
-            await updateApiHealthBadge();
 
             const uniqueCircuits = [...new Set(poleData.map(d => d.circuit))].sort();
             populateCircuitSelectors(uniqueCircuits);
@@ -1455,7 +1445,7 @@
                     scheduleReposition();
                 });
                 try {
-                    const res = await fetch(`history/${year}.json`, { cache: 'no-store' });
+                    const res = await fetch(`history/${year}.json`, { cache: 'no-cache' });
                     if (!res.ok) throw new Error(`status ${res.status}`);
                     historyCache[year] = await res.json();
                 } catch (err) {
@@ -1546,6 +1536,12 @@
             // entrambi i contenitori contemporaneamente (uno nascosto via CSS,
             // non rimosso dal DOM), quindi senza un prefisso diverso gli id dei
             // pannelli "Risultati" sarebbero duplicati sulla pagina.
+            //
+            // Questa funzione gira ogni 60s e ricostruisce l'HTML: i pannelli
+            // "Risultati" che l'utente ha aperto vanno ricordati e riaperti,
+            // altrimenti si richiudevano da soli ogni minuto mentre li leggeva.
+            const openPanelIds = [...document.querySelectorAll('[id^="widget-"][id*="-results-"]:not(.hidden)')].map(el => el.id);
+
             if (mobileContainer) {
                 mobileContainer.innerHTML = `<div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
                     <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
@@ -1558,6 +1554,11 @@
                     ${renderSessionsBlock(race, 'widget-desktop')}
                 `;
             }
+
+            openPanelIds.forEach(id => {
+                const panel = document.getElementById(id);
+                if (panel) panel.classList.remove('hidden');
+            });
         }
 
         function renderChart() {
