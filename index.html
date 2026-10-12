@@ -89,7 +89,7 @@
                              stagione disponibile) sono popolate via JS da
                              updateTelemetryButtonsVisibility(). Sovrappone
                              la stagione scelta (attivo = testo rosso). -->
-                        <select id="telemetryCompareSelect" onchange="onTelemetryCompareChange()" class="hidden text-xs bg-transparent text-gray-300 hover:text-white transition-colors cursor-pointer border-none outline-none appearance-none">
+                        <select id="telemetryCompareSelect" aria-label="Confronta con la pole di un'altra stagione" onchange="onTelemetryCompareChange()" class="hidden text-xs bg-transparent text-gray-300 hover:text-white transition-colors cursor-pointer border-none outline-none appearance-none">
                         </select>
                     </div>
                     <div class="flex items-center gap-2 ml-auto">
@@ -466,13 +466,13 @@
 
             if (caption) {
                 if (compareEntry) {
-                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
-                        + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${compareEntry.driver} '${yy(telemetryCompareYear)} — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
+                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${escapeHtml(entry.driver)} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
+                        + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${escapeHtml(compareEntry.driver)} '${yy(telemetryCompareYear)} — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
                 } else {
                     caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
                 }
-                caption.insertAdjacentHTML('beforeend', dropoutNote(entry, compareEntry ? `${entry.driver} '${yy(telemetryPrimarySeason)}: ` : '')
-                    + (compareEntry ? dropoutNote(compareEntry, `${compareEntry.driver} '${yy(telemetryCompareYear)}: `) : ''));
+                caption.insertAdjacentHTML('beforeend', dropoutNote(entry, compareEntry ? `${escapeHtml(entry.driver)} '${yy(telemetryPrimarySeason)}: ` : '')
+                    + (compareEntry ? dropoutNote(compareEntry, `${escapeHtml(compareEntry.driver)} '${yy(telemetryCompareYear)}: `) : ''));
             }
 
             const speedPoints = entry.samples.map(s => ({ x: s.t, y: s.speed }));
@@ -1081,14 +1081,14 @@
 
             driverRanking.innerHTML = standingsData.drivers.map((d, i) => `
                 <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
-                    <span>${medal(i)} ${d.driver} <span class="text-gray-500">(${d.team})</span></span>
+                    <span>${medal(i)} ${escapeHtml(d.driver)} <span class="text-gray-500">(${escapeHtml(d.team)})</span></span>
                     <span class="font-bold text-[#E10600]">${d.points} pt</span>
                 </div>
             `).join('');
 
             teamRanking.innerHTML = standingsData.constructors.map((c, i) => `
                 <div class="flex justify-between items-center bg-gray-900 rounded px-3 py-1.5">
-                    <span>${medal(i)} ${c.team}</span>
+                    <span>${medal(i)} ${escapeHtml(c.team)}</span>
                     <span class="font-bold text-[#E10600]">${c.points} pt</span>
                 </div>
             `).join('');
@@ -1250,7 +1250,7 @@
                 // (bianco, per leggerlo meglio rispetto ai colori di stato)
                 // al posto della data, cliccabile per espandere la tabella.
                 const timeCell = (status === 'past' && hasResults)
-                    ? `<span class="text-white underline decoration-dotted cursor-pointer" onclick="toggleSessionResults('${panelId}')">Risultati</span>`
+                    ? `<span role="button" tabindex="0" class="text-white underline decoration-dotted cursor-pointer" onclick="toggleSessionResults('${panelId}')">Risultati</span>`
                     : `${formatted}${liveTag}`;
 
                 const resultsPanel = hasResults
@@ -1285,6 +1285,8 @@
             const wasHidden = detail.classList.contains('hidden');
             detail.classList.toggle('hidden', !wasHidden);
             if (chevron) chevron.classList.toggle('rotate-180', wasHidden);
+            const header = document.getElementById(`raceHeader-${idPrefix}-${round}`);
+            if (header) header.setAttribute('aria-expanded', String(wasHidden));
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
@@ -1302,14 +1304,14 @@
             const featuredRound = idPrefix === 'cal' ? determineFeaturedRace()?.round : undefined;
             return races.map(r => `
                 <div class="bg-gray-900 rounded overflow-hidden">
-                    <div class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule('${idPrefix}', ${r.round})">
+                    <div role="button" tabindex="0" aria-expanded="false" id="raceHeader-${idPrefix}-${r.round}" class="flex justify-between items-center px-3 py-1.5 gap-2 cursor-pointer hover:bg-gray-800 transition-colors" onclick="toggleRaceSchedule('${idPrefix}', ${r.round})">
                         <span class="text-gray-400 shrink-0">
-                            <span class="block">${r.round}. ${r.circuit}</span>
+                            <span class="block">${r.round}. ${escapeHtml(r.circuit)}</span>
                             <span class="block text-[11px] text-gray-500">${formatRaceDateRange(r.weekendStart, r.date)}</span>
                         </span>
                         <span class="flex items-center gap-1.5 min-w-0">
                             <span class="text-right truncate ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
-                                ${r.winner ? `${r.winner.driver} (${r.winner.team})` : 'Da disputare'}
+                                ${r.winner ? `${escapeHtml(r.winner.driver)} (${escapeHtml(r.winner.team)})` : 'Da disputare'}
                             </span>
                             <span id="raceChevron-${idPrefix}-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform">▾</span>
                         </span>
@@ -1400,6 +1402,13 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // Accetta solo URL http(s): escapeHtml da solo non basta per un href,
+        // perché uno schema "javascript:" resterebbe cliccabile. Il feed RSS è
+        // una fonte esterna non fidata.
+        function safeHttpUrl(url) {
+            return typeof url === 'string' && /^https?:\/\//i.test(url.trim()) ? url.trim() : '';
+        }
+
         function renderNews() {
             const list = document.getElementById('newsList');
             const meta = document.getElementById('newsMeta');
@@ -1409,8 +1418,8 @@
                 return;
             }
             list.innerHTML = newsData.items.map(item => `
-                <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="flex gap-3 bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg p-2">
-                    ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="w-20 h-14 object-cover rounded shrink-0">` : ''}
+                <a href="${escapeHtml(safeHttpUrl(item.link) || '#')}" target="_blank" rel="noopener noreferrer" class="flex gap-3 bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg p-2">
+                    ${safeHttpUrl(item.image) ? `<img src="${escapeHtml(safeHttpUrl(item.image))}" alt="" class="w-20 h-14 object-cover rounded shrink-0">` : ''}
                     <div class="min-w-0">
                         <p class="text-gray-200 font-medium leading-snug">${escapeHtml(item.title)}</p>
                         <p class="text-xs text-gray-500 mt-1">${formatNewsDate(item.date)}${item.author ? ` · ${escapeHtml(item.author)}` : ''}</p>
@@ -1552,7 +1561,7 @@
                 : null;
             const countdown = raceStart ? formatCountdown(raceStart) : null;
 
-            const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${race.circuit}</span>
+            const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${escapeHtml(race.circuit)}</span>
                 <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>` +
                 (countdown ? `<span class="text-gray-400"> · ⏳ ${countdown}</span>` : '');
 
@@ -1754,6 +1763,8 @@
                     (hasTelemetryForYear ? " cursor-pointer" : "");
                 if (hasTelemetryForYear) {
                     card.onclick = () => showTelemetryForYear(d.year);
+                    card.setAttribute('role', 'button');
+                    card.tabIndex = 0;
                     card.title = `Vedi la telemetria del giro di pole ${d.year}`;
                 }
                 card.innerHTML = `
@@ -1761,10 +1772,10 @@
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
                         <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
                     </div>
-                    <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${d.driver}</span></div>
-                    <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${d.team}</span></div>
-                    <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${d.weather}</div>
-                    ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${d.penaltyNote}</span></div>` : ''}
+                    <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${escapeHtml(d.driver)}</span></div>
+                    <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
+                    <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${escapeHtml(d.weather)}</div>
+                    ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${escapeHtml(d.penaltyNote)}</span></div>` : ''}
                     ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">🏎️ Clicca per la telemetria</div>' : ''}
                 `;
                 detailsList.appendChild(card);
@@ -1773,6 +1784,18 @@
 
             alignChartTop();
         }
+
+        // Elementi cliccabili che non sono <button>/<a> (righe gara, box anno,
+        // "Risultati") hanno role="button" e tabindex="0": qui Invio e Spazio
+        // li attivano come un click, per l'uso da tastiera e coi lettori
+        // schermo. I controlli nativi (button, select, a) sono esclusi.
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            const el = e.target;
+            if (!el || el.getAttribute?.('role') !== 'button' || /^(BUTTON|A|SELECT|INPUT)$/.test(el.tagName)) return;
+            e.preventDefault(); // evita lo scroll della pagina con Spazio
+            el.click();
+        });
 
         initApp();
 

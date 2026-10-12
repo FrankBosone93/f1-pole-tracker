@@ -104,6 +104,9 @@ async function main() {
             // cache, lo ricaviamo da lì invece di rifare la richiesta.
             const winnerRow = cachedRaceResults.find(r => r.position === 1);
             if (winnerRow) winner = { driver: winnerRow.driver, team: winnerRow.team };
+        } else if (race.schedule?.race?.date && new Date(`${race.schedule.race.date}T${race.schedule.race.time || '23:59:59Z'}`) > now) {
+            // Gara ancora da disputare: nessuna richiesta (prima partiva un
+            // 404 inutile per ogni gara futura, a ogni run: 6 su 7 richieste).
         } else {
             try {
                 const racePayload = await fetchJson(`https://f1api.dev/api/${season}/${round}/race`, { allow404: true });

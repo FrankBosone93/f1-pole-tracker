@@ -26,7 +26,10 @@ async function fetchJson(url, { allow404 = false, retries = 1 } = {}) {
             const res = await fetch(url);
             if (res.status === 404 && allow404) return null;
             if (res.status === 429 && attempt < 5) {
-                const waitMs = 1000 * attempt;
+                // Rispetta Retry-After se il server lo manda, altrimenti
+                // backoff crescente.
+                const retryAfterMs = Number(res.headers.get('retry-after')) * 1000;
+                const waitMs = retryAfterMs > 0 ? retryAfterMs : 1000 * attempt;
                 console.warn(`   ⏳ 429 (troppe richieste), riprovo tra ${waitMs}ms...`);
                 await sleep(waitMs);
                 continue;

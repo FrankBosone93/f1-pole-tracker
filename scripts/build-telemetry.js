@@ -30,7 +30,7 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
-const { fetchJson } = require('./lib/http');
+const { fetchJson, sleep } = require('./lib/http');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -39,6 +39,33 @@ const DEFAULT_SEASONS = [2023, 2024, 2025, 2026];
 // durante un test con concorrenza 4) - meglio andare piano che perdere gare
 // per errori di troppe richieste ravvicinate.
 const CIRCUIT_CONCURRENCY = 2;
+// Scarto massimo tra il tempo di pole in data.json e la durata del giro
+// OpenF1 scelto. Le due fonti differiscono al più di pochi millesimi (tutti
+// gli 85 giri attuali combaciano entro 0.05s): una soglia più larga (era 0.5)
+// permetteva di scegliere un giro di Q1/Q2 quando il tempo in data.json era
+// sbagliato (successo con Las Vegas e Abu Dhabi 2023).
+const POLE_LAP_TOLERANCE_S = 0.1;
+
+// Il piano gratuito di OpenF1 consente 3 richieste/secondo e 30 al minuto: con
+// un backoff reattivo sui 429 (tentativi ravvicinati per pochi secondi) una
+// rigenerazione di più circuiti falliva a raffica. Le richieste vengono
+// invece distanziate in anticipo (una ogni 2,1 s, condiviso tra i worker),
+// così il limite non scatta quasi mai.
+const OPENF1_MIN_INTERVAL_MS = 2100;
+let openf1NextSlot = 0;
+async function openf1Json(url) {
+    const now = Date.now();
+    const wait = Math.max(0, openf1NextSlot - now);
+    openf1NextSlot = Math.max(now, openf1NextSlot) + OPENF1_MIN_INTERVAL_MS;
+    if (wait > 0) await sleep(wait);
+    return fetchJson(url);
+}
+
+// Sessioni per cui OpenF1 non ha (e non avrà) i giri: restituisce 404 per
+// sempre, quindi inutile ritentare a ogni run.
+const KNOWN_UNAVAILABLE = new Set([
+    '2025|Baku (Azerbaijan)',
+]);
 
 // circuit_short_name (OpenF1) -> nome circuito usato dal sito.
 const CIRCUIT_MAP = {
@@ -59,6 +86,7 @@ const CIRCUIT_MAP = {
     'Zandvoort': 'Zandvoort',
     'Monza': 'Monza',
     'Madring': 'Madrid',
+    'Kuala Lumpur': 'Sepang (Malesia)', // OpenF1 chiama così il circuito di Sepang (round 16 del 2026)
     'Baku': 'Baku (Azerbaijan)',
     'Singapore': 'Singapore',
     'Austin': 'Austin (COTA)',
@@ -107,60 +135,57 @@ async function buildCircuitTelemetry(session, season) {
         return null;
     }
 
-    const laps = await fetchJson(`https://api.openf1.org/v1/laps?session_key=${session.session_key}`);
+    const laps = await openf1Json(`https://api.openf1.org/v1/laps?session_key=${session.session_key}`);
     const validLaps = laps.filter(l => typeof l.lap_duration === 'number' && l.lap_duration > 0);
     if (validLaps.length === 0) {
         console.warn(`⚠️  ${circuitName}: nessun giro valido trovato.`);
         return null;
     }
 
+    // La pole in data.json (già verificata con una seconda fonte) è
+    // OBBLIGATORIA: serve sia per trovare il pilota sia per scegliere il giro.
+    // Prima, senza pole o senza un giro abbastanza vicino, si ripiegava sul
+    // giro più veloce della sessione: una scelta che può essere sbagliata
+    // (giro cancellato per track limits, sessione bagnata, Q1/Q2) e produceva
+    // telemetria del giro sbagliato senza nessun avviso. Meglio nessuna
+    // telemetria che quella di un altro giro.
     const poleEntry = getPoleEntry(season, circuitName);
-    let poleLap = null;
-    if (poleEntry) {
-        const allDrivers = await fetchJson(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
-        const poleSurname = normalizeName(poleEntry.driver.trim().split(' ').pop());
-        const matchedDriver = allDrivers.find(d => normalizeName(d.last_name) === poleSurname);
-        if (matchedDriver) {
-            const driverLaps = validLaps.filter(l => l.driver_number === matchedDriver.driver_number);
-            if (driverLaps.length > 0) {
-                // Il giro di pole è quello del pilota giusto la cui durata è
-                // più vicina al tempo ufficiale di data.json - NON il suo
-                // giro più veloce in assoluto nella sessione: un giro di
-                // Q1/Q2 (asfalto diverso, prima che venisse cancellato per
-                // track limits, o - visto realmente a Montreal 2023 - una
-                // sessione bagnata con condizioni molto diverse tra un
-                // segmento e l'altro) può risultare più veloce del vero
-                // giro di pole senza esserlo davvero.
-                const closest = driverLaps.reduce((best, l) =>
-                    Math.abs(l.lap_duration - poleEntry.seconds) < Math.abs(best.lap_duration - poleEntry.seconds) ? l : best
-                );
-                if (Math.abs(closest.lap_duration - poleEntry.seconds) <= 0.5) {
-                    poleLap = closest;
-                } else {
-                    console.warn(`⚠️  ${circuitName}: nessun giro di ${poleEntry.driver} vicino al tempo ufficiale (${poleEntry.seconds}s, più vicino trovato ${closest.lap_duration}s), uso il minimo assoluto come ripiego.`);
-                }
-            } else {
-                console.warn(`⚠️  ${circuitName}: nessun giro valido per ${poleEntry.driver} (pole da data.json), uso il minimo assoluto come ripiego.`);
-            }
-        } else {
-            console.warn(`⚠️  ${circuitName}: pilota "${poleEntry.driver}" (pole da data.json) non trovato tra i piloti OpenF1, uso il minimo assoluto come ripiego.`);
-        }
+    if (!poleEntry) {
+        console.warn(`⚠️  ${circuitName}: nessuna pole in data.json per il ${season}, salto.`);
+        return null;
     }
-    // Ripiego (nessuna voce in data.json per questo anno+circuito, o pilota
-    // non riconosciuto): il minimo assoluto resta una stima ragionevole.
-    if (!poleLap) {
-        poleLap = validLaps.reduce((best, l) => (l.lap_duration < best.lap_duration ? l : best));
+    const allDrivers = await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
+    const poleSurname = normalizeName(poleEntry.driver.trim().split(' ').pop());
+    const matchedDriver = allDrivers.find(d => normalizeName(d.last_name) === poleSurname);
+    if (!matchedDriver) {
+        console.warn(`⚠️  ${circuitName}: pilota "${poleEntry.driver}" (pole da data.json) non trovato tra i piloti OpenF1, salto.`);
+        return null;
+    }
+    const driverLaps = validLaps.filter(l => l.driver_number === matchedDriver.driver_number);
+    if (driverLaps.length === 0) {
+        console.warn(`⚠️  ${circuitName}: nessun giro valido per ${poleEntry.driver}, salto.`);
+        return null;
+    }
+    // Giro del pilota giusto con durata più vicina al tempo ufficiale (non il
+    // più veloce in assoluto: un giro di Q1/Q2, o uno cancellato per track
+    // limits, può risultare più veloce del vero giro di pole).
+    const poleLap = driverLaps.reduce((best, l) =>
+        Math.abs(l.lap_duration - poleEntry.seconds) < Math.abs(best.lap_duration - poleEntry.seconds) ? l : best
+    );
+    if (Math.abs(poleLap.lap_duration - poleEntry.seconds) > POLE_LAP_TOLERANCE_S) {
+        console.warn(`⚠️  ${circuitName}: nessun giro di ${poleEntry.driver} entro ${POLE_LAP_TOLERANCE_S}s dal tempo ufficiale (${poleEntry.seconds}s, più vicino ${poleLap.lap_duration}s): salto. Controllare il tempo in data.json (verify-data.js).`);
+        return null;
     }
 
-    const drivers = await fetchJson(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}&driver_number=${poleLap.driver_number}`);
-    const driverInfo = drivers[0] || null;
+    // Stesso elenco già scaricato sopra: niente seconda richiesta.
+    const driverInfo = allDrivers.find(d => d.driver_number === poleLap.driver_number) || null;
 
     const lapStart = new Date(poleLap.date_start);
     // Margine di mezzo secondo oltre la durata del giro: i campioni di
     // car_data non arrivano esattamente al decimo di secondo del traguardo.
     const lapEnd = new Date(lapStart.getTime() + poleLap.lap_duration * 1000 + 500);
 
-    const carData = await fetchJson(
+    const carData = await openf1Json(
         `https://api.openf1.org/v1/car_data?session_key=${session.session_key}&driver_number=${poleLap.driver_number}` +
         `&date>=${lapStart.toISOString()}&date<=${lapEnd.toISOString()}`
     );
@@ -208,7 +233,7 @@ async function buildCircuitTelemetry(session, season) {
 async function buildSeason(season, existingCircuits, saveProgress) {
     console.log(`\n=== Stagione ${season} ===`);
     console.log(`Richiesta sessioni di qualifica ${season} a OpenF1...`);
-    const sessions = await fetchJson(`https://api.openf1.org/v1/sessions?year=${season}&session_type=Qualifying`);
+    const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_type=Qualifying`);
     // OpenF1 marca anche le qualifiche sprint con session_type "Qualifying":
     // si distinguono solo dal session_name ("Sprint Qualifying" vs "Qualifying").
     const mainQualy = sessions.filter(s => s.session_name === 'Qualifying');
@@ -219,6 +244,11 @@ async function buildSeason(season, existingCircuits, saveProgress) {
         const circuitName = CIRCUIT_MAP[session.circuit_short_name];
         if (circuitName && existingCircuits[circuitName]) return false; // già scaricato in un run precedente
         if (new Date(session.date_end) > now) return false; // non ancora disputata
+        if (circuitName && KNOWN_UNAVAILABLE.has(`${season}|${circuitName}`)) return false;
+        // Nessuna pole in data.json = gara annullata (OpenF1 elenca comunque
+        // la sessione ma non ha i giri: Sakhir/Jeddah 2026, Imola 2023). Si
+        // salta senza richieste, invece di fallire con un 404 a ogni run.
+        if (circuitName && !getPoleEntry(season, circuitName)) return false;
         return true;
     });
     console.log(`${toProcess.length} circuiti da scaricare (gli altri sono già in cache o non ancora disputati).`);
