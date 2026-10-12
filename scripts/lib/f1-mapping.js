@@ -101,8 +101,11 @@ function matchTeam(teamRaw) {
 function parseQualyTime(raw) {
     if (!raw || typeof raw !== 'string' || raw === '-' || raw.trim() === '') return null;
 
-    // Formato atteso più comune per un giro secco di qualifica: M:SS.mmm
-    const simple = raw.match(/^(\d{1,2}):(\d{2})\.(\d{1,3})$/);
+    // Formato atteso più comune per un giro secco di qualifica: M:SS.mmm.
+    // Per alcune stagioni (es. 2024) l'API usa i due punti anche prima dei
+    // millesimi ("1:29:179"): accettati entrambi, altrimenti la pole veniva
+    // letta come "tempo non valido".
+    const simple = raw.match(/^(\d{1,2}):(\d{2})[.:](\d{1,3})$/);
     if (simple) {
         const mins = parseInt(simple[1], 10);
         const secs = parseInt(simple[2], 10);

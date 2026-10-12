@@ -19,6 +19,14 @@ const { matchCircuitById, matchTeam, parseQualyTime, driverFullName, normalize }
 const { fetchJson: fetchJsonOnce, sleep } = require('./lib/http');
 const fetchJson = url => fetchJsonOnce(url, { retries: 3 });
 
+// Discrepanze già verificate a mano con fonti indipendenti (Formula1.com,
+// Motorsport.com, ecc.): in questi casi l'errore è di f1api.dev e il valore di
+// data.json è quello giusto. Non vengono più riproposte come "da rivedere".
+const VERIFIED_API_ERRORS = {
+    '2024|Melbourne (Australia)': 'pole 1:15.915 (f1api.dev dà 1:15.925)',
+    '2024|Red Bull Ring': 'pole 1:04.314 (f1api.dev dà 1:04.426)',
+};
+
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 
 async function main() {
@@ -29,6 +37,7 @@ async function main() {
     const missingInJson = [];
     const mismatches = [];
     const seenKeys = new Set();
+    const matchedKeys = new Set(); // anno|circuito con almeno una gara che combacia
     let checked = 0;
 
     for (const year of years) {
@@ -73,6 +82,8 @@ async function main() {
             const teamMatches = jsonEntry.team === team;
             const timeMatches = parsedTime && jsonEntry.timeStr === parsedTime.timeStr;
 
+            if (driverMatches && teamMatches && timeMatches) matchedKeys.add(`${year}|${mappedCircuit}`);
+
             if (!driverMatches || !teamMatches || !timeMatches) {
                 mismatches.push({
                     year, circuit: mappedCircuit, raceName: r.raceName,
@@ -82,6 +93,20 @@ async function main() {
             }
 
             await sleep(150); // rate limit gentile verso l'API pubblica
+        }
+    }
+
+    // Stesso circuito due volte nello stesso anno (es. Red Bull Ring 2021:
+    // GP di Stiria e GP d'Austria) ma data.json ha una sola voce per
+    // anno+circuito: se UNA delle due gare combacia, l'altra non è un errore.
+    const verified = [];
+    for (let i = mismatches.length - 1; i >= 0; i--) {
+        const key = `${mismatches[i].year}|${mismatches[i].circuit}`;
+        if (matchedKeys.has(key)) {
+            mismatches.splice(i, 1);
+        } else if (VERIFIED_API_ERRORS[key]) {
+            verified.push(`${mismatches[i].year} ${mismatches[i].circuit}: ${VERIFIED_API_ERRORS[key]}`);
+            mismatches.splice(i, 1);
         }
     }
 
@@ -95,6 +120,8 @@ async function main() {
     missingInJson.forEach(m => console.log('  - ' + m));
     console.log(`Entry in data.json mai incontrate nello scan (${orphanEntries.length}, spesso perché la stagione non è ancora arrivata a quel round):`);
     orphanEntries.forEach(o => console.log(`  - ${o.year} ${o.circuit}: ${o.driver}`));
+    console.log(`Errori noti di f1api.dev, già verificati (${verified.length}):`);
+    verified.forEach(v => console.log('  - ' + v));
     console.log(`\nDISCREPANZE DA RIVEDERE (${mismatches.length}):`);
     mismatches.forEach(m => {
         console.log(`\n--- ${m.year} ${m.circuit} (${m.raceName}) ---`);

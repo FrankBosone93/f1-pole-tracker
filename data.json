@@ -155,7 +155,7 @@
   {
     "year": 2026,
     "circuit": "Shanghai (Cina)",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:32.064",
     "seconds": 92.064,
@@ -245,7 +245,7 @@
   {
     "year": 2026,
     "circuit": "Miami",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:27.798",
     "seconds": 87.798,
@@ -335,7 +335,7 @@
   {
     "year": 2026,
     "circuit": "Monaco",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:12.051",
     "seconds": 72.051,
@@ -542,7 +542,7 @@
   {
     "year": 2026,
     "circuit": "Silverstone",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:28.111",
     "seconds": 88.111,
@@ -813,7 +813,7 @@
   {
     "year": 2026,
     "circuit": "Suzuka",
-    "driver": "Kimi Antonelli",
+    "driver": "Andrea Kimi Antonelli",
     "team": "Mercedes",
     "timeStr": "1:28.778",
     "seconds": 88.778,
@@ -932,8 +932,8 @@
     "circuit": "Interlagos (San Paolo)",
     "driver": "Max Verstappen",
     "team": "Red Bull",
-    "timeStr": "1:10.725",
-    "seconds": 70.725,
+    "timeStr": "1:10.727",
+    "seconds": 70.727,
     "weather": "🌧️ Pioggia"
   },
   {
@@ -959,8 +959,8 @@
     "circuit": "Las Vegas",
     "driver": "Charles Leclerc",
     "team": "Ferrari",
-    "timeStr": "1:34.054",
-    "seconds": 94.054,
+    "timeStr": "1:32.726",
+    "seconds": 92.726,
     "weather": "☁️ Notturno Nuvoloso"
   },
   {
@@ -1040,8 +1040,8 @@
     "circuit": "Abu Dhabi (Yas Marina)",
     "driver": "Max Verstappen",
     "team": "Red Bull",
-    "timeStr": "1:24.008",
-    "seconds": 84.008,
+    "timeStr": "1:23.445",
+    "seconds": 83.445,
     "weather": "🌙 Notturno Sereno"
   },
   {

@@ -265,12 +265,20 @@ async function main() {
     }
 
     const outputSeasons = { ...existing.seasons };
+    // Ultima versione SERIALIZZATA scritta per ogni stagione. Si confrontano
+    // stringhe e non oggetti: "circuits" viene modificato in place dai worker,
+    // quindi confrontare l'oggetto con sé stesso dava sempre "uguale" e
+    // saltava la scrittura dei circuiti nuovi (bug trovato in test).
+    const lastSerialized = {};
+    for (const [season, value] of Object.entries(outputSeasons)) lastSerialized[season] = JSON.stringify(value);
     function saveProgress(season, circuits) {
         // Niente scrittura se i dati di questa stagione non sono cambiati:
         // il file pesa 1,5 MB e riscriverlo solo per aggiornare updatedAt
         // produceva un commit pesante (e un deploy) a ogni esecuzione, anche
         // senza nessun giro nuovo.
-        if (JSON.stringify(outputSeasons[season]) === JSON.stringify({ circuits })) return;
+        const serialized = JSON.stringify({ circuits });
+        if (lastSerialized[season] === serialized) return;
+        lastSerialized[season] = serialized;
         outputSeasons[season] = { circuits };
         const output = { updatedAt: new Date().toISOString(), seasons: outputSeasons };
         fs.writeFileSync(OUT_PATH, JSON.stringify(output) + '\n', 'utf-8');
@@ -283,7 +291,7 @@ async function main() {
     }
 
     const totalCircuits = Object.values(outputSeasons).reduce((sum, s) => sum + Object.keys(s.circuits).length, 0);
-    console.log(`\n✅ telemetry.json scritto (${Object.keys(outputSeasons).length} stagioni, ${totalCircuits} circuiti totali).`);
+    console.log(`\n✅ telemetry.json pronto (${Object.keys(outputSeasons).length} stagioni, ${totalCircuits} circuiti totali).`);
 }
 
 main()
