@@ -15,10 +15,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="F1 Pole Tracker">
 
+    <!-- Versioni FISSE con controllo di integrità (SRI): prima puntavano
+         alla "ultima versione" (@4 / senza versione), quindi una release
+         nuova o un file alterato sul CDN poteva rompere o compromettere il
+         sito senza che nessun commit lo avesse toccato. Per aggiornare:
+         cambiare versione E hash (openssl dgst -sha384 -binary file | openssl base64 -A). -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <!-- Tailwind CSS per la grafica -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3" integrity="sha384-aJ9rL4k6lF+91guGvUFVSkpIcge7Zd9EiI4TQDLoK9kFaFJgKHgjEXVvG/qA5COj" crossorigin="anonymous"></script>
     <!-- Chart.js per il grafico -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
     <style>
         body { background-color: #121212; color: #ffffff; font-family: system-ui, sans-serif; }
     </style>
@@ -710,14 +716,20 @@
             alignChartTop();
         }
 
+        // Data di oggi nel fuso locale dell'utente, "YYYY-MM-DD" (confrontabile
+        // come stringa con le date di gara del calendario).
+        function localDateStr() {
+            const now = new Date();
+            return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        }
+
         // Circuito da mostrare di default all'apertura del sito: quello
         // dell'ultimo GP disputato, a meno che non sia già iniziato il
         // weekend del prossimo GP (dal venerdì delle prove libere in poi),
         // nel qual caso si mostra quello.
         function determineDefaultCircuit() {
             if (!calendarData) return null;
-            const now = new Date();
-            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const todayStr = localDateStr();
 
             const currentWeekend = calendarData.races.find(r => r.weekendStart && r.date && r.weekendStart <= todayStr && todayStr <= r.date);
             if (currentWeekend) return currentWeekend.circuit;
@@ -756,7 +768,6 @@
             const width = (totalWidth - 12) * DEFAULT_LEFT_RATIO;
             classificaPanel.style.width = width + 'px';
         }
-        window.addEventListener('resize', applyClassificaPanelWidth);
 
         // La colonna "Dettagli Qualifiche" ha una larghezza massima FISSA pari
         // al 2/3 di default del grafico (stessa base della classifica): il
@@ -778,7 +789,6 @@
             detailsColumn.style.width = Math.min(defaultWidth, liveWidth) + 'px';
             detailsColumn.style.marginLeft = 'auto';
         }
-        window.addEventListener('resize', applyDetailsColumnWidth);
 
         // Il riquadro "Prossimo GP" nell'header deve avere la stessa
         // larghezza (di default, non quella live trascinabile) dei riquadri
@@ -808,7 +818,6 @@
             featuredRaceWidgetDesktop.style.width = detailsRect.width + 'px';
             featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - detailsRect.right) + 'px';
         }
-        window.addEventListener('resize', applyFeaturedWidgetWidth);
 
         let dragging = false;
         resizeHandle.addEventListener('mousedown', (e) => {
@@ -979,11 +988,26 @@
             const delta = Math.min(targetTop - naturalTop, 0);
             detailsColumn.style.marginTop = delta + 'px';
         }
-        // L'ordine conta: detailsColumn deve essere già riposizionato prima
-        // che alignChartTop() ne legga la nuova posizione del primo riquadro.
+        // Un solo handler di resize, al massimo una volta per frame: prima
+        // c'erano 5 listener separati che leggevano e scrivevano il layout
+        // ognuno per conto suo a ogni evento (decine al secondo durante un
+        // ridimensionamento). L'ordine conta: le larghezze prima (le
+        // allineamenti dipendono da esse), detailsColumn già riposizionato
+        // prima che alignChartTop() ne legga il primo riquadro, e l'altezza
+        // del grafico per ultima.
+        let resizeFramePending = false;
         window.addEventListener('resize', () => {
-            alignDetailsColumnTop();
-            alignChartTop();
+            if (resizeFramePending) return;
+            resizeFramePending = true;
+            requestAnimationFrame(() => {
+                resizeFramePending = false;
+                applyClassificaPanelWidth();
+                applyDetailsColumnWidth();
+                applyFeaturedWidgetWidth();
+                alignDetailsColumnTop();
+                alignChartTop();
+                applyChartHeight();
+            });
         });
 
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
@@ -1007,7 +1031,6 @@
             document.body.style.cursor = '';
             document.body.style.userSelect = '';
         });
-        window.addEventListener('resize', applyChartHeight);
 
         function formatSecondsToTime(totalSeconds) {
             const mins = Math.floor(totalSeconds / 60);
@@ -1161,14 +1184,16 @@
         // qualifiche o gara): posizione, pilota, scuderia, tempo. In gara un
         // ritiro mostra il motivo al posto del distacco.
         function renderResultsTable(results, key) {
+            // Nomi, scuderie e motivi di ritiro arrivano dall'API esterna
+            // (f1api.dev): escape prima dell'innerHTML, come per le news.
             const rows = results.map(r => {
                 const timeCell = r.retired
-                    ? `<span class="text-orange-400 italic">${r.retired}</span>`
-                    : `<span class="text-gray-300">${r.time || '-'}</span>`;
+                    ? `<span class="text-orange-400 italic">${escapeHtml(r.retired)}</span>`
+                    : `<span class="text-gray-300">${escapeHtml(r.time || '-')}</span>`;
                 return `<tr class="border-t border-gray-800">
-                    <td class="py-1 pl-2 pr-1 text-gray-500 text-right">${r.position}</td>
-                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${r.driver}</td>
-                    <td class="py-1 px-1 text-gray-500 truncate max-w-[90px]">${r.team}</td>
+                    <td class="py-1 pl-2 pr-1 text-gray-500 text-right">${escapeHtml(String(r.position))}</td>
+                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${escapeHtml(r.driver)}</td>
+                    <td class="py-1 px-1 text-gray-500 truncate max-w-[90px]">${escapeHtml(r.team)}</td>
                     <td class="py-1 pl-1 pr-2 text-right whitespace-nowrap">${timeCell}</td>
                 </tr>`;
             }).join('');
@@ -1502,8 +1527,7 @@
         // esplicitamente alla domenica di gara, su richiesta esplicita.
         function determineFeaturedRace() {
             if (!calendarData) return null;
-            const now = new Date();
-            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const todayStr = localDateStr();
             const upcoming = calendarData.races.find(r => r.date && r.date >= todayStr);
             if (upcoming) return upcoming;
             const past = calendarData.races.filter(r => r.date).sort((a, b) => b.date.localeCompare(a.date));

@@ -16,22 +16,10 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, matchTeam, parseQualyTime, driverFullName, normalize } = require('./lib/f1-mapping');
 
+const { fetchJson: fetchJsonOnce, sleep } = require('./lib/http');
+const fetchJson = url => fetchJsonOnce(url, { retries: 3 });
+
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function fetchJson(url, retries = 3) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch (err) {
-            if (i === retries - 1) throw err;
-            await sleep(1000);
-        }
-    }
-}
 
 async function main() {
     const currentData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));

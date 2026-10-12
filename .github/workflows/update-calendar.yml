@@ -2,6 +2,7 @@ name: Aggiorna calendario F1
 
 on:
   schedule:
+    # Orari: minuti fuori dall'ora tonda (i cron alle ore tonde sono i più ritardati/congestionati): :31, prima di archive-finished-season (:53) che legge calendar.json.
     # Venerdì e sabato (prove libere, sprint, qualifiche): gira ogni 2 ore
     # tutto il giorno, perché gli orari delle sessioni cambiano moltissimo da
     # circuito a circuito (es. Melbourne FP1 alle 01:30 UTC, Austin alle
@@ -9,15 +10,15 @@ on:
     # ogni sessione per tutti i GP con un cron fisso. Ogni run scarica solo le
     # sessioni nuove già disputate (vedi update-calendar.js), quindi nei
     # weekend senza gara o fuori sessione è un no-op istantaneo.
-    - cron: '0 */2 * * 5'
-    - cron: '0 */2 * * 6'
-    # Domenica (gara) e lunedì: stesso orario di check-pole-penalty.yml e
-    # update-standings.yml: domenica 18:00 e 22:00 UTC, più un run di
+    - cron: '31 */2 * * 5'
+    - cron: '31 */2 * * 6'
+    # Domenica (gara) e lunedì: stessi giorni/ore (UTC) di check-pole-penalty.yml e
+    # update-standings.yml, cambia solo il minuto: domenica 18:00 e 22:00 UTC, più un run di
     # sicurezza lunedì mattina per le gare che finiscono più tardi (es.
     # Messico, Brasile, Las Vegas) o in caso di gare interrotte.
-    - cron: '0 18 * * 0'
-    - cron: '0 22 * * 0'
-    - cron: '0 6 * * 1'
+    - cron: '31 18 * * 0'
+    - cron: '31 22 * * 0'
+    - cron: '31 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -33,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # continue-on-error: lo script scrive comunque status/calendar.json
       # (con ok:false e il messaggio d'errore) anche se fallisce - deve poter

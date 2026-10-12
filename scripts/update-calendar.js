@@ -19,17 +19,9 @@ const path = require('path');
 const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
 const { writeStatus } = require('./lib/status');
+const { sleep, fetchJson } = require('./lib/http');
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function fetchJson(url, { allow404 = false } = {}) {
-    const res = await fetch(url);
-    if (res.status === 404 && allow404) return null;
-    if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
-    return res.json();
-}
 
 async function main() {
     console.log('Richiesta a https://f1api.dev/api/current ...');

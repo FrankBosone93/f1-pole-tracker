@@ -2,11 +2,18 @@ name: Aggiorna telemetria pole position F1
 
 on:
   schedule:
-    # Stesso orario di update-poles.yml: la telemetria di OpenF1 riguarda lo
+    # Orari: minuto :23 (non l'ora tonda, vedi update-poles.yml): parte DOPO update-poles (:07), perché usa la pole che quello ha appena scritto in data.json.
+    # Stessi giorni/ore (UTC) di update-poles.yml: la telemetria di OpenF1 riguarda lo
     # stesso giro di pole in qualifica, quindi è disponibile grosso modo
     # nella stessa finestra oraria (sabato pomeriggio/sera UTC).
-    - cron: '0 18 * * 6'
-    - cron: '0 22 * * 6'
+    - cron: '23 18 * * 6'
+    - cron: '23 22 * * 6'
+    # Run di recupero domenica e lunedì mattina (come update-poles.yml): se
+    # OpenF1 non aveva ancora pubblicato i dati di sessione ai run di sabato
+    # (o un run è saltato), il giro mancante viene ripreso qui invece di
+    # aspettare il sabato dopo. Se non manca nulla è un no-op.
+    - cron: '23 6 * * 0'
+    - cron: '23 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -22,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # continue-on-error: lo script scrive comunque status/telemetry.json
       # (con ok:false e il messaggio d'errore) anche se fallisce - deve poter

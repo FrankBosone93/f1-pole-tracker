@@ -2,10 +2,11 @@ name: Aggiorna news F1
 
 on:
   schedule:
+    # Orari: minuto :17, non l'ora tonda (i cron alle ore tonde sono i più ritardati/congestionati su GitHub Actions).
     # A differenza delle altre automazioni (legate a un momento preciso del
     # weekend di gara), le news escono in continuazione: aggiorniamo ogni
     # 4 ore, tutti i giorni.
-    - cron: '0 */4 * * *'
+    - cron: '17 */4 * * *'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -21,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Esegui script di aggiornamento news
         run: node scripts/update-news.js

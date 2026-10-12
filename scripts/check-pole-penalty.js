@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, normalize, driverFullName } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
+const { HttpError, fetchJson } = require('./lib/http');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const CURRENT_URL = 'https://f1api.dev/api/current';
@@ -25,19 +26,6 @@ const RECENT_RACES = 3;
 // Dopo la gara l'API può dare 404 per ore prima di pubblicare i risultati.
 // Entro questa finestra non è un errore: si riprova al run successivo.
 const PENDING_GRACE_HOURS = 72;
-
-class HttpError extends Error {
-    constructor(status, url) {
-        super(`Risposta API non valida: ${status} per ${url}`);
-        this.status = status;
-    }
-}
-
-async function fetchJson(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new HttpError(res.status, url);
-    return res.json();
-}
 
 // Controlla la penalità di un singolo round. Ritorna true se currentData
 // (in memoria) è cambiato.

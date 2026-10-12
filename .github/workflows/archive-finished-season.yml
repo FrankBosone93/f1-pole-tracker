@@ -2,15 +2,15 @@ name: Archivia stagione conclusa
 
 on:
   schedule:
-    # Stessa schedulazione di update-calendar.yml: domenica 18:00 e 22:00
-    # UTC, più un run di sicurezza lunedì mattina. Legge calendar.json, quindi
+    # Orari: minuto :53, non l'ora tonda: parte dopo update-calendar (:31), che aggiorna il calendar.json letto da questo script.
+    # Stessi giorni/ore (UTC) di update-calendar.yml: domenica 18 e 22, più un run di sicurezza lunedì mattina. Legge calendar.json, quindi
     # in teoria potrebbe girare su una copia non ancora aggiornata dall'altro
     # workflow nello stesso momento - non è un problema: lo script è
     # idempotente e rigira comunque poche ore dopo (o al più al run di
     # lunedì), quindi la finestra di ritardo è al massimo di poche ore.
-    - cron: '0 18 * * 0'
-    - cron: '0 22 * * 0'
-    - cron: '0 6 * * 1'
+    - cron: '53 18 * * 0'
+    - cron: '53 22 * * 0'
+    - cron: '53 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # continue-on-error: lo script scrive comunque status/history.json (con
       # ok:false e il messaggio d'errore) anche se fallisce - deve poter

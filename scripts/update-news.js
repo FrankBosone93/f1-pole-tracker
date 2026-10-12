@@ -47,7 +47,6 @@ function parseItems(xml) {
         link: extractTag(block, 'link'),
         date: extractTag(block, 'pubDate'),
         author: extractTag(block, 'dc:creator'),
-        excerpt: extractTag(block, 'description'),
         image: extractTag(block, 'image_medium') || extractTag(block, 'image'),
     }));
 }
@@ -72,7 +71,6 @@ async function main() {
             link: i.link,
             date: i.date ? new Date(i.date).toISOString() : null,
             author: i.author,
-            excerpt: i.excerpt,
             image: i.image,
         })),
     };

@@ -9,22 +9,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchTeam } = require('./lib/f1-mapping');
+const { matchTeam, driverFullName } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
+const { fetchJson } = require('./lib/http');
 
 const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
 const DRIVERS_URL = 'https://f1api.dev/api/current/drivers-championship';
 const CONSTRUCTORS_URL = 'https://f1api.dev/api/current/constructors-championship';
-
-async function fetchJson(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Risposta API non valida per ${url}: ${res.status}`);
-    return res.json();
-}
-
-function driverFullName(driver) {
-    return [driver?.name, driver?.surname].filter(Boolean).join(' ').trim();
-}
 
 async function main() {
     console.log(`Richiesta a ${DRIVERS_URL} ...`);

@@ -33,17 +33,11 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
+const { fetchJson } = require('./lib/http');
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const PREVIOUS_YEARS = [2025, 2024, 2023, 2022, 2021];
 const ROUND_CONCURRENCY = 4; // quante gare scaricare in parallelo per stagione
-
-async function fetchJson(url, { allow404 = false } = {}) {
-    const res = await fetch(url);
-    if (res.status === 404 && allow404) return null;
-    if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
-    return res.json();
-}
 
 async function buildRaceEntry(year, race) {
     const round = race.round;

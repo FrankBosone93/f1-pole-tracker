@@ -19,21 +19,9 @@ const path = require('path');
 const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mapping');
 const { fetchWeatherForCircuit } = require('./lib/weather');
 const { writeStatus } = require('./lib/status');
+const { HttpError, fetchJson } = require('./lib/http');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
-
-class HttpError extends Error {
-    constructor(status, url) {
-        super(`HTTP ${status} per ${url}`);
-        this.status = status;
-    }
-}
-
-async function fetchJson(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new HttpError(res.status, url);
-    return res.json();
-}
 
 // Dopo la fine di una qualifica l'API può restituire 404 per ore (a volte
 // oltre un giorno: visto su Singapore 2026) prima di pubblicare i risultati.

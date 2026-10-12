@@ -30,6 +30,7 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
+const { fetchJson } = require('./lib/http');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -68,8 +69,6 @@ const CIRCUIT_MAP = {
     'Yas Marina Circuit': 'Abu Dhabi (Yas Marina)',
 };
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
 let poleDataCache = null;
 // Il pilota realmente in pole (già verificato in data.json, fonte f1api.dev)
 // per anno+circuito, o null se non presente. Serve sia il nome (per trovare
@@ -89,18 +88,6 @@ function normalizeName(s) {
 
 // OpenF1 ha un rate limit reale (429 osservato durante lo sviluppo): un 429
 // viene ritentato con backoff invece di far fallire l'intero circuito.
-async function fetchJson(url, attempt = 1) {
-    const res = await fetch(url);
-    if (res.status === 429 && attempt <= 5) {
-        const waitMs = 1000 * attempt;
-        console.warn(`   ⏳ 429 (troppe richieste), riprovo tra ${waitMs}ms...`);
-        await sleep(waitMs);
-        return fetchJson(url, attempt + 1);
-    }
-    if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
-    return res.json();
-}
-
 // Trova il giro di pole e ne scarica la telemetria completa, campione per
 // campione. Il giro di pole NON è semplicemente il più veloce in assoluto
 // tra tutti i piloti: un giro più veloce può essere stato cancellato per
@@ -279,6 +266,11 @@ async function main() {
 
     const outputSeasons = { ...existing.seasons };
     function saveProgress(season, circuits) {
+        // Niente scrittura se i dati di questa stagione non sono cambiati:
+        // il file pesa 1,5 MB e riscriverlo solo per aggiornare updatedAt
+        // produceva un commit pesante (e un deploy) a ogni esecuzione, anche
+        // senza nessun giro nuovo.
+        if (JSON.stringify(outputSeasons[season]) === JSON.stringify({ circuits })) return;
         outputSeasons[season] = { circuits };
         const output = { updatedAt: new Date().toISOString(), seasons: outputSeasons };
         fs.writeFileSync(OUT_PATH, JSON.stringify(output) + '\n', 'utf-8');

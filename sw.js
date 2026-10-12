@@ -27,14 +27,27 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-    if (event.request.method !== 'GET') return;
+    const { request } = event;
+    if (request.method !== 'GET') return;
+    // Solo risorse dello stesso sito: le librerie da CDN (Tailwind, Chart.js)
+    // hanno già la cache HTTP del browser, e metterle qui raddoppierebbe
+    // soltanto lo spazio occupato.
+    if (new URL(request.url).origin !== self.location.origin) return;
+
     event.respondWith(
-        fetch(event.request)
+        fetch(request)
             .then(response => {
-                const copy = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+                // Si conserva solo una copia di risposte valide (200): prima
+                // finivano in cache anche i 404/errori, e poi venivano
+                // serviti offline al posto della pagina vera. Il parametro
+                // di query (?t=..., ?v=...) è ignorato nella chiave, così lo
+                // stesso file non si accumula in decine di copie.
+                if (response.ok) {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(request.url.split('?')[0], copy));
+                }
                 return response;
             })
-            .catch(() => caches.match(event.request))
+            .catch(() => caches.match(request.url.split('?')[0]))
     );
 });

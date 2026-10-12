@@ -2,17 +2,18 @@ name: Aggiorna pole position F1
 
 on:
   schedule:
+    # Orari: minuto :07, non l'ora tonda: i cron alle ore tonde sono i più ritardati/congestionati su GitHub Actions, e così parte prima di update-telemetry (:23), che legge la pole appena scritta in data.json.
     # Ogni sabato alle 18:00 UTC e alle 22:00 UTC (dopo la maggior parte
     # delle qualifiche del weekend, che si tengono di sabato pomeriggio/sera).
     # GitHub Actions esegue i cron job in orario UTC.
-    - cron: '0 18 * * 6'
-    - cron: '0 22 * * 6'
+    - cron: '7 18 * * 6'
+    - cron: '7 22 * * 6'
     # Run di recupero domenica e lunedì mattina: se l'API non aveva ancora
     # pubblicato la qualifica ai run di sabato (404, visto su Singapore 2026)
     # o un run è saltato, la pole mancante viene ripresa qui senza aspettare
     # il sabato dopo. Se non manca nulla è un no-op.
-    - cron: '0 6 * * 0'
-    - cron: '0 6 * * 1'
+    - cron: '7 6 * * 0'
+    - cron: '7 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -28,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # continue-on-error: lo script scrive comunque status/poles.json (con
       # ok:false e il messaggio d'errore) anche se fallisce - deve poter

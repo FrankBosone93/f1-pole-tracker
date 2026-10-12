@@ -6,16 +6,7 @@
 // (stagione in corso) e build-history.js (stagioni passate) per non
 // duplicare la stessa logica in due posti.
 
-const { matchTeam } = require('./f1-mapping');
-
-// Sessioni di cui scarichiamo i risultati completi: niente sprint, l'API non
-// espone un endpoint dedicato ai loro risultati (provati vari nomi
-// plausibili - sprint, sprintQualy, sprintRace, sprint-qualifying - tutti 404).
-const SESSION_RESULT_KEYS = ['fp1', 'fp2', 'fp3', 'qualy', 'race'];
-
-function driverFullName(driver) {
-    return [driver?.name, driver?.surname].filter(Boolean).join(' ').trim();
-}
+const { matchTeam, driverFullName } = require('./f1-mapping');
 
 // L'API restituisce i tempi di giro secco con la virgola dei millesimi come
 // ":" invece di "." per alcune stagioni/round (es. "1:29:179" invece di
@@ -80,7 +71,6 @@ function normalizeSessionResults(key, racesNode) {
 }
 
 module.exports = {
-    SESSION_RESULT_KEYS,
     driverFullName,
     normalizeLapTimeDisplay,
     normalizeSessionResults,

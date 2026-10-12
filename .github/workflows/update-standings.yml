@@ -2,13 +2,14 @@ name: Aggiorna classifica campionato F1
 
 on:
   schedule:
+    # Orari: minuto :47, non l'ora tonda (i cron alle ore tonde sono i più ritardati/congestionati su GitHub Actions).
     # Gira DOPO la gara (i punti si assegnano in gara, non in qualifica),
-    # stesso orario di check-pole-penalty.yml: domenica 18:00 e 22:00 UTC,
+    # stessi giorni/ore (UTC) di check-pole-penalty.yml: domenica 18 e 22,
     # più un run di sicurezza lunedì mattina per le gare che finiscono più
     # tardi (es. Messico, Brasile, Las Vegas) o in caso di gare interrotte.
-    - cron: '0 18 * * 0'
-    - cron: '0 22 * * 0'
-    - cron: '0 6 * * 1'
+    - cron: '47 18 * * 0'
+    - cron: '47 22 * * 0'
+    - cron: '47 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:
@@ -24,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # continue-on-error: lo script scrive comunque status/standings.json
       # (con ok:false e il messaggio d'errore) anche se fallisce - deve poter
