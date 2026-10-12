@@ -1143,5 +1143,32 @@
     "timeStr": "1:42.526",
     "seconds": 102.526,
     "weather": "🌧️ Pioggia"
+  },
+  {
+    "year": 2026,
+    "circuit": "Monza",
+    "driver": "Pierre Gasly",
+    "team": "Alpine",
+    "timeStr": "1:21.786",
+    "seconds": 81.786,
+    "weather": "☁️ Nuvoloso"
+  },
+  {
+    "year": 2026,
+    "circuit": "Sepang (Malesia)",
+    "driver": "Max Verstappen",
+    "team": "Red Bull",
+    "timeStr": "1:35.130",
+    "seconds": 95.13,
+    "weather": "🌧️ Pioggia"
+  },
+  {
+    "year": 2026,
+    "circuit": "Singapore",
+    "driver": "Max Verstappen",
+    "team": "Red Bull",
+    "timeStr": "1:31.373",
+    "seconds": 91.373,
+    "weather": "🌧️ Notturno Umido"
   }
 ]

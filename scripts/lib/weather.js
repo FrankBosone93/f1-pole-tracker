@@ -16,6 +16,7 @@
 // rischia di prendere il meteo del giorno sbagliato (successo per errore con
 // il GP Australia 2025, corretto durante lo sviluppo).
 const CIRCUIT_INFO = {
+    'Sepang (Malesia)': { lat: 2.7608, lon: 101.7380, tz: 'Asia/Kuala_Lumpur', night: false },
     'Bahrain (Sakhir)': { lat: 26.0325, lon: 50.5106, tz: 'Asia/Bahrain', night: true },
     'Jeddah (Arabia Saudita)': { lat: 21.6319, lon: 39.1044, tz: 'Asia/Riyadh', night: true },
     'Melbourne (Australia)': { lat: -37.8497, lon: 144.9680, tz: 'Australia/Melbourne', night: false },

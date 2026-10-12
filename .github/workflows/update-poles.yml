@@ -7,6 +7,12 @@ on:
     # GitHub Actions esegue i cron job in orario UTC.
     - cron: '0 18 * * 6'
     - cron: '0 22 * * 6'
+    # Run di recupero domenica e lunedì mattina: se l'API non aveva ancora
+    # pubblicato la qualifica ai run di sabato (404, visto su Singapore 2026)
+    # o un run è saltato, la pole mancante viene ripresa qui senza aspettare
+    # il sabato dopo. Se non manca nulla è un no-op.
+    - cron: '0 6 * * 0'
+    - cron: '0 6 * * 1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 permissions:

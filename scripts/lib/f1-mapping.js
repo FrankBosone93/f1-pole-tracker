@@ -42,6 +42,7 @@ const CIRCUIT_ID_MAP = {
     'albert_park': 'Melbourne (Australia)',
     'jeddah': 'Jeddah (Arabia Saudita)',
     'bahrain': 'Bahrain (Sakhir)',
+    'sepang': 'Sepang (Malesia)', // round 16 del 2026 ("Bahrain GP in Malaysia"): gara spostata a Sepang
     // Circuiti storici non più in calendario, ma presenti in data.json (stagione 2021)
     'ricard': 'Paul Ricard (Francia)',
     'sochi': 'Sochi (Russia)',
