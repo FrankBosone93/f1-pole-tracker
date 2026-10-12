@@ -438,6 +438,26 @@
                 if (caption) caption.innerText = 'Telemetria non disponibile';
                 return;
             }
+            // Tratti in cui la telemetria dell'auto si è interrotta alla fonte
+            // (OpenF1): campioni senza velocità, mostrati come buchi nei tre
+            // grafici. Li segnaliamo a parole per non farli sembrare un bug.
+            const dropoutNote = (e, label) => {
+                // Raggruppa i campioni consecutivi senza velocità in "tratti".
+                const windows = [];
+                e.samples.forEach((s, i) => {
+                    if (s.speed !== null) return;
+                    const prevMissing = i > 0 && e.samples[i - 1].speed === null;
+                    if (prevMissing) windows[windows.length - 1].end = s.t;
+                    else windows.push({ start: s.t, end: s.t });
+                });
+                if (windows.length === 0) return '';
+                const f = v => v.toFixed(1).replace('.', ',');
+                const detail = windows.length === 1
+                    ? `tra ${f(windows[0].start)} e ${f(windows[0].end)} s`
+                    : `in ${windows.length} tratti (~${f(windows.reduce((sum, w) => sum + (w.end - w.start), 0))} s in totale)`;
+                return ` <span class="text-yellow-500" title="La telemetria dell'auto si è interrotta alla fonte (OpenF1): per quei tratti non esistono dati attendibili.">⚠️ ${label}dati OpenF1 assenti ${detail}</span>`;
+            };
+
             if (caption) {
                 if (compareEntry) {
                     caption.innerHTML = `<span style="color:#E10600">🏎️ ${entry.driver} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
@@ -445,6 +465,8 @@
                 } else {
                     caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
                 }
+                caption.insertAdjacentHTML('beforeend', dropoutNote(entry, compareEntry ? `${entry.driver} '${yy(telemetryPrimarySeason)}: ` : '')
+                    + (compareEntry ? dropoutNote(compareEntry, `${compareEntry.driver} '${yy(telemetryCompareYear)}: `) : ''));
             }
 
             const speedPoints = entry.samples.map(s => ({ x: s.t, y: s.speed }));

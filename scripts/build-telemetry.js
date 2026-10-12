@@ -190,13 +190,23 @@ async function buildCircuitTelemetry(session, season) {
     const validPercent = v => (typeof v === 'number' && v >= 0 && v <= 100) ? v : null;
 
     const samples = carData
-        .map(d => ({
-            t: Math.round((new Date(d.date) - lapStart) / 10) / 100, // secondi dall'inizio del giro, 2 decimali
-            speed: d.speed,
-            throttle: validPercent(d.throttle),
-            brake: validPercent(d.brake),
-            gear: d.n_gear,
-        }))
+        .map(d => {
+            const throttle = validPercent(d.throttle);
+            const brake = validPercent(d.brake);
+            // Throttle e brake entrambi non validi = la telemetria dell'auto
+            // si è interrotta in quel momento: nel dropout di Monza 2026
+            // velocità e marcia restavano congelate all'ultimo valore (308
+            // km/h, 8ª) mentre l'auto frenava davvero fino a 118 km/h. Anche
+            // loro vanno scartati, altrimenti il grafico mostra un tratto falso.
+            const dropout = throttle === null && brake === null;
+            return {
+                t: Math.round((new Date(d.date) - lapStart) / 10) / 100, // secondi dall'inizio del giro, 2 decimali
+                speed: dropout ? null : d.speed,
+                throttle,
+                brake,
+                gear: dropout ? null : d.n_gear,
+            };
+        })
         .filter(s => s.t >= 0 && s.t <= poleLap.lap_duration + 1);
 
     return {
