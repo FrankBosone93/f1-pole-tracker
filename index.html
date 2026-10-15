@@ -27,6 +27,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
     <style>
         body { background-color: #121212; color: #ffffff; font-family: system-ui, sans-serif; }
+        /* Telefono ruotato in orizzontale (classe messa da applyLayoutMode):
+           lo schermo è largo come un tablet ma alto meno di 500px, quindi il
+           layout desktop a due colonne (grafico alto 440px) non ci starebbe.
+           Si usa una colonna sola, col grafico a tutta larghezza e alto
+           quanto lo schermo, e il widget "Prossimo GP" in versione mobile. */
+        body.phone-landscape { padding-left: 12px; padding-right: 12px; max-width: none !important; }
+        body.phone-landscape #mainGrid { display: block !important; }
+        body.phone-landscape #resizeHandle,
+        body.phone-landscape #vResizeHandle { display: none !important; }
+        body.phone-landscape #leftColumn { position: static !important; }
+        body.phone-landscape #chartCard { margin-bottom: 1.5rem; }
+        body.phone-landscape #featuredRaceWidget { display: block !important; }
+        body.phone-landscape #featuredRaceWidgetDesktop { display: none !important; }
+        body.phone-landscape #telemetryStatsGrid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -77,7 +91,7 @@
         <!-- Colonna sinistra (desktop, 2/3 dello schermo di default, trascinabile): grafico, classifica. Su mobile è semplicemente in cima. -->
         <div id="leftColumn" class="md:sticky md:top-8">
             <!-- Contenitore Grafico -->
-            <div id="chartCard" class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
+            <div id="chartCard" class="bg-[#1E1E1E] px-2 py-3 md:p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="flex items-center justify-between gap-2 mb-2">
                     <div class="flex items-center gap-2">
                         <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
@@ -234,6 +248,25 @@
     <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
 
     <script>
+        // --- LAYOUT: desktop, telefono verticale, telefono ruotato ---------
+        // Telefono ruotato = schermo orizzontale, basso (< 500px) e touch: per
+        // larghezza sarebbe "desktop", ma il layout a due colonne non ci sta.
+        function isPhoneLandscape() {
+            return window.matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)').matches;
+        }
+        function isDesktopLayout() {
+            return window.innerWidth >= 768 && !isPhoneLandscape();
+        }
+        // Telefono verticale (schermo stretto): asse Y della telemetria
+        // compatto, per lasciare più spazio orizzontale alle curve.
+        function isCompactTelemetryAxis() {
+            return !isDesktopLayout() && window.innerWidth < 600;
+        }
+        function applyLayoutMode() {
+            document.body.classList.toggle('phone-landscape', isPhoneLandscape());
+        }
+        applyLayoutMode();
+
         // baseData = fonte di verità "ufficiale", caricata da data.json con fetch() più sotto.
         let baseData = [];
         let poleData = [];
@@ -708,6 +741,11 @@
             const xMax = Math.max(lastT(speedPoints), lastT(compareSpeedPoints));
             const xScaleRange = { min: 0, max: xMax };
 
+            // Telefono verticale: asse Y stretto (numeri senza "km/h", font più
+            // piccolo) e meno margine a destra, per allargare le curve.
+            const compactAxis = isCompactTelemetryAxis();
+            const tickFont = compactAxis ? { size: 10 } : undefined;
+
             const commonOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -718,7 +756,7 @@
                 // dell'asse X (visibile solo nel grafico marce): senza, Chart.js
                 // restringe di ~12px l'area di disegno di quel solo pannello e
                 // la curva delle marce finisce prima delle altre due.
-                layout: { padding: { right: 20 } },
+                layout: { padding: { right: compactAxis ? 10 : 20 } },
             };
 
             // I tre grafici hanno etichette sull'asse Y di larghezza diversa
@@ -727,7 +765,7 @@
             // di disegno (e con esse l'inizio del giro, t=0) non partirebbero
             // allineate verticalmente tra i tre pannelli. Forzando la stessa
             // larghezza fissa su tutti e tre, i tre assi X restano allineati.
-            const Y_AXIS_WIDTH = 70;
+            const Y_AXIS_WIDTH = compactAxis ? 36 : 70;
             const fixedYAxisWidth = { afterFit: scale => { scale.width = Y_AXIS_WIDTH; } };
 
             const speedDatasets = [
@@ -744,7 +782,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { display: false } },
-                        y: { ...fixedYAxisWidth, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + ' km/h' } }
+                        y: { ...fixedYAxisWidth, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => compactAxis ? v : v + ' km/h' } }
                     },
                     plugins: {
                         legend: { display: false },
@@ -765,7 +803,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { display: false } },
-                        y: { ...fixedYAxisWidth, min: 0, max: 100, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', callback: v => v + '%' } }
+                        y: { ...fixedYAxisWidth, min: 0, max: 100, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => v + '%' } }
                     },
                     plugins: {
                         legend: { display: false },
@@ -787,8 +825,8 @@
                 options: {
                     ...commonOptions,
                     scales: {
-                        x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 0, callback: v => v.toFixed(0) + 's' } },
-                        y: { ...fixedYAxisWidth, min: 1, max: 8, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', stepSize: 1 } }
+                        x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { color: '#a0aec0', font: tickFont, maxRotation: 0, callback: v => v.toFixed(0) + 's' } },
+                        y: { ...fixedYAxisWidth, min: 1, max: 8, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, stepSize: 1 } }
                     },
                     plugins: {
                         legend: { display: false },
@@ -996,7 +1034,7 @@
         // grafico stesso (leftRatio può cambiare col drag, DEFAULT_LEFT_RATIO no).
         const classificaPanel = document.getElementById('classificaPanel');
         function applyClassificaPanelWidth() {
-            if (window.innerWidth < 768) {
+            if (!isDesktopLayout()) {
                 classificaPanel.style.width = '';
                 return;
             }
@@ -1014,7 +1052,7 @@
         // Classifica quando il grafico si restringe.
         const detailsColumn = document.getElementById('detailsColumn');
         function applyDetailsColumnWidth() {
-            if (window.innerWidth < 768) {
+            if (!isDesktopLayout()) {
                 detailsColumn.style.width = '';
                 detailsColumn.style.marginLeft = '';
                 return;
@@ -1033,7 +1071,7 @@
         // stessa formula usata per detailsColumn.
         const featuredRaceWidgetDesktop = document.getElementById('featuredRaceWidgetDesktop');
         function applyFeaturedWidgetWidth() {
-            if (window.innerWidth < 768) {
+            if (!isDesktopLayout()) {
                 featuredRaceWidgetDesktop.style.width = '';
                 featuredRaceWidgetDesktop.style.marginRight = '';
                 return;
@@ -1109,7 +1147,7 @@
         // la pagina). Con "top" assoluto sul figlio, l'elemento sticky esterno
         // non ha margini e resta perfettamente sincronizzato con leftColumn.
         function positionResizeHandle() {
-            if (window.innerWidth < 768) return;
+            if (!isDesktopLayout()) return;
             // L'altezza "naturale" di resizeHandle deve combaciare con quella
             // di leftColumn (non con l'intera riga della griglia, che segue
             // anche la colonna dei dettagli molto più alta): altrimenti i due
@@ -1131,7 +1169,7 @@
 
         // Maniglia altezza (orizzontale): centrata sull'asse X del grafico.
         function positionVResizeHandle() {
-            if (window.innerWidth < 768) return;
+            if (!isDesktopLayout()) return;
             const area = getChartAreaRect();
             if (!area) return;
             const handleRect = vResizeHandle.getBoundingClientRect();
@@ -1164,8 +1202,22 @@
             setTimeout(repositionHandles, 50);
         }
 
+        // Altezza del contenitore dei grafici, calcolata in un solo punto:
+        // - desktop: quella trascinata col divisore (chartHeight);
+        // - telefono ruotato: quasi tutto lo schermo, così i tre grafici della
+        //   telemetria si vedono interi senza scorrere;
+        // - telefono verticale: 380px in telemetria (3 pannelli), altrimenti
+        //   quella del CSS (200px).
+        // Prima ogni evento resize (anche la barra di Safari che si nasconde
+        // scorrendo) riportava la telemetria su mobile a 200px.
+        function chartContainerHeight() {
+            if (isDesktopLayout()) return chartHeight + 'px';
+            if (isPhoneLandscape()) return Math.max(220, window.innerHeight - 64) + 'px';
+            return chartViewMode === 'telemetry' ? '380px' : '';
+        }
+
         function applyChartHeight() {
-            chartContainer.style.height = window.innerWidth >= 768 ? chartHeight + 'px' : '';
+            chartContainer.style.height = chartContainerHeight();
             scheduleReposition();
         }
 
@@ -1177,7 +1229,7 @@
         // perché l'altezza del primo riquadro varia da circuito a circuito
         // (una entry con penaltyNote ha una riga in più).
         function alignChartTop() {
-            if (window.innerWidth < 768) {
+            if (!isDesktopLayout()) {
                 chartCard.style.marginTop = '';
                 return;
             }
@@ -1209,7 +1261,7 @@
         // posizione naturale (solo per "chiudere" lo spazio in eccesso, non
         // per spingere i dettagli più giù del normale).
         function alignDetailsColumnTop() {
-            if (window.innerWidth < 768) {
+            if (!isDesktopLayout()) {
                 detailsColumn.style.marginTop = '';
                 return;
             }
@@ -1237,14 +1289,24 @@
             resizeFramePending = true;
             requestAnimationFrame(() => {
                 resizeFramePending = false;
+                applyLayoutMode();
                 applyClassificaPanelWidth();
                 applyDetailsColumnWidth();
                 applyFeaturedWidgetWidth();
                 alignDetailsColumnTop();
                 alignChartTop();
                 applyChartHeight();
+                // Rotazione del telefono / cambio di layout: la telemetria va
+                // ricreata (asse Y compatto o no, altezze diverse). Non a ogni
+                // resize: solo quando il tipo di layout cambia davvero.
+                const layoutKey = `${isDesktopLayout()}|${isPhoneLandscape()}|${isCompactTelemetryAxis()}`;
+                if (layoutKey !== lastLayoutKey) {
+                    lastLayoutKey = layoutKey;
+                    if (chartViewMode === 'telemetry') renderChart();
+                }
             });
         });
+        let lastLayoutKey = `${isDesktopLayout()}|${isPhoneLandscape()}|${isCompactTelemetryAxis()}`;
 
         let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
         vResizeHandle.addEventListener('mousedown', (e) => {
@@ -1846,13 +1908,13 @@
                 // Su mobile l'altezza normale (200px, dal CSS) è troppo
                 // stretta per 3 pannelli leggibili: qui serve più spazio,
                 // ripristinato quando si torna alla vista normale sotto.
-                if (window.innerWidth < 768) chartContainer.style.height = '380px';
+                chartContainer.style.height = chartContainerHeight();
                 renderTelemetryCharts();
                 scheduleReposition();
                 return;
             }
 
-            if (window.innerWidth < 768) chartContainer.style.height = '';
+            chartContainer.style.height = chartContainerHeight();
             poleCanvas.style.display = '';
             telemetryPanels.classList.add('hidden');
             document.getElementById('telemetryStats').classList.add('hidden');

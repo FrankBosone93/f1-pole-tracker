@@ -99,6 +99,13 @@ Il sito è installabile su iOS e Android come una vera app, senza passare dagli 
 
 Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più `manifest.json` (nome, icone, colori, modalità a schermo intero) e `sw.js` (service worker minimo, solo per l'installabilità e una resilienza offline di base — vedi sopra). Nessuna build, nessun account sviluppatore, nessuna pubblicazione su App Store/Play Store: si aggiorna da sola ogni volta che il sito viene ripubblicato.
 
+## Telefono: verticale e ruotato
+
+- **Verticale:** nella telemetria l'asse Y è compatto (numeri senza "km/h", font più piccolo, unità già nei riquadri sotto) e i margini sono ridotti: le curve occupano circa il 75% della larghezza dello schermo invece del 58%.
+- **Ruotato in orizzontale:** riconosciuto come schermo orizzontale, alto meno di 500px e touch (`isPhoneLandscape()` in `index.html`). Anche se per larghezza sarebbe "desktop", si usa una colonna sola (classe `phone-landscape` sul `body`): grafico a tutta larghezza e alto quanto lo schermo, così i tre pannelli della telemetria si vedono interi, widget "Prossimo GP" in versione mobile, quattro riquadri di statistiche in una riga. Ruotando il telefono la telemetria si ridisegna da sola.
+- L'altezza del grafico è calcolata in un solo punto (`chartContainerHeight()`): prima ogni evento di ridimensionamento, compresa la barra di Safari che si nasconde scorrendo, riportava la telemetria su mobile all'altezza normale (200px).
+- `manifest.json` ha `orientation: any`, quindi anche l'app installata sulla schermata Home può ruotare.
+
 ## Link condivisibili
 
 Lo stato della vista è nell'indirizzo della pagina (la parte dopo `#`), che si aggiorna da solo mentre navighi: copiandolo, o col tasto **Condividi** (icona a tre pallini collegati, in alto a destra nel riquadro del grafico, dopo il tasto del delta), si manda a qualcuno esattamente quello che si sta guardando. Su telefono il tasto apre il foglio di condivisione nativo, altrove copia il link negli appunti.
