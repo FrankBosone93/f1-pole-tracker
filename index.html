@@ -48,6 +48,7 @@
            vengono DOPO quelle del telefono ruotato apposta, così vincono. */
         body.pace-mode #mainGrid,
         body.pace-mode #qualiSelector,
+        body.pace-mode #qualiSelectorLabel,
         body.pace-mode #featuredRaceWidget,
         body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.pace-mode) #paceView { display: none; }
@@ -82,21 +83,30 @@
             <!-- Interruttore Qualifiche / Passo gara: su mobile sotto il box del
                  prossimo GP e sopra la scelta del circuito, su desktop a destra
                  della scelta del circuito (order-* scambia le due posizioni).
-                 In modalità Passo gara il selettore delle qualifiche si
-                 nasconde e l'interruttore resta da solo. -->
-            <div class="mt-4 md:mt-6 mb-6 md:mb-0 flex flex-col md:flex-row md:items-end gap-3 text-left">
-                <div id="modeToggle" class="order-1 md:order-2">
-                    <div class="flex md:inline-flex rounded-lg border border-gray-700 overflow-hidden text-sm" role="group" aria-label="Modalità del sito">
-                        <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 md:h-[56px] cursor-pointer transition-colors">Qualifiche</button>
-                        <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 md:h-[56px] cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
+                 Su desktop la riga allinea in altezza menu e interruttore
+                 (items-stretch): l'interruttore prende l'altezza reale del
+                 menu, che cambia da browser a browser (con un'altezza fissa in
+                 px su Safari risultava più alto). L'etichetta "Scegli un
+                 circuito" sta sopra la riga su desktop e sopra il menu su
+                 mobile. In modalità Passo gara selettore ed etichetta si
+                 nascondono e l'interruttore resta da solo. -->
+            <div class="mt-4 md:mt-6 mb-6 md:mb-0 text-left">
+                <label id="qualiSelectorLabel" for="circuitSelect" class="hidden md:block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
+                <div class="flex flex-col md:flex-row md:items-stretch gap-3">
+                    <div id="modeToggle" class="order-1 md:order-2 md:flex">
+                        <div class="flex md:min-h-[40px] rounded-lg border border-gray-700 overflow-hidden text-sm" role="group" aria-label="Modalità del sito">
+                            <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors">Qualifiche</button>
+                            <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
+                        </div>
+                    </div>
+                    <div id="qualiSelector" class="order-2 md:order-1 w-full md:w-96 text-left">
+                        <label for="circuitSelect" class="block md:hidden text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
+                        <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-base md:text-lg border border-gray-700 rounded-lg p-3 md:p-4 focus:outline-none focus:border-[#E10600]">
+                            <!-- Inseriti automaticamente dallo script -->
+                        </select>
                     </div>
                 </div>
-                <div id="qualiSelector" class="order-2 md:order-1 w-full md:w-96 text-left">
-                    <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
-                    <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-base md:text-lg border border-gray-700 rounded-lg p-3 md:p-4 focus:outline-none focus:border-[#E10600]">
-                        <!-- Inseriti automaticamente dallo script -->
-                    </select>
-                </div>
+            </div>
             </div>
         </div>
         <!-- Posizionato in assoluto (non più nel flusso flex) apposta: se
@@ -2006,10 +2016,11 @@
         const PACE_COLOR_B = '#3b82f6';
 
         function updateModeToggle() {
-            // Modalità attiva nel rosso del sito: un grigio scuro si distingueva
-            // appena dallo sfondo.
-            const active = ['bg-[#E10600]', 'text-white', 'font-semibold'];
-            const inactive = ['text-gray-300', 'hover:text-white', 'hover:bg-gray-800'];
+            // Attiva: grigio chiaro pieno con testo bianco in grassetto;
+            // non attiva: trasparente con testo grigio. Il grigio scuro di
+            // prima si distingueva appena dallo sfondo, il rosso era troppo forte.
+            const active = ['bg-gray-600', 'text-white', 'font-semibold'];
+            const inactive = ['text-gray-400', 'hover:text-white', 'hover:bg-gray-800'];
             [['modeBtnQuali', 'quali'], ['modeBtnPace', 'pace']].forEach(([id, mode]) => {
                 const btn = document.getElementById(id);
                 if (!btn) return;
