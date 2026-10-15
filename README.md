@@ -99,6 +99,18 @@ Il sito è installabile su iOS e Android come una vera app, senza passare dagli 
 
 Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più `manifest.json` (nome, icone, colori, modalità a schermo intero) e `sw.js` (service worker minimo, solo per l'installabilità e una resilienza offline di base — vedi sopra). Nessuna build, nessun account sviluppatore, nessuna pubblicazione su App Store/Play Store: si aggiorna da sola ogni volta che il sito viene ripubblicato.
 
+## Link condivisibili
+
+Lo stato della vista è nell'indirizzo della pagina (la parte dopo `#`), che si aggiorna da solo mentre navighi: copiandolo, o col tasto **Condividi** (icona a tre pallini collegati, accanto al titolo del grafico), si manda a qualcuno esattamente quello che si sta guardando. Su telefono il tasto apre il foglio di condivisione nativo, altrove copia il link negli appunti.
+
+Formato: `#c=Monza&view=telemetry&y=2023&vs=2024`
+- `c` — circuito, con il nome del menu a tendina (spazi e parentesi codificati, es. `Baku%20%28Azerbaijan%29`).
+- `view` — `telemetry` o `delta`; assente = grafico dei tempi.
+- `y` — anno principale della telemetria; assente = 2026.
+- `vs` — anno di confronto della telemetria.
+
+Link non validi non rompono nulla: un circuito inesistente viene ignorato (si apre il circuito di default), un anno senza telemetria ripiega sul 2026, e se il circuito non ha telemetria si apre il grafico normale. L'hash non viene mai inviato al server (il sito è statico) e si aggiorna con `history.replaceState`, quindi non riempie la cronologia del browser. Modificare l'hash a mano nella stessa scheda applica subito la nuova vista.
+
 ## Come funziona l'aggiornamento automatico
 
 Ci sono quattro momenti distinti, perché prove libere, qualifica e gara di un weekend F1 non finiscono mai nello stesso momento, e le news escono in continuazione:

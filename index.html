@@ -94,6 +94,9 @@
                     </div>
                     <div class="flex items-center gap-2 ml-auto">
                         <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
+                        <button id="shareBtn" onclick="shareCurrentView()" title="Condividi questa vista" aria-label="Condividi questa vista" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
+                        </button>
                         <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
                     </div>
                 </div>
@@ -221,6 +224,8 @@
 
     </div>
 
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
+
     <script>
         // baseData = fonte di verità "ufficiale", caricata da data.json con fetch() più sotto.
         let baseData = [];
@@ -274,9 +279,78 @@
             }
         }
 
+        // --- LINK CONDIVISIBILI -------------------------------------------
+        // Lo stato della vista vive nell'hash dell'indirizzo, p.es.
+        //   #c=Monza&view=telemetry&y=2023&vs=2024
+        //   c    = circuito (nome come nel menu)
+        //   view = "telemetry" | "delta" (assente = grafico dei tempi)
+        //   y    = anno principale della telemetria (assente = 2026)
+        //   vs   = anno di confronto della telemetria
+        // L'hash non arriva mai al server (il sito è statico) e si aggiorna con
+        // replaceState: niente voci extra nella cronologia del browser.
+        function parseUrlState() {
+            const p = new URLSearchParams(location.hash.replace(/^#/, ''));
+            return { circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs') };
+        }
+
+        function buildUrlHash() {
+            const p = new URLSearchParams();
+            p.set('c', select.value);
+            if (chartViewMode === 'telemetry') {
+                p.set('view', 'telemetry');
+                if (telemetryPrimarySeason !== DEFAULT_TELEMETRY_SEASON) p.set('y', telemetryPrimarySeason);
+                if (telemetryCompareYear) p.set('vs', telemetryCompareYear);
+            } else if (chartViewMode === 'delta') {
+                p.set('view', 'delta');
+            }
+            return '#' + p.toString().replace(/\+/g, '%20'); // spazi come %20, più leggibile di +
+        }
+
+        function syncUrlState() {
+            if (!select.value) return;
+            const hash = buildUrlHash();
+            if (hash !== location.hash) {
+                try { history.replaceState(null, '', hash); } catch (err) { /* es. file:// */ }
+            }
+        }
+
+        let toastTimer = null;
+        function showToast(message) {
+            const el = document.getElementById('toast');
+            if (!el) return;
+            el.innerText = message;
+            el.classList.remove('opacity-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.add('opacity-0'), 2200);
+        }
+
+        // Su telefono apre il foglio di condivisione nativo; altrove copia il
+        // link negli appunti (con un prompt come ultimo ripiego).
+        async function shareCurrentView() {
+            syncUrlState();
+            const url = location.href;
+            const view = chartViewMode === 'telemetry' ? ` - telemetria ${telemetryPrimarySeason}${telemetryCompareYear ? ' vs ' + telemetryCompareYear : ''}` : '';
+            const title = `F1 Pole Tracker - ${select.value}${view}`;
+            if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+                try {
+                    await navigator.share({ title, url });
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return; // l'utente ha annullato
+                }
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast('Link copiato negli appunti');
+            } catch (err) {
+                window.prompt('Copia il link:', url);
+            }
+        }
+
         function toggleChartView() {
             chartViewMode = chartViewMode === 'line' ? 'delta' : 'line';
             updateChartViewToggleIcon();
+            syncUrlState();
             // Dissolvenza gestita a mano invece di affidarsi all'animazione
             // d'ingresso di Chart.js: quest'ultima può completarsi quasi
             // istantaneamente (osservato su desktop) a seconda di quando il
@@ -364,6 +438,7 @@
             updateTelemetryToggleLabel();
             updateTelemetryButtonsVisibility();
             updateActiveYearCardHighlight();
+            syncUrlState();
             // Stessa dissolvenza usata dal toggle linea/delta, per coerenza.
             chartContainer.style.opacity = '0';
             setTimeout(() => {
@@ -397,6 +472,7 @@
             telemetryCompareYear = sel.value || null;
             updateTelemetryCompareSelectStyle();
             updateActiveYearCardHighlight();
+            syncUrlState();
             renderTelemetryCharts();
         }
 
@@ -414,6 +490,7 @@
             updateTelemetryToggleLabel();
             updateTelemetryButtonsVisibility();
             updateActiveYearCardHighlight();
+            syncUrlState();
             chartContainer.style.opacity = '0';
             setTimeout(() => {
                 renderChart();
@@ -706,11 +783,25 @@
 
             select.addEventListener('change', (e) => updateApp(e.target.value));
 
+            // Circuito e vista iniziali: quelli di un link condiviso se validi,
+            // altrimenti il circuito di default (ultimo GP / weekend in corso).
+            const urlState = parseUrlState();
             const defaultCircuit = determineDefaultCircuit();
-            const initialCircuit = (defaultCircuit && uniqueCircuits.includes(defaultCircuit)) ? defaultCircuit : uniqueCircuits[0];
+            const initialCircuit = uniqueCircuits.includes(urlState.circuit) ? urlState.circuit
+                : (defaultCircuit && uniqueCircuits.includes(defaultCircuit)) ? defaultCircuit : uniqueCircuits[0];
             select.value = initialCircuit;
             updateChartViewToggleIcon();
-            updateApp(initialCircuit);
+            updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) ? urlState : null);
+
+            // Hash incollato/modificato a mano nella stessa scheda (replaceState
+            // non lo fa scattare, quindi nessun ciclo con syncUrlState).
+            window.addEventListener('hashchange', () => {
+                if (location.hash === buildUrlHash()) return;
+                const state = parseUrlState();
+                if (!uniqueCircuits.includes(state.circuit)) { syncUrlState(); return; } // riscrive l'indirizzo con lo stato reale
+                select.value = state.circuit;
+                updateApp(state.circuit, state);
+            });
             applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
             applyDetailsColumnWidth();
             applyFeaturedWidgetWidth();
@@ -1739,13 +1830,42 @@
             scheduleReposition();
         }
 
-        function updateApp(circuitName) {
+        function updateApp(circuitName, viewState = null) {
             currentFiltered = poleData.filter(d => d.circuit === circuitName).sort((a,b) => a.year - b.year);
 
             // Cambiando circuito si torna alla stagione primaria di default:
             // la vista su un anno specifico (showTelemetryForYear) è legata
             // al box di quel circuito, non ha senso portarla su un altro.
             telemetryPrimarySeason = DEFAULT_TELEMETRY_SEASON;
+
+            // Vista richiesta da un link condiviso (o da una modifica manuale
+            // dell'hash): applicata prima del primo render. Valori non validi
+            // (anno senza telemetria, confronto inesistente) vengono scartati
+            // da updateTelemetryButtonsVisibility() qui sotto, che ripiega sulla
+            // vista normale.
+            if (viewState && viewState.mode === 'telemetry') {
+                // Anno richiesto se ha telemetria per questo circuito, altrimenti
+                // quello di default (2026); se manca anche quello, vista normale.
+                const requested = viewState.year && /^\d{4}$/.test(viewState.year) ? viewState.year : DEFAULT_TELEMETRY_SEASON;
+                const year = getTelemetryEntry(requested, circuitName) ? requested
+                    : (getTelemetryEntry(DEFAULT_TELEMETRY_SEASON, circuitName) ? DEFAULT_TELEMETRY_SEASON : null);
+                if (year) {
+                    telemetryPrimarySeason = year;
+                    chartViewMode = 'telemetry';
+                    telemetryCompareYear = viewState.compare && /^\d{4}$/.test(viewState.compare) ? viewState.compare : null;
+                    updateTelemetryToggleLabel();
+                } else {
+                    // Telemetria richiesta ma assente per questo circuito: vista normale.
+                    chartViewMode = 'line';
+                    updateTelemetryToggleLabel();
+                }
+            } else if (viewState && viewState.mode === 'delta') {
+                chartViewMode = 'delta';
+                updateTelemetryToggleLabel();
+            } else if (viewState) {
+                chartViewMode = 'line';
+                updateTelemetryToggleLabel();
+            }
 
             // I tasti "Telemetria"/"2025" sono visibili solo se questo
             // circuito ha i rispettivi dati. Se si cambia circuito mentre si
@@ -1791,6 +1911,7 @@
             updateActiveYearCardHighlight();
 
             alignChartTop();
+            syncUrlState();
         }
 
         // Elementi cliccabili che non sono <button>/<a> (righe gara, box anno,
