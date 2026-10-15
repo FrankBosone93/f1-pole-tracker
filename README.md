@@ -101,13 +101,15 @@ Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più
 
 ## Link condivisibili
 
-Lo stato della vista è nell'indirizzo della pagina (la parte dopo `#`), che si aggiorna da solo mentre navighi: copiandolo, o col tasto **Condividi** (icona a tre pallini collegati, accanto al titolo del grafico), si manda a qualcuno esattamente quello che si sta guardando. Su telefono il tasto apre il foglio di condivisione nativo, altrove copia il link negli appunti.
+Lo stato della vista è nell'indirizzo della pagina (la parte dopo `#`), che si aggiorna da solo mentre navighi: copiandolo, o col tasto **Condividi** (icona a tre pallini collegati, in alto a destra nel riquadro del grafico, dopo il tasto del delta), si manda a qualcuno esattamente quello che si sta guardando. Su telefono il tasto apre il foglio di condivisione nativo, altrove copia il link negli appunti.
 
 Formato: `#c=Monza&view=telemetry&y=2023&vs=2024`
 - `c` — circuito, con il nome del menu a tendina (spazi e parentesi codificati, es. `Baku%20%28Azerbaijan%29`).
 - `view` — `telemetry` o `delta`; assente = grafico dei tempi.
 - `y` — anno principale della telemetria; assente = 2026.
 - `vs` — anno di confronto della telemetria.
+
+Cliccando sul titolo **F1 POLE TRACKER** il sito si ricarica aggiornato e torna alla home (indirizzo senza circuito né vista), cancellando le personalizzazioni della sessione di consultazione; prima di ricaricare rivalida `index.html` saltando la cache HTTP (GitHub Pages la tiene 10 minuti).
 
 Link non validi non rompono nulla: un circuito inesistente viene ignorato (si apre il circuito di default), un anno senza telemetria ripiega sul 2026, e se il circuito non ha telemetria si apre il grafico normale. L'hash non viene mai inviato al server (il sito è statico) e si aggiorna con `history.replaceState`, quindi non riempie la cronologia del browser. Modificare l'hash a mano nella stessa scheda applica subito la nuova vista.
 

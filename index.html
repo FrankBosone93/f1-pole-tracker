@@ -44,7 +44,7 @@
          l'header precede comunque mainGrid nel flusso del documento. -->
     <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:relative md:flex md:items-start md:justify-between md:gap-6">
         <div class="text-center md:text-left">
-            <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider">F1 POLE TRACKER</h1>
+            <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider"><a href="./" onclick="goHome(event)" title="Torna alla home e ricarica" class="hover:opacity-80 transition-opacity">F1 POLE TRACKER</a></h1>
             <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
             <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
 
@@ -93,11 +93,11 @@
                         </select>
                     </div>
                     <div class="flex items-center gap-2 ml-auto">
-                        <span id="chartCaption" class="text-xs text-gray-400">In basso = Più Veloce ⚡</span>
+                        <span id="chartCaption" class="text-xs text-gray-400">Andamenti tempi</span>
+                        <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
                         <button id="shareBtn" onclick="shareCurrentView()" title="Condividi questa vista" aria-label="Condividi questa vista" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
                         </button>
-                        <button id="chartViewToggle" onclick="toggleChartView()" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"></button>
                     </div>
                 </div>
                 <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
@@ -275,7 +275,7 @@
             } else {
                 btn.innerHTML = ICON_BARS;
                 btn.title = 'Vedi il delta anno su anno';
-                if (caption) caption.innerText = 'In basso = Più Veloce ⚡';
+                if (caption) caption.innerText = 'Andamenti tempi';
             }
         }
 
@@ -312,6 +312,19 @@
             if (hash !== location.hash) {
                 try { history.replaceState(null, '', hash); } catch (err) { /* es. file:// */ }
             }
+        }
+
+        // Clic sul titolo: ricarica il sito aggiornato e riparte dalla home,
+        // senza circuito/vista nell'indirizzo, così sparisce ogni
+        // personalizzazione fatta durante la consultazione (circuito, vista,
+        // pannelli aperti, dimensioni trascinate). Prima di navigare si
+        // rivalida index.html con cache:'reload': la cache HTTP di GitHub
+        // Pages lo terrebbe per 10 minuti, e si rivedrebbe la versione vecchia.
+        async function goHome(event) {
+            event.preventDefault();
+            try { await fetch(location.pathname, { cache: 'reload' }); } catch (err) { /* offline: si ricarica comunque */ }
+            if (location.hash || location.search) location.replace(location.pathname);
+            else location.reload();
         }
 
         let toastTimer = null;
