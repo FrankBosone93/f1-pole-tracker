@@ -41,6 +41,16 @@
         body.phone-landscape #featuredRaceWidget { display: block !important; }
         body.phone-landscape #featuredRaceWidgetDesktop { display: none !important; }
         body.phone-landscape #telemetryStatsGrid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+        body.phone-landscape #paceGrid { display: block !important; }
+        body.phone-landscape #paceChartContainer { height: calc(100vh - 70px) !important; min-height: 220px; }
+        /* Modalità "Passo gara" (classe pace-mode sul body, vedi setSiteMode):
+           sostituisce tutto il contenuto della vista Qualifiche. Queste regole
+           vengono DOPO quelle del telefono ruotato apposta, così vincono. */
+        body.pace-mode #mainGrid,
+        body.pace-mode #qualiSelector,
+        body.pace-mode #featuredRaceWidget,
+        body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
+        body:not(.pace-mode) #paceView { display: none; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -57,6 +67,15 @@
          identico a prima (titolo, poi selettore, poi grafico), dato che
          l'header precede comunque mainGrid nel flusso del documento. -->
     <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:relative md:flex md:items-start md:justify-between md:gap-6">
+        <!-- Interruttore tra le due modalità del sito. Su mobile è una riga in
+             alto a destra sopra il titolo; su desktop è ancorato in alto a
+             destra, sopra il widget "Prossimo GP". -->
+        <div id="modeToggle" class="flex justify-end mb-2 md:mb-0 md:absolute md:top-0 md:right-0">
+            <div class="inline-flex rounded-lg border border-gray-700 overflow-hidden text-xs" role="group" aria-label="Modalità del sito">
+                <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="px-3 py-1.5 cursor-pointer transition-colors">Qualifiche</button>
+                <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="px-3 py-1.5 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
+            </div>
+        </div>
         <div class="text-center md:text-left">
             <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider"><a href="./" onclick="goHome(event)" title="Torna alla home e ricarica" class="hover:opacity-80 transition-opacity">F1 POLE TRACKER</a></h1>
             <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
@@ -69,7 +88,7 @@
                  (in alto a destra, posizionato in assoluto) invece. -->
             <div id="featuredRaceWidget" class="mt-4 mb-4 md:hidden text-left"></div>
 
-            <div class="mt-4 md:mt-6 mb-6 md:mb-0 md:w-96 text-left">
+            <div id="qualiSelector" class="mt-4 md:mt-6 mb-6 md:mb-0 md:w-96 text-left">
                 <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
                 <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-base md:text-lg border border-gray-700 rounded-lg p-3 md:p-4 focus:outline-none focus:border-[#E10600]">
                     <!-- Inseriti automaticamente dallo script -->
@@ -83,7 +102,7 @@
              (segnalato dall'utente). Così l'header si alza solo quanto serve
              al titolo+selettore, e il widget resta ancorato in alto a
              destra senza influenzare quell'altezza. -->
-        <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-0 md:right-0 text-left pt-1"></div>
+        <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-11 md:right-0 text-left pt-1"></div>
     </header>
 
     <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
@@ -245,6 +264,44 @@
 
     </div>
 
+    <!-- Modalità "Passo gara": tempi giro per giro di due piloti in una gara
+         (dati OpenF1, dal 2023 - vedi scripts/build-race-pace.js). Stessa
+         disposizione della vista Qualifiche: grafico a sinistra, classifica
+         della gara a destra (su mobile sotto), da cui scegliere i piloti. -->
+    <div id="paceView" class="mt-4 md:mt-6">
+        <div id="paceGrid" class="md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:gap-4 md:items-start">
+            <div id="paceCard" class="bg-[#1E1E1E] px-2 py-3 md:p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                    <label class="text-[11px] text-gray-500">Anno
+                        <select id="paceYear" onchange="onPaceYearChange()" class="mt-0.5 w-full bg-[#121212] text-white text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]"></select>
+                    </label>
+                    <label class="text-[11px] text-gray-500">Circuito
+                        <select id="paceCircuit" onchange="onPaceCircuitChange()" class="mt-0.5 w-full bg-[#121212] text-white text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]"></select>
+                    </label>
+                    <label class="text-[11px] text-gray-500">Pilota A
+                        <select id="paceDriverA" onchange="onPaceDriverChange('a', this.value)" class="mt-0.5 w-full bg-[#121212] text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]" style="color:#E10600"></select>
+                    </label>
+                    <label class="text-[11px] text-gray-500">Pilota B
+                        <select id="paceDriverB" onchange="onPaceDriverChange('b', this.value)" class="mt-0.5 w-full bg-[#121212] text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]" style="color:#3b82f6"></select>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between gap-2 mb-1">
+                    <span id="paceCaption" class="text-xs text-gray-400"></span>
+                    <button onclick="shareCurrentView()" title="Condividi questa vista" aria-label="Condividi questa vista" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
+                    </button>
+                </div>
+                <div id="paceChartContainer" class="relative w-full h-[320px] md:h-[440px]"><canvas id="paceChart"></canvas></div>
+                <p id="paceNote" class="text-[11px] text-gray-500 mt-2"></p>
+            </div>
+            <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800">
+                <h2 class="text-sm font-bold text-[#E10600] mb-2">Classifica gara</h2>
+                <p class="text-[11px] text-gray-500 mb-2">Tocca A o B per scegliere i piloti da confrontare.</p>
+                <div id="paceResultsList" class="space-y-1 text-sm"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
 
     <script>
@@ -330,11 +387,19 @@
         // replaceState: niente voci extra nella cronologia del browser.
         function parseUrlState() {
             const p = new URLSearchParams(location.hash.replace(/^#/, ''));
-            return { circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs') };
+            return { site: p.get('mode'), circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs'), a: p.get('a'), b: p.get('b') };
         }
 
         function buildUrlHash() {
             const p = new URLSearchParams();
+            if (siteMode === 'pace' && paceState.year) {
+                p.set('mode', 'pace');
+                p.set('y', paceState.year);
+                p.set('c', paceState.circuit);
+                if (paceState.a) p.set('a', paceState.a);
+                if (paceState.b) p.set('b', paceState.b);
+                return '#' + p.toString().replace(/\+/g, '%20');
+            }
             p.set('c', select.value);
             if (chartViewMode === 'telemetry') {
                 p.set('view', 'telemetry');
@@ -347,7 +412,7 @@
         }
 
         function syncUrlState() {
-            if (!select.value) return;
+            if (!select.value && siteMode !== 'pace') return;
             const hash = buildUrlHash();
             if (hash !== location.hash) {
                 try { history.replaceState(null, '', hash); } catch (err) { /* es. file:// */ }
@@ -383,7 +448,9 @@
             syncUrlState();
             const url = location.href;
             const view = chartViewMode === 'telemetry' ? ` - telemetria ${telemetryPrimarySeason}${telemetryCompareYear ? ' vs ' + telemetryCompareYear : ''}` : '';
-            const title = `F1 Pole Tracker - ${select.value}${view}`;
+            const title = siteMode === 'pace'
+                ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a} vs ${paceState.b}`
+                : `F1 Pole Tracker - ${select.value}${view}`;
             if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
                 try {
                     await navigator.share({ title, url });
@@ -848,6 +915,7 @@
             { key: 'calendar', label: 'Calendario' },
             { key: 'history', label: 'Storico stagioni' },
             { key: 'telemetry', label: 'Telemetria' },
+            { key: 'pace', label: 'Passo gara' },
         ];
 
         async function updateApiHealthBadge() {
@@ -966,13 +1034,17 @@
                 : (defaultCircuit && uniqueCircuits.includes(defaultCircuit)) ? defaultCircuit : uniqueCircuits[0];
             select.value = initialCircuit;
             updateChartViewToggleIcon();
-            updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) ? urlState : null);
+            updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) && urlState.site !== 'pace' ? urlState : null);
+            updateModeToggle();
+            if (urlState.site === 'pace') await setSiteMode('pace', { state: { year: urlState.year, circuit: urlState.circuit, a: urlState.a, b: urlState.b } });
 
             // Hash incollato/modificato a mano nella stessa scheda (replaceState
             // non lo fa scattare, quindi nessun ciclo con syncUrlState).
             window.addEventListener('hashchange', () => {
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
+                if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
+                if (siteMode === 'pace') setSiteMode('quali');
                 if (!uniqueCircuits.includes(state.circuit)) { syncUrlState(); return; } // riscrive l'indirizzo con lo stato reale
                 select.value = state.circuit;
                 updateApp(state.circuit, state);
@@ -1074,6 +1146,7 @@
             if (!isDesktopLayout()) {
                 featuredRaceWidgetDesktop.style.width = '';
                 featuredRaceWidgetDesktop.style.marginRight = '';
+                document.getElementById('modeToggle').style.marginRight = '';
                 return;
             }
             // Copia larghezza e bordo destro REALI di detailsColumn (misurati,
@@ -1089,8 +1162,17 @@
             // cambiassero in futuro.
             const detailsRect = detailsColumn.getBoundingClientRect();
             const parentRect = featuredRaceWidgetDesktop.parentElement.getBoundingClientRect();
+            // In modalità Passo gara la colonna dei dettagli è nascosta (misura
+            // 0): niente da allineare, si lasciano le misure precedenti.
+            if (detailsRect.width === 0) return;
             featuredRaceWidgetDesktop.style.width = detailsRect.width + 'px';
             featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - detailsRect.right) + 'px';
+            // L'interruttore Qualifiche/Passo gara sta sopra il widget e ne
+            // segue il bordo destro.
+            // Mai oltre il bordo della pagina: a certe larghezze (~1024px) la
+            // colonna dei dettagli sborda di qualche pixel e l'interruttore
+            // risulterebbe tagliato.
+            document.getElementById('modeToggle').style.marginRight = Math.max(0, parentRect.right - detailsRect.right) + 'px';
         }
 
         let dragging = false;
@@ -1889,6 +1971,267 @@
             openPanelIds.forEach(id => {
                 const panel = document.getElementById(id);
                 if (panel) panel.classList.remove('hidden');
+            });
+        }
+
+        // --- MODALITÀ "PASSO GARA" -----------------------------------------
+        // Seconda vista del sito: i tempi di ogni giro di due piloti in una gara
+        // (dati OpenF1 dal 2023, un file per gara in pace/{anno}/ scaricato
+        // solo quando serve - vedi scripts/build-race-pace.js). La modalità
+        // vive in una classe sul body (pace-mode), che via CSS nasconde la
+        // vista Qualifiche e mostra #paceView.
+        let siteMode = 'quali';
+        let paceIndex = null;
+        const paceRaceCache = {};
+        const paceState = { year: null, circuit: null, a: null, b: null }; // a/b = sigle pilota (es. "VER")
+        let paceChart = null;
+        const PACE_COLOR_A = '#E10600';
+        const PACE_COLOR_B = '#3b82f6';
+
+        function updateModeToggle() {
+            const active = 'bg-gray-700 text-white';
+            const inactive = 'text-gray-400 hover:text-white';
+            [['modeBtnQuali', 'quali'], ['modeBtnPace', 'pace']].forEach(([id, mode]) => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                const on = siteMode === mode;
+                btn.className = btn.className.replace(/\b(bg-gray-700|text-white|text-gray-400|hover:text-white)\b/g, '').trim() + ' ' + (on ? active : inactive);
+                btn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        async function setSiteMode(mode, { state = null } = {}) {
+            siteMode = mode === 'pace' ? 'pace' : 'quali';
+            document.body.classList.toggle('pace-mode', siteMode === 'pace');
+            updateModeToggle();
+            if (siteMode === 'pace') {
+                // In questa vista non c'è la colonna dei dettagli da seguire:
+                // l'interruttore torna sul bordo destro della pagina.
+                document.getElementById('modeToggle').style.marginRight = '';
+                await openPaceView(state);
+            } else {
+                // Tornando alle qualifiche il layout ha di nuovo il suo
+                // contenuto: si riallineano grafico e colonne.
+                applyDetailsColumnWidth();
+                applyFeaturedWidgetWidth();
+                alignDetailsColumnTop();
+                alignChartTop();
+                applyChartHeight();
+            }
+            syncUrlState();
+        }
+
+        async function loadPaceIndex() {
+            if (paceIndex) return paceIndex;
+            try {
+                const res = await fetch('pace/index.json', { cache: 'no-cache' });
+                paceIndex = res.ok ? await res.json() : { races: {} };
+            } catch (err) {
+                paceIndex = { races: {} };
+            }
+            return paceIndex;
+        }
+
+        async function loadPaceRace(year, circuit) {
+            const key = `${year}|${circuit}`;
+            if (paceRaceCache[key]) return paceRaceCache[key];
+            const entry = (paceIndex.races[year] || []).find(r => r.circuit === circuit);
+            if (!entry) return null;
+            const res = await fetch(entry.file, { cache: 'no-cache' });
+            if (!res.ok) return null;
+            paceRaceCache[key] = await res.json();
+            return paceRaceCache[key];
+        }
+
+        function paceYears() {
+            return Object.keys((paceIndex && paceIndex.races) || {}).filter(y => paceIndex.races[y].length).sort((a, b) => b - a);
+        }
+
+        // Apre la vista: anno/circuito/piloti da un link condiviso se validi,
+        // altrimenti l'ultima gara disputata e i primi due classificati.
+        async function openPaceView(state) {
+            await loadPaceIndex();
+            const years = paceYears();
+            if (!years.length) {
+                document.getElementById('paceCaption').innerText = 'Dati del passo gara non disponibili.';
+                return;
+            }
+            const year = state && years.includes(String(state.year)) ? String(state.year) : (paceState.year || years[0]);
+            const races = paceIndex.races[year];
+            const circuit = state && races.some(r => r.circuit === state.circuit) ? state.circuit
+                : (paceState.year === year && races.some(r => r.circuit === paceState.circuit) ? paceState.circuit : races[races.length - 1].circuit);
+            paceState.year = year;
+            paceState.circuit = circuit;
+            if (state) { paceState.a = state.a || null; paceState.b = state.b || null; }
+            fillPaceSelectors();
+            await showPaceRace();
+        }
+
+        function fillPaceSelectors() {
+            const yearSel = document.getElementById('paceYear');
+            yearSel.innerHTML = paceYears().map(y => `<option value="${y}">${y}</option>`).join('');
+            yearSel.value = paceState.year;
+            const circSel = document.getElementById('paceCircuit');
+            circSel.innerHTML = paceIndex.races[paceState.year].map(r => `<option value="${escapeHtml(r.circuit)}">${escapeHtml(r.circuit)}</option>`).join('');
+            circSel.value = paceState.circuit;
+        }
+
+        async function onPaceYearChange() {
+            paceState.year = document.getElementById('paceYear').value;
+            const races = paceIndex.races[paceState.year];
+            // Stesso circuito nel nuovo anno se c'è, altrimenti l'ultima gara.
+            if (!races.some(r => r.circuit === paceState.circuit)) paceState.circuit = races[races.length - 1].circuit;
+            fillPaceSelectors();
+            await showPaceRace();
+        }
+
+        async function onPaceCircuitChange() {
+            paceState.circuit = document.getElementById('paceCircuit').value;
+            await showPaceRace();
+        }
+
+        function onPaceDriverChange(which, code) {
+            const other = which === 'a' ? 'b' : 'a';
+            // Scegliere come A il pilota già B (o viceversa) scambia i due.
+            if (paceState[other] === code) paceState[other] = paceState[which];
+            paceState[which] = code;
+            renderPaceView();
+        }
+
+        async function showPaceRace() {
+            const race = await loadPaceRace(paceState.year, paceState.circuit);
+            if (!race) {
+                document.getElementById('paceCaption').innerText = 'Gara non disponibile.';
+                return;
+            }
+            const codes = race.drivers.map(d => d.code);
+            // Piloti scelti mantenuti se hanno corso questa gara, altrimenti
+            // i primi due della classifica.
+            if (!codes.includes(paceState.a)) paceState.a = codes[0];
+            if (!codes.includes(paceState.b) || paceState.b === paceState.a) paceState.b = codes.find(c => c !== paceState.a);
+            renderPaceView();
+        }
+
+        function currentPaceRace() {
+            return paceRaceCache[`${paceState.year}|${paceState.circuit}`] || null;
+        }
+
+        function renderPaceView() {
+            const race = currentPaceRace();
+            if (!race) return;
+            const opts = race.drivers.map(d => `<option value="${escapeHtml(d.code)}">${escapeHtml(d.code)} · ${escapeHtml(d.name)}</option>`).join('');
+            const selA = document.getElementById('paceDriverA');
+            const selB = document.getElementById('paceDriverB');
+            selA.innerHTML = opts; selA.value = paceState.a;
+            selB.innerHTML = opts; selB.value = paceState.b;
+            renderPaceResults(race);
+            renderPaceChart(race);
+            syncUrlState();
+        }
+
+        function renderPaceResults(race) {
+            const list = document.getElementById('paceResultsList');
+            const btn = (code, which) => {
+                const on = paceState[which] === code;
+                const color = which === 'a' ? PACE_COLOR_A : PACE_COLOR_B;
+                const style = on ? `background:${color};color:#fff;border-color:${color}` : `color:${color};border-color:#374151`;
+                return `<button type="button" onclick="onPaceDriverChange('${which}', '${escapeHtml(code)}')" aria-pressed="${on}" aria-label="Scegli come pilota ${which.toUpperCase()}" class="w-7 h-7 rounded-md border text-xs font-bold cursor-pointer" style="${style}">${which.toUpperCase()}</button>`;
+            };
+            list.innerHTML = race.drivers.map(d => `
+                <div class="flex items-center gap-2 bg-gray-900 rounded px-2 py-1.5">
+                    <span class="w-8 shrink-0 text-right text-gray-500 text-xs">${d.pos && !d.status ? d.pos + '.' : escapeHtml(d.status || '-')}</span>
+                    <span class="w-1.5 h-4 rounded-sm shrink-0" style="background:${/^#[0-9a-f]{6}$/i.test(d.color || '') ? d.color : '#4b5563'}"></span>
+                    <span class="min-w-0 flex-1 truncate">${escapeHtml(d.name)} <span class="text-gray-500 text-xs">${escapeHtml(d.team)}</span></span>
+                    ${btn(d.code, 'a')}${btn(d.code, 'b')}
+                </div>`).join('');
+        }
+
+        // "84.512" -> "1:24.5" (asse) o "1:24.512" (tooltip)
+        function formatLapTime(sec, decimals = 3) {
+            if (typeof sec !== 'number') return '—';
+            const m = Math.floor(sec / 60);
+            const rest = (sec - m * 60).toFixed(decimals).padStart(decimals ? decimals + 3 : 2, '0');
+            return `${m}:${rest}`;
+        }
+
+        // Giri "puliti" di un pilota: niente primo giro, giri di entrata e
+        // uscita dai box, giri sotto safety car / VSC. Servono per scegliere la
+        // scala dell'asse Y: i giri lenti (box, SC) altrimenti schiaccerebbero
+        // le differenze di passo in una riga piatta.
+        function paceNeutralLaps(race) {
+            const set = new Set();
+            (race.periods || []).forEach(p => { for (let l = p.from; l <= p.to; l++) set.add(l); });
+            return set;
+        }
+        function cleanLapTimes(race, n, neutral) {
+            const times = race.laps[n] || [];
+            const pits = new Set([...(race.pitIn[n] || []), ...(race.pitOut[n] || [])]);
+            return times.filter((t, i) => typeof t === 'number' && i > 0 && !pits.has(i + 1) && !neutral.has(i + 1));
+        }
+
+        function renderPaceChart(race) {
+            const canvas = document.getElementById('paceChart');
+            if (paceChart) { paceChart.destroy(); paceChart = null; }
+            const drvA = race.drivers.find(d => d.code === paceState.a);
+            const drvB = race.drivers.find(d => d.code === paceState.b);
+            const neutral = paceNeutralLaps(race);
+
+            const series = (drv) => {
+                const times = race.laps[drv.n] || [];
+                const pitIn = new Set(race.pitIn[drv.n] || []);
+                return {
+                    points: times.map((t, i) => ({ x: i + 1, y: t })),
+                    radius: times.map((t, i) => pitIn.has(i + 1) ? 4 : 0),
+                };
+            };
+            const a = series(drvA), b = series(drvB);
+
+            // Scala Y sui giri puliti dei due piloti: dal più veloce a un po'
+            // sopra il 95° percentile. I giri più lenti escono in alto.
+            const clean = [...cleanLapTimes(race, drvA.n, neutral), ...cleanLapTimes(race, drvB.n, neutral)].sort((x, y) => x - y);
+            const yMin = clean.length ? Math.floor(clean[0] - 0.5) : undefined;
+            const yMax = clean.length ? Math.ceil(clean[Math.floor((clean.length - 1) * 0.95)] + 2) : undefined;
+
+            document.getElementById('paceCaption').innerHTML =
+                `<span style="color:${PACE_COLOR_A}">${escapeHtml(drvA.name)}</span> &nbsp;vs&nbsp; <span style="color:${PACE_COLOR_B}">${escapeHtml(drvB.name)}</span> · ${escapeHtml(race.circuit)} ${race.year}`;
+            document.getElementById('paceNote').innerText =
+                `Tempo di ogni giro (${race.totalLaps} giri). I picchi che escono in alto sono giri lenti: soste ai box, safety car o primo giro. Passa col mouse o col dito sul grafico per i dettagli di ogni giro.`;
+
+            const compact = isCompactTelemetryAxis();
+            paceChart = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: drvA.code, data: a.points, borderColor: PACE_COLOR_A, backgroundColor: PACE_COLOR_A, borderWidth: 2, pointRadius: a.radius, pointHoverRadius: 4, tension: 0.15, spanGaps: false },
+                        { label: drvB.code, data: b.points, borderColor: PACE_COLOR_B, backgroundColor: PACE_COLOR_B, borderWidth: 2, borderDash: [5, 3], pointRadius: b.radius, pointHoverRadius: 4, tension: 0.15, spanGaps: false },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    resizeDelay: 200,
+                    animation: { duration: 400 },
+                    interaction: { mode: 'index', intersect: false },
+                    layout: { padding: { right: compact ? 6 : 12 } },
+                    scales: {
+                        x: { type: 'linear', min: 1, max: race.totalLaps, grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 0, precision: 0, font: compact ? { size: 10 } : undefined } , title: { display: !compact, text: 'Giro', color: '#6b7280' } },
+                        y: { min: yMin, max: yMax, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: compact ? { size: 10 } : undefined, callback: v => formatLapTime(v, 1) } },
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: items => `Giro ${items[0].parsed.x}${neutral.has(items[0].parsed.x) ? ' · safety car' : ''}`,
+                                label: c => {
+                                    const drv = c.datasetIndex === 0 ? drvA : drvB;
+                                    const lap = c.parsed.x;
+                                    const box = (race.pitIn[drv.n] || []).includes(lap) ? ' · box' : (race.pitOut[drv.n] || []).includes(lap) ? ' · uscita box' : '';
+                                    return ` ${drv.code} ${formatLapTime(c.parsed.y)}${box}`;
+                                },
+                            },
+                        },
+                    },
+                },
             });
         }
 

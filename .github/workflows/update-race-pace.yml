@@ -1,0 +1,55 @@
+name: Aggiorna passo gara F1
+
+on:
+  schedule:
+    # Orari: minuto :27, non l'ora tonda (i cron alle ore tonde sono i più
+    # ritardati/congestionati su GitHub Actions). Dopo la gara, come le altre
+    # automazioni della domenica: domenica 18 e 22 UTC, più un run di
+    # recupero lunedì mattina (OpenF1 rende gratuiti i dati di una sessione
+    # solo 30 minuti dopo la fine; una gara non ancora disponibile resta "in
+    # attesa" per 72 ore senza far fallire il run).
+    - cron: '27 18 * * 0'
+    - cron: '27 22 * * 0'
+    - cron: '27 6 * * 1'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: write
+
+jobs:
+  update-race-pace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # continue-on-error: lo script scrive comunque status/pace.json (con
+      # ok:false e il messaggio d'errore) anche se fallisce - deve poter
+      # arrivare fino al commit qui sotto. Il job resta comunque segnato come
+      # fallito grazie all'ultimo step.
+      - name: Esegui aggiornamento passo gara
+        id: run
+        continue-on-error: true
+        run: node scripts/build-race-pace.js
+
+      - name: Commit e push se i dati del passo gara o lo stato sono cambiati
+        run: |
+          if [ -z "$(git status --porcelain -- pace status/pace.json)" ]; then
+            echo "Nessuna modifica, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add pace status/pace.json
+            git commit -m "🏁 Aggiornamento automatico passo gara"
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
+          fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

@@ -30,7 +30,7 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
-const { fetchJson, sleep } = require('./lib/http');
+const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -46,56 +46,11 @@ const CIRCUIT_CONCURRENCY = 2;
 // sbagliato (successo con Las Vegas e Abu Dhabi 2023).
 const POLE_LAP_TOLERANCE_S = 0.1;
 
-// Il piano gratuito di OpenF1 consente 3 richieste/secondo e 30 al minuto: con
-// un backoff reattivo sui 429 (tentativi ravvicinati per pochi secondi) una
-// rigenerazione di più circuiti falliva a raffica. Le richieste vengono
-// invece distanziate in anticipo (una ogni 2,1 s, condiviso tra i worker),
-// così il limite non scatta quasi mai.
-const OPENF1_MIN_INTERVAL_MS = 2100;
-let openf1NextSlot = 0;
-async function openf1Json(url) {
-    const now = Date.now();
-    const wait = Math.max(0, openf1NextSlot - now);
-    openf1NextSlot = Math.max(now, openf1NextSlot) + OPENF1_MIN_INTERVAL_MS;
-    if (wait > 0) await sleep(wait);
-    return fetchJson(url);
-}
-
 // Sessioni per cui OpenF1 non ha (e non avrà) i giri: restituisce 404 per
 // sempre, quindi inutile ritentare a ogni run.
 const KNOWN_UNAVAILABLE = new Set([
     '2025|Baku (Azerbaijan)',
 ]);
-
-// circuit_short_name (OpenF1) -> nome circuito usato dal sito.
-const CIRCUIT_MAP = {
-    'Imola': 'Imola',
-    'Melbourne': 'Melbourne (Australia)',
-    'Shanghai': 'Shanghai (Cina)',
-    'Suzuka': 'Suzuka',
-    'Sakhir': 'Bahrain (Sakhir)',
-    'Jeddah': 'Jeddah (Arabia Saudita)',
-    'Miami': 'Miami',
-    'Montreal': 'Montreal (Canada)',
-    'Monte Carlo': 'Monaco',
-    'Catalunya': 'Barcellona',
-    'Spielberg': 'Red Bull Ring',
-    'Silverstone': 'Silverstone',
-    'Spa-Francorchamps': 'Spa-Francorchamps',
-    'Hungaroring': 'Hungaroring',
-    'Zandvoort': 'Zandvoort',
-    'Monza': 'Monza',
-    'Madring': 'Madrid',
-    'Kuala Lumpur': 'Sepang (Malesia)', // OpenF1 chiama così il circuito di Sepang (round 16 del 2026)
-    'Baku': 'Baku (Azerbaijan)',
-    'Singapore': 'Singapore',
-    'Austin': 'Austin (COTA)',
-    'Mexico City': 'Città del Messico',
-    'Interlagos': 'Interlagos (San Paolo)',
-    'Las Vegas': 'Las Vegas',
-    'Lusail': 'Qatar (Lusail)',
-    'Yas Marina Circuit': 'Abu Dhabi (Yas Marina)',
-};
 
 let poleDataCache = null;
 // Il pilota realmente in pole (già verificato in data.json, fonte f1api.dev)

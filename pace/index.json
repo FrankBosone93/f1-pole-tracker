@@ -1,0 +1,448 @@
+{
+  "updatedAt": "2026-10-15T22:03:31.332Z",
+  "races": {
+    "2023": [
+      {
+        "circuit": "Bahrain (Sakhir)",
+        "date": "2023-03-05",
+        "file": "pace/2023/bahrain-sakhir.json"
+      },
+      {
+        "circuit": "Jeddah (Arabia Saudita)",
+        "date": "2023-03-19",
+        "file": "pace/2023/jeddah-arabia-saudita.json"
+      },
+      {
+        "circuit": "Melbourne (Australia)",
+        "date": "2023-04-02",
+        "file": "pace/2023/melbourne-australia.json"
+      },
+      {
+        "circuit": "Baku (Azerbaijan)",
+        "date": "2023-04-30",
+        "file": "pace/2023/baku-azerbaijan.json"
+      },
+      {
+        "circuit": "Miami",
+        "date": "2023-05-07",
+        "file": "pace/2023/miami.json"
+      },
+      {
+        "circuit": "Monaco",
+        "date": "2023-05-28",
+        "file": "pace/2023/monaco.json"
+      },
+      {
+        "circuit": "Barcellona",
+        "date": "2023-06-04",
+        "file": "pace/2023/barcellona.json"
+      },
+      {
+        "circuit": "Montreal (Canada)",
+        "date": "2023-06-18",
+        "file": "pace/2023/montreal-canada.json"
+      },
+      {
+        "circuit": "Red Bull Ring",
+        "date": "2023-07-02",
+        "file": "pace/2023/red-bull-ring.json"
+      },
+      {
+        "circuit": "Silverstone",
+        "date": "2023-07-09",
+        "file": "pace/2023/silverstone.json"
+      },
+      {
+        "circuit": "Hungaroring",
+        "date": "2023-07-23",
+        "file": "pace/2023/hungaroring.json"
+      },
+      {
+        "circuit": "Spa-Francorchamps",
+        "date": "2023-07-30",
+        "file": "pace/2023/spa-francorchamps.json"
+      },
+      {
+        "circuit": "Zandvoort",
+        "date": "2023-08-27",
+        "file": "pace/2023/zandvoort.json"
+      },
+      {
+        "circuit": "Monza",
+        "date": "2023-09-03",
+        "file": "pace/2023/monza.json"
+      },
+      {
+        "circuit": "Singapore",
+        "date": "2023-09-17",
+        "file": "pace/2023/singapore.json"
+      },
+      {
+        "circuit": "Suzuka",
+        "date": "2023-09-24",
+        "file": "pace/2023/suzuka.json"
+      },
+      {
+        "circuit": "Qatar (Lusail)",
+        "date": "2023-10-08",
+        "file": "pace/2023/qatar-lusail.json"
+      },
+      {
+        "circuit": "Austin (COTA)",
+        "date": "2023-10-22",
+        "file": "pace/2023/austin-cota.json"
+      },
+      {
+        "circuit": "Città del Messico",
+        "date": "2023-10-29",
+        "file": "pace/2023/citta-del-messico.json"
+      },
+      {
+        "circuit": "Interlagos (San Paolo)",
+        "date": "2023-11-05",
+        "file": "pace/2023/interlagos-san-paolo.json"
+      },
+      {
+        "circuit": "Las Vegas",
+        "date": "2023-11-19",
+        "file": "pace/2023/las-vegas.json"
+      },
+      {
+        "circuit": "Abu Dhabi (Yas Marina)",
+        "date": "2023-11-26",
+        "file": "pace/2023/abu-dhabi-yas-marina.json"
+      }
+    ],
+    "2024": [
+      {
+        "circuit": "Bahrain (Sakhir)",
+        "date": "2024-03-02",
+        "file": "pace/2024/bahrain-sakhir.json"
+      },
+      {
+        "circuit": "Jeddah (Arabia Saudita)",
+        "date": "2024-03-09",
+        "file": "pace/2024/jeddah-arabia-saudita.json"
+      },
+      {
+        "circuit": "Melbourne (Australia)",
+        "date": "2024-03-24",
+        "file": "pace/2024/melbourne-australia.json"
+      },
+      {
+        "circuit": "Suzuka",
+        "date": "2024-04-07",
+        "file": "pace/2024/suzuka.json"
+      },
+      {
+        "circuit": "Shanghai (Cina)",
+        "date": "2024-04-21",
+        "file": "pace/2024/shanghai-cina.json"
+      },
+      {
+        "circuit": "Miami",
+        "date": "2024-05-05",
+        "file": "pace/2024/miami.json"
+      },
+      {
+        "circuit": "Imola",
+        "date": "2024-05-19",
+        "file": "pace/2024/imola.json"
+      },
+      {
+        "circuit": "Monaco",
+        "date": "2024-05-26",
+        "file": "pace/2024/monaco.json"
+      },
+      {
+        "circuit": "Montreal (Canada)",
+        "date": "2024-06-09",
+        "file": "pace/2024/montreal-canada.json"
+      },
+      {
+        "circuit": "Barcellona",
+        "date": "2024-06-23",
+        "file": "pace/2024/barcellona.json"
+      },
+      {
+        "circuit": "Red Bull Ring",
+        "date": "2024-06-30",
+        "file": "pace/2024/red-bull-ring.json"
+      },
+      {
+        "circuit": "Silverstone",
+        "date": "2024-07-07",
+        "file": "pace/2024/silverstone.json"
+      },
+      {
+        "circuit": "Hungaroring",
+        "date": "2024-07-21",
+        "file": "pace/2024/hungaroring.json"
+      },
+      {
+        "circuit": "Spa-Francorchamps",
+        "date": "2024-07-28",
+        "file": "pace/2024/spa-francorchamps.json"
+      },
+      {
+        "circuit": "Zandvoort",
+        "date": "2024-08-25",
+        "file": "pace/2024/zandvoort.json"
+      },
+      {
+        "circuit": "Monza",
+        "date": "2024-09-01",
+        "file": "pace/2024/monza.json"
+      },
+      {
+        "circuit": "Baku (Azerbaijan)",
+        "date": "2024-09-15",
+        "file": "pace/2024/baku-azerbaijan.json"
+      },
+      {
+        "circuit": "Singapore",
+        "date": "2024-09-22",
+        "file": "pace/2024/singapore.json"
+      },
+      {
+        "circuit": "Austin (COTA)",
+        "date": "2024-10-20",
+        "file": "pace/2024/austin-cota.json"
+      },
+      {
+        "circuit": "Città del Messico",
+        "date": "2024-10-27",
+        "file": "pace/2024/citta-del-messico.json"
+      },
+      {
+        "circuit": "Interlagos (San Paolo)",
+        "date": "2024-11-03",
+        "file": "pace/2024/interlagos-san-paolo.json"
+      },
+      {
+        "circuit": "Las Vegas",
+        "date": "2024-11-24",
+        "file": "pace/2024/las-vegas.json"
+      },
+      {
+        "circuit": "Qatar (Lusail)",
+        "date": "2024-12-01",
+        "file": "pace/2024/qatar-lusail.json"
+      },
+      {
+        "circuit": "Abu Dhabi (Yas Marina)",
+        "date": "2024-12-08",
+        "file": "pace/2024/abu-dhabi-yas-marina.json"
+      }
+    ],
+    "2025": [
+      {
+        "circuit": "Melbourne (Australia)",
+        "date": "2025-03-16",
+        "file": "pace/2025/melbourne-australia.json"
+      },
+      {
+        "circuit": "Shanghai (Cina)",
+        "date": "2025-03-23",
+        "file": "pace/2025/shanghai-cina.json"
+      },
+      {
+        "circuit": "Suzuka",
+        "date": "2025-04-06",
+        "file": "pace/2025/suzuka.json"
+      },
+      {
+        "circuit": "Bahrain (Sakhir)",
+        "date": "2025-04-13",
+        "file": "pace/2025/bahrain-sakhir.json"
+      },
+      {
+        "circuit": "Jeddah (Arabia Saudita)",
+        "date": "2025-04-20",
+        "file": "pace/2025/jeddah-arabia-saudita.json"
+      },
+      {
+        "circuit": "Miami",
+        "date": "2025-05-04",
+        "file": "pace/2025/miami.json"
+      },
+      {
+        "circuit": "Imola",
+        "date": "2025-05-18",
+        "file": "pace/2025/imola.json"
+      },
+      {
+        "circuit": "Monaco",
+        "date": "2025-05-25",
+        "file": "pace/2025/monaco.json"
+      },
+      {
+        "circuit": "Barcellona",
+        "date": "2025-06-01",
+        "file": "pace/2025/barcellona.json"
+      },
+      {
+        "circuit": "Montreal (Canada)",
+        "date": "2025-06-15",
+        "file": "pace/2025/montreal-canada.json"
+      },
+      {
+        "circuit": "Red Bull Ring",
+        "date": "2025-06-29",
+        "file": "pace/2025/red-bull-ring.json"
+      },
+      {
+        "circuit": "Silverstone",
+        "date": "2025-07-06",
+        "file": "pace/2025/silverstone.json"
+      },
+      {
+        "circuit": "Spa-Francorchamps",
+        "date": "2025-07-27",
+        "file": "pace/2025/spa-francorchamps.json"
+      },
+      {
+        "circuit": "Hungaroring",
+        "date": "2025-08-03",
+        "file": "pace/2025/hungaroring.json"
+      },
+      {
+        "circuit": "Zandvoort",
+        "date": "2025-08-31",
+        "file": "pace/2025/zandvoort.json"
+      },
+      {
+        "circuit": "Monza",
+        "date": "2025-09-07",
+        "file": "pace/2025/monza.json"
+      },
+      {
+        "circuit": "Baku (Azerbaijan)",
+        "date": "2025-09-21",
+        "file": "pace/2025/baku-azerbaijan.json"
+      },
+      {
+        "circuit": "Singapore",
+        "date": "2025-10-05",
+        "file": "pace/2025/singapore.json"
+      },
+      {
+        "circuit": "Austin (COTA)",
+        "date": "2025-10-19",
+        "file": "pace/2025/austin-cota.json"
+      },
+      {
+        "circuit": "Città del Messico",
+        "date": "2025-10-26",
+        "file": "pace/2025/citta-del-messico.json"
+      },
+      {
+        "circuit": "Interlagos (San Paolo)",
+        "date": "2025-11-09",
+        "file": "pace/2025/interlagos-san-paolo.json"
+      },
+      {
+        "circuit": "Las Vegas",
+        "date": "2025-11-23",
+        "file": "pace/2025/las-vegas.json"
+      },
+      {
+        "circuit": "Qatar (Lusail)",
+        "date": "2025-11-30",
+        "file": "pace/2025/qatar-lusail.json"
+      },
+      {
+        "circuit": "Abu Dhabi (Yas Marina)",
+        "date": "2025-12-07",
+        "file": "pace/2025/abu-dhabi-yas-marina.json"
+      }
+    ],
+    "2026": [
+      {
+        "circuit": "Melbourne (Australia)",
+        "date": "2026-03-08",
+        "file": "pace/2026/melbourne-australia.json"
+      },
+      {
+        "circuit": "Shanghai (Cina)",
+        "date": "2026-03-15",
+        "file": "pace/2026/shanghai-cina.json"
+      },
+      {
+        "circuit": "Suzuka",
+        "date": "2026-03-29",
+        "file": "pace/2026/suzuka.json"
+      },
+      {
+        "circuit": "Miami",
+        "date": "2026-05-03",
+        "file": "pace/2026/miami.json"
+      },
+      {
+        "circuit": "Montreal (Canada)",
+        "date": "2026-05-24",
+        "file": "pace/2026/montreal-canada.json"
+      },
+      {
+        "circuit": "Monaco",
+        "date": "2026-06-07",
+        "file": "pace/2026/monaco.json"
+      },
+      {
+        "circuit": "Barcellona",
+        "date": "2026-06-14",
+        "file": "pace/2026/barcellona.json"
+      },
+      {
+        "circuit": "Red Bull Ring",
+        "date": "2026-06-28",
+        "file": "pace/2026/red-bull-ring.json"
+      },
+      {
+        "circuit": "Silverstone",
+        "date": "2026-07-05",
+        "file": "pace/2026/silverstone.json"
+      },
+      {
+        "circuit": "Spa-Francorchamps",
+        "date": "2026-07-19",
+        "file": "pace/2026/spa-francorchamps.json"
+      },
+      {
+        "circuit": "Hungaroring",
+        "date": "2026-07-26",
+        "file": "pace/2026/hungaroring.json"
+      },
+      {
+        "circuit": "Zandvoort",
+        "date": "2026-08-23",
+        "file": "pace/2026/zandvoort.json"
+      },
+      {
+        "circuit": "Monza",
+        "date": "2026-09-06",
+        "file": "pace/2026/monza.json"
+      },
+      {
+        "circuit": "Madrid",
+        "date": "2026-09-13",
+        "file": "pace/2026/madrid.json"
+      },
+      {
+        "circuit": "Baku (Azerbaijan)",
+        "date": "2026-09-26",
+        "file": "pace/2026/baku-azerbaijan.json"
+      },
+      {
+        "circuit": "Sepang (Malesia)",
+        "date": "2026-10-04",
+        "file": "pace/2026/sepang-malesia.json"
+      },
+      {
+        "circuit": "Singapore",
+        "date": "2026-10-11",
+        "file": "pace/2026/singapore.json"
+      }
+    ]
+  }
+}

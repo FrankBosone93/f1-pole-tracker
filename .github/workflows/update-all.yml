@@ -1,10 +1,10 @@
-name: Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, news)
+name: Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, passo gara, news)
 
-# Solo manuale: le 7 automazioni singole (update-poles.yml,
+# Solo manuale: le 8 automazioni singole (update-poles.yml,
 # check-pole-penalty.yml, update-standings.yml, update-calendar.yml,
-# archive-finished-season.yml, update-telemetry.yml, update-news.yml)
-# restano schedulate separatamente come prima. Questo workflow esegue gli
-# stessi 7 script in sequenza in un unico run, per non doverli lanciare uno
+# archive-finished-season.yml, update-telemetry.yml, update-race-pace.yml,
+# update-news.yml) restano schedulate separatamente come prima. Questo
+# workflow esegue gli stessi 8 script in sequenza in un unico run, per non doverli lanciare uno
 # alla volta da GitHub quando si vuole aggiornare tutto subito (è il
 # workflow collegato al tasto "Full Update" del sito).
 on:
@@ -145,6 +145,23 @@ jobs:
             push_with_retry
           fi
 
+      - name: Aggiorna passo gara
+        id: pace
+        continue-on-error: true
+        run: node scripts/build-race-pace.js
+
+      - name: Commit passo gara (se cambiato)
+        if: always()
+        run: |
+          if [ -z "$(git status --porcelain -- pace status/pace.json)" ]; then
+            echo "Nessuna modifica (passo gara)."
+          else
+            git add pace status/pace.json
+            git commit -m "🏁 Aggiornamento automatico passo gara"
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
+          fi
+
       - name: Aggiorna news
         id: news
         continue-on-error: true
@@ -174,11 +191,12 @@ jobs:
           echo "| Calendario | ${{ steps.calendar.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Storico | ${{ steps.history.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Telemetria | ${{ steps.telemetry.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Passo gara | ${{ steps.pace.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| News | ${{ steps.news.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
 
       # Se anche solo uno script è fallito, il run resta segnato come
       # fallito (X rosso su GitHub) pur avendo lasciato provare tutti gli
       # altri - così un fallimento non passa inosservato.
       - name: Fallisci il run se qualche automazione è fallita
-        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.history.outcome != 'success' || steps.telemetry.outcome != 'success' || steps.news.outcome != 'success'
+        if: steps.poles.outcome != 'success' || steps.penalty.outcome != 'success' || steps.standings.outcome != 'success' || steps.calendar.outcome != 'success' || steps.history.outcome != 'success' || steps.telemetry.outcome != 'success' || steps.pace.outcome != 'success' || steps.news.outcome != 'success'
         run: exit 1
