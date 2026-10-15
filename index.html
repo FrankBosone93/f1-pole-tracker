@@ -67,15 +67,6 @@
          identico a prima (titolo, poi selettore, poi grafico), dato che
          l'header precede comunque mainGrid nel flusso del documento. -->
     <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:relative md:flex md:items-start md:justify-between md:gap-6">
-        <!-- Interruttore tra le due modalità del sito. Su mobile è una riga in
-             alto a destra sopra il titolo; su desktop è ancorato in alto a
-             destra, sopra il widget "Prossimo GP". -->
-        <div id="modeToggle" class="flex justify-end mb-2 md:mb-0 md:absolute md:top-0 md:right-0">
-            <div class="inline-flex rounded-lg border border-gray-700 overflow-hidden text-xs" role="group" aria-label="Modalità del sito">
-                <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="px-3 py-1.5 cursor-pointer transition-colors">Qualifiche</button>
-                <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="px-3 py-1.5 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
-            </div>
-        </div>
         <div class="text-center md:text-left">
             <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider"><a href="./" onclick="goHome(event)" title="Torna alla home e ricarica" class="hover:opacity-80 transition-opacity">F1 POLE TRACKER</a></h1>
             <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
@@ -88,11 +79,24 @@
                  (in alto a destra, posizionato in assoluto) invece. -->
             <div id="featuredRaceWidget" class="mt-4 mb-4 md:hidden text-left"></div>
 
-            <div id="qualiSelector" class="mt-4 md:mt-6 mb-6 md:mb-0 md:w-96 text-left">
-                <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
-                <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-base md:text-lg border border-gray-700 rounded-lg p-3 md:p-4 focus:outline-none focus:border-[#E10600]">
-                    <!-- Inseriti automaticamente dallo script -->
-                </select>
+            <!-- Interruttore Qualifiche / Passo gara: su mobile sotto il box del
+                 prossimo GP e sopra la scelta del circuito, su desktop a destra
+                 della scelta del circuito (order-* scambia le due posizioni).
+                 In modalità Passo gara il selettore delle qualifiche si
+                 nasconde e l'interruttore resta da solo. -->
+            <div class="mt-4 md:mt-6 mb-6 md:mb-0 flex flex-col md:flex-row md:items-end gap-3 text-left">
+                <div id="modeToggle" class="order-1 md:order-2">
+                    <div class="flex md:inline-flex rounded-lg border border-gray-700 overflow-hidden text-sm" role="group" aria-label="Modalità del sito">
+                        <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 md:h-[56px] cursor-pointer transition-colors">Qualifiche</button>
+                        <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 md:h-[56px] cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
+                    </div>
+                </div>
+                <div id="qualiSelector" class="order-2 md:order-1 w-full md:w-96 text-left">
+                    <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2">Scegli un circuito:</label>
+                    <select id="circuitSelect" class="w-full bg-[#1E1E1E] text-white text-base md:text-lg border border-gray-700 rounded-lg p-3 md:p-4 focus:outline-none focus:border-[#E10600]">
+                        <!-- Inseriti automaticamente dallo script -->
+                    </select>
+                </div>
             </div>
         </div>
         <!-- Posizionato in assoluto (non più nel flusso flex) apposta: se
@@ -102,7 +106,7 @@
              (segnalato dall'utente). Così l'header si alza solo quanto serve
              al titolo+selettore, e il widget resta ancorato in alto a
              destra senza influenzare quell'altezza. -->
-        <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-11 md:right-0 text-left pt-1"></div>
+        <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-0 md:right-0 text-left pt-1"></div>
     </header>
 
     <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
@@ -281,7 +285,7 @@
                     <label class="text-[11px] text-gray-500">Pilota A
                         <select id="paceDriverA" onchange="onPaceDriverChange('a', this.value)" class="mt-0.5 w-full bg-[#121212] text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]" style="color:#E10600"></select>
                     </label>
-                    <label class="text-[11px] text-gray-500">Pilota B
+                    <label class="text-[11px] text-gray-500">Pilota B (facoltativo)
                         <select id="paceDriverB" onchange="onPaceDriverChange('b', this.value)" class="mt-0.5 w-full bg-[#121212] text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]" style="color:#3b82f6"></select>
                     </label>
                 </div>
@@ -291,7 +295,14 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
                     </button>
                 </div>
-                <div id="paceChartContainer" class="relative w-full h-[320px] md:h-[440px]"><canvas id="paceChart"></canvas></div>
+                <div id="paceChartContainer" class="relative w-full h-[320px] md:h-[420px]"><canvas id="paceChart"></canvas></div>
+                <!-- Distacco di B da A giro per giro (nascosto con un solo pilota). -->
+                <div id="paceGapWrap" class="mt-2">
+                    <div class="text-[11px] text-gray-500 mb-0.5" id="paceGapTitle"></div>
+                    <div id="paceGapContainer" class="relative w-full h-[110px] md:h-[130px]"><canvas id="paceGapChart"></canvas></div>
+                </div>
+                <div id="paceLegend" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mt-2"></div>
+                <div id="paceStatsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3"></div>
                 <p id="paceNote" class="text-[11px] text-gray-500 mt-2"></p>
             </div>
             <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800">
@@ -398,6 +409,7 @@
                 p.set('c', paceState.circuit);
                 if (paceState.a) p.set('a', paceState.a);
                 if (paceState.b) p.set('b', paceState.b);
+                else if (paceState.b === '') p.set('b', '-'); // un solo pilota
                 return '#' + p.toString().replace(/\+/g, '%20');
             }
             p.set('c', select.value);
@@ -449,7 +461,7 @@
             const url = location.href;
             const view = chartViewMode === 'telemetry' ? ` - telemetria ${telemetryPrimarySeason}${telemetryCompareYear ? ' vs ' + telemetryCompareYear : ''}` : '';
             const title = siteMode === 'pace'
-                ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a} vs ${paceState.b}`
+                ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a}${paceState.b ? ' vs ' + paceState.b : ''}`
                 : `F1 Pole Tracker - ${select.value}${view}`;
             if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
                 try {
@@ -920,9 +932,20 @@
 
         async function updateApiHealthBadge() {
             if (!dataSourceBadge) return;
+            // Un secondo tentativo dopo un errore di rete momentaneo: senza,
+            // un singolo intoppo di connessione colorava di rosso il badge
+            // anche con tutte le automazioni funzionanti.
+            const fetchStatus = async (key) => {
+                try {
+                    return await fetch(`status/${key}.json`, { cache: 'no-cache' });
+                } catch (err) {
+                    await new Promise(r => setTimeout(r, 600));
+                    return fetch(`status/${key}.json`, { cache: 'no-cache' });
+                }
+            };
             const results = await Promise.all(API_STATUS_SOURCES.map(async src => {
                 try {
-                    const res = await fetch(`status/${src.key}.json`, { cache: 'no-cache' });
+                    const res = await fetchStatus(src.key);
                     if (!res.ok) return { ...src, ok: false, error: 'file di stato non trovato' };
                     const data = await res.json();
                     return { ...src, ok: !!data.ok, error: data.error, lastRun: data.lastRun };
@@ -1146,7 +1169,6 @@
             if (!isDesktopLayout()) {
                 featuredRaceWidgetDesktop.style.width = '';
                 featuredRaceWidgetDesktop.style.marginRight = '';
-                document.getElementById('modeToggle').style.marginRight = '';
                 return;
             }
             // Copia larghezza e bordo destro REALI di detailsColumn (misurati,
@@ -1167,12 +1189,6 @@
             if (detailsRect.width === 0) return;
             featuredRaceWidgetDesktop.style.width = detailsRect.width + 'px';
             featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - detailsRect.right) + 'px';
-            // L'interruttore Qualifiche/Passo gara sta sopra il widget e ne
-            // segue il bordo destro.
-            // Mai oltre il bordo della pagina: a certe larghezze (~1024px) la
-            // colonna dei dettagli sborda di qualche pixel e l'interruttore
-            // risulterebbe tagliato.
-            document.getElementById('modeToggle').style.marginRight = Math.max(0, parentRect.right - detailsRect.right) + 'px';
         }
 
         let dragging = false;
@@ -1385,6 +1401,7 @@
                 if (layoutKey !== lastLayoutKey) {
                     lastLayoutKey = layoutKey;
                     if (chartViewMode === 'telemetry') renderChart();
+                    if (siteMode === 'pace' && currentPaceRace()) renderPaceCharts(currentPaceRace());
                 }
             });
         });
@@ -1989,13 +2006,16 @@
         const PACE_COLOR_B = '#3b82f6';
 
         function updateModeToggle() {
-            const active = 'bg-gray-700 text-white';
-            const inactive = 'text-gray-400 hover:text-white';
+            // Modalità attiva nel rosso del sito: un grigio scuro si distingueva
+            // appena dallo sfondo.
+            const active = ['bg-[#E10600]', 'text-white', 'font-semibold'];
+            const inactive = ['text-gray-300', 'hover:text-white', 'hover:bg-gray-800'];
             [['modeBtnQuali', 'quali'], ['modeBtnPace', 'pace']].forEach(([id, mode]) => {
                 const btn = document.getElementById(id);
                 if (!btn) return;
                 const on = siteMode === mode;
-                btn.className = btn.className.replace(/\b(bg-gray-700|text-white|text-gray-400|hover:text-white)\b/g, '').trim() + ' ' + (on ? active : inactive);
+                btn.classList.remove(...active, ...inactive);
+                btn.classList.add(...(on ? active : inactive));
                 btn.setAttribute('aria-pressed', String(on));
             });
         }
@@ -2005,9 +2025,6 @@
             document.body.classList.toggle('pace-mode', siteMode === 'pace');
             updateModeToggle();
             if (siteMode === 'pace') {
-                // In questa vista non c'è la colonna dei dettagli da seguire:
-                // l'interruttore torna sul bordo destro della pagina.
-                document.getElementById('modeToggle').style.marginRight = '';
                 await openPaceView(state);
             } else {
                 // Tornando alle qualifiche il layout ha di nuovo il suo
@@ -2062,7 +2079,7 @@
                 : (paceState.year === year && races.some(r => r.circuit === paceState.circuit) ? paceState.circuit : races[races.length - 1].circuit);
             paceState.year = year;
             paceState.circuit = circuit;
-            if (state) { paceState.a = state.a || null; paceState.b = state.b || null; }
+            if (state) { paceState.a = state.a || null; paceState.b = state.b === '-' ? '' : (state.b || null); }
             fillPaceSelectors();
             await showPaceRace();
         }
@@ -2091,10 +2108,15 @@
         }
 
         function onPaceDriverChange(which, code) {
-            const other = which === 'a' ? 'b' : 'a';
-            // Scegliere come A il pilota già B (o viceversa) scambia i due.
-            if (paceState[other] === code) paceState[other] = paceState[which];
-            paceState[which] = code;
+            if (which === 'b' && (code === '' || code === paceState.b)) {
+                // B vuoto (o B premuto di nuovo sullo stesso pilota): un solo pilota.
+                paceState.b = '';
+            } else {
+                const other = which === 'a' ? 'b' : 'a';
+                // Scegliere come A il pilota già B (o viceversa) scambia i due.
+                if (paceState[other] === code) paceState[other] = paceState[which];
+                paceState[which] = code;
+            }
             renderPaceView();
         }
 
@@ -2105,10 +2127,11 @@
                 return;
             }
             const codes = race.drivers.map(d => d.code);
-            // Piloti scelti mantenuti se hanno corso questa gara, altrimenti
-            // i primi due della classifica.
+            // Piloti scelti mantenuti se hanno corso questa gara, altrimenti i
+            // primi due della classifica. B = '' significa "un solo pilota" ed è
+            // una scelta da rispettare, non un valore mancante.
             if (!codes.includes(paceState.a)) paceState.a = codes[0];
-            if (!codes.includes(paceState.b) || paceState.b === paceState.a) paceState.b = codes.find(c => c !== paceState.a);
+            if (paceState.b !== '' && (!codes.includes(paceState.b) || paceState.b === paceState.a)) paceState.b = codes.find(c => c !== paceState.a);
             renderPaceView();
         }
 
@@ -2123,9 +2146,9 @@
             const selA = document.getElementById('paceDriverA');
             const selB = document.getElementById('paceDriverB');
             selA.innerHTML = opts; selA.value = paceState.a;
-            selB.innerHTML = opts; selB.value = paceState.b;
+            selB.innerHTML = '<option value="">— nessuno —</option>' + opts; selB.value = paceState.b || '';
             renderPaceResults(race);
-            renderPaceChart(race);
+            renderPaceCharts(race);
             syncUrlState();
         }
 
@@ -2135,7 +2158,8 @@
                 const on = paceState[which] === code;
                 const color = which === 'a' ? PACE_COLOR_A : PACE_COLOR_B;
                 const style = on ? `background:${color};color:#fff;border-color:${color}` : `color:${color};border-color:#374151`;
-                return `<button type="button" onclick="onPaceDriverChange('${which}', '${escapeHtml(code)}')" aria-pressed="${on}" aria-label="Scegli come pilota ${which.toUpperCase()}" class="w-7 h-7 rounded-md border text-xs font-bold cursor-pointer" style="${style}">${which.toUpperCase()}</button>`;
+                const label = which === 'a' ? 'Scegli come pilota A' : (on ? 'Togli il pilota B (un solo pilota)' : 'Scegli come pilota B');
+                return `<button type="button" onclick="onPaceDriverChange('${which}', '${escapeHtml(code)}')" aria-pressed="${on}" aria-label="${label}" title="${label}" class="w-7 h-7 rounded-md border text-xs font-bold cursor-pointer" style="${style}">${which.toUpperCase()}</button>`;
             };
             list.innerHTML = race.drivers.map(d => `
                 <div class="flex items-center gap-2 bg-gray-900 rounded px-2 py-1.5">
@@ -2154,85 +2178,264 @@
             return `${m}:${rest}`;
         }
 
-        // Giri "puliti" di un pilota: niente primo giro, giri di entrata e
-        // uscita dai box, giri sotto safety car / VSC. Servono per scegliere la
-        // scala dell'asse Y: i giri lenti (box, SC) altrimenti schiaccerebbero
-        // le differenze di passo in una riga piatta.
+        // Mescole Pirelli: colori ufficiali e sigla.
+        const COMPOUNDS = {
+            SOFT: { color: '#DA291C', letter: 'S', label: 'Soft' },
+            MEDIUM: { color: '#FFD12E', letter: 'M', label: 'Medium' },
+            HARD: { color: '#F0F0EC', letter: 'H', label: 'Hard' },
+            INTERMEDIATE: { color: '#43B02A', letter: 'I', label: 'Intermedia' },
+            WET: { color: '#0067AD', letter: 'W', label: 'Bagnato' },
+        };
+        const compoundOf = c => COMPOUNDS[c] || { color: '#6b7280', letter: '?', label: 'Sconosciuta' };
+        function compoundAtLap(race, n, lap) {
+            const st = (race.stints[n] || []).find(([from, to]) => lap >= from && lap <= to);
+            return st ? st[2] : null;
+        }
+
+        // Giri neutralizzati (safety car / VSC) della gara.
         function paceNeutralLaps(race) {
             const set = new Set();
             (race.periods || []).forEach(p => { for (let l = p.from; l <= p.to; l++) set.add(l); });
             return set;
         }
+
+        // Giri "puliti" di un pilota, usati per scala e statistiche: niente
+        // primo giro, giri di entrata/uscita dai box, giri sotto safety car /
+        // VSC o bandiera rossa, e niente giri oltre il 110% della mediana (un
+        // giro con un problema o un'escursione falserebbe passo e costanza).
         function cleanLapTimes(race, n, neutral) {
             const times = race.laps[n] || [];
-            const pits = new Set([...(race.pitIn[n] || []), ...(race.pitOut[n] || [])]);
-            return times.filter((t, i) => typeof t === 'number' && i > 0 && !pits.has(i + 1) && !neutral.has(i + 1));
+            const skip = new Set([...(race.pitIn[n] || []), ...(race.pitOut[n] || []), ...(race.redFlags || [])]);
+            const base = times.filter((t, i) => typeof t === 'number' && i > 0 && !skip.has(i + 1) && !neutral.has(i + 1));
+            if (!base.length) return [];
+            const sorted = base.slice().sort((x, y) => x - y);
+            const median = sorted[Math.floor(sorted.length / 2)];
+            return base.filter(t => t <= median * 1.10);
         }
 
-        function renderPaceChart(race) {
-            const canvas = document.getElementById('paceChart');
+        function paceStats(race, drv, neutral) {
+            const clean = cleanLapTimes(race, drv.n, neutral);
+            const valid = (race.laps[drv.n] || []).filter(t => typeof t === 'number');
+            const mean = clean.length ? clean.reduce((s, t) => s + t, 0) / clean.length : null;
+            const sd = clean.length > 1 ? Math.sqrt(clean.reduce((s, t) => s + (t - mean) ** 2, 0) / (clean.length - 1)) : null;
+            const pits = race.pitIn[drv.n] || [];
+            return { mean, best: valid.length ? Math.min(...valid) : null, sd, pits, clean: clean.length };
+        }
+
+        // Disegni sopra i grafici del passo gara (plugin Chart.js locale):
+        // bande dei periodi di safety car / VSC, linee delle bandiere rosse,
+        // triangoli delle soste sul fondo e - solo nel grafico principale -
+        // una striscia per pilota con le mescole usate, sopra l'area di disegno.
+        const paceOverlayPlugin = {
+            id: 'paceOverlay',
+            beforeDatasetsDraw(chart, args, opts) {
+                const { ctx, chartArea: a } = chart;
+                const x = chart.scales && chart.scales.x;
+                if (!a || !x || !opts) return; // grafico non ancora dimensionato
+                ctx.save();
+                ctx.beginPath(); ctx.rect(a.left, a.top, a.right - a.left, a.bottom - a.top); ctx.clip();
+                for (const p of opts.periods || []) {
+                    const x0 = x.getPixelForValue(p.from - 0.5), x1 = x.getPixelForValue(p.to + 0.5);
+                    ctx.fillStyle = p.type === 'SC' ? 'rgba(239,159,39,0.20)' : 'rgba(239,159,39,0.10)';
+                    ctx.fillRect(x0, a.top, x1 - x0, a.bottom - a.top);
+                    if (opts.labels) {
+                        ctx.fillStyle = 'rgba(239,159,39,0.9)';
+                        ctx.font = '10px system-ui, sans-serif';
+                        ctx.fillText(p.type, x0 + 3, a.top + 11);
+                    }
+                }
+                ctx.strokeStyle = '#ef4444'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+                for (const lap of opts.redFlags || []) {
+                    const px = x.getPixelForValue(lap);
+                    ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke();
+                }
+                ctx.restore();
+            },
+            afterDatasetsDraw(chart, args, opts) {
+                const { ctx, chartArea: a } = chart;
+                const x = chart.scales && chart.scales.x;
+                if (!a || !x || !opts) return;
+                ctx.save();
+                // Soste: triangolo sul fondo, del colore del pilota.
+                (opts.pits || []).forEach(({ laps, color }, i) => {
+                    ctx.fillStyle = color;
+                    for (const lap of laps) {
+                        const px = x.getPixelForValue(lap), py = a.bottom - 2 - i * 8;
+                        ctx.beginPath(); ctx.moveTo(px, py - 6); ctx.lineTo(px - 4, py); ctx.lineTo(px + 4, py); ctx.closePath(); ctx.fill();
+                    }
+                });
+                // Gomme: una striscia per pilota sopra il grafico.
+                (opts.stints || []).forEach(({ stints, code, color }, i) => {
+                    const y = a.top - 8 - i * 9;
+                    ctx.fillStyle = color;
+                    ctx.font = 'bold 9px system-ui, sans-serif';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(code, a.left - 4, y + 6);
+                    for (const [from, to, comp] of stints) {
+                        const x0 = x.getPixelForValue(from - 0.5), x1 = x.getPixelForValue(to + 0.5);
+                        ctx.fillStyle = compoundOf(comp).color;
+                        ctx.fillRect(Math.max(x0, a.left) + 0.5, y, Math.min(x1, a.right) - Math.max(x0, a.left) - 1, 6);
+                    }
+                });
+                ctx.restore();
+            },
+        };
+
+        let paceGapChart = null;
+
+        function renderPaceCharts(race) {
             if (paceChart) { paceChart.destroy(); paceChart = null; }
+            if (paceGapChart) { paceGapChart.destroy(); paceGapChart = null; }
             const drvA = race.drivers.find(d => d.code === paceState.a);
-            const drvB = race.drivers.find(d => d.code === paceState.b);
+            const drvB = paceState.b ? race.drivers.find(d => d.code === paceState.b) : null;
+            const drivers = [drvA, drvB].filter(Boolean);
+            const colors = [PACE_COLOR_A, PACE_COLOR_B];
             const neutral = paceNeutralLaps(race);
+            const compact = isCompactTelemetryAxis();
+            const tickFont = compact ? { size: 10 } : undefined;
+            // Stessa larghezza dell'asse Y nei due grafici: i giri restano
+            // allineati in verticale tra tempi e distacco.
+            const yAxisWidth = compact ? 44 : 58;
+            const fixedYAxis = { afterFit: scale => { scale.width = yAxisWidth; } };
+            const xScale = { type: 'linear', min: 1, max: race.totalLaps, grid: { display: false } };
 
-            const series = (drv) => {
-                const times = race.laps[drv.n] || [];
-                const pitIn = new Set(race.pitIn[drv.n] || []);
-                return {
-                    points: times.map((t, i) => ({ x: i + 1, y: t })),
-                    radius: times.map((t, i) => pitIn.has(i + 1) ? 4 : 0),
-                };
-            };
-            const a = series(drvA), b = series(drvB);
-
-            // Scala Y sui giri puliti dei due piloti: dal più veloce a un po'
-            // sopra il 95° percentile. I giri più lenti escono in alto.
-            const clean = [...cleanLapTimes(race, drvA.n, neutral), ...cleanLapTimes(race, drvB.n, neutral)].sort((x, y) => x - y);
+            // Scala Y sui giri puliti: dal più veloce a poco sopra il 95°
+            // percentile. I giri lenti (box, safety car) escono in alto.
+            const clean = drivers.flatMap(d => cleanLapTimes(race, d.n, neutral)).sort((x, y) => x - y);
             const yMin = clean.length ? Math.floor(clean[0] - 0.5) : undefined;
             const yMax = clean.length ? Math.ceil(clean[Math.floor((clean.length - 1) * 0.95)] + 2) : undefined;
 
-            document.getElementById('paceCaption').innerHTML =
-                `<span style="color:${PACE_COLOR_A}">${escapeHtml(drvA.name)}</span> &nbsp;vs&nbsp; <span style="color:${PACE_COLOR_B}">${escapeHtml(drvB.name)}</span> · ${escapeHtml(race.circuit)} ${race.year}`;
-            document.getElementById('paceNote').innerText =
-                `Tempo di ogni giro (${race.totalLaps} giri). I picchi che escono in alto sono giri lenti: soste ai box, safety car o primo giro. Passa col mouse o col dito sul grafico per i dettagli di ogni giro.`;
+            document.getElementById('paceCaption').innerHTML = drivers
+                .map((d, i) => `<span style="color:${colors[i]}">${escapeHtml(d.name)}</span>`).join(' &nbsp;vs&nbsp; ')
+                + ` · ${escapeHtml(race.circuit)} ${race.year}`;
 
-            const compact = isCompactTelemetryAxis();
-            paceChart = new Chart(canvas.getContext('2d'), {
+            paceChart = new Chart(document.getElementById('paceChart').getContext('2d'), {
                 type: 'line',
                 data: {
-                    datasets: [
-                        { label: drvA.code, data: a.points, borderColor: PACE_COLOR_A, backgroundColor: PACE_COLOR_A, borderWidth: 2, pointRadius: a.radius, pointHoverRadius: 4, tension: 0.15, spanGaps: false },
-                        { label: drvB.code, data: b.points, borderColor: PACE_COLOR_B, backgroundColor: PACE_COLOR_B, borderWidth: 2, borderDash: [5, 3], pointRadius: b.radius, pointHoverRadius: 4, tension: 0.15, spanGaps: false },
-                    ],
+                    datasets: drivers.map((d, i) => ({
+                        label: d.code,
+                        data: (race.laps[d.n] || []).map((t, k) => ({ x: k + 1, y: t })),
+                        borderColor: colors[i], backgroundColor: colors[i],
+                        borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.15, spanGaps: false,
+                        borderDash: i === 1 ? [5, 3] : undefined,
+                    })),
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    resizeDelay: 200,
-                    animation: { duration: 400 },
+                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: { duration: 400 },
                     interaction: { mode: 'index', intersect: false },
-                    layout: { padding: { right: compact ? 6 : 12 } },
+                    // Spazio in alto per le strisce delle gomme.
+                    layout: { padding: { right: compact ? 6 : 12, top: 6 + drivers.length * 9 } },
                     scales: {
-                        x: { type: 'linear', min: 1, max: race.totalLaps, grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 0, precision: 0, font: compact ? { size: 10 } : undefined } , title: { display: !compact, text: 'Giro', color: '#6b7280' } },
-                        y: { min: yMin, max: yMax, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: compact ? { size: 10 } : undefined, callback: v => formatLapTime(v, 1) } },
+                        x: { ...xScale, ticks: { display: false } },
+                        y: { ...fixedYAxis, min: yMin, max: yMax, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => formatLapTime(v, 1) } },
                     },
                     plugins: {
                         legend: { display: false },
+                        paceOverlay: {
+                            periods: race.periods, redFlags: race.redFlags, labels: true,
+                            pits: drivers.map((d, i) => ({ laps: race.pitIn[d.n] || [], color: colors[i] })),
+                            stints: drivers.map((d, i) => ({ stints: race.stints[d.n] || [], code: d.code, color: colors[i] })),
+                        },
                         tooltip: {
                             callbacks: {
-                                title: items => `Giro ${items[0].parsed.x}${neutral.has(items[0].parsed.x) ? ' · safety car' : ''}`,
+                                title: items => {
+                                    const lap = items[0].parsed.x;
+                                    const p = (race.periods || []).find(q => lap >= q.from && lap <= q.to);
+                                    return `Giro ${lap}${p ? ' · ' + (p.type === 'SC' ? 'safety car' : 'virtual safety car') : ''}`;
+                                },
                                 label: c => {
-                                    const drv = c.datasetIndex === 0 ? drvA : drvB;
+                                    const drv = drivers[c.datasetIndex];
                                     const lap = c.parsed.x;
-                                    const box = (race.pitIn[drv.n] || []).includes(lap) ? ' · box' : (race.pitOut[drv.n] || []).includes(lap) ? ' · uscita box' : '';
-                                    return ` ${drv.code} ${formatLapTime(c.parsed.y)}${box}`;
+                                    const box = (race.pitIn[drv.n] || []).includes(lap) ? ' · ai box' : (race.pitOut[drv.n] || []).includes(lap) ? ' · uscita box' : '';
+                                    const comp = compoundAtLap(race, drv.n, lap);
+                                    return ` ${drv.code} ${formatLapTime(c.parsed.y)}${comp ? ' · ' + compoundOf(comp).label : ''}${box}`;
                                 },
                             },
                         },
                     },
                 },
+                plugins: [paceOverlayPlugin],
             });
+
+            renderPaceGap(race, drvA, drvB, { xScale, fixedYAxis, tickFont, compact });
+            renderPaceLegend(race, drivers);
+            renderPaceStats(race, drivers, neutral);
+            document.getElementById('paceNote').innerText =
+                `${race.totalLaps} giri. Passo medio e costanza escludono primo giro, soste, safety car e giri oltre il 110% della mediana. I picchi in alto sono giri lenti (box, safety car).`;
+        }
+
+        // Distacco di B da A alla fine di ogni giro, dalla somma dei tempi sul
+        // giro: positivo = B dietro. Si interrompe dove manca un giro di uno dei
+        // due (dato assente o ritiro), perché da lì la somma non è più valida.
+        function renderPaceGap(race, drvA, drvB, { xScale, fixedYAxis, tickFont, compact }) {
+            const wrap = document.getElementById('paceGapWrap');
+            wrap.classList.toggle('hidden', !drvB);
+            if (!drvB) return;
+            const la = race.laps[drvA.n] || [], lb = race.laps[drvB.n] || [];
+            const points = [];
+            let ca = 0, cb = 0;
+            for (let k = 0; k < race.totalLaps; k++) {
+                if (typeof la[k] !== 'number' || typeof lb[k] !== 'number') break;
+                ca += la[k]; cb += lb[k];
+                points.push({ x: k + 1, y: Math.round((cb - ca) * 1000) / 1000 });
+            }
+            document.getElementById('paceGapTitle').innerHTML =
+                `Distacco di <span style="color:${PACE_COLOR_B}">${escapeHtml(drvB.code)}</span> da <span style="color:${PACE_COLOR_A}">${escapeHtml(drvA.code)}</span> (sopra lo zero = ${escapeHtml(drvB.code)} dietro)`;
+            const fmtGap = v => (v > 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + ' s';
+            paceGapChart = new Chart(document.getElementById('paceGapChart').getContext('2d'), {
+                type: 'line',
+                data: { datasets: [{ data: points, borderColor: PACE_COLOR_B, borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: 0.15,
+                    fill: { target: 'origin', above: 'rgba(59,130,246,0.15)', below: 'rgba(225,6,0,0.15)' } }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: { duration: 400 },
+                    interaction: { mode: 'index', intersect: false },
+                    layout: { padding: { right: compact ? 6 : 12 } },
+                    scales: {
+                        x: { ...xScale, ticks: { color: '#a0aec0', maxRotation: 0, precision: 0, font: tickFont } },
+                        y: { ...fixedYAxis, grid: { color: ctx => ctx.tick.value === 0 ? '#6b7280' : '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, maxTicksLimit: 4, callback: v => fmtGap(v) } },
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        paceOverlay: { periods: race.periods, redFlags: race.redFlags, labels: false },
+                        tooltip: { callbacks: {
+                            title: items => `Giro ${items[0].parsed.x}`,
+                            label: c => {
+                                const v = c.parsed.y;
+                                if (Math.abs(v) < 0.05) return ` ${drvB.code} appaiato a ${drvA.code}`;
+                                return v > 0 ? ` ${drvB.code} dietro di ${v.toFixed(1).replace('.', ',')} s` : ` ${drvB.code} davanti di ${(-v).toFixed(1).replace('.', ',')} s`;
+                            },
+                        } },
+                    },
+                },
+                plugins: [paceOverlayPlugin],
+            });
+        }
+
+        function renderPaceLegend(race, drivers) {
+            const used = new Set(drivers.flatMap(d => (race.stints[d.n] || []).map(s => s[2])));
+            const tyres = Object.entries(COMPOUNDS).filter(([k]) => used.has(k))
+                .map(([, c]) => `<span class="inline-flex items-center gap-1"><span class="inline-block w-3 h-1.5 rounded-sm" style="background:${c.color}"></span>${c.label}</span>`).join('');
+            const sc = (race.periods || []).length ? '<span class="inline-flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:rgba(239,159,39,0.35)"></span>Safety car / VSC</span>' : '';
+            const red = (race.redFlags || []).length ? '<span class="inline-flex items-center gap-1"><span class="inline-block w-3 border-t border-dashed border-red-500"></span>Bandiera rossa</span>' : '';
+            document.getElementById('paceLegend').innerHTML =
+                `<span>Gomme (strisce in alto):</span>${tyres || '<span>non disponibili</span>'}<span class="inline-flex items-center gap-1">▲ Sosta ai box</span>${sc}${red}`;
+        }
+
+        function renderPaceStats(race, drivers, neutral) {
+            const colors = [PACE_COLOR_A, PACE_COLOR_B];
+            const stats = drivers.map(d => paceStats(race, d, neutral));
+            const fmt1 = v => v.toFixed(2).replace('.', ',');
+            const boxes = [
+                ['Passo medio', stats.map(s => s.mean === null ? '—' : formatLapTime(s.mean))],
+                ['Giro più veloce', stats.map(s => s.best === null ? '—' : formatLapTime(s.best))],
+                ['Costanza', stats.map(s => s.sd === null ? '—' : `±${fmt1(s.sd)} s`)],
+                ['Soste', stats.map(s => s.pits.length ? `${s.pits.length} (giro ${s.pits.join(', ')})` : 'Nessuna')],
+            ];
+            document.getElementById('paceStatsGrid').innerHTML = boxes.map(([label, values]) => `
+                <div class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
+                    <div class="text-[11px] text-gray-400">${label}</div>
+                    ${values.map((v, i) => `<div class="${i === 0 ? 'text-sm font-semibold' : 'text-xs'}" style="color:${colors[i]}">${v}</div>`).join('')}
+                </div>`).join('');
         }
 
         function renderChart() {

@@ -101,11 +101,16 @@ Tecnicamente non è un'app separata da mantenere: è lo stesso sito, con in più
 
 ## Modalità "Passo gara"
 
-L'interruttore **Qualifiche / Passo gara** in alto a destra cambia tutto il contenuto del sito (classe `pace-mode` sul `body`): la vista Qualifiche resta com'è, la vista Passo gara mostra i tempi di ogni giro di due piloti in una gara, a confronto.
+L'interruttore **Qualifiche / Passo gara** (su desktop a destra del menu del circuito, su mobile sotto il box del prossimo GP e sopra il menu; modalità attiva in rosso) cambia tutto il contenuto del sito (classe `pace-mode` sul `body`): la vista Qualifiche resta com'è, la vista Passo gara mostra i tempi di ogni giro di due piloti in una gara, a confronto.
 
 - **Dati:** `pace/{anno}/{circuito}.json` (un file per gara, ~13 KB, caricato solo quando la si apre) e `pace/index.json` (elenco delle gare per anno). Scaricati da `scripts/build-race-pace.js` da OpenF1, quindi **solo dal 2023** (87 gare al momento). Ogni file contiene la classifica ufficiale (con ritiri e squalifiche), i piloti con colore della scuderia, il tempo di ogni giro, i giri di ingresso e uscita dai box, gli stint con le mescole e i periodi di safety car / VSC e bandiere rosse. I giri di gara sono quelli del vincitore in classifica: OpenF1 conta anche il giro dopo la bandiera a scacchi, che viene scartato. Dati accessori mancanti per alcune gare (es. soste di alcune gare 2023) non fanno scartare la gara: le soste si ricavano dai giri di uscita dai box.
-- **Vista:** in alto anno, circuito e i due piloti; a sinistra il grafico dei tempi sul giro (A rosso, B blu tratteggiato, come la telemetria), con la scala tarata sui giri "puliti" (senza primo giro, soste e safety car), così le differenze di passo non vengono schiacciate dai giri lenti; a destra (su mobile sotto) la classifica della gara con i tasti A/B per scegliere i piloti. Si apre sull'ultima gara disputata con i primi due classificati.
-- **Link:** `#mode=pace&y=2025&c=Monza&a=VER&b=NOR` apre direttamente quella gara e quei piloti (sigle a tre lettere). Il titolo riporta sempre alla vista Qualifiche.
+- **Vista:** in alto anno, circuito e i piloti (B facoltativo: "nessuno", o B premuto di nuovo in classifica, mostra un solo pilota); a sinistra:
+  - il grafico dei tempi sul giro (A rosso, B blu tratteggiato, come la telemetria), con la scala tarata sui giri "puliti" (senza primo giro, soste e safety car), così le differenze di passo non vengono schiacciate dai giri lenti; bande arancioni per safety car (piena) e VSC (tenue), linea rossa tratteggiata per le bandiere rosse, triangoli sul fondo per le soste e, sopra il grafico, una striscia per pilota con le mescole usate (colori Pirelli); il tooltip di ogni giro riporta tempo, mescola ed eventuale sosta;
+  - il distacco di B da A a fine giro (somma dei tempi sul giro; sopra lo zero = B dietro), che si interrompe dove manca un giro di uno dei due; nascosto con un solo pilota;
+  - quattro riquadri: passo medio e costanza (deviazione standard) sui giri puliti (esclusi anche i giri oltre il 110% della mediana), giro più veloce, soste con i giri.
+
+  A destra (su mobile sotto) la classifica della gara con i tasti A/B. Si apre sull'ultima gara disputata con i primi due classificati.
+- **Link:** `#mode=pace&y=2025&c=Monza&a=VER&b=NOR` apre direttamente quella gara e quei piloti (sigle a tre lettere); `b=-` = un solo pilota. Il titolo riporta sempre alla vista Qualifiche.
 - **Automazione:** `.github/workflows/update-race-pace.yml` dopo ogni gara (domenica 18:27 e 22:27 UTC, lunedì 6:27), più un passo in `update-all.yml`. Scarica solo le gare nuove; una gara appena finita senza dati su OpenF1 resta in attesa per 72 ore senza far fallire il run. Scrive `status/pace.json` per l'indicatore in alto.
 - `scripts/lib/openf1.js` raccoglie il codice condiviso con la telemetria: richieste distanziate per il limite del piano gratuito, mappa dei nomi dei circuiti, nome dei file per circuito.
 
