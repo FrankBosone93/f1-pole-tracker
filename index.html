@@ -113,6 +113,13 @@
                         <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
                     </div>
                 </div>
+                <!-- Statistiche del giro (solo in vista Telemetria): valori
+                     riassuntivi a riposo, valori nel punto indicato quando si
+                     passa col mouse/dito sui grafici - vedi renderTelemetryStats. -->
+                <div id="telemetryStats" class="hidden mt-3">
+                    <div id="telemetryStatsHeader" class="text-[11px] text-gray-500 mb-1.5"></div>
+                    <div id="telemetryStatsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+                </div>
             </div>
 
             <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico.
@@ -517,6 +524,117 @@
         // il confronto è attivo, sovrapponiamo il giro di pole 2025 solo sui
         // grafici Velocità e Marcia (Acceleratore/Freno resta a 4 tracce
         // sovrapposte sarebbe illeggibile, quindi mostra solo il 2026).
+        // --- STATISTICHE DEL GIRO (riquadri sotto la telemetria) ----------
+        // A riposo: velocità minima e massima, % del giro a gas pieno, secondi
+        // in frenata. Passando col mouse/dito sui grafici: velocità, marcia,
+        // acceleratore e freno nel punto indicato. Rosso = giro principale,
+        // blu = giro di confronto, come le curve.
+        const STAT_COLOR_PRIMARY = '#E10600';
+        const STAT_COLOR_COMPARE = '#3b82f6';
+        let telemetryStatsCtx = null; // { entries: [{entry, stats}], lastKey }
+
+        // Riassunto di un giro. Medie pesate sul tempo (i campioni non sono
+        // equidistanti) e solo sui tratti con dati validi: i buchi della
+        // fonte (dropout OpenF1) non falsano le percentuali.
+        function computeLapStats(entry) {
+            const speeds = entry.samples.map(s => s.speed).filter(v => typeof v === 'number');
+            let throttleTime = 0, fullTime = 0, brakeTime = 0;
+            for (let i = 0; i < entry.samples.length - 1; i++) {
+                const a = entry.samples[i];
+                const dt = entry.samples[i + 1].t - a.t;
+                if (typeof a.throttle !== 'number' || dt <= 0) continue;
+                throttleTime += dt;
+                if (a.throttle >= 98) fullTime += dt;
+                if (typeof a.brake === 'number' && a.brake > 0) brakeTime += dt;
+            }
+            return {
+                vmin: speeds.length ? Math.min(...speeds) : null,
+                vmax: speeds.length ? Math.max(...speeds) : null,
+                fullPct: throttleTime > 0 ? Math.round(100 * fullTime / throttleTime) : null,
+                brakeSec: throttleTime > 0 ? brakeTime : null,
+            };
+        }
+
+        // Campione più vicino all'istante t (ricerca binaria: i campioni sono
+        // ordinati per tempo).
+        function sampleAt(entry, t) {
+            const s = entry.samples;
+            if (!s.length || t < s[0].t - 0.5 || t > s[s.length - 1].t + 0.5) return null;
+            let lo = 0, hi = s.length - 1;
+            while (hi - lo > 1) {
+                const mid = (lo + hi) >> 1;
+                if (s[mid].t <= t) lo = mid; else hi = mid;
+            }
+            return Math.abs(s[lo].t - t) <= Math.abs(s[hi].t - t) ? s[lo] : s[hi];
+        }
+
+        const fmtDec = (v, d = 1) => v.toFixed(d).replace('.', ',');
+
+        // hoverT = secondo del giro sotto il puntatore, o null a riposo.
+        function renderTelemetryStats(hoverT = null) {
+            const ctx = telemetryStatsCtx;
+            const grid = document.getElementById('telemetryStatsGrid');
+            const header = document.getElementById('telemetryStatsHeader');
+            if (!ctx || !grid) return;
+
+            let boxes;
+            if (hoverT === null) {
+                boxes = [
+                    ['Velocità min', ctx.entries.map(e => e.stats.vmin === null ? '—' : `${e.stats.vmin} km/h`)],
+                    ['Velocità max', ctx.entries.map(e => e.stats.vmax === null ? '—' : `${e.stats.vmax} km/h`)],
+                    ['Gas pieno', ctx.entries.map(e => e.stats.fullPct === null ? '—' : `${e.stats.fullPct}% del giro`)],
+                    ['In frenata', ctx.entries.map(e => e.stats.brakeSec === null ? '—' : `${fmtDec(e.stats.brakeSec)} s`)],
+                ];
+            } else {
+                const samples = ctx.entries.map(e => sampleAt(e.entry, hoverT));
+                // "—" = istante fuori dal giro o tratto senza dati alla fonte.
+                const val = (s, f) => (s && f(s) !== null && f(s) !== undefined) ? f(s) : null;
+                boxes = [
+                    ['Velocità', samples.map(s => { const v = val(s, x => x.speed); return v === null ? '—' : `${v} km/h`; })],
+                    ['Marcia', samples.map(s => { const v = val(s, x => x.gear); return v === null ? '—' : `${v}ª`; })],
+                    ['Acceleratore', samples.map(s => { const v = val(s, x => x.throttle); return v === null ? '—' : `${v}%`; })],
+                    // Il freno in OpenF1 è solo premuto/rilasciato (0 o 100):
+                    // una percentuale sembrerebbe misurata senza esserlo.
+                    ['Freno', samples.map(s => { const v = val(s, x => x.brake); return v === null ? '—' : (v > 0 ? 'Premuto' : 'Rilasciato'); })],
+                ];
+            }
+
+            const key = JSON.stringify(boxes);
+            if (key === ctx.lastKey) return; // stesso campione: niente da ridisegnare
+            ctx.lastKey = key;
+
+            header.innerText = hoverT === null ? 'Riepilogo del giro' : `Valori a ${fmtDec(hoverT)} s del giro`;
+            grid.innerHTML = boxes.map(([label, values]) => `
+                <div class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
+                    <div class="text-[11px] text-gray-400">${label}</div>
+                    ${values.map((v, i) => `<div class="${i === 0 ? 'text-sm font-semibold' : 'text-xs'}" style="color:${i === 0 ? STAT_COLOR_PRIMARY : STAT_COLOR_COMPARE}">${v}</div>`).join('')}
+                </div>`).join('');
+        }
+
+        // Puntatore sui grafici -> secondo del giro. Ascoltatori sul
+        // contenitore dei tre pannelli invece dell'onHover di Chart.js, che
+        // scatta solo dentro l'area di disegno e mai all'uscita (i riquadri
+        // restavano fermi sull'ultimo punto). Le tre aree di disegno hanno lo
+        // stesso asse X e sono allineate, quindi basta leggerlo da una.
+        function telemetryTimeAtClientX(clientX) {
+            const chart = telemetrySpeedChart;
+            if (!chart || !chart.chartArea) return null;
+            const x = clientX - chart.canvas.getBoundingClientRect().left;
+            if (x < chart.chartArea.left || x > chart.chartArea.right) return null;
+            return chart.scales.x.getValueForPixel(x);
+        }
+        (function setupTelemetryStatsPointer() {
+            const panels = document.getElementById('telemetryPanels');
+            const onMove = (clientX) => renderTelemetryStats(telemetryTimeAtClientX(clientX));
+            const reset = () => renderTelemetryStats(null);
+            panels.addEventListener('mousemove', e => onMove(e.clientX));
+            panels.addEventListener('mouseleave', reset);
+            panels.addEventListener('touchstart', e => onMove(e.touches[0].clientX), { passive: true });
+            panels.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
+            panels.addEventListener('touchend', reset);
+            panels.addEventListener('touchcancel', reset);
+        })();
+
         function renderTelemetryCharts() {
             const poleCanvas = document.getElementById('telemetrySpeedChart');
             const tbCanvas = document.getElementById('telemetryThrottleBrakeChart');
@@ -580,6 +698,12 @@
             // confronto), uguale nei tre pannelli. Lasciato in automatico,
             // Chart.js lo arrotondava al "numero tondo" successivo (es. 90 s
             // per un giro da 80,8 s) e la curva finiva molto prima del bordo.
+            telemetryStatsCtx = {
+                entries: [entry, compareEntry].filter(Boolean).map(e => ({ entry: e, stats: computeLapStats(e) })),
+                lastKey: null,
+            };
+            renderTelemetryStats(null);
+
             const lastT = pts => (pts && pts.length) ? pts[pts.length - 1].x : 0;
             const xMax = Math.max(lastT(speedPoints), lastT(compareSpeedPoints));
             const xScaleRange = { min: 0, max: xMax };
@@ -1716,6 +1840,7 @@
                 // applicano qui: nascosti finché non si torna indietro.
                 poleCanvas.style.display = 'none';
                 telemetryPanels.classList.remove('hidden');
+                document.getElementById('telemetryStats').classList.remove('hidden');
                 toggleIconBtn.classList.add('hidden');
                 if (currentChart) { currentChart.destroy(); currentChart = null; }
                 // Su mobile l'altezza normale (200px, dal CSS) è troppo
@@ -1730,6 +1855,7 @@
             if (window.innerWidth < 768) chartContainer.style.height = '';
             poleCanvas.style.display = '';
             telemetryPanels.classList.add('hidden');
+            document.getElementById('telemetryStats').classList.add('hidden');
             toggleIconBtn.classList.remove('hidden');
             updateChartViewToggleIcon();
 
