@@ -1,0 +1,46 @@
+name: Notifica aggiornamento GP
+
+on:
+  schedule:
+    # Lunedì alle 8:13 UTC, dopo tutti i run di recupero del lunedì mattina
+    # (l'ultimo è archive-finished-season alle 6:53), quando i dati dell'ultimo
+    # GP dovrebbero essere tutti al loro posto. Martedì un secondo controllo:
+    # se lunedì mancava qualcosa ed è arrivato dopo, parte il ✅.
+    - cron: '13 8 * * 1'
+    - cron: '13 8 * * 2'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: write
+
+jobs:
+  notify-gp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Controlla i dati dell'ultimo GP e invia la notifica
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node scripts/notify-gp.js
+
+      # Lo stato (ultimo GP notificato) va in git, così la notifica non si
+      # ripete ai run successivi.
+      - name: Commit dello stato delle notifiche (se cambiato)
+        run: |
+          if [ -z "$(git status --porcelain -- status/notified.json)" ]; then
+            echo "Nessuna notifica inviata, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add status/notified.json
+            git commit -m "🔔 Notifica aggiornamento GP inviata"
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
+          fi

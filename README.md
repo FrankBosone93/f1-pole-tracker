@@ -114,6 +114,17 @@ L'interruttore **Qualifiche / Passo gara** (su desktop a destra del menu del cir
 - **Automazione:** `.github/workflows/update-race-pace.yml` dopo ogni gara (domenica 18:27 e 22:27 UTC, lunedì 6:27), più un passo in `update-all.yml`. Scarica solo le gare nuove; una gara appena finita senza dati su OpenF1 resta in attesa per 72 ore senza far fallire il run. Scrive `status/pace.json` per l'indicatore in alto.
 - `scripts/lib/openf1.js` raccoglie il codice condiviso con la telemetria: richieste distanziate per il limite del piano gratuito, mappa dei nomi dei circuiti, nome dei file per circuito.
 
+## Notifica dopo ogni GP (ntfy)
+
+Lunedì alle 8:13 UTC (dopo tutti i run di recupero, con un secondo controllo martedì) `.github/workflows/notify-gp.yml` esegue `scripts/notify-gp.js`, che controlla l'ultima gara corsa: pole in `data.json`, risultati di gara, classifica aggiornata dopo la gara, telemetria della pole e passo gara. Poi invia una notifica push con [ntfy](https://ntfy.sh) (gratuito, nessun account):
+
+- **✅ "GP di Austin 2026: dati del sito aggiornati"** con pole, podio, leader del mondiale piloti e costruttori e l'elenco dei dati aggiornati; toccandola si apre il sito su quel circuito.
+- **⚠️ "GP di Austin 2026: dati incompleti (manca: …)"**, a priorità più alta, se qualcosa non c'è. Si avvisa una volta; se il dato arriva dopo (es. martedì) parte il ✅.
+- **Una sola notifica per GP:** l'ultimo GP notificato è in `status/notified.json`.
+- **Canale:** nome lungo e casuale nel segreto del repository `NTFY_TOPIC` (Settings → Secrets and variables → Actions), mai nel codice pubblico: chi conosce il nome può leggere e scrivere nel canale. Per ricevere le notifiche: app ntfy (iPhone, Android, web) → "+" → iscrizione a quel canale sul server ntfy.sh. Per aggiungere persone basta dar loro il nome del canale; per toglierle, si cambia nome (nuovo segreto). Senza segreto lo script non invia nulla e non fallisce.
+- Prova senza inviare: `node scripts/notify-gp.js --dry-run`.
+- Idea per il futuro: lo stesso controllo potrebbe anche scrivere un commento su una issue fissa con @menzione, per ricevere il riepilogo via email da GitHub.
+
 ## Telefono: verticale e ruotato
 
 - **Verticale:** nella telemetria l'asse Y è compatto (numeri senza "km/h", font più piccolo, unità già nei riquadri sotto) e i margini sono ridotti: le curve occupano circa il 75% della larghezza dello schermo invece del 58%.
