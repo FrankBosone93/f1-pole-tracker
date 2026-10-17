@@ -20,6 +20,44 @@ const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
 const { writeStatus } = require('./lib/status');
 const { sleep, fetchJson } = require('./lib/http');
+const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+
+// Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
+// invernali e si ignorano.)
+const OPENF1_SESSION_KEYS = {
+    'Practice 1': 'fp1',
+    'Practice 2': 'fp2',
+    'Practice 3': 'fp3',
+    'Sprint Qualifying': 'sprintQualy',
+    'Sprint': 'sprintRace',
+    'Qualifying': 'qualy',
+    'Race': 'race',
+};
+
+// Orari ufficiali delle sessioni da OpenF1, per circuito: { circuito: { fp1:
+// {date, time}, ... } }. f1api.dev ha a volte orari sbagliati (Austin 2026:
+// gara alle 19:00 UTC invece delle 20:00 ufficiali, cioè 20:00 invece delle
+// 21:00 italiane, e anche Prove Libere 2 e 3 sfasate di mezz'ora), mentre
+// OpenF1 li prende dal feed ufficiale F1. Se OpenF1 non risponde, restano
+// quelli di f1api.dev.
+async function loadOfficialSchedule(season) {
+    const bySessions = new Map();
+    try {
+        const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}`);
+        for (const s of sessions) {
+            const key = OPENF1_SESSION_KEYS[s.session_name];
+            const circuit = CIRCUIT_MAP[s.circuit_short_name];
+            const start = new Date(s.date_start);
+            if (!key || !circuit || isNaN(start)) continue;
+            const iso = start.toISOString();
+            if (!bySessions.has(circuit)) bySessions.set(circuit, {});
+            bySessions.get(circuit)[key] = { date: iso.slice(0, 10), time: iso.slice(11, 19) + 'Z' };
+        }
+    } catch (err) {
+        console.warn(`⚠️  Orari ufficiali OpenF1 non disponibili (${err.message}): uso quelli di f1api.dev.`);
+    }
+    return bySessions;
+}
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
 
@@ -51,6 +89,7 @@ async function main() {
     }
 
     const now = new Date();
+    const officialSchedule = await loadOfficialSchedule(season);
     const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 
     // GP in evidenza (stessa logica di determineFeaturedRace() in index.html):
@@ -71,11 +110,6 @@ async function main() {
     for (const race of races) {
         const round = race.round;
         const mappedCircuit = matchCircuitById(race.circuit?.circuitId) || race.circuit?.circuitName || 'Sconosciuto';
-        const date = race.schedule?.race?.date || null;
-        // Inizio del weekend di gara (venerdì delle prove libere), usato dal
-        // sito per decidere quando mostrare di default questo circuito invece
-        // dell'ultimo GP disputato.
-        const weekendStart = race.schedule?.fp1?.date || race.schedule?.qualy?.date || date;
 
         // Orario di ogni sessione del weekend (UTC, come fornito dall'API):
         // la conversione al fuso orario italiano (con cambio ora legale
@@ -89,6 +123,24 @@ async function main() {
             qualy: race.schedule?.qualy?.date ? race.schedule.qualy : null,
             race: race.schedule?.race?.date ? race.schedule.race : null,
         };
+
+        // Orari ufficiali (OpenF1) al posto di quelli di f1api.dev quando ci
+        // sono; ogni differenza viene scritta nel log.
+        const official = officialSchedule.get(mappedCircuit) || {};
+        for (const [key, o] of Object.entries(official)) {
+            if (!(key in schedule)) continue;
+            const cur = schedule[key];
+            if (!cur || cur.date !== o.date || cur.time !== o.time) {
+                console.log(`🕒 ${mappedCircuit} ${key}: ${cur ? `${cur.date} ${cur.time}` : '—'} -> ${o.date} ${o.time} (orario ufficiale OpenF1)`);
+            }
+            schedule[key] = o;
+        }
+
+        const date = schedule.race?.date || race.schedule?.race?.date || null;
+        // Inizio del weekend di gara (venerdì delle prove libere), usato dal
+        // sito per decidere quando mostrare di default questo circuito invece
+        // dell'ultimo GP disputato.
+        const weekendStart = schedule.fp1?.date || schedule.qualy?.date || date;
 
         const existingRace = existingByCircuit.get(mappedCircuit);
 
