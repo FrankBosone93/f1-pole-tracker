@@ -109,7 +109,7 @@ L'interruttore **Qualifiche / Passo gara** (su desktop a destra del menu del cir
   - il distacco di B da A a fine giro (somma dei tempi sul giro; sopra lo zero = B dietro), che si interrompe dove manca un giro di uno dei due; nascosto con un solo pilota;
   - quattro riquadri: passo medio e costanza (deviazione standard) sui giri puliti (esclusi anche i giri oltre il 110% della mediana), giro più veloce, soste con i giri.
 
-  A destra (su mobile sotto) la classifica della gara con i tasti A/B. Si apre sull'ultima gara disputata con i primi due classificati.
+  A destra (su mobile sotto) la classifica della gara con i tasti A/B. Passando dalle Qualifiche con l'interruttore si apre sullo stesso circuito scelto lì (anno già aperto nel passo gara se ha quel circuito, altrimenti il più recente; piloti mantenuti se hanno corso); per un circuito senza dati (prima del 2023) resta la gara aperta prima, o l'ultima disputata, con un avviso. La prima apertura senza circuito noto mostra l'ultima gara con i primi due classificati.
 - **Link:** `#mode=pace&y=2025&c=Monza&a=VER&b=NOR` apre direttamente quella gara e quei piloti (sigle a tre lettere); `b=-` = un solo pilota. Il titolo riporta sempre alla vista Qualifiche.
 - **Automazione:** `.github/workflows/update-race-pace.yml` dopo ogni gara (domenica 18:27 e 22:27 UTC, lunedì 6:27), più un passo in `update-all.yml`. Scarica solo le gare nuove; una gara appena finita senza dati su OpenF1 resta in attesa per 72 ore senza far fallire il run. Scrive `status/pace.json` per l'indicatore in alto.
 - `scripts/lib/openf1.js` raccoglie il codice condiviso con la telemetria: richieste distanziate per il limite del piano gratuito, mappa dei nomi dei circuiti, nome dei file per circuito.

@@ -2036,6 +2036,11 @@
             document.body.classList.toggle('pace-mode', siteMode === 'pace');
             updateModeToggle();
             if (siteMode === 'pace') {
+                // Aperta dall'interruttore (non da un link): stesso circuito
+                // scelto nelle Qualifiche. Anno: quello già aperto nel passo
+                // gara se ha quel circuito, altrimenti il più recente in cui
+                // si è corso lì. Piloti scelti mantenuti se hanno corso.
+                if (!state) state = await paceStateFromQualiCircuit();
                 await openPaceView(state);
             } else {
                 // Tornando alle qualifiche il layout ha di nuovo il suo
@@ -2047,6 +2052,23 @@
                 applyChartHeight();
             }
             syncUrlState();
+        }
+
+        async function paceStateFromQualiCircuit() {
+            const circuit = select.value;
+            await loadPaceIndex();
+            const yearsWith = paceYears().filter(y => paceIndex.races[y].some(r => r.circuit === circuit)); // dal più recente
+            if (!yearsWith.length) {
+                // Circuito senza dati (OpenF1 parte dal 2023): si apre l'ultima gara.
+                if (circuit && paceYears().length) showToast(`Nessun dato del passo gara per ${circuit} (disponibile dal 2023): ${paceState.year ? 'resta la gara aperta prima' : "mostro l'ultima gara"}`);
+                return null;
+            }
+            return {
+                year: yearsWith.includes(paceState.year) ? paceState.year : yearsWith[0],
+                circuit,
+                a: paceState.a,
+                b: paceState.b === '' ? '-' : paceState.b, // "un solo pilota" resta tale
+            };
         }
 
         async function loadPaceIndex() {
