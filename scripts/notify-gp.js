@@ -91,7 +91,10 @@ function buildReport() {
         const d = standings.drivers[0], c = standings.constructors[0];
         lines.push(`📊 Mondiale: ${d.driver} ${d.points} pt · Costruttori: ${c.team} ${c.points} pt`);
     }
-    lines.push(checks.map(([label, ok]) => `${ok ? '✅' : '❌'} ${label}`).join('  '));
+    // Elenco dei dati solo se manca qualcosa, in fondo e solo con ciò che
+    // manca: con tutto aggiornato basta il ✅ del titolo.
+    const missingLabels = checks.filter(([, ok]) => !ok).map(([label]) => label);
+    if (missingLabels.length) lines.push(`❌ Non aggiornati: ${missingLabels.join(', ')}`);
 
     return {
         key: `${year}|${circuit}`,
