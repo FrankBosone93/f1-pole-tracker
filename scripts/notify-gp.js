@@ -114,7 +114,9 @@ async function send(report, topic) {
             topic,
             title: report.title,
             message: report.message,
-            tags: report.complete ? ['checkered_flag'] : ['warning'],
+            // Nessun tag: ntfy li mostra come emoji davanti al titolo (una
+            // bandiera a scacchi prima del ✅, un secondo ⚠️ prima del ⚠️).
+            // Il titolo ha già la sua emoji.
             priority: report.complete ? 3 : 4,
             click: report.click,
         }),
