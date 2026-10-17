@@ -2275,9 +2275,14 @@
                         ctx.beginPath(); ctx.moveTo(px, py - 6); ctx.lineTo(px - 4, py); ctx.lineTo(px + 4, py); ctx.closePath(); ctx.fill();
                     }
                 });
-                // Gomme: una striscia per pilota sopra il grafico.
+                // Gomme: una striscia per pilota sopra il grafico, staccata
+                // dall'area di disegno di PACE_STRIP_GAP px: l'etichetta più
+                // alta dell'asse dei tempi (es. "1:26.0") è centrata sul bordo
+                // superiore dell'area e sporge sopra di circa 7px; con le
+                // strisce subito sopra, la sigla del primo pilota ci finiva
+                // addosso.
                 (opts.stints || []).forEach(({ stints, code, color }, i) => {
-                    const y = a.top - 8 - i * 9;
+                    const y = a.top - PACE_STRIP_GAP - 6 - i * 9;
                     ctx.fillStyle = color;
                     ctx.font = 'bold 9px system-ui, sans-serif';
                     ctx.textAlign = 'right';
@@ -2293,6 +2298,8 @@
         };
 
         let paceGapChart = null;
+        // Spazio tra le strisce delle gomme e l'area del grafico (vedi plugin).
+        const PACE_STRIP_GAP = 12;
 
         function renderPaceCharts(race) {
             if (paceChart) { paceChart.destroy(); paceChart = null; }
@@ -2335,7 +2342,7 @@
                     responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: { duration: 400 },
                     interaction: { mode: 'index', intersect: false },
                     // Spazio in alto per le strisce delle gomme.
-                    layout: { padding: { right: compact ? 6 : 12, top: 6 + drivers.length * 9 } },
+                    layout: { padding: { right: compact ? 6 : 12, top: PACE_STRIP_GAP + 6 + drivers.length * 9 } },
                     scales: {
                         x: { ...xScale, ticks: { display: false } },
                         y: { ...fixedYAxis, min: yMin, max: yMax, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => formatLapTime(v, 1) } },
