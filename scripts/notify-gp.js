@@ -99,9 +99,9 @@ function buildReport() {
     return {
         key: `${year}|${circuit}`,
         complete,
-        title: complete
-            ? `✅ GP di ${circuit} ${year}: dati del sito aggiornati`
-            : `⚠️ GP di ${circuit} ${year}: dati incompleti (manca: ${missing.join(', ')})`,
+        // Titolo = solo il nome del GP: l'esito lo dice l'emoji (✅ tutto
+        // aggiornato, ⚠️ manca qualcosa, elencato in fondo al messaggio).
+        title: `${complete ? '✅' : '⚠️'} GP di ${circuit} ${year}`,
         message: lines.join('\n'),
         click: `${SITE_URL}#c=${encodeURIComponent(circuit)}`,
     };

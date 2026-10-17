@@ -118,8 +118,8 @@ L'interruttore **Qualifiche / Passo gara** (su desktop a destra del menu del cir
 
 Lunedì alle 8:13 UTC (dopo tutti i run di recupero, con un secondo controllo martedì) `.github/workflows/notify-gp.yml` esegue `scripts/notify-gp.js`, che controlla l'ultima gara corsa: pole in `data.json`, risultati di gara, classifica aggiornata dopo la gara, telemetria della pole e passo gara. Poi invia una notifica push con [ntfy](https://ntfy.sh) (gratuito, nessun account):
 
-- **✅ "GP di Austin 2026: dati del sito aggiornati"** con pole, podio, leader del mondiale piloti e costruttori e l'elenco dei dati aggiornati; toccandola si apre il sito su quel circuito.
-- **⚠️ "GP di Austin 2026: dati incompleti (manca: …)"**, a priorità più alta, se qualcosa non c'è. Si avvisa una volta; se il dato arriva dopo (es. martedì) parte il ✅.
+- **✅ "GP di Austin 2026"** (titolo = solo il nome del GP, l'esito lo dice l'emoji) con pole, podio e leader del mondiale piloti e costruttori; toccandola si apre il sito su quel circuito.
+- **⚠️ "GP di Austin 2026"**, a priorità più alta, se qualcosa non c'è: stesso riepilogo e in fondo "❌ Non aggiornati: …" con i soli dati mancanti. Si avvisa una volta; se il dato arriva dopo (es. martedì) parte il ✅.
 - **Una sola notifica per GP:** l'ultimo GP notificato è in `status/notified.json`.
 - **Canale:** nome lungo e casuale nel segreto del repository `NTFY_TOPIC` (Settings → Secrets and variables → Actions), mai nel codice pubblico: chi conosce il nome può leggere e scrivere nel canale. Per ricevere le notifiche: app ntfy (iPhone, Android, web) → "+" → iscrizione a quel canale sul server ntfy.sh. Per aggiungere persone basta dar loro il nome del canale; per toglierle, si cambia nome (nuovo segreto). Senza segreto lo script non invia nulla e non fallisce.
 - Prova senza inviare: `node scripts/notify-gp.js --dry-run`.
