@@ -1002,10 +1002,25 @@
             const reset = () => { renderTelemetryStats(null); showTelemetryTooltipsAt(null); };
             svg.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
             svg.addEventListener('mouseleave', reset);
-            svg.addEventListener('touchstart', e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-            svg.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-            svg.addEventListener('touchend', reset);
-            svg.addEventListener('touchcancel', reset);
+            // Dito sul telefono: se il tocco parte sulla pista la pagina resta
+            // ferma e il dito scorre lungo il giro; se parte in una zona vuota
+            // della mappa la pagina scorre normalmente.
+            let scrubbing = false;
+            svg.addEventListener('touchstart', e => {
+                const { clientX, clientY } = e.touches[0];
+                scrubbing = telemetryTimeAtMapPoint(clientX, clientY) !== null;
+                if (!scrubbing) return;
+                e.preventDefault();
+                onMove(clientX, clientY);
+            }, { passive: false });
+            svg.addEventListener('touchmove', e => {
+                if (!scrubbing) return;
+                e.preventDefault();
+                onMove(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: false });
+            const endTouch = () => { if (scrubbing) reset(); scrubbing = false; };
+            svg.addEventListener('touchend', endTouch);
+            svg.addEventListener('touchcancel', endTouch);
         })();
 
         function renderTelemetryCharts() {
