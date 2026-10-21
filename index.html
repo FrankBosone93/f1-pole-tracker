@@ -899,6 +899,14 @@
                 <g fill="#9ca3af" font-size="38" font-weight="600" text-anchor="middle" dominant-baseline="central" style="pointer-events:none">${corners}</g>
                 <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="11" fill="#ffffff"><title>Inizio del giro</title></circle>
                 ${items.map((it, i) => `<circle id="trackDot${i}" r="20" fill="${it.color}" stroke="#ffffff" stroke-width="5" style="display:none"></circle>`).join('')}`;
+            // Riquadro allargato a tutto il disegno: i numeri delle curve
+            // sporgono oltre il tracciato e sui bordi venivano tagliati (il 7
+            // di Monza, in alto). getBBox non conta lo spessore della linea né
+            // i puntini, da qui il margine.
+            try {
+                const bb = svg.getBBox(), M = 30;
+                if (bb.width > 0) svg.setAttribute('viewBox', `${(bb.x - M).toFixed(0)} ${(bb.y - M).toFixed(0)} ${(bb.width + 2 * M).toFixed(0)} ${(bb.height + 2 * M).toFixed(0)}`);
+            } catch (e) { /* SVG non visibile: resta il riquadro calcolato sopra */ }
             const years = items.filter(it => it.pts).map(it => it.season).join(' vs ');
             document.getElementById('telemetryMapTitle').innerText = `Tracciato · giro di pole ${years}`;
             trackMapCtx = { items };
