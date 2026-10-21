@@ -740,27 +740,6 @@
             telemetryCharts().forEach(ch => ch.render());
         }
 
-        // Scorrendo sul tracciato: tooltip di tutti e tre i grafici sul
-        // campione più vicino all'istante t (come passandoci sopra col mouse),
-        // o nessun tooltip con t = null.
-        function showTelemetryTooltipsAt(t) {
-            telemetryCharts().forEach(ch => {
-                const active = [];
-                if (t !== null) ch.data.datasets.forEach((ds, datasetIndex) => {
-                    const d = ds.data;
-                    if (!d.length || t < d[0].x - 0.5 || t > d[d.length - 1].x + 0.5) return;
-                    let lo = 0, hi = d.length - 1;
-                    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (d[mid].x <= t) lo = mid; else hi = mid; }
-                    const index = Math.abs(d[lo].x - t) <= Math.abs(d[hi].x - t) ? lo : hi;
-                    if (d[index].y !== null) active.push({ datasetIndex, index });
-                });
-                const x = ch.scales.x.getPixelForValue(t ?? 0);
-                ch.setActiveElements(active);
-                ch.tooltip.setActiveElements(active, { x, y: ch.chartArea ? ch.chartArea.top : 0 });
-                ch.render();
-            });
-        }
-
         // hoverT = secondo del giro sotto il puntatore, o null a riposo.
         function renderTelemetryStats(hoverT = null) {
             updateTrackDots(hoverT);
@@ -998,8 +977,10 @@
         }
         (function setupTrackMapPointer() {
             const svg = document.getElementById('telemetryMap');
-            const onMove = (x, y) => { const t = telemetryTimeAtMapPoint(x, y); renderTelemetryStats(t); showTelemetryTooltipsAt(t); };
-            const reset = () => { renderTelemetryStats(null); showTelemetryTooltipsAt(null); };
+            // Niente tooltip sui grafici: i valori sono già nei riquadri, sui
+            // grafici basta la linea verticale.
+            const onMove = (x, y) => renderTelemetryStats(telemetryTimeAtMapPoint(x, y));
+            const reset = () => renderTelemetryStats(null);
             svg.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
             svg.addEventListener('mouseleave', reset);
             // Dito sul telefono: se il tocco parte sulla pista la pagina resta
