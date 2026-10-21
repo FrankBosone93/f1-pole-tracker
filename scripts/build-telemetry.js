@@ -23,7 +23,7 @@
 // circuito (non riscaricate), quindi ogni run scarica solo le gare nuove.
 //
 // Uso:
-//   node scripts/build-telemetry.js            (2023-2026)
+//   node scripts/build-telemetry.js            (dal 2023 all'anno in corso)
 //   node scripts/build-telemetry.js 2026        (solo il 2026, es. per
 //                                                 aggiungere i round nuovi)
 
@@ -42,7 +42,10 @@ const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 const TRACKS_DIR = path.join(__dirname, '..', 'tracks');
 const trackFile = (season, circuitName) => path.join(TRACKS_DIR, String(season), `${circuitSlug(circuitName)}.json`);
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
-const DEFAULT_SEASONS = [2023, 2024, 2025, 2026];
+// Stagioni dal 2023 (OpenF1 non ha dati prima) all'anno in corso: con una
+// lista fissa la telemetria si sarebbe fermata a gennaio dell'anno nuovo.
+const FIRST_SEASON = 2023;
+const defaultSeasons = () => Array.from({ length: new Date().getFullYear() - FIRST_SEASON + 1 }, (_, i) => FIRST_SEASON + i);
 // Concorrenza bassa apposta: OpenF1 ha un rate limit reale (visto un 429
 // durante un test con concorrenza 4) - meglio andare piano che perdere gare
 // per errori di troppe richieste ravvicinate.
@@ -344,7 +347,7 @@ async function buildSeason(season, existingCircuits, saveProgress) {
 
 async function main() {
     const argSeasons = process.argv.slice(2).map(Number).filter(n => !isNaN(n));
-    const seasons = argSeasons.length > 0 ? argSeasons : DEFAULT_SEASONS;
+    const seasons = argSeasons.length > 0 ? argSeasons : defaultSeasons();
 
     let existing = { updatedAt: null, seasons: {} };
     if (fs.existsSync(OUT_PATH)) {
