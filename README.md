@@ -14,6 +14,7 @@
 - `news.json` — le ultime 5 notizie F1 (titolo, link, data, autore, immagine) dal feed RSS di [FormulaPassion.it](https://www.formulapassion.it/f1/feed) (fonte scelta esplicitamente, nessuna chiave richiesta). Scaricato da `scripts/update-news.js`, mostrato nel pannello "📰 News".
 - `status/{poles,penalty,standings,calendar,history,telemetry,pace}.json` — un file per automazione (il feed news escluso di proposito), scritto da `scripts/lib/status.js` ad ogni esecuzione del rispettivo script, successo o errore: `{ok, lastRun, error}`. Il sito li combina nell'indicatore in alto (vedi sezione dedicata).
 - `scripts/lib/f1-mapping.js` — mappature condivise (circuito, team, parsing tempi) usate dagli script sotto.
+- `auto-circuits.json` — circuiti nuovi riconosciuti in automatico (vedi "Circuiti nuovi" più sotto); il file nasce solo quando serve.
 - `scripts/lib/session-results.js` — normalizzazione dei risultati di sessione (prove libere, qualifiche, gara) dal formato f1api.dev al formato del sito. Condivisa tra `update-calendar.js` e `build-history.js`.
 - `scripts/lib/weather.js` — meteo storico reale via [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave, dati ERA5 dal 1940), usato sia per il backfill che per gli aggiornamenti futuri.
 - `scripts/lib/http.js` — `fetchJson` (con `allow404`, ritentativi su errori di rete e backoff automatico sui 429), `HttpError` e `sleep`, condivisi da tutti gli script (prima copiati, con piccole varianti, in 8 file).
@@ -122,8 +123,21 @@ Lunedì alle 8:13 UTC (dopo tutti i run di recupero, con un secondo controllo ma
 - **⚠️ "GP di Austin 2026"**, a priorità più alta, se qualcosa non c'è: stesso riepilogo e in fondo "❌ Non aggiornati: …" con i soli dati mancanti. Si avvisa una volta; se il dato arriva dopo (es. martedì) parte il ✅.
 - **Una sola notifica per GP:** l'ultimo GP notificato è in `status/notified.json`.
 - **Canale:** nome lungo e casuale nel segreto del repository `NTFY_TOPIC` (Settings → Secrets and variables → Actions), mai nel codice pubblico: chi conosce il nome può leggere e scrivere nel canale. Per ricevere le notifiche: app ntfy (iPhone, Android, web) → "+" → iscrizione a quel canale sul server ntfy.sh. Per aggiungere persone basta dar loro il nome del canale; per toglierle, si cambia nome (nuovo segreto). Senza segreto lo script non invia nulla e non fallisce.
+- **ℹ️ "Circuito nuovo aggiunto in automatico: …"** in più se il GP si è corso su un circuito riconosciuto in automatico quest'anno (vedi sotto), per poterne cambiare il nome.
 - Prova senza inviare: `node scripts/notify-gp.js --dry-run`.
 - Idea per il futuro: lo stesso controllo potrebbe anche scrivere un commento su una issue fissa con @menzione, per ricevere il riepilogo via email da GitHub.
+
+## Circuiti nuovi (riconosciuti in automatico)
+
+Ogni fonte chiama i circuiti a modo suo, e tre tabelle scritte a mano li traducono nei nomi del sito: `CIRCUIT_ID_MAP` in `scripts/lib/f1-mapping.js` (f1api.dev: pole, calendario, risultati), `CIRCUIT_MAP` in `scripts/lib/openf1.js` (OpenF1: telemetria, mappa, passo gara, orari ufficiali) e `CIRCUIT_INFO` in `scripts/lib/weather.js` (coordinate e fuso orario per il meteo). Un circuito assente da queste tabelle prima bloccava la pole (errore e mail "Run failed") e lasciava senza telemetria, passo gara e meteo.
+
+Ora `update-calendar.js` (`scripts/lib/auto-circuits.js`) li riconosce da solo appena compaiono nel calendario, in genere mesi prima della gara:
+
+- **Nome del sito:** la città indicata da f1api.dev (es. "Madrid"); se già usata da un altro circuito, il nome completo del circuito.
+- **Nome OpenF1:** collegato per data: la gara OpenF1 dello stesso giorno (±1) di una sola gara del calendario è quel circuito.
+- **Meteo:** coordinate e fuso orario dalla città con la ricerca località di Open-Meteo (gratuita, senza chiave); "notturno" se la gara parte dalle 18 ora locale.
+
+Quanto imparato va in `auto-circuits.json` e viene usato da tutti gli script, ma le tabelle scritte a mano hanno sempre la precedenza: per cambiare il nome automatico basta aggiungere la voce nelle tabelle (lo stesso nome nelle tre). La notifica del lunedì lo segnala con una riga ℹ️. Se il collegamento per data non riesce, il log lo dice e si torna al caso di prima (⚠️ nella notifica, riga da aggiungere a mano). Verificato togliendo Madrid dalle tre tabelle: riconosciuto con lo stesso nome, gli stessi orari ufficiali e un `calendar.json` identico.
 
 ## Telefono: verticale e ruotato
 

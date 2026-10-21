@@ -51,6 +51,12 @@ const CIRCUIT_MAP = {
     'Yas Marina Circuit': 'Abu Dhabi (Yas Marina)',
 };
 
+// Circuiti nuovi riconosciuti in automatico (lib/auto-circuits.js), solo se
+// non già presenti sopra.
+for (const [shortName, name] of Object.entries(require('./auto-circuits').loadAutoCircuits().openf1)) {
+    if (!(shortName in CIRCUIT_MAP)) CIRCUIT_MAP[shortName] = name;
+}
+
 // Nome del circuito usato dal sito -> nome file (es. "Baku (Azerbaijan)" ->
 // "baku-azerbaijan"), per i file per-gara in pace/{anno}/.
 function circuitSlug(circuitName) {

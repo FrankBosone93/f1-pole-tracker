@@ -16,11 +16,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
+const { matchCircuitById, matchTeam, CIRCUIT_ID_MAP } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
 const { writeStatus } = require('./lib/status');
 const { sleep, fetchJson } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { CIRCUIT_INFO } = require('./lib/weather');
+const { loadAutoCircuits, saveAutoCircuits } = require('./lib/auto-circuits');
 
 // Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
 // invernali e si ignorano.)
@@ -34,29 +36,107 @@ const OPENF1_SESSION_KEYS = {
     'Race': 'race',
 };
 
+// Sessioni della stagione da OpenF1 (servono per gli orari ufficiali e per
+// riconoscere i circuiti nuovi). Se OpenF1 non risponde: lista vuota, e
+// restano gli orari di f1api.dev.
+async function loadOpenF1Sessions(season) {
+    try {
+        return await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}`);
+    } catch (err) {
+        console.warn(`⚠️  Orari ufficiali OpenF1 non disponibili (${err.message}): uso quelli di f1api.dev.`);
+        return [];
+    }
+}
+
 // Orari ufficiali delle sessioni da OpenF1, per circuito: { circuito: { fp1:
 // {date, time}, ... } }. f1api.dev ha a volte orari sbagliati (Austin 2026:
 // gara alle 19:00 UTC invece delle 20:00 ufficiali, cioè 20:00 invece delle
 // 21:00 italiane, e anche Prove Libere 2 e 3 sfasate di mezz'ora), mentre
 // OpenF1 li prende dal feed ufficiale F1. Se OpenF1 non risponde, restano
 // quelli di f1api.dev.
-async function loadOfficialSchedule(season) {
+function officialSchedule(sessions) {
     const bySessions = new Map();
-    try {
-        const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}`);
-        for (const s of sessions) {
-            const key = OPENF1_SESSION_KEYS[s.session_name];
-            const circuit = CIRCUIT_MAP[s.circuit_short_name];
-            const start = new Date(s.date_start);
-            if (!key || !circuit || isNaN(start)) continue;
-            const iso = start.toISOString();
-            if (!bySessions.has(circuit)) bySessions.set(circuit, {});
-            bySessions.get(circuit)[key] = { date: iso.slice(0, 10), time: iso.slice(11, 19) + 'Z' };
-        }
-    } catch (err) {
-        console.warn(`⚠️  Orari ufficiali OpenF1 non disponibili (${err.message}): uso quelli di f1api.dev.`);
+    for (const s of sessions) {
+        const key = OPENF1_SESSION_KEYS[s.session_name];
+        const circuit = CIRCUIT_MAP[s.circuit_short_name];
+        const start = new Date(s.date_start);
+        if (!key || !circuit || isNaN(start)) continue;
+        const iso = start.toISOString();
+        if (!bySessions.has(circuit)) bySessions.set(circuit, {});
+        bySessions.get(circuit)[key] = { date: iso.slice(0, 10), time: iso.slice(11, 19) + 'Z' };
     }
     return bySessions;
+}
+
+// Circuiti nuovi: invece di fermarsi finché qualcuno non aggiunge una riga
+// alle tabelle (f1-mapping.js, openf1.js, weather.js), li riconosce da solo
+// appena compaiono nel calendario e li salva in auto-circuits.json (vedi
+// lib/auto-circuits.js). Le tabelle scritte a mano hanno la precedenza.
+const DAY_MS = 24 * 3600 * 1000;
+async function learnNewCircuits(races, sessions) {
+    const auto = loadAutoCircuits();
+    const before = JSON.stringify(auto);
+    const today = new Date().toISOString().slice(0, 10);
+
+    // 1. f1api.dev: nome del sito = città del circuito (es. "Madrid").
+    const usedNames = new Set(Object.values(CIRCUIT_ID_MAP));
+    for (const race of races) {
+        const c = race.circuit || {};
+        const id = String(c.circuitId || '').toLowerCase();
+        if (!id || CIRCUIT_ID_MAP[id]) continue;
+        let name = c.city || c.circuitName;
+        if (!name) continue;
+        // Città già usata da un altro circuito: nome completo del circuito.
+        if (usedNames.has(name)) name = c.circuitName && !usedNames.has(c.circuitName) ? c.circuitName : `${name} (${c.circuitId})`;
+        auto.f1api[id] = { name, addedAt: today };
+        CIRCUIT_ID_MAP[id] = name;
+        usedNames.add(name);
+        console.log(`🆕 Circuito nuovo riconosciuto in automatico: "${c.circuitId}" (${c.circuitName}) -> "${name}"`);
+    }
+
+    // 2. OpenF1: collegamento per data. La gara OpenF1 che si corre lo stesso
+    // giorno (±1, per orari UTC a cavallo di mezzanotte) di una sola gara del
+    // calendario è quel circuito.
+    for (const s of sessions) {
+        if (s.session_name !== 'Race' || !s.circuit_short_name || CIRCUIT_MAP[s.circuit_short_name]) continue;
+        const day = new Date(s.date_start.slice(0, 10)).getTime();
+        const matches = races.filter(r => r.schedule?.race?.date && Math.abs(new Date(r.schedule.race.date).getTime() - day) <= DAY_MS);
+        const name = matches.length === 1 ? matchCircuitById(matches[0].circuit?.circuitId) : null;
+        if (!name) {
+            console.warn(`⚠️  Circuito OpenF1 "${s.circuit_short_name}" (${s.date_start.slice(0, 10)}) non collegabile a una gara del calendario: aggiungerlo a CIRCUIT_MAP in scripts/lib/openf1.js.`);
+            continue;
+        }
+        auto.openf1[s.circuit_short_name] = name;
+        CIRCUIT_MAP[s.circuit_short_name] = name;
+        console.log(`🆕 Circuito OpenF1 "${s.circuit_short_name}" collegato in automatico a "${name}"`);
+    }
+
+    // 3. Meteo: coordinate e fuso orario dalla città (ricerca località di
+    // Open-Meteo, stesso fornitore del meteo). "Notturno" se la gara parte
+    // dalle 18 in poi, ora locale.
+    for (const race of races) {
+        const c = race.circuit || {};
+        const name = matchCircuitById(c.circuitId);
+        if (!name || CIRCUIT_INFO[name] || !c.city) continue;
+        try {
+            const geo = await fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(c.city)}&count=10&language=en&format=json`);
+            const results = geo?.results || [];
+            const place = results.find(p => p.country && c.country && p.country.toLowerCase() === c.country.toLowerCase()) || results[0];
+            if (!place) { console.warn(`⚠️  ${name}: località "${c.city}" non trovata per il meteo.`); continue; }
+            const r = race.schedule?.race;
+            const localHour = r?.date && r?.time
+                ? Number(new Intl.DateTimeFormat('en-GB', { timeZone: place.timezone, hour: '2-digit', hour12: false }).format(new Date(`${r.date}T${r.time}`)))
+                : 12;
+            const info = { lat: place.latitude, lon: place.longitude, tz: place.timezone, night: localHour >= 18 };
+            auto.weather[name] = info;
+            CIRCUIT_INFO[name] = info;
+            console.log(`🆕 Meteo di "${name}": ${place.name} (${place.country}) ${info.lat}, ${info.lon}, ${info.tz}${info.night ? ', notturno' : ''}`);
+        } catch (err) {
+            console.warn(`⚠️  ${name}: coordinate per il meteo non disponibili (${err.message}).`);
+        }
+    }
+
+    if (JSON.stringify(auto) !== before) saveAutoCircuits(auto);
 }
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
@@ -89,7 +169,9 @@ async function main() {
     }
 
     const now = new Date();
-    const officialSchedule = await loadOfficialSchedule(season);
+    const openf1Sessions = await loadOpenF1Sessions(season);
+    await learnNewCircuits(races, openf1Sessions);
+    const official = officialSchedule(openf1Sessions);
     const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 
     // GP in evidenza (stessa logica di determineFeaturedRace() in index.html):
@@ -126,8 +208,8 @@ async function main() {
 
         // Orari ufficiali (OpenF1) al posto di quelli di f1api.dev quando ci
         // sono; ogni differenza viene scritta nel log.
-        const official = officialSchedule.get(mappedCircuit) || {};
-        for (const [key, o] of Object.entries(official)) {
+        const officialTimes = official.get(mappedCircuit) || {};
+        for (const [key, o] of Object.entries(officialTimes)) {
             if (!(key in schedule)) continue;
             const cur = schedule[key];
             if (!cur || cur.date !== o.date || cur.time !== o.time) {

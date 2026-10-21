@@ -25,6 +25,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { autoCircuitsAddedIn } = require('./lib/auto-circuits');
 
 const ROOT = path.join(__dirname, '..');
 const STATE_PATH = path.join(ROOT, 'status', 'notified.json');
@@ -91,6 +92,9 @@ function buildReport() {
         const d = standings.drivers[0], c = standings.constructors[0];
         lines.push(`📊 Mondiale: ${d.driver} ${d.points} pt · Costruttori: ${c.team} ${c.points} pt`);
     }
+    // Circuito nuovo riconosciuto in automatico quest'anno (nome = città):
+    // si segnala, così il nome si può cambiare se non piace.
+    if (autoCircuitsAddedIn(year).includes(circuit)) lines.push(`ℹ️ Circuito nuovo aggiunto in automatico: ${circuit}`);
     // Elenco dei dati solo se manca qualcosa, in fondo e solo con ciò che
     // manca: con tutto aggiornato basta il ✅ del titolo.
     const missingLabels = checks.filter(([, ok]) => !ok).map(([label]) => label);

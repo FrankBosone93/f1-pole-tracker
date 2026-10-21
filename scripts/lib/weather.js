@@ -48,6 +48,12 @@ const CIRCUIT_INFO = {
     'Suzuka': { lat: 34.8431, lon: 136.5410, tz: 'Asia/Tokyo', night: false },
 };
 
+// Circuiti nuovi riconosciuti in automatico (lib/auto-circuits.js), solo se
+// non già presenti sopra.
+for (const [name, info] of Object.entries(require('./auto-circuits').loadAutoCircuits().weather)) {
+    if (!(name in CIRCUIT_INFO)) CIRCUIT_INFO[name] = info;
+}
+
 function describeWeather(weathercode, precipSum, tempMax, isNight) {
     // La classificazione pioggia/sereno si basa sulla quantità di precipitazione
     // misurata (mm), non sul solo codice meteo: un codice "drizzle" con 0.1mm

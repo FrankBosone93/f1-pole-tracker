@@ -50,6 +50,13 @@ const CIRCUIT_ID_MAP = {
     'istanbul': 'Istanbul (Turchia)',
 };
 
+// Circuiti nuovi riconosciuti in automatico da update-calendar.js (vedi
+// lib/auto-circuits.js): si aggiungono solo dove la tabella sopra non ha già
+// una voce, che resta sempre la scelta di riferimento.
+for (const [id, entry] of Object.entries(require('./auto-circuits').loadAutoCircuits().f1api)) {
+    if (!(id in CIRCUIT_ID_MAP) && entry && entry.name) CIRCUIT_ID_MAP[id] = entry.name;
+}
+
 // --- Mappatura Team: nome completo restituito dall'API -> nome breve usato nel sito ---
 const TEAM_KEYWORDS = [
     { keywords: ['mercedes'], name: 'Mercedes' },

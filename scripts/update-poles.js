@@ -53,7 +53,8 @@ async function processRound(season, round, raceLabel, currentData) {
         throw new Error(
             `Circuito con circuitId="${circuitInfo?.circuitId}" non riconosciuto ` +
             `(gara: "${raceName}", circuitName: "${circuitInfo?.circuitName}", country: "${circuitInfo?.country}"). ` +
-            `Aggiungere una nuova voce a CIRCUIT_ID_MAP in scripts/lib/f1-mapping.js.`
+            `Di norma update-calendar.js lo riconosce da solo (auto-circuits.json) appena compare nel calendario; ` +
+            `altrimenti aggiungere una voce a CIRCUIT_ID_MAP in scripts/lib/f1-mapping.js.`
         );
     }
 

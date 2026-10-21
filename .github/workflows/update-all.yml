@@ -97,10 +97,12 @@ jobs:
       - name: Commit calendario (se cambiato)
         if: always()
         run: |
-          if git diff --quiet -- calendar.json status/calendar.json; then
+          # git status e non git diff: auto-circuits.json (circuiti nuovi riconosciuti
+          # in automatico) la prima volta è un file nuovo, che git diff non vede.
+          if [ -z "$(git status --porcelain -- calendar.json status/calendar.json auto-circuits.json)" ]; then
             echo "Nessuna modifica (calendario)."
           else
-            git add calendar.json status/calendar.json
+            git add calendar.json status/calendar.json $(ls auto-circuits.json 2>/dev/null)
             git commit -m "📅 Aggiornamento automatico calendario"
             source scripts/lib/push-with-retry.sh
             push_with_retry
