@@ -30,9 +30,14 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
-const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1Json, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
+// Tracciati dei giri di pole: un file per circuito e anno in
+// tracks/{anno}/{circuito}.json (~2,5 KB compressi), caricato dal sito solo
+// per il giro aperto. In telemetry.json (letto all'avvio) non finiscono.
+const TRACKS_DIR = path.join(__dirname, '..', 'tracks');
+const trackFile = (season, circuitName) => path.join(TRACKS_DIR, String(season), `${circuitSlug(circuitName)}.json`);
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const DEFAULT_SEASONS = [2023, 2024, 2025, 2026];
 // Concorrenza bassa apposta: OpenF1 ha un rate limit reale (visto un 429
@@ -83,13 +88,10 @@ function normalizeName(s) {
 // data.json (già verificato da un'altra fonte, f1api.dev): si cerca il
 // pilota giusto, poi tra i suoi giri quello con durata più vicina al tempo
 // ufficiale.
-async function buildCircuitTelemetry(session, season) {
-    const circuitName = CIRCUIT_MAP[session.circuit_short_name];
-    if (!circuitName) {
-        console.warn(`⚠️  Circuito OpenF1 "${session.circuit_short_name}" non mappato, salto.`);
-        return null;
-    }
-
+// Trova il giro di pole (vedi commento sopra) e il pilota. null se non si
+// può determinare con certezza. Usata sia per la telemetria sia per il
+// tracciato (posizioni dell'auto).
+async function findPoleLap(session, season, circuitName) {
     const laps = await openf1Json(`https://api.openf1.org/v1/laps?session_key=${session.session_key}`);
     const validLaps = laps.filter(l => typeof l.lap_duration === 'number' && l.lap_duration > 0);
     if (validLaps.length === 0) {
@@ -134,6 +136,40 @@ async function buildCircuitTelemetry(session, season) {
 
     // Stesso elenco già scaricato sopra: niente seconda richiesta.
     const driverInfo = allDrivers.find(d => d.driver_number === poleLap.driver_number) || null;
+    return { poleLap, driverInfo };
+}
+
+// Tracciato del giro di pole: posizioni x/y dell'auto (OpenF1 /location, ~4
+// al secondo) come [[secondi dall'inizio del giro, x, y], ...]. Serve alla
+// mappa sotto la telemetria, dove un puntino segue l'istante indicato sui
+// grafici: stessa frequenza e stessa origine dei tempi dei campioni.
+async function fetchTrack(session, poleLap) {
+    const lapStart = new Date(poleLap.date_start);
+    const lapEnd = new Date(lapStart.getTime() + poleLap.lap_duration * 1000 + 500);
+    const loc = await openf1Json(
+        `https://api.openf1.org/v1/location?session_key=${session.session_key}&driver_number=${poleLap.driver_number}` +
+        `&date>=${lapStart.toISOString()}&date<=${lapEnd.toISOString()}`
+    );
+    const pts = [];
+    for (const p of loc) {
+        const t = Math.round((new Date(p.date) - lapStart) / 10) / 100;
+        if (t < 0 || t > poleLap.lap_duration + 0.5 || typeof p.x !== 'number' || typeof p.y !== 'number') continue;
+        const last = pts[pts.length - 1];
+        if (last && last[1] === p.x && last[2] === p.y) continue; // punto ripetuto (auto ferma o campione doppio)
+        pts.push([t, p.x, p.y]);
+    }
+    return pts.length >= 20 ? pts : null;
+}
+
+async function buildCircuitTelemetry(session, season) {
+    const circuitName = CIRCUIT_MAP[session.circuit_short_name];
+    if (!circuitName) {
+        console.warn(`⚠️  Circuito OpenF1 "${session.circuit_short_name}" non mappato, salto.`);
+        return null;
+    }
+    const found = await findPoleLap(session, season, circuitName);
+    if (!found) return null;
+    const { poleLap, driverInfo } = found;
 
     const lapStart = new Date(poleLap.date_start);
     // Margine di mezzo secondo oltre la durata del giro: i campioni di
@@ -182,6 +218,7 @@ async function buildCircuitTelemetry(session, season) {
         team: driverInfo ? driverInfo.team_name : null,
         lapTime: Math.round(poleLap.lap_duration * 1000) / 1000,
         samples,
+        track: await fetchTrack(session, poleLap),
     };
 }
 
@@ -231,6 +268,31 @@ async function buildSeason(season, existingCircuits, saveProgress) {
     }
     await Promise.all(Array.from({ length: Math.min(CIRCUIT_CONCURRENCY, toProcess.length) }, worker));
 
+    // Tracciati mancanti per giri già in archivio (scaricati prima che
+    // esistesse la mappa, o un download del tracciato andato male): si
+    // recuperano senza riscaricare la telemetria.
+    const trackTodo = mainQualy.filter(session => {
+        const name = CIRCUIT_MAP[session.circuit_short_name];
+        return name && circuits[name] && !circuits[name].track && !fs.existsSync(trackFile(season, name));
+    });
+    if (trackTodo.length) console.log(`${trackTodo.length} tracciati da recuperare per giri già in archivio.`);
+    for (const session of trackTodo) {
+        const name = CIRCUIT_MAP[session.circuit_short_name];
+        try {
+            const found = await findPoleLap(session, season, name);
+            const track = found ? await fetchTrack(session, found.poleLap) : null;
+            if (track) {
+                circuits[name] = { ...circuits[name], track };
+                saveProgress(circuits);
+                console.log(`  🗺️  ${name}: tracciato di ${track.length} punti`);
+            } else {
+                console.warn(`  ⚠️  ${name}: tracciato non disponibile`);
+            }
+        } catch (err) {
+            console.warn(`  ⚠️  ${name}: errore tracciato - ${err.message}`);
+        }
+    }
+
     return circuits;
 }
 
@@ -261,10 +323,25 @@ async function main() {
         // il file pesa 1,5 MB e riscriverlo solo per aggiornare updatedAt
         // produceva un commit pesante (e un deploy) a ogni esecuzione, anche
         // senza nessun giro nuovo.
-        const serialized = JSON.stringify({ circuits });
+        // Il tracciato (campo "track") va nel suo file in tracks/, non in
+        // telemetry.json; riscritto solo se cambia.
+        const clean = {};
+        for (const [name, entry] of Object.entries(circuits)) {
+            const { track, ...rest } = entry;
+            clean[name] = rest;
+            if (track) {
+                const file = trackFile(season, name);
+                const content = JSON.stringify(track) + '\n';
+                if (!fs.existsSync(file) || fs.readFileSync(file, 'utf-8') !== content) {
+                    fs.mkdirSync(path.dirname(file), { recursive: true });
+                    fs.writeFileSync(file, content, 'utf-8');
+                }
+            }
+        }
+        const serialized = JSON.stringify({ circuits: clean });
         if (lastSerialized[season] === serialized) return;
         lastSerialized[season] = serialized;
-        outputSeasons[season] = { circuits };
+        outputSeasons[season] = { circuits: clean };
         const output = { updatedAt: new Date().toISOString(), seasons: outputSeasons };
         fs.writeFileSync(OUT_PATH, JSON.stringify(output) + '\n', 'utf-8');
     }

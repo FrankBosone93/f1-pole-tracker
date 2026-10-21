@@ -43,12 +43,12 @@ jobs:
 
       - name: Commit e push se telemetry.json o lo stato sono cambiati
         run: |
-          if git diff --quiet -- telemetry.json status/telemetry.json; then
+          if [ -z "$(git status --porcelain -- telemetry.json status/telemetry.json tracks)" ]; then
             echo "Nessuna modifica, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add telemetry.json status/telemetry.json
+            git add telemetry.json status/telemetry.json tracks
             git commit -m "🏎️ Aggiornamento automatico telemetria pole position"
             source scripts/lib/push-with-retry.sh
             push_with_retry

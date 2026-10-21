@@ -136,10 +136,10 @@ jobs:
       - name: Commit telemetria (se cambiato)
         if: always()
         run: |
-          if git diff --quiet -- telemetry.json status/telemetry.json; then
+          if [ -z "$(git status --porcelain -- telemetry.json status/telemetry.json tracks)" ]; then
             echo "Nessuna modifica (telemetria)."
           else
-            git add telemetry.json status/telemetry.json
+            git add telemetry.json status/telemetry.json tracks
             git commit -m "🏎️ Aggiornamento automatico telemetria pole position"
             source scripts/lib/push-with-retry.sh
             push_with_retry
