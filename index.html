@@ -70,7 +70,7 @@
     <header class="mt-2 md:mt-3 mb-1 md:mb-2 md:relative md:flex md:items-start md:justify-between md:gap-6">
         <div class="text-center md:text-left">
             <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider"><a href="./" onclick="goHome(event)" title="Torna alla home e ricarica" class="hover:opacity-80 transition-opacity">F1 POLE TRACKER</a></h1>
-            <p class="text-gray-400 text-sm md:text-base">Calendario Completo Storico & Live 2021 - 2026</p>
+            <p id="siteSubtitle" class="text-gray-400 text-sm md:text-base">Qualifiche & Passo Gara 2021-2026</p>
             <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
 
             <!-- Widget "Prossimo GP" versione MOBILE (riquadro con bordo,
@@ -361,29 +361,27 @@
         let standingsData = null; // classifica piloti/costruttori reale, da standings.json
         let calendarData = null; // calendario stagione in corso, da calendar.json
         let telemetryData = null; // telemetria giro di pole per stagione (solo qualifiche), da telemetry.json
-        const DEFAULT_TELEMETRY_SEASON = '2026'; // stagione mostrata di default in vista Telemetria
         // Stagione mostrata come "principale" nel grafico Telemetria: di
-        // default 2026, ma diventa quella scelta cliccando su un box
+        // default la più recente con dati per il circuito (defaultTelemetrySeason),
+        // ma diventa quella scelta cliccando su un box
         // "Dettagli Qualifiche" con dati telemetrici (vedi showTelemetryForYear).
         // Torna al default ad ogni cambio circuito (updateApp).
-        let telemetryPrimarySeason = DEFAULT_TELEMETRY_SEASON;
+        let telemetryPrimarySeason = String(new Date().getFullYear()); // reimpostata in updateApp
         let telemetryCompareYear = null; // stagione scelta per il confronto (es. '2025'), o null se nessuna
         let newsData = null; // ultime notizie F1 da FormulaPassion.it, da news.json
 
         // Legge il giro di pole di una stagione+circuito da telemetryData,
         // null se non disponibile (stagione non scaricata o circuito senza
         // dati per quella stagione - es. qualifica cancellata su OpenF1).
-        // Anno da mostrare di default nella telemetria di un circuito: il 2026
-        // se c'è, altrimenti il più recente con dati. Prima era sempre il 2026:
-        // su un circuito non ancora corso quest'anno (es. Abu Dhabi) la vista
-        // Telemetria si chiudeva e il pulsante spariva, pur esistendo i giri
-        // degli anni precedenti.
+        // Anno da mostrare di default nella telemetria di un circuito: il più
+        // recente con dati. Prima era il 2026 scritto a mano: nel 2027 avrebbe
+        // continuato a mostrare il giro del 2026 (e su un circuito non ancora
+        // corso nell'anno la vista Telemetria si chiudeva).
         function defaultTelemetrySeason(circuitName) {
-            if (getTelemetryEntry(DEFAULT_TELEMETRY_SEASON, circuitName)) return DEFAULT_TELEMETRY_SEASON;
             const seasons = Object.keys((telemetryData && telemetryData.seasons) || {})
                 .filter(y => getTelemetryEntry(y, circuitName))
                 .sort((a, b) => b.localeCompare(a));
-            return seasons[0] || DEFAULT_TELEMETRY_SEASON;
+            return seasons[0] || String(new Date().getFullYear());
         }
 
         function getTelemetryEntry(season, circuitName) {
@@ -1263,6 +1261,15 @@
             }
 
             poleData = [...baseData];
+
+            // Anni nel titolo e nel sottotitolo presi dai dati (prima "2026"
+            // scritto a mano): l'ultimo anno si aggiorna da solo.
+            const years = poleData.map(d => d.year).filter(Number.isFinite);
+            if (years.length) {
+                const span = `${Math.min(...years)}-${Math.max(...years)}`;
+                document.getElementById('siteSubtitle').innerText = `Qualifiche & Passo Gara ${span}`;
+                document.title = `F1 Pole Position Tracker Completo (${span})`;
+            }
 
             // Tutte le altre risorse partono insieme (prima erano 7 richieste
             // in fila: con la latenza di rete reale ognuna aggiungeva un
