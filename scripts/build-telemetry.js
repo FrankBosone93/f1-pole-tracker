@@ -31,11 +31,14 @@ const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
 const { openf1Json, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
+const { fetchJson } = require('./lib/http');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
 // Tracciati dei giri di pole: un file per circuito e anno in
 // tracks/{anno}/{circuito}.json (~2,5 KB compressi), caricato dal sito solo
 // per il giro aperto. In telemetry.json (letto all'avvio) non finiscono.
+// Formato: { rotation, corners: [[etichetta, x, y, angolo], ...], points:
+// [[t, x, y], ...] } (i file più vecchi erano solo l'array dei punti).
 const TRACKS_DIR = path.join(__dirname, '..', 'tracks');
 const trackFile = (season, circuitName) => path.join(TRACKS_DIR, String(season), `${circuitSlug(circuitName)}.json`);
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -161,6 +164,32 @@ async function fetchTrack(session, poleLap) {
     return pts.length >= 20 ? pts : null;
 }
 
+// Orientamento e curve del circuito come nelle grafiche ufficiali F1 (live
+// timing), dall'API pubblica di MultiViewer: rotazione in gradi e posizione
+// di ogni curva, nelle stesse coordinate di OpenF1 /location. Una richiesta
+// per circuito e anno, salvata nel file del tracciato: il sito non dipende
+// da MultiViewer mentre lo si consulta.
+async function fetchCircuitMap(session, season) {
+    if (!session.circuit_key) return null;
+    try {
+        const info = await fetchJson(`https://api.multiviewer.app/api/v1/circuits/${session.circuit_key}/${season}`, { allow404: true, retries: 2 });
+        if (!info || typeof info.rotation !== 'number') return null;
+        const corners = (info.corners || [])
+            .filter(c => c.trackPosition && typeof c.trackPosition.x === 'number')
+            .map(c => [`${c.number}${c.letter || ''}`, Math.round(c.trackPosition.x), Math.round(c.trackPosition.y), Math.round(c.angle || 0)]);
+        return { rotation: info.rotation, corners };
+    } catch (err) {
+        console.warn(`  ⚠️  Orientamento/curve MultiViewer non disponibili (circuito ${session.circuit_key}, ${season}): ${err.message}`);
+        return null;
+    }
+}
+
+async function buildTrack(session, season, poleLap) {
+    const points = await fetchTrack(session, poleLap);
+    if (!points) return null;
+    return { ...((await fetchCircuitMap(session, season)) || {}), points };
+}
+
 async function buildCircuitTelemetry(session, season) {
     const circuitName = CIRCUIT_MAP[session.circuit_short_name];
     if (!circuitName) {
@@ -218,7 +247,7 @@ async function buildCircuitTelemetry(session, season) {
         team: driverInfo ? driverInfo.team_name : null,
         lapTime: Math.round(poleLap.lap_duration * 1000) / 1000,
         samples,
-        track: await fetchTrack(session, poleLap),
+        track: await buildTrack(session, season, poleLap),
     };
 }
 
@@ -280,17 +309,34 @@ async function buildSeason(season, existingCircuits, saveProgress) {
         const name = CIRCUIT_MAP[session.circuit_short_name];
         try {
             const found = await findPoleLap(session, season, name);
-            const track = found ? await fetchTrack(session, found.poleLap) : null;
+            const track = found ? await buildTrack(session, season, found.poleLap) : null;
             if (track) {
                 circuits[name] = { ...circuits[name], track };
                 saveProgress(circuits);
-                console.log(`  🗺️  ${name}: tracciato di ${track.length} punti`);
+                console.log(`  🗺️  ${name}: tracciato di ${track.points.length} punti`);
             } else {
                 console.warn(`  ⚠️  ${name}: tracciato non disponibile`);
             }
         } catch (err) {
             console.warn(`  ⚠️  ${name}: errore tracciato - ${err.message}`);
         }
+    }
+
+    // Tracciati già salvati senza orientamento/curve (file nel formato
+    // vecchio, o MultiViewer non rispondeva al momento del download): si
+    // aggiungono senza riscaricare le posizioni. Se MultiViewer non ha il
+    // circuito si riprova al run successivo (una sola richiesta).
+    for (const session of mainQualy) {
+        const name = CIRCUIT_MAP[session.circuit_short_name];
+        const file = name && trackFile(season, name);
+        if (!file || !fs.existsSync(file)) continue;
+        const saved = JSON.parse(fs.readFileSync(file, 'utf-8'));
+        if (!Array.isArray(saved) && typeof saved.rotation === 'number') continue;
+        const map = await fetchCircuitMap(session, season);
+        if (!map) continue;
+        const points = Array.isArray(saved) ? saved : saved.points;
+        fs.writeFileSync(file, JSON.stringify({ ...map, points }) + '\n', 'utf-8');
+        console.log(`  🧭 ${name}: orientamento ${map.rotation}° e ${map.corners.length} curve`);
     }
 
     return circuits;

@@ -785,8 +785,10 @@
         // Disegnata con le posizioni reali dell'auto durante il giro di pole
         // (OpenF1, ~4 al secondo, un file per giro in tracks/ caricato solo quando serve).
         // Il puntino rosso (e blu in confronto) segue l'istante indicato sui
-        // grafici, interpolando tra due posizioni consecutive.
-        const trackCache = {};      // "anno|circuito" -> punti (o null se assente)
+        // grafici, interpolando tra due posizioni consecutive. Orientamento e
+        // numeri delle curve come nelle grafiche ufficiali F1 (dati MultiViewer
+        // salvati nel file del tracciato).
+        const trackCache = {};      // "anno|circuito" -> { rotation, corners, points } (o null se assente)
         let trackMapCtx = null;
 
         // Nome del file del circuito (stessa regola di circuitSlug negli script).
@@ -796,23 +798,35 @@
         }
 
         // Tracciato di un giro: tracks/{anno}/{circuito}.json, scaricato solo
-        // quando serve e tenuto in memoria.
+        // quando serve e tenuto in memoria. I file vecchi sono solo l'array
+        // dei punti (nessuna rotazione né curve).
         function loadTrack(season, circuit) {
             const key = `${season}|${circuit}`;
             if (key in trackCache) return Promise.resolve(trackCache[key]);
             return fetch(`tracks/${season}/${circuitSlug(circuit)}.json`, { cache: 'no-cache' })
                 .then(r => (r.ok ? r.json() : null))
                 .catch(() => null)
-                .then(pts => (trackCache[key] = pts));
+                .then(d => (trackCache[key] = !d ? null
+                    : Array.isArray(d) ? { rotation: 0, corners: [], points: d }
+                    : { rotation: d.rotation || 0, corners: d.corners || [], points: d.points }));
         }
 
         function getTrack(season, circuit) {
             return trackCache[`${season}|${circuit}`] || null;
         }
 
-        function trackBounds(pts) {
+        // Rotazione come nel live timing F1 (stessa formula di f1-dash su
+        // dati MultiViewer): angolo = rotation + 90°, assi scambiati, Y non
+        // capovolta. Con rotation 0 equivale al disegno "nord in alto".
+        function trackRotator(rotation) {
+            const a = (rotation + 90) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+            return (x, y) => [x * s + y * c, x * c - y * s];
+        }
+
+        function trackBounds(pts, rot) {
             let minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
-            for (const [, x, y] of pts) {
+            for (const [, x0, y0] of pts) {
+                const [x, y] = rot(x0, y0);
                 if (x < minx) minx = x; if (x > maxx) maxx = x;
                 if (y < miny) miny = y; if (y > maxy) maxy = y;
             }
@@ -842,31 +856,47 @@
             const items = [
                 { season: telemetryPrimarySeason, color: STAT_COLOR_PRIMARY },
                 telemetryCompareYear ? { season: telemetryCompareYear, color: STAT_COLOR_COMPARE } : null,
-            ].filter(Boolean).map(it => ({ ...it, pts: getTrack(it.season, select.value) }));
-            const base = items[0].pts;
-            if (!base) { wrap.classList.add('hidden'); return; }
+            ].filter(Boolean).map(it => ({ ...it, track: getTrack(it.season, select.value) }))
+                .map(it => ({ ...it, pts: it.track ? it.track.points : null }));
+            const baseTrack = items[0].track;
+            if (!baseTrack) { wrap.classList.add('hidden'); return; }
             wrap.classList.remove('hidden');
+            const base = baseTrack.points;
 
-            // Coordinate in un riquadro di 1000 unità sul lato lungo, asse Y
-            // capovolto (in SVG cresce verso il basso). Il tracciato di un altro
-            // anno viene portato nello stesso riquadro con i suoi limiti: le
+            // Coordinate ruotate, poi in un riquadro di 1000 unità sul lato
+            // lungo. Il tracciato di un altro anno usa la stessa rotazione e
+            // viene portato nello stesso riquadro con i suoi limiti: le
             // coordinate OpenF1 non sono garantite identiche tra stagioni.
-            const b = trackBounds(base);
-            const S = 1000 / Math.max(b.w, b.h), PAD = 40;
+            const rot = trackRotator(baseTrack.rotation);
+            const b = trackBounds(base, rot);
+            const S = 1000 / Math.max(b.w, b.h), PAD = 70;
             const vbW = b.w * S + PAD * 2, vbH = b.h * S + PAD * 2;
             items.forEach(it => {
                 if (!it.pts) return;
-                const ib = trackBounds(it.pts);
-                it.X = x => PAD + ((x - ib.minx) / ib.w) * b.w * S;
-                it.Y = y => PAD + ((ib.maxy - y) / ib.h) * b.h * S;
+                const ib = it === items[0] ? b : trackBounds(it.pts, rot);
+                it.P = (x0, y0) => {
+                    const [x, y] = rot(x0, y0);
+                    return [PAD + ((x - ib.minx) / ib.w) * b.w * S, PAD + ((y - ib.miny) / ib.h) * b.h * S];
+                };
             });
             const main = items[0];
-            const line = base.map(([, x, y]) => `${main.X(x).toFixed(1)},${main.Y(y).toFixed(1)}`).join(' ');
-            const [sx, sy] = [main.X(base[0][1]), main.Y(base[0][2])];
+            const line = base.map(([, x, y]) => main.P(x, y).map(v => v.toFixed(1)).join(',')).join(' ');
+            const [sx, sy] = main.P(base[0][1], base[0][2]);
+
+            // Numero di ogni curva accanto al tracciato, spostato nella
+            // direzione indicata dai dati (verso l'esterno della curva).
+            const LABEL_DIST = 62 / S;
+            const corners = baseTrack.corners.map(([label, x, y, angle]) => {
+                const r = angle * Math.PI / 180;
+                const [lx, ly] = main.P(x + LABEL_DIST * Math.cos(r), y + LABEL_DIST * Math.sin(r));
+                return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}">${label}</text>`;
+            }).join('');
+
             svg.setAttribute('viewBox', `0 0 ${vbW.toFixed(0)} ${vbH.toFixed(0)}`);
             svg.innerHTML = `
                 <polyline points="${line}" fill="none" stroke="#374151" stroke-width="28" stroke-linejoin="round" stroke-linecap="round"></polyline>
                 <polyline points="${line}" fill="none" stroke="#9ca3af" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                <g fill="#9ca3af" font-size="38" font-weight="600" text-anchor="middle" dominant-baseline="central" style="pointer-events:none">${corners}</g>
                 <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="11" fill="#ffffff"><title>Inizio del giro</title></circle>
                 ${items.map((it, i) => `<circle id="trackDot${i}" r="20" fill="${it.color}" stroke="#ffffff" stroke-width="5" style="display:none"></circle>`).join('')}`;
             const years = items.filter(it => it.pts).map(it => it.season).join(' vs ');
@@ -882,8 +912,9 @@
                 if (!dot) return;
                 const p = it.pts ? trackPositionAt(it.pts, t) : null;
                 if (!p) { dot.style.display = 'none'; return; }
-                dot.setAttribute('cx', it.X(p[0]).toFixed(1));
-                dot.setAttribute('cy', it.Y(p[1]).toFixed(1));
+                const [cx, cy] = it.P(p[0], p[1]);
+                dot.setAttribute('cx', cx.toFixed(1));
+                dot.setAttribute('cy', cy.toFixed(1));
                 dot.style.display = '';
             });
         }
