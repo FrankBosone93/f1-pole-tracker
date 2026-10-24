@@ -1,41 +1,41 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-10-24T04:31:39.254Z",
+  "updatedAt": "2026-10-24T12:39:15.321Z",
   "items": [
+    {
+      "title": "Vasseur: “Vincere? Vediamo prima le qualifiche, sarà una lotta a 6”",
+      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-vasseur-vincere-vediamo-prima-qualifiche-lotta-a-6-austin-leclerc-hamilton",
+      "date": "2026-10-24T08:56:38.000Z",
+      "author": "Stefano Ollanu",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Vasseur-Ferrari-1-436x291.jpg"
+    },
+    {
+      "title": "Hamilton: “Abbiamo provato una direzione diversa di set-up, ma non ero a mio agio”",
+      "link": "https://www.formulapassion.it/f1/f1-news/hamilton-provato-direzione-diversa-setup-ma-non-a-mio-agio-ferrari-austin",
+      "date": "2026-10-24T08:36:32.000Z",
+      "author": "Stefano Ollanu",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Hamilton-Ferrari-3-436x291.jpg"
+    },
+    {
+      "title": "Antonelli: “Nelle FP1 non avevo il sedile fissato bene, i progressi sulla vettura aggiornata sono incoraggianti”",
+      "link": "https://www.formulapassion.it/f1/f1-news/problemi-sedile-antonelli-fp1-ero-montagne-russe-mercedes-gp-stati-uniti-aggiornamenti",
+      "date": "2026-10-24T08:21:53.000Z",
+      "author": "Marco Belloro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Antonelli-Mercedes-6-436x291.jpg"
+    },
+    {
+      "title": "Leclerc: “Restiamo cauti, senza nutrire aspettative troppo alte per le qualifiche”",
+      "link": "https://www.formulapassion.it/f1/f1-news/leclerc-restiamo-cauti-senza-nutrire-aspettative-troppo-alte-ferrari-austin",
+      "date": "2026-10-24T08:18:57.000Z",
+      "author": "Stefano Ollanu",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Leclerc-Ferrari-7-436x291.jpg"
+    },
     {
       "title": "GP Stati Uniti 2026: orari Sky/Now e TV8",
       "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-stati-uniti-2026-austin-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-leclerc-hamilton-sf26-aggiornamenti-match-point-antonelli",
-      "date": "2026-10-24T04:00:00.000Z",
+      "date": "2026-10-24T06:00:00.000Z",
       "author": "Marco Belloro",
       "image": "https://storage.googleapis.com/fp-media/1/2026/10/Start-f1-usa-2025-partenza-436x291.jpg"
-    },
-    {
-      "title": "La nuova Ferrari piace a Leclerc: è sfida con Max e Kimi",
-      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/austin-nuova-ferrari-piace-leclerc-sfida-max-kimi",
-      "date": "2026-10-23T23:27:50.000Z",
-      "author": "Carlo Platella",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/ferrari-leclerc-austin-f1-436x291.jpg"
-    },
-    {
-      "title": "GP Stati Uniti 2026 – Classifica FP2: Leclerc resta davanti, Antonelli è vicinissimo. Ma Verstappen (3°) fa paura a tutti",
-      "link": "https://www.formulapassion.it/f1/f1-risultati/gp-stati-uniti-2026-classifica-fp2-leclerc-resta-davanti-antonelli-e-vicinissimo-ma-verstappen-3-fa-paura-a-tutti",
-      "date": "2026-10-23T22:04:42.000Z",
-      "author": "Matteo Senatore",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2301164768-1-436x291.jpg"
-    },
-    {
-      "title": "F1 GP Stati Uniti 2026, Austin: la cronaca delle FP2, minuto per minuto",
-      "link": "https://www.formulapassion.it/f1/f1-live/diretta-f1-gp-usa-stati-uniti-2026-austin-prove-libere-2-fp2-aggiornamenti-ferrari-leclerc-hamilton-antonelli",
-      "date": "2026-10-23T22:00:00.000Z",
-      "author": "Salvo Sardina",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2301687615-1200x800-1-436x291.jpg"
-    },
-    {
-      "title": "Red Bull non si ferma: ancora novità sulla RB22",
-      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/red-bull-non-si-ferma-ancora-novita-rb22",
-      "date": "2026-10-23T21:01:43.000Z",
-      "author": "Carlo Platella",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/red-bull-verstappen-austin-436x291.jpg"
     }
   ]
 }
