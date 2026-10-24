@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-24T00:57:53.767Z",
+  "updatedAt": "2026-10-24T18:55:00.480Z",
   "races": [
     {
       "round": 1,
@@ -1005,7 +1005,7 @@
       "schedule": {
         "fp1": {
           "date": "2026-05-01",
-          "time": "16:00:00Z"
+          "time": "16:30:00Z"
         },
         "fp2": null,
         "fp3": null,
@@ -1023,7 +1023,7 @@
         },
         "race": {
           "date": "2026-05-03",
-          "time": "17:00:00Z"
+          "time": "20:00:00Z"
         }
       },
       "results": {
@@ -1335,17 +1335,17 @@
       "schedule": {
         "fp1": {
           "date": "2026-05-22",
-          "time": "16:30:00Z"
+          "time": "17:30:00Z"
         },
         "fp2": null,
         "fp3": null,
         "sprintQualy": {
           "date": "2026-05-22",
-          "time": "20:30:00Z"
+          "time": "21:00:00Z"
         },
         "sprintRace": {
           "date": "2026-05-23",
-          "time": "16:00:00Z"
+          "time": "16:30:00Z"
         },
         "qualy": {
           "date": "2026-05-23",
@@ -1353,7 +1353,7 @@
         },
         "race": {
           "date": "2026-05-24",
-          "time": "20:00:00Z"
+          "time": "18:00:00Z"
         }
       },
       "results": {
@@ -2665,11 +2665,11 @@
         },
         "sprintRace": {
           "date": "2026-07-04",
-          "time": "11:00:00Z"
+          "time": "10:30:00Z"
         },
         "qualy": {
           "date": "2026-07-04",
-          "time": "15:00:00Z"
+          "time": "14:00:00Z"
         },
         "race": {
           "date": "2026-07-05",
@@ -2985,15 +2985,15 @@
       "schedule": {
         "fp1": {
           "date": "2026-07-17",
-          "time": "11:30:00Z"
+          "time": "10:30:00Z"
         },
         "fp2": {
           "date": "2026-07-17",
-          "time": "15:00:00Z"
+          "time": "14:30:00Z"
         },
         "fp3": {
           "date": "2026-07-18",
-          "time": "10:30:00Z"
+          "time": "10:00:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -3651,15 +3651,15 @@
         "fp3": null,
         "sprintQualy": {
           "date": "2026-08-21",
-          "time": "14:30:00Z"
+          "time": "13:30:00Z"
         },
         "sprintRace": {
           "date": "2026-08-22",
-          "time": "10:00:00Z"
+          "time": "09:00:00Z"
         },
         "qualy": {
           "date": "2026-08-22",
-          "time": "14:00:00Z"
+          "time": "13:00:00Z"
         },
         "race": {
           "date": "2026-08-23",
@@ -3975,11 +3975,11 @@
       "schedule": {
         "fp1": {
           "date": "2026-09-04",
-          "time": "10:30:00Z"
+          "time": "11:30:00Z"
         },
         "fp2": {
           "date": "2026-09-04",
-          "time": "14:00:00Z"
+          "time": "15:00:00Z"
         },
         "fp3": {
           "date": "2026-09-05",
@@ -3989,7 +3989,7 @@
         "sprintRace": null,
         "qualy": {
           "date": "2026-09-05",
-          "time": "14:00:00Z"
+          "time": "13:00:00Z"
         },
         "race": {
           "date": "2026-09-06",
@@ -4965,25 +4965,25 @@
       "schedule": {
         "fp1": {
           "date": "2026-10-02",
-          "time": "04:30:00Z"
+          "time": null
         },
         "fp2": {
           "date": "2026-10-02",
-          "time": "08:00:00Z"
+          "time": null
         },
         "fp3": {
           "date": "2026-10-03",
-          "time": "04:30:00Z"
+          "time": null
         },
         "sprintQualy": null,
         "sprintRace": null,
         "qualy": {
           "date": "2026-10-03",
-          "time": "08:00:00Z"
+          "time": null
         },
         "race": {
           "date": "2026-10-04",
-          "time": "07:00:00Z"
+          "time": null
         }
       },
       "results": {
@@ -5295,7 +5295,7 @@
       "schedule": {
         "fp1": {
           "date": "2026-10-09",
-          "time": "08:30:00Z"
+          "time": "09:30:00Z"
         },
         "fp2": null,
         "fp3": null,
@@ -5305,7 +5305,7 @@
         },
         "sprintRace": {
           "date": "2026-10-10",
-          "time": "09:00:00Z"
+          "time": "09:30:00Z"
         },
         "qualy": {
           "date": "2026-10-10",
@@ -5626,11 +5626,11 @@
         },
         "fp2": {
           "date": "2026-10-23",
-          "time": "21:00:00Z"
+          "time": "21:30:00Z"
         },
         "fp3": {
           "date": "2026-10-24",
-          "time": "17:30:00Z"
+          "time": "17:00:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -5640,7 +5640,7 @@
         },
         "race": {
           "date": "2026-10-25",
-          "time": "20:00:00Z"
+          "time": "19:00:00Z"
         }
       },
       "results": {
@@ -5700,15 +5700,15 @@
       "schedule": {
         "fp1": {
           "date": "2026-11-06",
-          "time": "15:30:00Z"
+          "time": "14:30:00Z"
         },
         "fp2": {
           "date": "2026-11-06",
-          "time": "19:00:00Z"
+          "time": "18:30:00Z"
         },
         "fp3": {
           "date": "2026-11-07",
-          "time": "14:30:00Z"
+          "time": "14:00:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -5782,11 +5782,11 @@
         },
         "fp2": {
           "date": "2026-11-27",
-          "time": "17:00:00Z"
+          "time": "17:30:00Z"
         },
         "fp3": {
           "date": "2026-11-28",
-          "time": "14:30:00Z"
+          "time": "14:00:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
