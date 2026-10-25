@@ -140,6 +140,54 @@ async function learnNewCircuits(races, sessions) {
 }
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
+const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
+
+// Prove libere da OpenF1 quando f1api.dev non le ha (Austin 2026: ancora
+// nessun risultato la domenica, e dal lunedì il GP non è più in evidenza,
+// quindi le libere non sarebbero mai state salvate). Stesso formato del sito:
+// [{position, driver, team, time}]. I nomi dei piloti vengono riportati a
+// quelli di f1api.dev (OpenF1 scrive "Kimi Antonelli", "Alexander Albon")
+// usando la classifica e i risultati già salvati, abbinati per cognome.
+const PRACTICE_SESSION_NAMES = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3' };
+const surnameKey = name => String(name || '').trim().split(/\s+/).pop()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+function f1apiDriverNames(existingCalendar) {
+    const names = new Map(), clash = new Set();
+    const add = full => {
+        const k = surnameKey(full);
+        if (!k) return;
+        if (names.has(k) && names.get(k) !== full) clash.add(k);
+        names.set(k, full);
+    };
+    try { (JSON.parse(fs.readFileSync(STANDINGS_JSON_PATH, 'utf-8')).drivers || []).forEach(d => add(d.driver)); } catch (e) { /* senza classifica: nomi OpenF1 */ }
+    (existingCalendar?.races || []).forEach(r => Object.values(r.results || {}).forEach(rows => (rows || []).forEach(x => add(x.driver))));
+    clash.forEach(k => names.delete(k)); // cognome ambiguo: meglio il nome OpenF1
+    return names;
+}
+const fmtLap = sec => {
+    const m = Math.floor(sec / 60), rest = sec - m * 60;
+    return `${m}:${rest.toFixed(3).padStart(6, '0')}`;
+};
+async function openf1PracticeResults(session, driverNames) {
+    const [rows, drivers] = [
+        await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`),
+        await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`),
+    ];
+    if (!rows.length) return null;
+    const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
+    const withTime = rows.filter(r => typeof r.duration === 'number').sort((a, b) => a.duration - b.duration);
+    const withoutTime = rows.filter(r => typeof r.duration !== 'number');
+    return [...withTime, ...withoutTime].map((r, i) => {
+        const d = byNumber.get(r.driver_number) || {};
+        const openf1Name = [d.first_name, d.last_name].filter(Boolean).join(' ') || `#${r.driver_number}`;
+        return {
+            position: i + 1,
+            driver: driverNames.get(surnameKey(d.last_name || openf1Name)) || openf1Name,
+            team: matchTeam(d.team_name || ''),
+            time: typeof r.duration === 'number' ? fmtLap(r.duration) : '-',
+        };
+    });
+}
 
 async function main() {
     console.log('Richiesta a https://f1api.dev/api/current ...');
@@ -169,6 +217,7 @@ async function main() {
     }
 
     const now = new Date();
+    const driverNames = f1apiDriverNames(existingCalendar);
     const openf1Sessions = await loadOpenF1Sessions(season);
     await learnNewCircuits(races, openf1Sessions);
     const official = officialSchedule(openf1Sessions);
@@ -290,6 +339,21 @@ async function main() {
                 console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati ${key}: errore - ${err.message}`);
             }
             await sleep(150);
+
+            // Prove libere senza risultati su f1api.dev: si prendono da
+            // OpenF1, solo a sessione finita.
+            if (!results[key] && PRACTICE_SESSION_NAMES[key]) {
+                const session = openf1Sessions.find(s => s.session_name === PRACTICE_SESSION_NAMES[key]
+                    && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
+                if (session) {
+                    try {
+                        results[key] = await openf1PracticeResults(session, driverNames);
+                        if (results[key]) console.log(`📥 ${mappedCircuit} ${key}: risultati da OpenF1 (non ancora su f1api.dev)`);
+                    } catch (err) {
+                        console.warn(`⚠️  ${mappedCircuit} ${key}: risultati OpenF1 non disponibili - ${err.message}`);
+                    }
+                }
+            }
         }
 
         calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results });
