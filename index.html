@@ -3017,7 +3017,17 @@
             // solo come risposta diretta a un gesto dell'utente.
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') {
-                showPushDialog('🔔 Notifiche non consentite', `<p>Per attivarle: <b>Impostazioni</b> → <b>Notifiche</b> → <b>F1 Pole Tracker</b> → Consenti notifiche, poi tocca di nuovo 🔔 Notifiche.</p>`);
+                // Percorso per riattivarle diverso per sistema (e, su Android,
+                // tra app installata e sito aperto in Chrome).
+                const isAndroid = /Android/i.test(navigator.userAgent);
+                const how = isIOS
+                    ? `<b>Impostazioni</b> → <b>Notifiche</b> → <b>F1 Pole Tracker</b> → attiva <b>Consenti notifiche</b>`
+                    : isAndroid && standalone
+                        ? `tieni premuta l'icona di <b>F1 Pole Tracker</b> nella Home → <b>Info app</b> → <b>Notifiche</b> → attivale`
+                        : isAndroid
+                            ? `in Chrome tocca l'icona a sinistra dell'indirizzo → <b>Autorizzazioni</b> → <b>Notifiche</b> → <b>Consenti</b>`
+                            : `clicca l'icona a sinistra dell'indirizzo del sito → <b>Notifiche</b> → <b>Consenti</b>`;
+                showPushDialog('🔔 Notifiche non consentite', `<p>Per attivarle: ${how}, poi tocca di nuovo 🔔 Notifiche.</p>`);
                 return;
             }
             try {
