@@ -1,6 +1,6 @@
 {
   "season": 2025,
-  "updatedAt": "2026-07-26T22:33:09.160Z",
+  "updatedAt": "2026-10-25T23:28:35.858Z",
   "races": [
     {
       "round": 1,
@@ -199,7 +199,7 @@
           {
             "position": 7,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+18.423",
             "retired": null
           },
@@ -256,46 +256,47 @@
             "position": 15,
             "driver": "Liam Lawson",
             "team": "Red Bull",
-            "time": "DNF (46)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 16,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "DNF (45)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (32)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
-            "driver": "Isack Hadjar",
-            "team": "RB",
-            "time": "DNF (0)",
-            "retired": null
+            "driver": "Jack Doohan",
+            "team": "Alpine",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Jack Doohan",
-            "team": "Alpine",
-            "time": "DNF (0)",
-            "retired": null
+            "driver": "Isack Hadjar",
+            "team": "RB",
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 2,
@@ -543,54 +544,55 @@
           {
             "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Yuki Tsunoda",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
-            "driver": "Lewis Hamilton",
-            "team": "Ferrari",
-            "time": "+0 lap",
-            "retired": null
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "+0 lap",
-            "retired": null
+            "time": null,
+            "retired": "Squalificato"
           },
           {
             "position": 19,
-            "driver": "Pierre Gasly",
-            "team": "Alpine",
-            "time": "+0 lap",
-            "retired": null
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": null,
+            "retired": "Squalificato"
           },
           {
             "position": 20,
-            "driver": "Fernando Alonso",
-            "team": "Aston Martin",
-            "time": "DNF (4)",
-            "retired": null
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": null,
+            "retired": "Squalificato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 3,
@@ -852,7 +854,7 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:21.957",
             "retired": null
           },
@@ -873,7 +875,7 @@
           {
             "position": 19,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:23.897",
             "retired": null
           },
@@ -881,11 +883,12 @@
             "position": 20,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 4,
@@ -1125,62 +1128,63 @@
           },
           {
             "position": 13,
-            "driver": "Jack Doohan",
-            "team": "Alpine",
-            "time": "+52.806",
-            "retired": null
-          },
-          {
-            "position": 14,
-            "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+53.472",
-            "retired": null
-          },
-          {
-            "position": 15,
             "driver": "Isack Hadjar",
             "team": "RB",
             "time": "+56.314",
             "retired": null
           },
           {
-            "position": 16,
+            "position": 14,
+            "driver": "Jack Doohan",
+            "team": "Alpine",
+            "time": "+57.806",
+            "retired": null
+          },
+          {
+            "position": 15,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "+1:00.340",
             "retired": null
           },
           {
-            "position": 17,
+            "position": 16,
             "driver": "Liam Lawson",
             "team": "RB",
             "time": "+1:04.435",
             "retired": null
           },
           {
-            "position": 18,
+            "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
             "time": "+1:05.489",
             "retired": null
           },
           {
-            "position": 19,
+            "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:06.872",
             "retired": null
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (50)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
+          },
+          {
+            "position": 20,
+            "driver": "Nico Hulkenberg",
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Squalificato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 5,
@@ -1435,47 +1439,48 @@
           {
             "position": 15,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Jack Doohan",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "DNF (1)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 6,
@@ -1633,7 +1638,7 @@
             "position": 1,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "-",
+            "time": "1:28:51.587",
             "retired": null
           },
           {
@@ -1723,54 +1728,55 @@
           {
             "position": 14,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "DNF (36)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "DNF (30)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "DNF (28)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Jack Doohan",
             "team": "Alpine",
-            "time": "DNF (1)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 7,
@@ -2004,7 +2010,7 @@
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+30.296",
             "retired": null
           },
@@ -2046,7 +2052,7 @@
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+38.572",
             "retired": null
           },
@@ -2054,18 +2060,19 @@
             "position": 19,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "DNF (44)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "DNF (27)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 8,
@@ -2223,7 +2230,7 @@
             "position": 1,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "-",
+            "time": "1:40:33.843",
             "retired": null
           },
           {
@@ -2258,109 +2265,110 @@
             "position": 6,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 7,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 8,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 11,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+2 laps",
+            "team": "Kick Sauber",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+2 laps",
+            "team": "Kick Sauber",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (38)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "DNF (9)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 9,
@@ -2545,7 +2553,7 @@
           {
             "position": 5,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+13.648",
             "retired": null
           },
@@ -2594,7 +2602,7 @@
           {
             "position": 12,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+25.996",
             "retired": null
           },
@@ -2637,25 +2645,19 @@
             "position": 18,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "DNF (53)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (27)",
-            "retired": null
-          },
-          {
-            "position": 20,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 10,
@@ -2861,7 +2863,7 @@
           {
             "position": 8,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+15.364",
             "retired": null
           },
@@ -2869,88 +2871,89 @@
             "position": 9,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "DNF (66)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "DNF (52)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (48)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 11,
@@ -3150,102 +3153,103 @@
             "position": 7,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 8,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (15)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Max Verstappen",
             "team": "Red Bull",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 12,
@@ -3403,7 +3407,7 @@
             "position": 1,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "-",
+            "time": "1:37:15.735",
             "retired": null
           },
           {
@@ -3416,7 +3420,7 @@
           {
             "position": 3,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+34.742",
             "retired": null
           },
@@ -3501,46 +3505,47 @@
             "position": 15,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "DNF (23)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "DNF (17)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "DNF (3)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 13,
@@ -3753,7 +3758,7 @@
           {
             "position": 9,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+56.434",
             "retired": null
           },
@@ -3774,7 +3779,7 @@
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:13.628",
             "retired": null
           },
@@ -3831,11 +3836,12 @@
             "position": 20,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 14,
@@ -4027,7 +4033,7 @@
           {
             "position": 6,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:06.169",
             "retired": null
           },
@@ -4056,81 +4062,82 @@
             "position": 10,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Lewis Hamilton",
             "team": "Ferrari",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "DNF (48)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 15,
@@ -4288,7 +4295,7 @@
             "position": 1,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "-",
+            "time": "1:38:29.849",
             "retired": null
           },
           {
@@ -4378,14 +4385,14 @@
           {
             "position": 14,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+19.725",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+21.565",
             "retired": null
           },
@@ -4407,25 +4414,26 @@
             "position": 18,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "DNF (64)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "DNF (52)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Lewis Hamilton",
             "team": "Ferrari",
-            "time": "DNF (22)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 16,
@@ -4631,7 +4639,7 @@
           {
             "position": 8,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+58.484",
             "retired": null
           },
@@ -4681,46 +4689,47 @@
             "position": 15,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (24)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "DNF (0)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 17,
@@ -4947,7 +4956,7 @@
           {
             "position": 11,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:07.606",
             "retired": null
           },
@@ -4982,7 +4991,7 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:20.237",
             "retired": null
           },
@@ -4997,25 +5006,26 @@
             "position": 18,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 18,
@@ -5213,16 +5223,16 @@
           },
           {
             "position": 7,
-            "driver": "Lewis Hamilton",
-            "team": "Ferrari",
-            "time": "+1:20.251",
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": "+1:20.667",
             "retired": null
           },
           {
             "position": 8,
-            "driver": "Fernando Alonso",
-            "team": "Aston Martin",
-            "time": "+1:20.667",
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": "+1:25.251",
             "retired": null
           },
           {
@@ -5236,81 +5246,82 @@
             "position": 10,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 19,
@@ -5516,7 +5527,7 @@
           {
             "position": 8,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+57.249",
             "retired": null
           },
@@ -5580,32 +5591,33 @@
             "position": 17,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "+1 lap",
+            "team": "Kick Sauber",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (5)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 20,
@@ -5825,7 +5837,7 @@
           {
             "position": 10,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:16.863",
             "retired": null
           },
@@ -5840,67 +5852,68 @@
             "position": 12,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (67)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (34)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "DNF (25)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "DNF (5)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 21,
@@ -6113,7 +6126,7 @@
           {
             "position": 9,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+53.324",
             "retired": null
           },
@@ -6177,25 +6190,26 @@
             "position": 18,
             "driver": "Lewis Hamilton",
             "team": "Ferrari",
-            "time": "DNF (37)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "DNF (5)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "DNF (0)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 22,
@@ -6394,7 +6408,7 @@
           {
             "position": 7,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+51.134",
             "retired": null
           },
@@ -6444,53 +6458,54 @@
             "position": 14,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
-            "driver": "Lando Norris",
-            "team": "McLaren",
-            "time": "DNF (49)",
-            "retired": null
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
-            "driver": "Oscar Piastri",
-            "team": "McLaren",
-            "time": "DNF (49)",
-            "retired": null
+            "driver": "Gabriel Bortoleto",
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "DNF (35)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
-            "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "DNF (2)",
-            "retired": null
+            "driver": "Lando Norris",
+            "team": "McLaren",
+            "time": null,
+            "retired": "Squalificato"
           },
           {
             "position": 20,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (0)",
-            "retired": null
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": null,
+            "retired": "Squalificato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 23,
@@ -6731,7 +6746,7 @@
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:24.812",
             "retired": null
           },
@@ -6739,53 +6754,54 @@
             "position": 14,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "DNF (55)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "DNF (55)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "DNF (41)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "DNF (6)",
-            "retired": null
+            "team": "Kick Sauber",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 24,
@@ -6998,7 +7014,7 @@
           {
             "position": 9,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:19.014",
             "retired": null
           },
@@ -7012,7 +7028,7 @@
           {
             "position": 11,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "+1:21.043",
             "retired": null
           },
@@ -7055,32 +7071,33 @@
             "position": 17,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     }
   ]
 }

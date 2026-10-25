@@ -34,12 +34,35 @@ const path = require('path');
 const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
 const { fetchJson } = require('./lib/http');
+const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1RaceResults } = require('./lib/openf1-results');
+const { knownDriverNames } = require('./lib/driver-names');
+
+// Risultati di gara dal 2023: fonte principale OpenF1 (classifica ufficiale
+// con le penalità post-gara; f1api.dev ne ha perse diverse, es. Brasile 2024
+// e Singapore 2025), ripiego f1api.dev. Prima del 2023 OpenF1 non ha dati.
+const OPENF1_FIRST_YEAR = 2023;
+async function openf1RaceSessions(year) {
+    if (year < OPENF1_FIRST_YEAR) return [];
+    try {
+        return await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}&session_name=Race`);
+    } catch (err) {
+        console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso f1api.dev.`);
+        return [];
+    }
+}
+// Gara OpenF1 dello stesso circuito e della stessa data (±2 giorni: nello
+// stesso anno un circuito può ospitare due GP, es. Red Bull Ring 2021).
+function findRaceSession(sessions, circuit, date) {
+    return sessions.find(s => CIRCUIT_MAP[s.circuit_short_name] === circuit && date
+        && Math.abs(new Date(s.date_start.slice(0, 10)) - new Date(date)) <= 2 * 86400000);
+}
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const PREVIOUS_YEARS = [2025, 2024, 2023, 2022, 2021];
 const ROUND_CONCURRENCY = 4; // quante gare scaricare in parallelo per stagione
 
-async function buildRaceEntry(year, race) {
+async function buildRaceEntry(year, race, raceSessions = []) {
     const round = race.round;
     const mappedCircuit = matchCircuitById(race.circuit?.circuitId) || race.circuit?.circuitName || 'Sconosciuto';
     const date = race.schedule?.race?.date || null;
@@ -83,7 +106,23 @@ async function buildRaceEntry(year, race) {
     }
     results.qualy = normalizeSessionResults('qualy', qualyPayload?.races);
 
-    return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results };
+    let raceSource = results.race ? 'f1api' : null;
+    const session = findRaceSession(raceSessions, mappedCircuit, date);
+    if (session) {
+        try {
+            const names = knownDriverNames([...(results.race || []), ...(results.qualy || [])].map(r => r.driver));
+            const fromOpenF1 = await openf1RaceResults(session, names);
+            if (fromOpenF1) {
+                results.race = fromOpenF1;
+                raceSource = 'openf1';
+                winner = { driver: fromOpenF1[0].driver, team: fromOpenF1[0].team };
+            }
+        } catch (err) {
+            console.warn(`⚠️  Round ${round} (${mappedCircuit}): gara OpenF1 non disponibile - ${err.message}`);
+        }
+    }
+
+    return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}) };
 }
 
 async function buildYear(year) {
@@ -106,6 +145,7 @@ async function buildYear(year) {
 
     if (!fs.existsSync(HISTORY_DIR)) fs.mkdirSync(HISTORY_DIR, { recursive: true });
 
+    const raceSessions = await openf1RaceSessions(year);
     const resultsByRound = new Map();
     function writePartial() {
         const sorted = races.map(r => resultsByRound.get(r.round)).filter(Boolean);
@@ -119,7 +159,7 @@ async function buildYear(year) {
             const i = nextIndex++;
             if (i >= races.length) return;
             const race = races[i];
-            const entry = await buildRaceEntry(year, race);
+            const entry = await buildRaceEntry(year, race, raceSessions);
             resultsByRound.set(entry.round, entry);
             console.log(`Round ${entry.round} - ${entry.circuit}: ${entry.winner ? `${entry.winner.driver} (${entry.winner.team})` : 'nessun vincitore trovato'}`);
             writePartial();
@@ -132,7 +172,43 @@ async function buildYear(year) {
     console.log(`✅ history/${year}.json scritto (${races.length} gare).`);
 }
 
+// Sostituisce nei file storici già scritti i risultati di gara di f1api.dev
+// con quelli OpenF1 (dal 2023), senza riscaricare il resto della stagione.
+// Uso: node scripts/build-history.js --refresh-race 2023 2024 2025
+async function refreshRaceResults(year) {
+    const file = path.join(HISTORY_DIR, `${year}.json`);
+    if (!fs.existsSync(file)) { console.warn(`⚠️  history/${year}.json non esiste, salto.`); return; }
+    const history = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    const sessions = await openf1RaceSessions(year);
+    if (!sessions.length) return;
+    const names = knownDriverNames(history.races.flatMap(r => [...(r.results?.race || []), ...(r.results?.qualy || [])]).map(r => r.driver));
+    let changed = 0;
+    for (const race of history.races) {
+        const session = findRaceSession(sessions, race.circuit, race.date);
+        if (!session) continue;
+        let fromOpenF1 = null;
+        try { fromOpenF1 = await openf1RaceResults(session, names); }
+        catch (err) { console.warn(`⚠️  ${year} ${race.circuit}: ${err.message}`); continue; }
+        if (!fromOpenF1) continue;
+        const before = race.results.race || [];
+        const diffs = fromOpenF1.filter((r, i) => !before[i] || before[i].driver !== r.driver || before[i].time !== r.time || before[i].retired !== r.retired);
+        const moved = fromOpenF1.filter((r, i) => before[i] && before[i].driver !== r.driver).map(r => `P${r.position} ${r.driver}`);
+        race.results.race = fromOpenF1;
+        race.winner = { driver: fromOpenF1[0].driver, team: fromOpenF1[0].team };
+        race.raceSource = 'openf1';
+        changed++;
+        console.log(`${year} ${race.circuit}: ${diffs.length} righe cambiate${moved.length ? ` - ordine: ${moved.join(', ')}` : ''}`);
+    }
+    history.updatedAt = new Date().toISOString();
+    fs.writeFileSync(file, JSON.stringify(history, null, 2) + '\n', 'utf-8');
+    console.log(`✅ history/${year}.json: ${changed} gare con risultati OpenF1.`);
+}
+
 async function main() {
+    if (process.argv.includes('--refresh-race')) {
+        for (const year of process.argv.slice(2).map(Number).filter(n => !isNaN(n))) await refreshRaceResults(year);
+        return;
+    }
     const argYears = process.argv.slice(2).map(Number).filter(n => !isNaN(n));
     const years = argYears.length > 0 ? argYears : PREVIOUS_YEARS;
     for (const year of years) {

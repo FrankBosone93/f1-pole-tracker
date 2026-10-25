@@ -1,6 +1,6 @@
 {
   "season": 2023,
-  "updatedAt": "2026-07-26T22:34:21.616Z",
+  "updatedAt": "2026-10-25T23:25:10.045Z",
   "races": [
     {
       "round": 1,
@@ -235,67 +235,68 @@
             "position": 12,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Mechanical",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "Electrical",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 2,
@@ -572,25 +573,26 @@
             "position": 18,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Brakes",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 3,
@@ -832,60 +834,61 @@
             "position": 13,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 14,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 15,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 16,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 4,
@@ -1155,32 +1158,33 @@
             "position": 17,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "Overheating",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 5,
@@ -1464,18 +1468,19 @@
             "position": 19,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 6,
@@ -1689,88 +1694,89 @@
             "position": 9,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 7,
@@ -2012,60 +2018,61 @@
             "position": 13,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 8,
@@ -2237,7 +2244,7 @@
             "position": 3,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
-            "time": "+4.598",
+            "time": "+14.168",
             "retired": null
           },
           {
@@ -2321,46 +2328,47 @@
             "position": 15,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "Brakes",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 9,
@@ -2595,67 +2603,68 @@
             "position": 12,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "Power loss",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 10,
@@ -2932,25 +2941,26 @@
             "position": 18,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Oil leak",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 11,
@@ -3171,81 +3181,82 @@
             "position": 10,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Daniel Ricciardo",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Retired",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 12,
@@ -3529,18 +3540,19 @@
             "position": 19,
             "driver": "Carlos Sainz",
             "team": "Ferrari",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 13,
@@ -3817,25 +3829,26 @@
             "position": 18,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "Undertray",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 14,
@@ -4105,32 +4118,33 @@
             "position": 17,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Steering",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 15,
@@ -4393,39 +4407,33 @@
             "position": 16,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "Technical",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Gearbox",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "Collision",
-            "retired": null
-          },
-          {
-            "position": 20,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "Withdrew",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 16,
@@ -4653,74 +4661,75 @@
             "position": 11,
             "driver": "Liam Lawson",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Rear wing",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 17,
@@ -4969,53 +4978,54 @@
             "position": 14,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Liam Lawson",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Illness",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Carlos Sainz",
             "team": "Ferrari",
-            "time": "Fuel leak",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 18,
@@ -5257,60 +5267,61 @@
             "position": 13,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Daniel Ricciardo",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "Undertray",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "Radiator",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
-            "time": "Disqualified",
-            "retired": null
+            "time": null,
+            "retired": "Squalificato"
           },
           {
             "position": 20,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "Disqualified",
-            "retired": null
+            "time": null,
+            "retired": "Squalificato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 19,
@@ -5573,39 +5584,40 @@
             "position": 16,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Retired",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "Withdrew",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
-            "time": "Collision damage",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 20,
@@ -5826,81 +5838,82 @@
             "position": 10,
             "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Daniel Ricciardo",
             "team": "AlphaTauri",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+2 Laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 15,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "Overheating",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 16,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Collision",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 21,
@@ -6177,25 +6190,26 @@
             "position": 18,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
-            "time": "Gearbox",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "Engine",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "Accident",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 22,
@@ -6472,25 +6486,26 @@
             "position": 18,
             "driver": "Carlos Sainz",
             "team": "Ferrari",
-            "time": "Retired",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Alfa Romeo",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "+1 Lap",
+            "time": "+1 giro",
             "retired": null
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     }
   ]
 }

@@ -18,8 +18,9 @@ const surnameKey = name => String(name || '').trim().split(/\s+/).pop()
 
 // Cognome -> nome completo già usato sul sito (classifica, calendario, pole).
 // Un cognome con due nomi diversi (omonimi) viene escluso: meglio il nome
-// OpenF1 che un abbinamento sbagliato.
-function knownDriverNames() {
+// OpenF1 che un abbinamento sbagliato. Con `only` (elenco di nomi) si usano
+// solo quelli: per una stagione passata, i nomi già nel suo file storico.
+function knownDriverNames(only = null) {
     const names = new Map(), clash = new Set();
     const add = full => {
         const k = surnameKey(full);
@@ -27,6 +28,11 @@ function knownDriverNames() {
         if (names.has(k) && names.get(k) !== full) clash.add(k);
         names.set(k, full);
     };
+    if (only) {
+        only.forEach(add);
+        clash.forEach(k => names.delete(k));
+        return names;
+    }
     (readJson('standings.json')?.drivers || []).forEach(d => add(d.driver));
     (readJson('calendar.json')?.races || []).forEach(r => Object.values(r.results || {}).forEach(rows => (rows || []).forEach(x => add(x.driver))));
     const year = new Date().getFullYear();

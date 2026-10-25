@@ -23,7 +23,8 @@ const { sleep, fetchJson } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 const { CIRCUIT_INFO } = require('./lib/weather');
 const { loadAutoCircuits, saveAutoCircuits } = require('./lib/auto-circuits');
-const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
+const { knownDriverNames } = require('./lib/driver-names');
+const { openf1PracticeResults, openf1RaceResults } = require('./lib/openf1-results');
 
 // Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
 // invernali e si ignorano.)
@@ -141,80 +142,16 @@ async function learnNewCircuits(races, sessions) {
 }
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
-// Prove libere da OpenF1 quando f1api.dev non le ha (Austin 2026: ancora
-// nessun risultato la domenica, e dal lunedì il GP non è più in evidenza,
-// quindi le libere non sarebbero mai state salvate). Stesso formato del sito:
-// [{position, driver, team, time}], con i nomi dei piloti riportati a quelli
-// già usati sul sito (lib/driver-names.js).
+// Prove libere e gara da OpenF1: vedi lib/openf1-results.js.
 const PRACTICE_SESSION_NAMES = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3' };
-const fmtLap = sec => {
-    const m = Math.floor(sec / 60), rest = sec - m * 60;
-    return `${m}:${rest.toFixed(3).padStart(6, '0')}`;
-};
-async function openf1PracticeResults(session, driverNames) {
-    const [rows, drivers] = [
-        await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`),
-        await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`),
-    ];
-    if (!rows.length) return null;
-    const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
-    const withTime = rows.filter(r => typeof r.duration === 'number').sort((a, b) => a.duration - b.duration);
-    const withoutTime = rows.filter(r => typeof r.duration !== 'number');
-    return [...withTime, ...withoutTime].map((r, i) => {
-        const d = byNumber.get(r.driver_number) || {};
-        return {
-            position: i + 1,
-            driver: siteDriverName(d, driverNames) || `#${r.driver_number}`,
-            team: matchTeam(d.team_name || ''),
-            time: typeof r.duration === 'number' ? fmtLap(r.duration) : '-',
-        };
-    });
-}
 
-// Risultati di gara da OpenF1 (classifica ufficiale, penalità post-gara
-// comprese). Confronto del 2026-10-25 su 87 gare 2023-2026: in tutte le 10
-// gare in cui le due fonti non coincidevano aveva ragione OpenF1 (verificato
-// sulle classifiche ufficiali), mentre f1api.dev aveva penalità post-gara
-// mancanti (Brasile 2024, Singapore 2025, Bahrain 2025, Barcellona e Miami
-// 2026), distacchi sbagliati (Canada 2023, Brasile 2024) e ritirati in ordine
-// sbagliato. f1api.dev resta il ripiego (OpenF1 è bloccata durante le
-// sessioni live). Stesso formato del sito: {position, driver, team, time, retired}.
-const fmtGap = sec => {
-    if (sec < 60) return `+${sec.toFixed(3)}`;
-    const m = Math.floor(sec / 60);
-    return `+${m}:${(sec - m * 60).toFixed(3).padStart(6, '0')}`;
-};
-const fmtRaceTime = sec => {
-    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), rest = sec - h * 3600 - m * 60;
-    return `${h}:${String(m).padStart(2, '0')}:${rest.toFixed(3).padStart(6, '0')}`;
-};
-async function openf1RaceResults(session, driverNames) {
-    const rows = await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`);
-    if (!rows.length) return null;
-    const drivers = await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
-    const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
-    // Classificati in ordine di posizione; i non classificati (posizione
-    // null: ritirati presto, non partiti, squalificati) in fondo, per giri.
-    const classified = rows.filter(r => r.position).sort((a, b) => a.position - b.position);
-    const others = rows.filter(r => !r.position).sort((a, b) => (b.number_of_laps || 0) - (a.number_of_laps || 0));
-    return [...classified, ...others].map((r, i) => {
-        const d = byNumber.get(r.driver_number) || {};
-        const retired = r.dsq ? 'Squalificato' : r.dns ? 'Non partito' : r.dnf ? 'Ritirato' : null;
-        let time = null;
-        if (!retired) {
-            if (i === 0 && typeof r.duration === 'number') time = fmtRaceTime(r.duration);
-            else if (typeof r.gap_to_leader === 'number') time = fmtGap(r.gap_to_leader);
-            else if (typeof r.gap_to_leader === 'string') {
-                const laps = parseInt(r.gap_to_leader.replace(/\D/g, ''), 10) || 1;
-                time = `+${laps} ${laps === 1 ? 'giro' : 'giri'}`;
-            } else time = '-';
-        }
-        return { position: i + 1, driver: siteDriverName(d, driverNames) || `#${r.driver_number}`, team: matchTeam(d.team_name || ''), time, retired };
-    });
-}
 // Le penalità post-gara possono arrivare anche giorni dopo: i risultati
 // OpenF1 di una gara si ricontrollano per una settimana, poi restano in cache.
 const RACE_RECHECK_DAYS = 7;
+// node scripts/update-calendar.js --refresh-race: ricontrolla da OpenF1 tutte
+// le gare della stagione, anche quelle oltre i 7 giorni (es. dopo una
+// modifica alla conversione dei risultati).
+const FORCE_RACE_REFRESH = process.argv.includes('--refresh-race');
 
 async function main() {
     console.log('Richiesta a https://f1api.dev/api/current ...');
@@ -315,7 +252,7 @@ async function main() {
         const raceIsPast = raceStart && raceStart <= now;
         let raceSource = existingRace?.raceSource || (cachedRaceResults ? 'f1api' : null);
         if (cachedRaceResults) results.race = cachedRaceResults;
-        const settled = cachedRaceResults && raceSource === 'openf1' && raceStart && (now - raceStart) > RACE_RECHECK_DAYS * 86400000;
+        const settled = !FORCE_RACE_REFRESH && cachedRaceResults && raceSource === 'openf1' && raceStart && (now - raceStart) > RACE_RECHECK_DAYS * 86400000;
 
         if (raceIsPast && !settled) {
             const session = openf1Sessions.find(s => s.session_name === 'Race'
