@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-25T21:09:42.283Z",
+  "updatedAt": "2026-10-25T23:03:26.803Z",
   "races": [
     {
       "round": 1,
@@ -221,116 +221,117 @@
             "position": 7,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 8,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+15 laps",
+            "time": "+15 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (21)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "DNF (15)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
-            "time": "DNF (10)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           },
           {
             "position": 22,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 2,
@@ -565,102 +566,103 @@
             "position": 9,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Max Verstappen",
             "team": "Red Bull",
-            "time": "DNF (45)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (32)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "DNF (9)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           },
           {
             "position": 20,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           },
           {
             "position": 21,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           },
           {
             "position": 22,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (0)",
-            "retired": null
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 3,
@@ -958,39 +960,40 @@
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 21,
-            "driver": "Oliver Bearman",
-            "team": "Haas",
-            "time": "DNF (53)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (53)",
-            "retired": null
+            "driver": "Oliver Bearman",
+            "team": "Haas",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 4,
@@ -1005,7 +1008,7 @@
       "schedule": {
         "fp1": {
           "date": "2026-05-01",
-          "time": "16:30:00Z"
+          "time": "16:00:00Z"
         },
         "fp2": null,
         "fp3": null,
@@ -1023,7 +1026,7 @@
         },
         "race": {
           "date": "2026-05-03",
-          "time": "20:00:00Z"
+          "time": "17:00:00Z"
         }
       },
       "results": {
@@ -1169,7 +1172,7 @@
             "position": 1,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "-",
+            "time": "1:33:19.273",
             "retired": null
           },
           {
@@ -1197,7 +1200,7 @@
             "position": 5,
             "driver": "Max Verstappen",
             "team": "Red Bull",
-            "time": "+43.949",
+            "time": "+48.949",
             "retired": null
           },
           {
@@ -1239,88 +1242,89 @@
             "position": 11,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 19,
-            "driver": "Isack Hadjar",
-            "team": "Red Bull",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Pierre Gasly",
-            "team": "Alpine",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Nico Hulkenberg",
-            "team": "Audi",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Liam Lawson",
-            "team": "RB",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Isack Hadjar",
+            "team": "Red Bull",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 5,
@@ -1335,17 +1339,17 @@
       "schedule": {
         "fp1": {
           "date": "2026-05-22",
-          "time": "17:30:00Z"
+          "time": "16:30:00Z"
         },
         "fp2": null,
         "fp3": null,
         "sprintQualy": {
           "date": "2026-05-22",
-          "time": "21:00:00Z"
+          "time": "20:30:00Z"
         },
         "sprintRace": {
           "date": "2026-05-23",
-          "time": "16:30:00Z"
+          "time": "16:00:00Z"
         },
         "qualy": {
           "date": "2026-05-23",
@@ -1353,7 +1357,7 @@
         },
         "race": {
           "date": "2026-05-24",
-          "time": "18:00:00Z"
+          "time": "20:00:00Z"
         }
       },
       "results": {
@@ -1527,130 +1531,131 @@
             "position": 5,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 6,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 7,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 8,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+4 laps",
+            "time": "+4 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+4 laps",
+            "time": "+4 giri",
             "retired": null
           },
           {
             "position": 17,
-            "driver": "George Russell",
-            "team": "Mercedes",
-            "time": "DNF (68)",
-            "retired": null
+            "driver": "Sergio Pérez",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "DNF (68)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
-            "driver": "Arvid Lindblad",
-            "team": "RB",
-            "time": "DNF (68)",
-            "retired": null
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "DNF (68)",
-            "retired": null
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Fernando Alonso",
-            "team": "Aston Martin",
-            "time": "DNF (68)",
-            "retired": null
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Sergio Pérez",
-            "team": "Cadillac",
-            "time": "DNF (68)",
-            "retired": null
+            "driver": "Arvid Lindblad",
+            "team": "RB",
+            "time": null,
+            "retired": "Non partito"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 6,
@@ -1934,53 +1939,54 @@
             "position": 16,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (78)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "DNF (78)",
-            "retired": null
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
-            "driver": "Charles Leclerc",
-            "team": "Ferrari",
-            "time": "DNF (78)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Lando Norris",
             "team": "McLaren",
-            "time": "DNF (78)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "DNF (78)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "DNF (78)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (78)",
-            "retired": null
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 7,
@@ -2194,123 +2200,124 @@
             "position": 6,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 7,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 8,
-            "driver": "Franco Colapinto",
-            "team": "Alpine",
-            "time": "+1 lap",
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
-            "driver": "Liam Lawson",
+            "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
-            "driver": "Arvid Lindblad",
-            "team": "RB",
-            "time": "+1 lap",
+            "driver": "Franco Colapinto",
+            "team": "Alpine",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 15,
-            "driver": "Andrea Kimi Antonelli",
-            "team": "Mercedes",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 16,
-            "driver": "Nico Hulkenberg",
-            "team": "Audi",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Andrea Kimi Antonelli",
+            "team": "Mercedes",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
-            "driver": "Charles Leclerc",
-            "team": "Ferrari",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Oliver Bearman",
+            "team": "Haas",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
-            "driver": "Oliver Bearman",
-            "team": "Haas",
-            "time": "DNF (66)",
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "+11 giri",
             "retired": null
           },
           {
             "position": 19,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Valtteri Bottas",
-            "team": "Cadillac",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (66)",
-            "retired": null
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Fernando Alonso",
+            "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "DNF (66)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 8,
@@ -2545,102 +2552,103 @@
             "position": 9,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 19,
-            "driver": "Carlos Sainz",
-            "team": "Williams",
-            "time": "DNF (71)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Sergio Pérez",
-            "team": "Cadillac",
-            "time": "DNF (71)",
-            "retired": null
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Valtteri Bottas",
+            "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "DNF (71)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (71)",
-            "retired": null
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 9,
@@ -2665,11 +2673,11 @@
         },
         "sprintRace": {
           "date": "2026-07-04",
-          "time": "10:30:00Z"
+          "time": "11:00:00Z"
         },
         "qualy": {
           "date": "2026-07-04",
-          "time": "14:00:00Z"
+          "time": "15:00:00Z"
         },
         "race": {
           "date": "2026-07-05",
@@ -2931,46 +2939,47 @@
             "position": 17,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "DNF (52)",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Max Verstappen",
             "team": "Red Bull",
-            "time": "DNF (52)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Nico Hulkenberg",
-            "team": "Audi",
-            "time": "DNF (52)",
-            "retired": null
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "DNF (52)",
-            "retired": null
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 10,
@@ -2985,15 +2994,15 @@
       "schedule": {
         "fp1": {
           "date": "2026-07-17",
-          "time": "10:30:00Z"
+          "time": "11:30:00Z"
         },
         "fp2": {
           "date": "2026-07-17",
-          "time": "14:30:00Z"
+          "time": "15:00:00Z"
         },
         "fp3": {
           "date": "2026-07-18",
-          "time": "10:00:00Z"
+          "time": "10:30:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -3268,39 +3277,40 @@
             "position": 18,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 20,
-            "driver": "George Russell",
-            "team": "Mercedes",
-            "time": "DNF (44)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "DNF (44)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (44)",
-            "retired": null
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 11,
@@ -3528,109 +3538,110 @@
             "position": 8,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 20,
             "driver": "Oscar Piastri",
             "team": "McLaren",
-            "time": "DNF (70)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Valtteri Bottas",
+            "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "DNF (70)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Sergio Pérez",
+            "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "DNF (70)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 12,
@@ -3651,15 +3662,15 @@
         "fp3": null,
         "sprintQualy": {
           "date": "2026-08-21",
-          "time": "13:30:00Z"
+          "time": "14:30:00Z"
         },
         "sprintRace": {
           "date": "2026-08-22",
-          "time": "09:00:00Z"
+          "time": "10:00:00Z"
         },
         "qualy": {
           "date": "2026-08-22",
-          "time": "13:00:00Z"
+          "time": "14:00:00Z"
         },
         "race": {
           "date": "2026-08-23",
@@ -3858,109 +3869,110 @@
             "position": 8,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 9,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Yuki Tsunoda",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (72)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "DNF (72)",
-            "retired": null
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "DNF (72)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "DNF (72)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "DNF (72)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Valtteri Bottas",
-            "team": "Cadillac",
-            "time": "DNF (72)",
-            "retired": null
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 13,
@@ -3975,11 +3987,11 @@
       "schedule": {
         "fp1": {
           "date": "2026-09-04",
-          "time": "11:30:00Z"
+          "time": "10:30:00Z"
         },
         "fp2": {
           "date": "2026-09-04",
-          "time": "15:00:00Z"
+          "time": "14:00:00Z"
         },
         "fp3": {
           "date": "2026-09-05",
@@ -3989,7 +4001,7 @@
         "sprintRace": null,
         "qualy": {
           "date": "2026-09-05",
-          "time": "13:00:00Z"
+          "time": "14:00:00Z"
         },
         "race": {
           "date": "2026-09-06",
@@ -4244,53 +4256,54 @@
             "position": 16,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 20,
-            "driver": "Charles Leclerc",
-            "team": "Ferrari",
-            "time": "DNF (53)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (53)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (53)",
-            "retired": null
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 14,
@@ -4525,102 +4538,103 @@
             "position": 9,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 10,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 11,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Yuki Tsunoda",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 19,
-            "driver": "Lewis Hamilton",
-            "team": "Ferrari",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Carlos Sainz",
-            "team": "Williams",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Sergio Pérez",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Sergio Pérez",
-            "team": "Cadillac",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (57)",
-            "retired": null
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 15,
@@ -4902,55 +4916,56 @@
           },
           {
             "position": 16,
-            "driver": "Lando Norris",
-            "team": "McLaren",
-            "time": "DNF (51)",
-            "retired": null
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 17,
-            "driver": "Pierre Gasly",
+            "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "DNF (51)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 18,
-            "driver": "Franco Colapinto",
+            "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "DNF (51)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "DNF (51)",
-            "retired": null
+            "driver": "Lando Norris",
+            "team": "McLaren",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 20,
-            "driver": "Fernando Alonso",
-            "team": "Aston Martin",
-            "time": "DNF (51)",
-            "retired": null
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
-            "driver": "Lance Stroll",
+            "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "DNF (51)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Valtteri Bottas",
-            "team": "Cadillac",
-            "time": "DNF (51)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 16,
@@ -4965,25 +4980,25 @@
       "schedule": {
         "fp1": {
           "date": "2026-10-02",
-          "time": null
+          "time": "04:30:00Z"
         },
         "fp2": {
           "date": "2026-10-02",
-          "time": null
+          "time": "08:00:00Z"
         },
         "fp3": {
           "date": "2026-10-03",
-          "time": null
+          "time": "04:30:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
         "qualy": {
           "date": "2026-10-03",
-          "time": null
+          "time": "08:00:00Z"
         },
         "race": {
           "date": "2026-10-04",
-          "time": null
+          "time": "07:00:00Z"
         }
       },
       "results": {
@@ -5262,25 +5277,26 @@
             "position": 20,
             "driver": "George Russell",
             "team": "Mercedes",
-            "time": "DNF (55)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (55)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "DNF (55)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 17,
@@ -5295,7 +5311,7 @@
       "schedule": {
         "fp1": {
           "date": "2026-10-09",
-          "time": "09:30:00Z"
+          "time": "08:30:00Z"
         },
         "fp2": null,
         "fp3": null,
@@ -5305,7 +5321,7 @@
         },
         "sprintRace": {
           "date": "2026-10-10",
-          "time": "09:30:00Z"
+          "time": "09:00:00Z"
         },
         "qualy": {
           "date": "2026-10-10",
@@ -5529,88 +5545,89 @@
             "position": 11,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 12,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 13,
             "driver": "Esteban Ocon",
             "team": "Haas",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 14,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 15,
             "driver": "Arvid Lindblad",
             "team": "RB",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 16,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "+1 lap",
+            "time": "+1 giro",
             "retired": null
           },
           {
             "position": 17,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "+2 laps",
+            "time": "+2 giri",
             "retired": null
           },
           {
             "position": 18,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "DNF (62)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 19,
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
-            "time": "+3 laps",
+            "time": "+3 giri",
             "retired": null
           },
           {
             "position": 20,
-            "driver": "Gabriel Bortoleto",
-            "team": "Audi",
-            "time": "DNF (62)",
-            "retired": null
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 21,
             "driver": "Franco Colapinto",
             "team": "Alpine",
-            "time": "DNF (62)",
-            "retired": null
+            "time": null,
+            "retired": "Ritirato"
           },
           {
             "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "DNF (62)",
-            "retired": null
+            "driver": "Gabriel Bortoleto",
+            "team": "Audi",
+            "time": null,
+            "retired": "Ritirato"
           }
         ]
-      }
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 18,
@@ -5618,7 +5635,10 @@
       "raceName": "Formula 1 MSC Cruises United States Grand Prix 2026",
       "date": "2026-10-25",
       "weekendStart": "2026-10-23",
-      "winner": null,
+      "winner": {
+        "driver": "Andrea Kimi Antonelli",
+        "team": "Mercedes"
+      },
       "schedule": {
         "fp1": {
           "date": "2026-10-23",
@@ -5626,11 +5646,11 @@
         },
         "fp2": {
           "date": "2026-10-23",
-          "time": "21:30:00Z"
+          "time": "21:00:00Z"
         },
         "fp3": {
           "date": "2026-10-24",
-          "time": "17:00:00Z"
+          "time": "17:30:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -5640,7 +5660,7 @@
         },
         "race": {
           "date": "2026-10-25",
-          "time": "19:00:00Z"
+          "time": "20:00:00Z"
         }
       },
       "results": {
@@ -6047,8 +6067,164 @@
           }
         ],
         "qualy": null,
-        "race": null
-      }
+        "race": [
+          {
+            "position": 1,
+            "driver": "Andrea Kimi Antonelli",
+            "team": "Mercedes",
+            "time": "1:35:16.650",
+            "retired": null
+          },
+          {
+            "position": 2,
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": "+13.078",
+            "retired": null
+          },
+          {
+            "position": 3,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "+17.485",
+            "retired": null
+          },
+          {
+            "position": 4,
+            "driver": "Lewis Hamilton",
+            "team": "Ferrari",
+            "time": "+18.515",
+            "retired": null
+          },
+          {
+            "position": 5,
+            "driver": "Lando Norris",
+            "team": "McLaren",
+            "time": "+30.521",
+            "retired": null
+          },
+          {
+            "position": 6,
+            "driver": "Isack Hadjar",
+            "team": "Red Bull",
+            "time": "+34.373",
+            "retired": null
+          },
+          {
+            "position": 7,
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": "+52.674",
+            "retired": null
+          },
+          {
+            "position": 8,
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": "+54.303",
+            "retired": null
+          },
+          {
+            "position": 9,
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "+1:19.183",
+            "retired": null
+          },
+          {
+            "position": 10,
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": "+1:27.516",
+            "retired": null
+          },
+          {
+            "position": 11,
+            "driver": "Nico Hulkenberg",
+            "team": "Audi",
+            "time": "+1:34.945",
+            "retired": null
+          },
+          {
+            "position": 12,
+            "driver": "Arvid Lindblad",
+            "team": "RB",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 13,
+            "driver": "Gabriel Bortoleto",
+            "team": "Audi",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 14,
+            "driver": "Esteban Ocon",
+            "team": "Haas",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 15,
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 16,
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 17,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 18,
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 19,
+            "driver": "Sergio Pérez",
+            "team": "Cadillac",
+            "time": "+1 giro",
+            "retired": null
+          },
+          {
+            "position": 20,
+            "driver": "Valtteri Bottas",
+            "team": "Cadillac",
+            "time": null,
+            "retired": "Ritirato"
+          },
+          {
+            "position": 21,
+            "driver": "Franco Colapinto",
+            "team": "Alpine",
+            "time": null,
+            "retired": "Ritirato"
+          },
+          {
+            "position": 22,
+            "driver": "Oliver Bearman",
+            "team": "Haas",
+            "time": null,
+            "retired": "Ritirato"
+          }
+        ]
+      },
+      "raceSource": "openf1"
     },
     {
       "round": 19,
@@ -6099,15 +6275,15 @@
       "schedule": {
         "fp1": {
           "date": "2026-11-06",
-          "time": "14:30:00Z"
+          "time": "15:30:00Z"
         },
         "fp2": {
           "date": "2026-11-06",
-          "time": "18:30:00Z"
+          "time": "19:00:00Z"
         },
         "fp3": {
           "date": "2026-11-07",
-          "time": "14:00:00Z"
+          "time": "14:30:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
@@ -6181,11 +6357,11 @@
         },
         "fp2": {
           "date": "2026-11-27",
-          "time": "17:30:00Z"
+          "time": "17:00:00Z"
         },
         "fp3": {
           "date": "2026-11-28",
-          "time": "14:00:00Z"
+          "time": "14:30:00Z"
         },
         "sprintQualy": null,
         "sprintRace": null,
