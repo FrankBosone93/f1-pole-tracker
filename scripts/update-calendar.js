@@ -23,6 +23,7 @@ const { sleep, fetchJson } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 const { CIRCUIT_INFO } = require('./lib/weather');
 const { loadAutoCircuits, saveAutoCircuits } = require('./lib/auto-circuits');
+const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
 
 // Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
 // invernali e si ignorano.)
@@ -140,30 +141,12 @@ async function learnNewCircuits(races, sessions) {
 }
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
-const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
-
 // Prove libere da OpenF1 quando f1api.dev non le ha (Austin 2026: ancora
 // nessun risultato la domenica, e dal lunedì il GP non è più in evidenza,
 // quindi le libere non sarebbero mai state salvate). Stesso formato del sito:
-// [{position, driver, team, time}]. I nomi dei piloti vengono riportati a
-// quelli di f1api.dev (OpenF1 scrive "Kimi Antonelli", "Alexander Albon")
-// usando la classifica e i risultati già salvati, abbinati per cognome.
+// [{position, driver, team, time}], con i nomi dei piloti riportati a quelli
+// già usati sul sito (lib/driver-names.js).
 const PRACTICE_SESSION_NAMES = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3' };
-const surnameKey = name => String(name || '').trim().split(/\s+/).pop()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-function f1apiDriverNames(existingCalendar) {
-    const names = new Map(), clash = new Set();
-    const add = full => {
-        const k = surnameKey(full);
-        if (!k) return;
-        if (names.has(k) && names.get(k) !== full) clash.add(k);
-        names.set(k, full);
-    };
-    try { (JSON.parse(fs.readFileSync(STANDINGS_JSON_PATH, 'utf-8')).drivers || []).forEach(d => add(d.driver)); } catch (e) { /* senza classifica: nomi OpenF1 */ }
-    (existingCalendar?.races || []).forEach(r => Object.values(r.results || {}).forEach(rows => (rows || []).forEach(x => add(x.driver))));
-    clash.forEach(k => names.delete(k)); // cognome ambiguo: meglio il nome OpenF1
-    return names;
-}
 const fmtLap = sec => {
     const m = Math.floor(sec / 60), rest = sec - m * 60;
     return `${m}:${rest.toFixed(3).padStart(6, '0')}`;
@@ -179,10 +162,9 @@ async function openf1PracticeResults(session, driverNames) {
     const withoutTime = rows.filter(r => typeof r.duration !== 'number');
     return [...withTime, ...withoutTime].map((r, i) => {
         const d = byNumber.get(r.driver_number) || {};
-        const openf1Name = [d.first_name, d.last_name].filter(Boolean).join(' ') || `#${r.driver_number}`;
         return {
             position: i + 1,
-            driver: driverNames.get(surnameKey(d.last_name || openf1Name)) || openf1Name,
+            driver: siteDriverName(d, driverNames) || `#${r.driver_number}`,
             team: matchTeam(d.team_name || ''),
             time: typeof r.duration === 'number' ? fmtLap(r.duration) : '-',
         };
@@ -217,7 +199,7 @@ async function main() {
     }
 
     const now = new Date();
-    const driverNames = f1apiDriverNames(existingCalendar);
+    const driverNames = knownDriverNames();
     const openf1Sessions = await loadOpenF1Sessions(season);
     await learnNewCircuits(races, openf1Sessions);
     const official = officialSchedule(openf1Sessions);
