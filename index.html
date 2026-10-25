@@ -52,6 +52,16 @@
         body.pace-mode #featuredRaceWidget,
         body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.pace-mode) #paceView { display: none; }
+        /* Mappa del tracciato: si apre scorrendo verso il basso e sfumando
+           (righe della griglia da 0fr a 1fr = altezza reale del contenuto),
+           invece di comparire di colpo. */
+        #telemetryMapWrap { display: grid; grid-template-rows: 0fr; opacity: 0; margin-top: 0;
+            transition: grid-template-rows .4s ease, opacity .4s ease, margin-top .4s ease; }
+        /* Contenitore senza bordo né padding (quelli sono sul riquadro
+           interno): da chiuso scende davvero a 0 px. */
+        #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
+        #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
+        @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -169,13 +179,18 @@
                     <!-- Tracciato del giro di pole (posizioni reali dell'auto, da
                          tracks/{anno}/{circuito}.json): il puntino segue l'istante indicato sui
                          grafici - vedi renderTrackMap / updateTrackDots. -->
-                    <div id="telemetryMapWrap" class="hidden mt-3 bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
+                    <!-- Apertura animata (classe map-open, vedi CSS): il tracciato
+                         arriva dopo i grafici (file scaricato a parte), e prima
+                         compariva di colpo spingendo giù il resto della pagina. -->
+                    <div id="telemetryMapWrap"><div>
+                    <div class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
                         <div class="flex items-center justify-between gap-2 text-[11px] text-gray-400 mb-1">
                             <span id="telemetryMapTitle">Tracciato</span>
                             <span id="telemetryMapHint" class="text-gray-500">Scorri sui grafici o sul tracciato</span>
                         </div>
                         <svg id="telemetryMap" class="w-full h-[200px] md:h-[260px] cursor-crosshair" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Tracciato del circuito con la posizione dell'auto nel punto indicato sui grafici; scorrendo sul tracciato i grafici mostrano quel punto"></svg>
                     </div>
+                    </div></div>
                 </div>
             </div>
 
@@ -889,8 +904,8 @@
             ].filter(Boolean).map(it => ({ ...it, track: getTrack(it.season, select.value) }))
                 .map(it => ({ ...it, pts: it.track ? it.track.points : null }));
             const baseTrack = items[0].track;
-            if (!baseTrack) { wrap.classList.add('hidden'); return; }
-            wrap.classList.remove('hidden');
+            if (!baseTrack) { wrap.classList.remove('map-open'); return; }
+            wrap.classList.add('map-open');
             const base = baseTrack.points;
 
             // Coordinate ruotate, poi in un riquadro di 1000 unità sul lato
@@ -980,6 +995,11 @@
             return best <= 70 * 70 ? bestT : null;
         }
         (function setupTrackMapPointer() {
+            // A fine apertura/chiusura l'altezza della colonna è cambiata:
+            // stesso riallineamento di quando cambia il contenuto.
+            document.getElementById('telemetryMapWrap').addEventListener('transitionend', e => {
+                if (e.propertyName === 'grid-template-rows') scheduleReposition();
+            });
             const svg = document.getElementById('telemetryMap');
             // Niente tooltip sui grafici: i valori sono già nei riquadri, sui
             // grafici basta la linea verticale.
@@ -2767,6 +2787,9 @@
             poleCanvas.style.display = '';
             telemetryPanels.classList.add('hidden');
             document.getElementById('telemetryStats').classList.add('hidden');
+            // Chiusa uscendo dalla telemetria, così alla prossima apertura
+            // si riapre con l'animazione (e non mostra il circuito di prima).
+            document.getElementById('telemetryMapWrap').classList.remove('map-open');
             toggleIconBtn.classList.remove('hidden');
             updateChartViewToggleIcon();
 
