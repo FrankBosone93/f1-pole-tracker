@@ -171,6 +171,51 @@ async function openf1PracticeResults(session, driverNames) {
     });
 }
 
+// Risultati di gara da OpenF1 (classifica ufficiale, penalità post-gara
+// comprese). Confronto del 2026-10-25 su 87 gare 2023-2026: in tutte le 10
+// gare in cui le due fonti non coincidevano aveva ragione OpenF1 (verificato
+// sulle classifiche ufficiali), mentre f1api.dev aveva penalità post-gara
+// mancanti (Brasile 2024, Singapore 2025, Bahrain 2025, Barcellona e Miami
+// 2026), distacchi sbagliati (Canada 2023, Brasile 2024) e ritirati in ordine
+// sbagliato. f1api.dev resta il ripiego (OpenF1 è bloccata durante le
+// sessioni live). Stesso formato del sito: {position, driver, team, time, retired}.
+const fmtGap = sec => {
+    if (sec < 60) return `+${sec.toFixed(3)}`;
+    const m = Math.floor(sec / 60);
+    return `+${m}:${(sec - m * 60).toFixed(3).padStart(6, '0')}`;
+};
+const fmtRaceTime = sec => {
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), rest = sec - h * 3600 - m * 60;
+    return `${h}:${String(m).padStart(2, '0')}:${rest.toFixed(3).padStart(6, '0')}`;
+};
+async function openf1RaceResults(session, driverNames) {
+    const rows = await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`);
+    if (!rows.length) return null;
+    const drivers = await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
+    const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
+    // Classificati in ordine di posizione; i non classificati (posizione
+    // null: ritirati presto, non partiti, squalificati) in fondo, per giri.
+    const classified = rows.filter(r => r.position).sort((a, b) => a.position - b.position);
+    const others = rows.filter(r => !r.position).sort((a, b) => (b.number_of_laps || 0) - (a.number_of_laps || 0));
+    return [...classified, ...others].map((r, i) => {
+        const d = byNumber.get(r.driver_number) || {};
+        const retired = r.dsq ? 'Squalificato' : r.dns ? 'Non partito' : r.dnf ? 'Ritirato' : null;
+        let time = null;
+        if (!retired) {
+            if (i === 0 && typeof r.duration === 'number') time = fmtRaceTime(r.duration);
+            else if (typeof r.gap_to_leader === 'number') time = fmtGap(r.gap_to_leader);
+            else if (typeof r.gap_to_leader === 'string') {
+                const laps = parseInt(r.gap_to_leader.replace(/\D/g, ''), 10) || 1;
+                time = `+${laps} ${laps === 1 ? 'giro' : 'giri'}`;
+            } else time = '-';
+        }
+        return { position: i + 1, driver: siteDriverName(d, driverNames) || `#${r.driver_number}`, team: matchTeam(d.team_name || ''), time, retired };
+    });
+}
+// Le penalità post-gara possono arrivare anche giorni dopo: i risultati
+// OpenF1 di una gara si ricontrollano per una settimana, poi restano in cache.
+const RACE_RECHECK_DAYS = 7;
+
 async function main() {
     console.log('Richiesta a https://f1api.dev/api/current ...');
     const currentPayload = await fetchJson('https://f1api.dev/api/current');
@@ -260,35 +305,58 @@ async function main() {
         let winner = null;
         const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
 
-        // Gara: un'unica richiesta condivisa tra "vincitore" (già esistente)
-        // e "risultati completi" (nuovo), per non raddoppiare la chiamata.
+        // Gara: OpenF1 come fonte principale, f1api.dev come ripiego (vedi
+        // openf1RaceResults). raceSource dice da dove vengono i risultati
+        // salvati: quelli di f1api.dev (anche se già in cache) vengono
+        // sostituiti appena OpenF1 li ha, e quelli OpenF1 si ricontrollano
+        // per RACE_RECHECK_DAYS giorni (penalità post-gara).
         const cachedRaceResults = existingRace?.results?.race;
-        if (cachedRaceResults) {
-            results.race = cachedRaceResults;
-            // Il vincitore va comunque ricavato: se i risultati sono già in
-            // cache, lo ricaviamo da lì invece di rifare la richiesta.
-            const winnerRow = cachedRaceResults.find(r => r.position === 1);
-            if (winnerRow) winner = { driver: winnerRow.driver, team: winnerRow.team };
-        } else if (race.schedule?.race?.date && new Date(`${race.schedule.race.date}T${race.schedule.race.time || '23:59:59Z'}`) > now) {
-            // Gara ancora da disputare: nessuna richiesta (prima partiva un
-            // 404 inutile per ogni gara futura, a ogni run: 6 su 7 richieste).
-        } else {
-            try {
-                const racePayload = await fetchJson(`https://f1api.dev/api/${season}/${round}/race`, { allow404: true });
-                const rawResults = racePayload?.races?.results;
-                if (Array.isArray(rawResults) && rawResults.length > 0) {
-                    const winnerRow = rawResults.find(r => String(r.position) === '1') || rawResults[0];
-                    winner = {
-                        driver: driverFullName(winnerRow.driver),
-                        team: matchTeam(winnerRow.team?.teamName || winnerRow.team?.teamId || ''),
-                    };
-                    results.race = normalizeSessionResults('race', racePayload.races);
-                }
-            } catch (err) {
-                console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore nel recupero risultati gara - ${err.message}`);
+        const raceStart = race.schedule?.race?.date ? new Date(`${race.schedule.race.date}T${race.schedule.race.time || '23:59:59Z'}`) : null;
+        const raceIsPast = raceStart && raceStart <= now;
+        let raceSource = existingRace?.raceSource || (cachedRaceResults ? 'f1api' : null);
+        if (cachedRaceResults) results.race = cachedRaceResults;
+        const settled = cachedRaceResults && raceSource === 'openf1' && raceStart && (now - raceStart) > RACE_RECHECK_DAYS * 86400000;
+
+        if (raceIsPast && !settled) {
+            const session = openf1Sessions.find(s => s.session_name === 'Race'
+                && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
+            let fromOpenF1 = null;
+            if (session) {
+                try { fromOpenF1 = await openf1RaceResults(session, driverNames); }
+                catch (err) { console.warn(`⚠️  ${mappedCircuit}: risultati gara OpenF1 non disponibili - ${err.message}`); }
             }
-            await sleep(150);
+            if (fromOpenF1) {
+                const key = rows => (rows || []).map(r => `${r.position}|${r.driver}|${r.time}|${r.retired}`).join(';');
+                if (cachedRaceResults && key(cachedRaceResults) !== key(fromOpenF1)) {
+                    if (raceSource === 'openf1') console.log(`🔁 ${mappedCircuit}: classifica di gara aggiornata da OpenF1 (es. penalità post-gara).`);
+                    else {
+                        const firstDiff = fromOpenF1.find((r, i) => !cachedRaceResults[i] || cachedRaceResults[i].driver !== r.driver);
+                        console.log(`📥 ${mappedCircuit}: classifica di gara da OpenF1 al posto di f1api.dev${firstDiff ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ' (distacchi/formato)'}.`);
+                    }
+                } else if (!cachedRaceResults) {
+                    console.log(`📥 ${mappedCircuit}: classifica di gara da OpenF1.`);
+                }
+                results.race = fromOpenF1;
+                raceSource = 'openf1';
+            } else if (!cachedRaceResults) {
+                // Ripiego: f1api.dev.
+                try {
+                    const racePayload = await fetchJson(`https://f1api.dev/api/${season}/${round}/race`, { allow404: true });
+                    const normalized = normalizeSessionResults('race', racePayload?.races);
+                    if (normalized && normalized.length) {
+                        results.race = normalized;
+                        raceSource = 'f1api';
+                        console.log(`📥 ${mappedCircuit}: classifica di gara da f1api.dev (OpenF1 non disponibile).`);
+                    }
+                } catch (err) {
+                    console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore nel recupero risultati gara - ${err.message}`);
+                }
+                await sleep(150);
+            }
         }
+        if (!results.race) raceSource = null;
+        const winnerRow = (results.race || []).find(r => r.position === 1);
+        if (winnerRow) winner = { driver: winnerRow.driver, team: winnerRow.team };
 
         // Prove libere e qualifiche: una richiesta per sessione, solo se non
         // già in cache e solo se la sessione è già passata (niente 404 inutili
@@ -338,7 +406,7 @@ async function main() {
             }
         }
 
-        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results });
+        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}) });
         console.log(`Round ${round} - ${mappedCircuit}: ${winner ? `${winner.driver} (${winner.team})` : 'da disputare'}`);
     }
 
