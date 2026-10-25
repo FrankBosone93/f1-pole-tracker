@@ -1,5 +1,5 @@
 {
-  "ok": true,
-  "lastRun": "2026-10-19T13:45:07.468Z",
-  "error": null
+  "ok": false,
+  "lastRun": "2026-10-25T20:58:35.984Z",
+  "error": "HTTP 401 per https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
 }
