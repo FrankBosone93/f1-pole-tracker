@@ -1,3 +1,6 @@
 .DS_Store
 F1_Pole_Positions.xlsx
 .claude/
+
+# Dati privati delle notifiche (iscrizioni con nomi): solo in locale, mai su GitHub
+private/
