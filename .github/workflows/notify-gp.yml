@@ -28,6 +28,10 @@ jobs:
       - name: Controlla i dati dell'ultimo GP e invia la notifica
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          # Notifiche alla web app sulla schermata Home (Web Push): chiave
+          # privata VAPID e iscrizioni copiate dal tasto 🔔 Notifiche del sito.
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WEBPUSH_SUBSCRIPTIONS: ${{ secrets.WEBPUSH_SUBSCRIPTIONS }}
         run: node scripts/notify-gp.js
 
       # Lo stato (ultimo GP notificato) va in git, così la notifica non si

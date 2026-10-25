@@ -282,7 +282,13 @@
                    class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer">
                     🔄 Full Update
                 </a>
-                <p class="text-xs text-gray-600 mt-1">Aggiornamento Dati completo</p>
+                <!-- Notifiche push della web app (iPhone: solo dalla schermata
+                     Home, iOS 16.4+) - vedi enableWebPush e sw.js. -->
+                <button type="button" onclick="enableWebPush()"
+                   class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer ml-2">
+                    🔔 Notifiche
+                </button>
+                <p class="text-xs text-gray-600 mt-1">Aggiornamento Dati completo · Notifiche dopo ogni GP</p>
             </div>
         </div>
 
@@ -2970,6 +2976,72 @@
             e.preventDefault(); // evita lo scroll della pagina con Spazio
             el.click();
         });
+
+        // --- NOTIFICHE PUSH DELLA WEB APP -----------------------------------
+        // Il sito è statico: non può salvare da solo l'iscrizione del
+        // telefono. "Notifiche" chiede il permesso, crea l'iscrizione e ne
+        // mostra il codice da copiare, che va salvato nel segreto
+        // WEBPUSH_SUBSCRIPTIONS del repository; da lì l'automazione del
+        // lunedì (scripts/notify-gp.js) invia la notifica anche qui, oltre
+        // che su ntfy. Stessa chiave pubblica di scripts/lib/webpush.js.
+        const VAPID_PUBLIC_KEY = 'BG3V2TNhsjePVjINPgQXt_xqW18B-FQYYmX1wOqAMi-NJRvayErTAd36gB_PgL2IDjhPrvV5zVLM_jFVAAV09tA';
+
+        function showPushDialog(title, html) {
+            document.getElementById('pushDialog')?.remove();
+            const el = document.createElement('div');
+            el.id = 'pushDialog';
+            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
+            el.innerHTML = `
+                <div class="bg-[#1E1E1E] border border-gray-700 rounded-xl p-4 w-full max-w-md text-sm text-gray-300 space-y-3">
+                    <div class="font-semibold text-white">${title}</div>
+                    ${html}
+                    <div class="text-right"><button type="button" data-close class="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg py-1.5 px-4">Chiudi</button></div>
+                </div>`;
+            el.addEventListener('click', e => { if (e.target === el || e.target.hasAttribute('data-close')) el.remove(); });
+            document.body.appendChild(el);
+            return el;
+        }
+
+        async function enableWebPush() {
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+            if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+                showPushDialog('🔔 Notifiche', isIOS && !standalone
+                    ? `<p>Su iPhone le notifiche funzionano solo con il sito aggiunto alla schermata Home:</p>
+                       <p>apri il sito in <b>Safari</b> → tocca <b>Condividi</b> → <b>Aggiungi alla schermata Home</b>, poi apri l'app dalla Home e tocca di nuovo <b>🔔 Notifiche</b>.</p>
+                       <p class="text-xs text-gray-500">Serve iOS 16.4 o successivo.</p>`
+                    : `<p>Questo browser non supporta le notifiche push.</p>`);
+                return;
+            }
+            // Richiesta del permesso subito, dentro il tocco: iOS la accetta
+            // solo come risposta diretta a un gesto dell'utente.
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                showPushDialog('🔔 Notifiche non consentite', `<p>Per attivarle: <b>Impostazioni</b> → <b>Notifiche</b> → <b>F1 Pole Tracker</b> → Consenti notifiche, poi tocca di nuovo 🔔 Notifiche.</p>`);
+                return;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const key = Uint8Array.from(atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+                const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+                const code = JSON.stringify(sub);
+                const dlg = showPushDialog('🔔 Ultimo passaggio', `
+                    <p>Notifiche consentite. Copia questo codice e invialo per completare l'attivazione (va salvato nei segreti del repository):</p>
+                    <textarea readonly rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-[11px] font-mono text-gray-300 break-all">${code}</textarea>
+                    <div class="flex gap-2">
+                        <button type="button" data-copy class="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-1.5">Copia</button>
+                        ${navigator.share ? '<button type="button" data-share class="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-1.5">Condividi</button>' : ''}
+                    </div>`);
+                dlg.querySelector('[data-copy]').onclick = async () => {
+                    try { await navigator.clipboard.writeText(code); showToast('Codice copiato'); }
+                    catch (e) { const ta = dlg.querySelector('textarea'); ta.select(); document.execCommand('copy'); showToast('Codice copiato'); }
+                };
+                const shareBtn = dlg.querySelector('[data-share]');
+                if (shareBtn) shareBtn.onclick = () => navigator.share({ text: code }).catch(() => {});
+            } catch (err) {
+                showPushDialog('🔔 Notifiche', `<p>Attivazione non riuscita: ${String(err && err.message || err)}</p>`);
+            }
+        }
 
         initApp();
 

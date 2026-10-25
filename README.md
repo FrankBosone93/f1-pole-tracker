@@ -125,6 +125,18 @@ Lunedì alle 8:13 UTC (dopo tutti i run di recupero, con un secondo controllo ma
 - **Canale:** nome lungo e casuale nel segreto del repository `NTFY_TOPIC` (Settings → Secrets and variables → Actions), mai nel codice pubblico: chi conosce il nome può leggere e scrivere nel canale. Per ricevere le notifiche: app ntfy (iPhone, Android, web) → "+" → iscrizione a quel canale sul server ntfy.sh. Per aggiungere persone basta dar loro il nome del canale; per toglierle, si cambia nome (nuovo segreto). Senza segreto lo script non invia nulla e non fallisce.
 - **ℹ️ "Circuito nuovo aggiunto in automatico: …"** in più se il GP si è corso su un circuito riconosciuto in automatico quest'anno (vedi sotto), per poterne cambiare il nome.
 - Prova senza inviare: `node scripts/notify-gp.js --dry-run`.
+
+### Notifiche nella web app (schermata Home)
+
+Lo stesso messaggio arriva anche alla web app installata sulla schermata Home, in parallelo a ntfy (Web Push; su iPhone da iOS 16.4, solo con il sito aggiunto alla Home da Safari). Toccando la notifica si apre la web app sul GP.
+
+- **Attivazione:** nella web app il tasto **🔔 Notifiche** (accanto a Full Update) chiede il permesso e mostra un codice (l'iscrizione del telefono) da copiare. Il sito è statico e non può salvarlo da solo: va messo nel segreto `WEBPUSH_SUBSCRIPTIONS` (JSON, una iscrizione o un array per più telefoni). Fuori dalla Home, su iPhone il tasto spiega come aggiungerla.
+- **Invio:** `scripts/lib/webpush.js`, senza librerie esterne: cifratura RFC 8291 (verificabile con `node scripts/lib/webpush.js --self-test`, che la confronta con l'esempio ufficiale) e firma VAPID. Chiave pubblica nel codice (`webpush.js` e `index.html`), privata solo nel segreto `VAPID_PRIVATE_KEY`.
+- **Ricezione:** `sw.js` mostra la notifica e al tocco apre o porta in primo piano la web app.
+- **Iscrizione scaduta** (iOS può invalidarla): il log dice "iscrizione scaduta", si riattiva dal tasto 🔔 e si aggiorna il segreto.
+- Basta un canale riuscito (ntfy o web app) perché il GP risulti notificato.
+- Prova solo alla web app, senza toccare lo stato: `node scripts/notify-gp.js --test-push` (con `VAPID_PRIVATE_KEY` e `WEBPUSH_SUBSCRIPTIONS` nell'ambiente).
+- In futuro, per aprire l'attivazione a chiunque senza passare dai segreti, servirà un piccolo servizio che raccolga le iscrizioni (es. Cloudflare Workers).
 - Idea per il futuro: lo stesso controllo potrebbe anche scrivere un commento su una issue fissa con @menzione, per ricevere il riepilogo via email da GitHub.
 
 ## Circuiti nuovi (riconosciuti in automatico)

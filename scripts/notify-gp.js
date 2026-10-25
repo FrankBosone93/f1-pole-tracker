@@ -16,21 +16,30 @@
 // incompleti si avvisa una volta (⚠️) e si ricontrolla ai run successivi; quando
 // diventano completi arriva il ✅.
 //
-// Il canale ntfy è nella variabile d'ambiente NTFY_TOPIC (segreto del
-// repository: chi conosce il nome del canale può leggerne i messaggi).
+// Due canali in parallelo, stesso messaggio:
+//   - ntfy: canale nella variabile d'ambiente NTFY_TOPIC (segreto del
+//     repository: chi conosce il nome del canale può leggerne i messaggi);
+//   - web app sulla schermata Home (Web Push, lib/webpush.js): iscrizioni
+//     nel segreto WEBPUSH_SUBSCRIPTIONS (JSON, una o un array, copiate dal
+//     tasto "🔔 Notifiche" del sito) e chiave privata in VAPID_PRIVATE_KEY.
+// Un canale non configurato si salta senza errori.
 //
 // Uso:
-//   node scripts/notify-gp.js            (controlla e, se serve, invia)
-//   node scripts/notify-gp.js --dry-run  (mostra il messaggio senza inviarlo)
+//   node scripts/notify-gp.js              (controlla e, se serve, invia)
+//   node scripts/notify-gp.js --dry-run    (mostra il messaggio senza inviarlo)
+//   node scripts/notify-gp.js --test-push  (notifica di prova solo alla web
+//                                           app, senza toccare lo stato)
 
 const fs = require('fs');
 const path = require('path');
 const { autoCircuitsAddedIn } = require('./lib/auto-circuits');
+const { sendWebPush } = require('./lib/webpush');
 
 const ROOT = path.join(__dirname, '..');
 const STATE_PATH = path.join(ROOT, 'status', 'notified.json');
 const SITE_URL = 'https://frankbosone93.github.io/f1-pole-tracker/';
 const DRY_RUN = process.argv.includes('--dry-run');
+const TEST_PUSH = process.argv.includes('--test-push');
 
 const readJson = (rel, fallback = null) => {
     const p = path.join(ROOT, rel);
@@ -131,7 +140,37 @@ async function send(report, topic) {
     if (!res.ok) throw new Error(`ntfy HTTP ${res.status}: ${await res.text()}`);
 }
 
+function webPushSubscriptions() {
+    const raw = (process.env.WEBPUSH_SUBSCRIPTIONS || '').trim();
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return (Array.isArray(parsed) ? parsed : [parsed]).filter(s => s && s.endpoint && s.keys);
+}
+
+// Notifica alla web app: una richiesta per iscrizione. 404/410 = iscrizione
+// scaduta (iOS può invalidarla): va riattivata dal tasto 🔔 del sito e il
+// segreto aggiornato.
+async function sendWebPushAll(report) {
+    const key = process.env.VAPID_PRIVATE_KEY;
+    const subs = webPushSubscriptions();
+    if (!key || !subs.length) { console.log('Web app: nessuna iscrizione configurata, salto.'); return { configured: false, delivered: 0 }; }
+    let delivered = 0;
+    for (const [i, sub] of subs.entries()) {
+        const { status, text } = await sendWebPush(sub, { title: report.title, body: report.message, url: report.click }, key);
+        if (status >= 200 && status < 300) delivered++;
+        else if (status === 404 || status === 410) console.warn(`⚠️  Web app #${i + 1}: iscrizione scaduta (HTTP ${status}), va riattivata dal tasto 🔔 Notifiche del sito.`);
+        else console.warn(`⚠️  Web app #${i + 1}: HTTP ${status} ${text}`);
+    }
+    console.log(`Web app: ${delivered}/${subs.length} notifiche consegnate.`);
+    return { configured: true, delivered };
+}
+
 async function main() {
+    if (TEST_PUSH) {
+        const r = await sendWebPushAll({ title: '🔔 Notifica di prova', message: 'Le notifiche della web app funzionano.', click: SITE_URL });
+        if (!r.delivered) throw new Error('nessuna notifica di prova consegnata');
+        return;
+    }
     const report = buildReport();
     if (!report) { console.log('Nessun GP disputato in calendario: niente da notificare.'); return; }
 
@@ -147,14 +186,23 @@ async function main() {
     }
     if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }
 
+    // Basta un canale andato a buon fine per considerare il GP notificato
+    // (un errore sull'altro resta nel log). Nessun canale configurato non è
+    // un errore: lo stato non cambia, così si invierà appena ce n'è uno.
     const topic = process.env.NTFY_TOPIC;
-    if (!topic) {
-        // Non è un errore dell'automazione: semplicemente il canale non è
-        // ancora configurato. Lo stato non cambia, così si invierà appena c'è.
-        console.warn('⚠️  NTFY_TOPIC non impostato: notifica non inviata.');
-        return;
+    let delivered = 0, configured = false;
+    if (topic) {
+        configured = true;
+        try { await send(report, topic); delivered++; console.log('ntfy: notifica inviata.'); }
+        catch (err) { console.warn(`⚠️  ntfy: ${err.message}`); }
+    } else {
+        console.warn('⚠️  NTFY_TOPIC non impostato: ntfy saltato.');
     }
-    await send(report, topic);
+    const web = await sendWebPushAll(report);
+    configured = configured || web.configured;
+    delivered += web.delivered;
+    if (!configured) { console.warn('⚠️  Nessun canale di notifica configurato: notifica non inviata.'); return; }
+    if (!delivered) throw new Error('notifica non consegnata su nessun canale');
     fs.writeFileSync(STATE_PATH, JSON.stringify({
         gp: report.key,
         result: report.complete ? 'ok' : 'warned',

@@ -51,3 +51,31 @@ self.addEventListener('fetch', event => {
             .catch(() => caches.match(request.url.split('?')[0]))
     );
 });
+
+// --- Notifiche push (web app sulla schermata Home) ---------------------
+// Inviate dall'automazione del lunedì (scripts/notify-gp.js, lib/webpush.js)
+// come JSON { title, body, url }. iOS richiede che ogni push mostri una
+// notifica, quindi anche un messaggio illeggibile ne mostra una generica.
+self.addEventListener('push', event => {
+    let data = {};
+    try { data = event.data ? event.data.json() : {}; } catch (e) { data = { body: event.data && event.data.text() }; }
+    event.waitUntil(self.registration.showNotification(data.title || 'F1 Pole Tracker', {
+        body: data.body || '',
+        icon: 'icons/icon-192.png',
+        badge: 'icons/icon-192.png',
+        data: { url: data.url || './' },
+    }));
+});
+
+// Tocco sulla notifica: apre la web app sul GP indicato (o la porta in
+// primo piano se è già aperta).
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    const url = new URL(event.notification.data && event.notification.data.url || './', self.registration.scope).href;
+    event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+        const open = list.find(c => c.url.startsWith(self.registration.scope));
+        if (open && typeof open.navigate === 'function') return open.navigate(url).then(c => (c || open).focus()).catch(() => open.focus());
+        if (open) return open.focus();
+        return self.clients.openWindow(url);
+    }));
+});
