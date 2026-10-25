@@ -21,7 +21,8 @@
 //     repository: chi conosce il nome del canale può leggerne i messaggi);
 //   - web app sulla schermata Home (Web Push, lib/webpush.js): iscrizioni
 //     nel segreto WEBPUSH_SUBSCRIPTIONS (JSON, una o un array, copiate dal
-//     tasto "🔔 Notifiche" del sito) e chiave privata in VAPID_PRIVATE_KEY.
+//     tasto "🔔 Notifiche" del sito, ognuna con un campo "name" facoltativo
+//     usato nei log) e chiave privata in VAPID_PRIVATE_KEY.
 // Un canale non configurato si salta senza errori.
 //
 // Uso:
@@ -156,10 +157,12 @@ async function sendWebPushAll(report) {
     if (!key || !subs.length) { console.log('Web app: nessuna iscrizione configurata, salto.'); return { configured: false, delivered: 0 }; }
     let delivered = 0;
     for (const [i, sub] of subs.entries()) {
+        // Nome breve dell'iscrizione (i log sono pubblici: niente cognomi).
+        const who = sub.name || `#${i + 1}`;
         const { status, text } = await sendWebPush(sub, { title: report.title, body: report.message, url: report.click }, key);
         if (status >= 200 && status < 300) delivered++;
-        else if (status === 404 || status === 410) console.warn(`⚠️  Web app #${i + 1}: iscrizione scaduta (HTTP ${status}), va riattivata dal tasto 🔔 Notifiche del sito.`);
-        else console.warn(`⚠️  Web app #${i + 1}: HTTP ${status} ${text}`);
+        else if (status === 404 || status === 410) console.warn(`⚠️  Web app ${who}: iscrizione scaduta (HTTP ${status}), va riattivata dal tasto 🔔 Notifiche del sito.`);
+        else console.warn(`⚠️  Web app ${who}: HTTP ${status} ${text}`);
     }
     console.log(`Web app: ${delivered}/${subs.length} notifiche consegnate.`);
     return { configured: true, delivered };

@@ -3034,14 +3034,30 @@
                 const reg = await navigator.serviceWorker.ready;
                 const key = Uint8Array.from(atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
                 const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
-                const code = JSON.stringify(sub);
+                // Nome di chi si iscrive dentro il codice, così chi lo riceve
+                // sa di chi è (ricordato sul dispositivo per la volta dopo).
+                let savedName = '';
+                try { savedName = localStorage.getItem('pushName') || ''; } catch (e) {}
+                const codeFor = name => JSON.stringify(name ? { name, ...sub.toJSON() } : sub);
+                let code = codeFor(savedName);
                 const dlg = showPushDialog('🔔 Ultimo passaggio', `
-                    <p>Notifiche consentite. Copia questo codice e invialo per completare l'attivazione (va salvato nei segreti del repository):</p>
-                    <textarea readonly rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-[11px] font-mono text-gray-300 break-all">${code}</textarea>
+                    <p>Notifiche consentite. Scrivi il tuo nome, poi copia il codice e invialo per completare l'attivazione:</p>
+                    <input type="text" data-name maxlength="40" placeholder="Il tuo nome (es. Marco)" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-white">
+                    <textarea readonly rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-[11px] font-mono text-gray-300 break-all"></textarea>
                     <div class="flex gap-2">
                         <button type="button" data-copy class="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-1.5">Copia</button>
                         ${navigator.share ? '<button type="button" data-share class="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg py-1.5">Condividi</button>' : ''}
                     </div>`);
+                const nameInput = dlg.querySelector('[data-name]');
+                const codeBox = dlg.querySelector('textarea');
+                nameInput.value = savedName;
+                codeBox.value = code;
+                nameInput.addEventListener('input', () => {
+                    const name = nameInput.value.trim();
+                    code = codeFor(name);
+                    codeBox.value = code;
+                    try { localStorage.setItem('pushName', name); } catch (e) {}
+                });
                 dlg.querySelector('[data-copy]').onclick = async () => {
                     try { await navigator.clipboard.writeText(code); showToast('Codice copiato'); }
                     catch (e) { const ta = dlg.querySelector('textarea'); ta.select(); document.execCommand('copy'); showToast('Codice copiato'); }
