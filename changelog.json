@@ -66,6 +66,294 @@
           ]
         }
       ]
+    },
+    {
+      "date": "2026-10-17",
+      "title": "Changelog — 17 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Passo gara",
+          "items": [
+            "Le sigle dei piloti accanto alle strisce delle gomme non coprono più l'asse dei tempi.",
+            "Passando dalle Qualifiche al **Passo gara** resta aperto lo stesso circuito, con gli stessi piloti se ci sono.",
+            "Per i circuiti senza dati (prima del 2023) un avviso spiega cosa viene mostrato."
+          ]
+        },
+        {
+          "title": "Orari delle sessioni",
+          "items": [
+            "Il widget Prossimo GP e il calendario mostrano gli **orari ufficiali F1**: alcuni erano sbagliati (es. la gara di Austin alle 20:00 invece delle 21:00, Miami senza l'anticipo per il maltempo)."
+          ]
+        },
+        {
+          "title": "Notifiche",
+          "items": [
+            "Prima versione della **notifica dopo ogni GP**: titolo con il nome del GP, ✅ se il sito è aggiornato o ⚠️ se manca qualcosa, e un riepilogo con pole, podio e leader del mondiale.",
+            "Toccandola si apre il sito su quel circuito."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-10-15",
+      "title": "Changelog — 15 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Link condivisibili",
+          "items": [
+            "L'indirizzo della pagina riflette circuito e vista: con il nuovo tasto **Condividi** puoi mandare a qualcuno esattamente quello che stai guardando.",
+            "Toccando il titolo **F1 POLE TRACKER** torni alla pagina iniziale, aggiornata.",
+            "Il grafico principale si chiama ora \"Andamenti tempi\"."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "Sotto i grafici, quattro riquadri: velocità minima e massima, percentuale del giro a gas pieno e secondi in frenata.",
+            "Scorrendo col mouse o col dito sul grafico mostrano velocità, marcia, acceleratore e freno in quel punto.",
+            "Su telefono il grafico è più largo, e **ruotando il telefono** si apre una vista a tutto schermo.",
+            "Corretta l'altezza della telemetria su iPhone quando la barra di Safari si nasconde."
+          ]
+        },
+        {
+          "title": "Nuova modalità Passo gara",
+          "items": [
+            "Con l'interruttore **Qualifiche / Passo gara** vedi i tempi giro per giro di due piloti (o di uno solo) in tutte le gare dal 2023.",
+            "Nel grafico: safety car e VSC, bandiere rosse, soste ai box e mescole delle gomme.",
+            "Distacco giro per giro tra i due piloti e riquadri con passo medio, giro più veloce, costanza e soste.",
+            "Classifica della gara da cui scegliere i piloti, e link condivisibili anche per questa vista."
+          ]
+        },
+        {
+          "title": "Correzioni",
+          "items": [
+            "Corretto il numero di giri di alcune gare, che risultavano più lunghe di un giro.",
+            "Ricostruite le soste ai box mancanti in alcune gare del 2023.",
+            "L'indicatore dei dati in alto non diventa più rosso per un problema di rete momentaneo."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "title": "Changelog — 12 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Pole position",
+          "items": [
+            "Recuperate tre pole che non erano state salvate: **Monza, Sepang e Singapore 2026**.",
+            "Aggiornamento delle pole più affidabile, anche quando i risultati vengono pubblicati in ritardo."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "Corretti i grafici in cui acceleratore e freno risultavano a fondo insieme (dati errati della fonte).",
+            "Dove la fonte perde i dati, i grafici mostrano un buco con un avviso invece di valori falsi.",
+            "Grafici allineati tra loro e fino alla fine reale del giro.",
+            "Aggiunta **Sepang 2026**; corretti Las Vegas e Abu Dhabi 2023, che mostravano un giro sbagliato."
+          ]
+        },
+        {
+          "title": "Dati",
+          "items": [
+            "Corretti i tempi di pole di Interlagos, Las Vegas e Abu Dhabi 2023 e uniformato il nome di Andrea Kimi Antonelli."
+          ]
+        },
+        {
+          "title": "Sito",
+          "items": [
+            "Caricamento più veloce.",
+            "Il pannello Risultati del Prossimo GP non si richiude più da solo ogni minuto.",
+            "Righe e riquadri utilizzabili anche da tastiera."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-01",
+      "title": "Changelog — 1 Agosto 2026",
+      "sections": [
+        {
+          "title": "Prossimo GP",
+          "items": [
+            "Accanto alla data del weekend c'è un **conto alla rovescia** (giorni, ore, minuti) fino alla partenza della gara."
+          ]
+        },
+        {
+          "title": "News",
+          "items": [
+            "Il pannello News su computer è più largo, con più spazio per immagine e titolo."
+          ]
+        },
+        {
+          "title": "Stagioni precedenti",
+          "items": [
+            "A fine mondiale la stagione appena conclusa compare da sola tra le **Stagioni precedenti**."
+          ]
+        },
+        {
+          "title": "Il sito come app",
+          "items": [
+            "Su iPhone (Safari → Condividi → **Aggiungi alla schermata Home**) e su Android il sito si installa come un'app, a schermo intero e con la sua icona \"P1\"."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "title": "Changelog — 28 Luglio 2026",
+      "sections": [
+        {
+          "title": "Nuova sezione News",
+          "items": [
+            "Nuovo pannello **📰 News** con le ultime 5 notizie di F1 di FormulaPassion.it, aggiornate ogni 4 ore."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "Telemetria disponibile anche per il **2023 e il 2024** (per il 2021-2022 la fonte non ha dati).",
+            "Con il menu **vs...** puoi confrontare il giro di pole con quello di qualsiasi altro anno disponibile.",
+            "Toccando un riquadro in \"Dettagli Qualifiche\" si apre la telemetria di quell'anno; i riquadri degli anni a confronto restano evidenziati con i colori del grafico.",
+            "Corretta la scelta del giro di pole in alcune qualifiche bagnate, e allineati i tre grafici."
+          ]
+        },
+        {
+          "title": "Indicatore dei dati",
+          "items": [
+            "L'indicatore in alto mostra lo stato reale degli aggiornamenti automatici: 🟢 con data e ora se è tutto a posto, 🔴 con il nome di quello in errore."
+          ]
+        },
+        {
+          "title": "Grafica",
+          "items": [
+            "Tasti della telemetria più puliti; \"Aggiornato al…\" spostato in cima a Classifica e Calendario."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "title": "Changelog — 27 Luglio 2026",
+      "sections": [
+        {
+          "title": "Nuova vista Telemetria",
+          "items": [
+            "Con il tasto **Telemetria** il grafico dei tempi diventa il giro di pole in qualifica: velocità, acceleratore e freno, marcia.",
+            "Puoi sovrapporre il giro di pole 2025 a quello 2026 per confrontarli."
+          ]
+        },
+        {
+          "title": "Pole position",
+          "items": [
+            "Recuperata la pole dell'Ungheria 2026 (Lando Norris, 1:17.207), che non era stata salvata."
+          ]
+        },
+        {
+          "title": "Animazioni",
+          "items": [
+            "Apertura con dissolvenza per Stagioni precedenti, Classifica e Calendario."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-26",
+      "title": "Changelog — 24-26 Luglio 2026",
+      "sections": [
+        {
+          "title": "Widget Prossimo GP",
+          "items": [
+            "Nuovo riquadro sempre visibile con gli **orari di tutte le sessioni** del weekend in ora italiana, e l'indicatore **LIVE** durante la sessione in corso."
+          ]
+        },
+        {
+          "title": "Calendario",
+          "items": [
+            "Ogni gara mostra le date del weekend; toccandola si vedono gli orari di tutte le sessioni.",
+            "Ogni sessione già disputata ha **Risultati**: la classifica completa con pilota, scuderia e tempo.",
+            "Il pulsante ora si chiama \"Calendario & Risultati\"."
+          ]
+        },
+        {
+          "title": "Stagioni precedenti",
+          "items": [
+            "Nuova sezione **Stagioni precedenti** (2021-2025) con gare, qualifiche e risultati."
+          ]
+        },
+        {
+          "title": "Grafico dei tempi",
+          "items": [
+            "Nuova vista **Delta**: barre che mostrano quanto la pole è più veloce (verde) o più lenta (rosso) rispetto all'anno prima."
+          ]
+        },
+        {
+          "title": "Aggiornamenti",
+          "items": [
+            "Nuovo tasto **Full Update** per lanciare un aggiornamento completo dei dati."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-22",
+      "title": "Changelog — 22 Luglio 2026",
+      "sections": [
+        {
+          "title": "Grafico",
+          "items": [
+            "Le maniglie per ridimensionare il grafico restano attaccate al grafico anche scorrendo la pagina, senza salti."
+          ]
+        },
+        {
+          "title": "Classifica",
+          "items": [
+            "Classifica piloti e costruttori affiancate su computer."
+          ]
+        },
+        {
+          "title": "Pannelli",
+          "items": [
+            "Classifica e Calendario si aprono uno alla volta: aprendone uno si chiude l'altro.",
+            "I riquadri \"Dettagli Qualifiche\" non si sovrappongono più alla Classifica."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-07-21",
+      "title": "Changelog — 21 Luglio 2026",
+      "sections": [
+        {
+          "title": "Il sito è online",
+          "items": [
+            "**F1 Pole Tracker** è pubblicato: tutte le pole position dal 2021 a oggi, aggiornate in automatico dopo ogni qualifica."
+          ]
+        },
+        {
+          "title": "Layout",
+          "items": [
+            "Su computer grafico a sinistra e dettagli a destra, con maniglie per ridimensionare larghezza e altezza del grafico.",
+            "Nel grafico i tempi più veloci sono in basso.",
+            "Il sito si apre sul circuito dell'ultimo GP, o su quello del weekend in corso."
+          ]
+        },
+        {
+          "title": "Dati",
+          "items": [
+            "**Meteo reale** di ogni qualifica.",
+            "Le pole penalizzate in griglia hanno un avviso ⚠️ con chi è partito davvero davanti.",
+            "Corrette alcune pole storiche secondo la regola: pole = il più veloce in qualifica (Belgio 2023, Turchia 2021, Austria 2022)."
+          ]
+        },
+        {
+          "title": "Classifica e calendario",
+          "items": [
+            "Nuovi pannelli con la **classifica del mondiale** piloti e costruttori e il **calendario** con i vincitori, aggiornati dopo ogni gara."
+          ]
+        }
+      ]
     }
   ]
 }
