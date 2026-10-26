@@ -1,11 +1,11 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-26T18:51:58.709Z",
+  "updatedAt": "2026-10-26T19:58:16.988Z",
   "races": [
     {
       "round": 1,
       "circuit": "Melbourne (Australia)",
-      "raceName": "Formula 1 Qatar Airways Australian Grand Prix",
+      "raceName": "Australian Grand Prix",
       "date": "2026-03-08",
       "weekendStart": "2026-03-06",
       "winner": {
@@ -319,7 +319,7 @@
     {
       "round": 2,
       "circuit": "Shanghai (Cina)",
-      "raceName": "Formula 1 Heineken Chinese Grand Prix 2026",
+      "raceName": "Chinese Grand Prix",
       "date": "2026-03-15",
       "weekendStart": "2026-03-13",
       "winner": {
@@ -652,7 +652,7 @@
     {
       "round": 3,
       "circuit": "Suzuka",
-      "raceName": "Formula 1 Aramco Japanese Grand Prix 2026",
+      "raceName": "Japanese Grand Prix",
       "date": "2026-03-29",
       "weekendStart": "2026-03-27",
       "winner": {
@@ -984,7 +984,7 @@
     {
       "round": 4,
       "circuit": "Miami",
-      "raceName": "Formula 1 Crypto.com Miami Grand Prix 2026",
+      "raceName": "Miami Grand Prix",
       "date": "2026-05-03",
       "weekendStart": "2026-05-01",
       "winner": {
@@ -1317,7 +1317,7 @@
     {
       "round": 5,
       "circuit": "Montreal (Canada)",
-      "raceName": "Formula 1 Lenovo Grand Prix Du Canada 2026",
+      "raceName": "Canadian Grand Prix",
       "date": "2026-05-24",
       "weekendStart": "2026-05-22",
       "winner": {
@@ -1650,7 +1650,7 @@
     {
       "round": 6,
       "circuit": "Monaco",
-      "raceName": "Formula 1 Louis Vuitton Grand Prix de Monaco 2026",
+      "raceName": "Monaco Grand Prix",
       "date": "2026-06-07",
       "weekendStart": "2026-06-05",
       "winner": {
@@ -1982,7 +1982,7 @@
     {
       "round": 7,
       "circuit": "Barcellona",
-      "raceName": "Formula 1 MSC Cruises Gran Premio de Barcelona-Catalunya 2026",
+      "raceName": "Barcelona Grand Prix",
       "date": "2026-06-14",
       "weekendStart": "2026-06-12",
       "winner": {
@@ -2314,7 +2314,7 @@
     {
       "round": 8,
       "circuit": "Red Bull Ring",
-      "raceName": "Formula 1 Lenovo Austrian Grand Prix 2026",
+      "raceName": "Austrian Grand Prix",
       "date": "2026-06-28",
       "weekendStart": "2026-06-26",
       "winner": {
@@ -2646,7 +2646,7 @@
     {
       "round": 9,
       "circuit": "Silverstone",
-      "raceName": "Formula 1 Pirelli British Grand Prix 2026",
+      "raceName": "British Grand Prix",
       "date": "2026-07-05",
       "weekendStart": "2026-07-03",
       "winner": {
@@ -2980,7 +2980,7 @@
     {
       "round": 10,
       "circuit": "Spa-Francorchamps",
-      "raceName": "Formula 1 Belgian Grand Prix 2026",
+      "raceName": "Belgian Grand Prix",
       "date": "2026-07-19",
       "weekendStart": "2026-07-17",
       "winner": {
@@ -3316,7 +3316,7 @@
     {
       "round": 11,
       "circuit": "Hungaroring",
-      "raceName": "Formula 1 AWS Hungarian Grand Prix 2026",
+      "raceName": "Hungarian Grand Prix",
       "date": "2026-07-26",
       "weekendStart": "2026-07-24",
       "winner": {
@@ -3650,7 +3650,7 @@
     {
       "round": 12,
       "circuit": "Zandvoort",
-      "raceName": "Formula 1 Heineken Dutch Grand Prix 2026",
+      "raceName": "Dutch Grand Prix",
       "date": "2026-08-23",
       "weekendStart": "2026-08-21",
       "winner": {
@@ -3982,7 +3982,7 @@
     {
       "round": 13,
       "circuit": "Monza",
-      "raceName": "Formula 1 Pirelli Gran D'Italia 2026",
+      "raceName": "Italian Grand Prix",
       "date": "2026-09-06",
       "weekendStart": "2026-09-04",
       "winner": {
@@ -4318,7 +4318,7 @@
     {
       "round": 14,
       "circuit": "Madrid",
-      "raceName": "Formula 1 Tag Heuer Gran Premio de España 2026",
+      "raceName": "Spanish Grand Prix",
       "date": "2026-09-13",
       "weekendStart": "2026-09-11",
       "winner": {
@@ -4639,7 +4639,7 @@
     {
       "round": 15,
       "circuit": "Baku (Azerbaijan)",
-      "raceName": "Formula 1 Qatar Airways Azerbaijan Grand Prix 2026",
+      "raceName": "Azerbaijan Grand Prix",
       "date": "2026-09-26",
       "weekendStart": "2026-09-24",
       "winner": {
@@ -4974,7 +4974,7 @@
     {
       "round": 16,
       "circuit": "Sepang (Malesia)",
-      "raceName": "Formula 1 Gulf Air Bahrain Grand Prix in Malaysia 2026",
+      "raceName": "Bahrain Grand Prix",
       "date": "2026-10-04",
       "weekendStart": "2026-10-02",
       "winner": {
@@ -5309,7 +5309,7 @@
     {
       "round": 17,
       "circuit": "Singapore",
-      "raceName": "Formula 1 Singapore Airlanes Singapore Grand Prix 2026",
+      "raceName": "Singapore Grand Prix",
       "date": "2026-10-11",
       "weekendStart": "2026-10-09",
       "winner": {
@@ -5644,7 +5644,7 @@
     {
       "round": 18,
       "circuit": "Austin (COTA)",
-      "raceName": "Formula 1 MSC Cruises United States Grand Prix 2026",
+      "raceName": "United States Grand Prix",
       "date": "2026-10-25",
       "weekendStart": "2026-10-23",
       "winner": {
@@ -5979,7 +5979,7 @@
     {
       "round": 19,
       "circuit": "Città del Messico",
-      "raceName": "Formula 1 Gran Premio de La Ciudad de México 2026",
+      "raceName": "Mexico City Grand Prix",
       "date": "2026-11-01",
       "weekendStart": "2026-10-30",
       "winner": null,
@@ -6018,7 +6018,7 @@
     {
       "round": 20,
       "circuit": "Interlagos (San Paolo)",
-      "raceName": "Formula 1 MSC Cruises Grande Premio de Sao Paulo 2026",
+      "raceName": "São Paulo Grand Prix",
       "date": "2026-11-08",
       "weekendStart": "2026-11-06",
       "winner": null,
@@ -6057,7 +6057,7 @@
     {
       "round": 21,
       "circuit": "Las Vegas",
-      "raceName": "Formula 1 Heineken Las Vegas Grand Prix 2026",
+      "raceName": "Las Vegas Grand Prix",
       "date": "2026-11-22",
       "weekendStart": "2026-11-20",
       "winner": null,
@@ -6096,7 +6096,7 @@
     {
       "round": 22,
       "circuit": "Qatar (Lusail)",
-      "raceName": "Formula 1 Qatar Airways Qatar Grand Prix 2026",
+      "raceName": "Qatar Grand Prix",
       "date": "2026-11-29",
       "weekendStart": "2026-11-27",
       "winner": null,
@@ -6135,7 +6135,7 @@
     {
       "round": 23,
       "circuit": "Abu Dhabi (Yas Marina)",
-      "raceName": "Formula 1 Etihad Airways Abu Dhabi Grand Prix 2026",
+      "raceName": "Abu Dhabi Grand Prix",
       "date": "2026-12-06",
       "weekendStart": "2026-12-04",
       "winner": null,
