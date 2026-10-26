@@ -86,7 +86,7 @@
                  una riga discreta che apre l'elenco; pallino rosso se c'è un
                  changelog non ancora visto su questo dispositivo. -->
             <p id="changelogLink" class="hidden text-[10px] mt-0.5">
-                <button type="button" onclick="openChangelog()" class="text-gray-500 hover:text-gray-300 hover:underline cursor-pointer">📝 Novità<span id="changelogDate"></span></button><span id="changelogDot" class="hidden inline-block w-1.5 h-1.5 rounded-full bg-[#E10600] ml-1 align-middle"></span>
+                <button type="button" onclick="openChangelog()" class="text-gray-500 hover:text-gray-300 hover:underline cursor-pointer">📝 Novità<span id="changelogDate"></span></button><span id="changelogDot" class="w-1.5 h-1.5 rounded-full bg-[#E10600] ml-1 align-middle" style="display:none"></span>
                 <button type="button" onclick="openChangelog()" class="text-gray-500 hover:text-gray-300 hover:underline cursor-pointer ml-1">Clicca per visualizzare le nuove funzioni.</button>
             </p>
 
@@ -3123,7 +3123,9 @@
             document.getElementById('changelogDate').innerText = ` · ${d.getDate()} ${d.toLocaleString('it-IT', { month: 'short' }).replace('.', '')}`;
             let seen = null;
             try { seen = localStorage.getItem(CHANGELOG_SEEN_KEY); } catch (e) {}
-            document.getElementById('changelogDot').classList.toggle('hidden', seen === latest.date);
+            // display diretto e non la classe "hidden": con inline-block
+            // (necessario per le dimensioni) la classe non lo nascondeva.
+            document.getElementById('changelogDot').style.display = seen === latest.date ? 'none' : 'inline-block';
             document.getElementById('changelogLink').classList.remove('hidden');
         }
 
@@ -3162,7 +3164,7 @@
             el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) el.remove(); });
             document.body.appendChild(el);
             try { localStorage.setItem(CHANGELOG_SEEN_KEY, entries[0].date); } catch (e) {}
-            document.getElementById('changelogDot').classList.add('hidden');
+            document.getElementById('changelogDot').style.display = 'none';
         }
 
         initApp();
