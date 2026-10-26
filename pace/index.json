@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-15T22:03:31.332Z",
+  "updatedAt": "2026-10-26T00:30:21.600Z",
   "races": {
     "2023": [
       {
@@ -442,6 +442,11 @@
         "circuit": "Singapore",
         "date": "2026-10-11",
         "file": "pace/2026/singapore.json"
+      },
+      {
+        "circuit": "Austin (COTA)",
+        "date": "2026-10-25",
+        "file": "pace/2026/austin-cota.json"
       }
     ]
   }
