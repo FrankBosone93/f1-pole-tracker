@@ -50,11 +50,11 @@ async function main() {
     await buildYear(season);
 
     if (!fs.existsSync(outPath)) {
-        // buildYear salta silenziosamente se f1api.dev non ha ancora dati
+        // buildYear salta silenziosamente se le fonti non hanno ancora dati
         // completi per quell'anno (raro, ma possibile a ridosso della fine
         // stagione): non aggiorniamo il manifest in questo caso, ci riprova
         // la settimana prossima.
-        console.warn(`⚠️  history/${season}.json non è stato scritto (dati non ancora completi su f1api.dev?), riproverò al prossimo giro.`);
+        console.warn(`⚠️  history/${season}.json non è stato scritto (dati non ancora completi su OpenF1/Jolpica?), riproverò al prossimo giro.`);
         return;
     }
 

@@ -3,7 +3,7 @@
 // Scarica la telemetria (velocità, acceleratore, freno, marcia) del giro di
 // pole di ogni GP di cui la qualifica è già stata disputata, da OpenF1
 // (openf1.org, pubblica e gratuita, nessuna chiave richiesta - API diversa
-// da f1api.dev, usata solo per questa funzione). Solo qualifiche (non prove
+// da Jolpica, usata per telemetria, risultati e calendario). Solo qualifiche (non prove
 // libere, non sprint). Scrive telemetry.json, organizzato per stagione:
 // { updatedAt, seasons: { "2023": {...}, "2024": {...}, "2025": {...}, "2026": {...} } }.
 // Permette il confronto/sovrapposizione tra il giro di pole di stagioni
@@ -16,7 +16,7 @@
 // completa presenti).
 //
 // A differenza degli altri script, qui non serve incrociare i circuiti con
-// CIRCUIT_ID_MAP di f1api.dev: OpenF1 usa nomi propri di circuito
+// CIRCUIT_ID_MAP (id Jolpica): OpenF1 usa nomi propri di circuito
 // (circuit_short_name), mappati qui direttamente sui nomi usati dal sito.
 //
 // Le stagioni già presenti in telemetry.json vengono riusate circuito per
@@ -64,7 +64,7 @@ const KNOWN_UNAVAILABLE = new Set([
 ]);
 
 let poleDataCache = null;
-// Il pilota realmente in pole (già verificato in data.json, fonte f1api.dev)
+// Il pilota realmente in pole (già verificato in data.json)
 // per anno+circuito, o null se non presente. Serve sia il nome (per trovare
 // il pilota giusto tra quelli OpenF1) sia il tempo (per trovare il giro
 // giusto tra quelli di quel pilota - vedi buildCircuitTelemetry).
@@ -91,7 +91,7 @@ function normalizeName(s) {
 // in condizioni miste/in evoluzione un giro di Q1/Q2 può risultare più
 // veloce del vero giro di pole senza esserlo (successo davvero: Montreal
 // 2023, sessione bagnata). Pilota E tempo vengono quindi letti entrambi da
-// data.json (già verificato da un'altra fonte, f1api.dev): si cerca il
+// data.json (già verificato con altre fonti): si cerca il
 // pilota giusto, poi tra i suoi giri quello con durata più vicina al tempo
 // ufficiale.
 // Trova il giro di pole (vedi commento sopra) e il pilota. null se non si

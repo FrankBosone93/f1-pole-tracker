@@ -8,9 +8,9 @@ const { openf1Json } = require('./openf1');
 const { matchTeam } = require('./f1-mapping');
 const { siteDriverName } = require('./driver-names');
 
-// Prove libere da OpenF1 quando f1api.dev non le ha (Austin 2026: ancora
-// nessun risultato la domenica, e dal lunedì il GP non è più in evidenza,
-// quindi le libere non sarebbero mai state salvate). Stesso formato del sito:
+// Prove libere da OpenF1 (f1api.dev, la fonte di prima, ad Austin 2026 non
+// le aveva ancora la domenica, quando il GP stava per uscire dall'evidenza).
+// Stesso formato del sito:
 // [{position, driver, team, time}], con i nomi dei piloti riportati a quelli
 // già usati sul sito (lib/driver-names.js).
 const fmtLap = sec => {
@@ -43,8 +43,8 @@ async function openf1PracticeResults(session, driverNames) {
 // sulle classifiche ufficiali), mentre f1api.dev aveva penalità post-gara
 // mancanti (Brasile 2024, Singapore 2025, Bahrain 2025, Barcellona e Miami
 // 2026), distacchi sbagliati (Canada 2023, Brasile 2024) e ritirati in ordine
-// sbagliato. f1api.dev resta il ripiego (OpenF1 è bloccata durante le
-// sessioni live). Stesso formato del sito: {position, driver, team, time, retired}.
+// sbagliato. Il ripiego è Jolpica (OpenF1 è bloccata durante le sessioni
+// live). Stesso formato del sito: {position, driver, team, time, retired}.
 const fmtGap = sec => {
     if (sec < 60) return `+${sec.toFixed(3)}`;
     const m = Math.floor(sec / 60);

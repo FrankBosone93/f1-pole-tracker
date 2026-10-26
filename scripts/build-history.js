@@ -4,7 +4,8 @@
 // queste due sessioni per le stagioni passate: niente prove libere né
 // sprint, su richiesta esplicita - a differenza di calendar.json, che per la
 // stagione in corso include anche le prove libere) di una o più stagioni
-// PASSATE da f1api.dev, e scrive un file history/{anno}.json per ognuna.
+// PASSATE (OpenF1 dal 2023, Jolpica prima e come ripiego), e scrive un file
+// history/{anno}.json per ognuna.
 // Usato dal pannello "Stagioni precedenti" del sito, che li scarica uno alla
 // volta al primo click su quell'anno.
 //
@@ -13,10 +14,9 @@
 // richiama in automatico non appena la stagione in corso finisce - non serve
 // più lanciare questo script a mano quando termina un mondiale.
 //
-// L'API f1api.dev risponde piuttosto lenta (alcuni secondi a richiesta): le
-// gare di una stagione vengono quindi processate in parallelo (con un limite
-// di concorrenza) invece che una alla volta, altrimenti un'intera stagione
-// richiederebbe ore. Scrittura incrementale (file .partial aggiornato dopo
+// Le gare di una stagione vengono processate in parallelo (con un limite di
+// concorrenza; le richieste restano comunque distanziate per i limiti di
+// OpenF1 e Jolpica). Scrittura incrementale (file .partial aggiornato dopo
 // ogni gara completata, poi rinominato alla fine): se il processo viene
 // interrotto, i dati delle gare già scaricate non vanno persi - basta
 // rilanciare lo script, che riparte dal file .partial rimasto a metà.
@@ -31,16 +31,18 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
-const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
-const { fetchJson } = require('./lib/http');
+const { matchCircuitById } = require('./lib/f1-mapping');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { loadSeasonCalendar } = require('./lib/season-calendar');
+const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
 const { openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
 const { knownDriverNames } = require('./lib/driver-names');
 
-// Risultati di gara dal 2023: fonte principale OpenF1 (classifica ufficiale
-// con le penalità post-gara; f1api.dev ne ha perse diverse, es. Brasile 2024
-// e Singapore 2025), ripiego f1api.dev. Prima del 2023 OpenF1 non ha dati.
+// Calendario da lib/season-calendar.js; risultati di qualifica e gara dal
+// 2023 da OpenF1 (classifica ufficiale con le penalità post-gara), ripiego
+// Jolpica, che è anche l'unica fonte prima del 2023 (OpenF1 non ha quegli
+// anni). Prima la fonte era f1api.dev, eliminato il 2026-10-26: aveva perso
+// diverse penalità e squalifiche (Brasile 2024, Singapore 2025...).
 const OPENF1_FIRST_YEAR = 2023;
 async function openf1RaceSessions(year) {
     if (year < OPENF1_FIRST_YEAR) return [];
@@ -48,7 +50,7 @@ async function openf1RaceSessions(year) {
         const all = await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}`);
         return all.filter(s => s.session_name === 'Race' || s.session_name === 'Qualifying');
     } catch (err) {
-        console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso f1api.dev.`);
+        console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso Jolpica.`);
         return [];
     }
 }
@@ -65,8 +67,8 @@ const ROUND_CONCURRENCY = 4; // quante gare scaricare in parallelo per stagione
 
 async function buildRaceEntry(year, race, raceSessions = []) {
     const round = race.round;
-    const mappedCircuit = matchCircuitById(race.circuit?.circuitId) || race.circuit?.circuitName || 'Sconosciuto';
-    const date = race.schedule?.race?.date || null;
+    const mappedCircuit = race.circuit;
+    const date = race.schedule?.race?.date || race.date || null;
     const weekendStart = race.schedule?.qualy?.date || date;
 
     // Solo qualifiche e gara per le stagioni passate: niente prove libere né
@@ -74,67 +76,43 @@ async function buildRaceEntry(year, race, raceSessions = []) {
     // relative righe non compaiono nella lista sessioni (renderSessionsBlock
     // le salta già quando schedule[key] è null, nessuna modifica lì serve).
     const schedule = {
-        fp1: null,
-        fp2: null,
-        fp3: null,
-        sprintQualy: null,
-        sprintRace: null,
-        qualy: race.schedule?.qualy?.date ? race.schedule.qualy : null,
-        race: race.schedule?.race?.date ? race.schedule.race : null,
+        fp1: null, fp2: null, fp3: null, sprintQualy: null, sprintRace: null,
+        qualy: race.schedule?.qualy || null,
+        race: race.schedule?.race || null,
     };
-
-    // Le due richieste non dipendono l'una dall'altra: le lanciamo insieme
-    // invece che in sequenza (l'API è lenta, farlo in serie renderebbe
-    // un'intera stagione questione di ore).
-    const [racePayload, qualyPayload] = await Promise.all([
-        fetchJson(`https://f1api.dev/api/${year}/${round}/race`, { allow404: true })
-            .catch(err => { console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore risultati gara - ${err.message}`); return null; }),
-        fetchJson(`https://f1api.dev/api/${year}/${round}/qualy`, { allow404: true })
-            .catch(err => { console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati qualy: errore - ${err.message}`); return null; }),
-    ]);
-
-    let winner = null;
     const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
+    const names = knownDriverNames();
+    let raceSource = null, qualySource = null;
 
-    const rawResults = racePayload?.races?.results;
-    if (Array.isArray(rawResults) && rawResults.length > 0) {
-        const winnerRow = rawResults.find(r => String(r.position) === '1') || rawResults[0];
-        winner = {
-            driver: driverFullName(winnerRow.driver),
-            team: matchTeam(winnerRow.team?.teamName || winnerRow.team?.teamId || ''),
-        };
-        results.race = normalizeSessionResults('race', racePayload.races);
-    }
-    results.qualy = normalizeSessionResults('qualy', qualyPayload?.races);
-
-    let raceSource = results.race ? 'f1api' : null;
+    // 1. OpenF1 (dal 2023)
     const session = findRaceSession(raceSessions, mappedCircuit, date);
     if (session) {
         try {
-            const names = knownDriverNames([...(results.race || []), ...(results.qualy || [])].map(r => r.driver));
-            const fromOpenF1 = await openf1RaceResults(session, names);
-            if (fromOpenF1) {
-                results.race = fromOpenF1;
-                raceSource = 'openf1';
-                winner = { driver: fromOpenF1[0].driver, team: fromOpenF1[0].team };
-            }
-        } catch (err) {
-            console.warn(`⚠️  Round ${round} (${mappedCircuit}): gara OpenF1 non disponibile - ${err.message}`);
-        }
+            const r = await openf1RaceResults(session, names);
+            if (r) { results.race = r; raceSource = 'openf1'; }
+        } catch (err) { console.warn(`⚠️  Round ${round} (${mappedCircuit}): gara OpenF1 non disponibile - ${err.message}`); }
     }
-
-    let qualySource = results.qualy ? 'f1api' : null;
     const qSession = findRaceSession(raceSessions, mappedCircuit, date, 'Qualifying');
     if (qSession) {
         try {
-            const names = knownDriverNames([...(results.race || []), ...(results.qualy || [])].map(r => r.driver));
             const q = await openf1QualyResults(qSession, names);
             if (q) { results.qualy = q; qualySource = 'openf1'; }
-        } catch (err) {
-            console.warn(`⚠️  Round ${round} (${mappedCircuit}): qualifica OpenF1 non disponibile - ${err.message}`);
-        }
+        } catch (err) { console.warn(`⚠️  Round ${round} (${mappedCircuit}): qualifica OpenF1 non disponibile - ${err.message}`); }
     }
 
+    // 2. Jolpica (prima del 2023, o ripiego)
+    if (!results.race || !results.qualy) {
+        try {
+            const [jr] = await jolpicaRaces(`${year}/${round}/results`);
+            const [jq] = await jolpicaRaces(`${year}/${round}/qualifying`);
+            const ok = r => r && matchCircuitById(r.Circuit?.circuitId) === mappedCircuit;
+            if (!results.race && ok(jr) && jr.Results.length) { results.race = jolpicaRaceRows(jr, names); raceSource = 'jolpica'; }
+            if (!results.qualy && ok(jq) && jq.QualifyingResults.length) { results.qualy = jolpicaQualyRows(jq, names, ok(jr) ? jr : null); qualySource = 'jolpica'; }
+        } catch (err) { console.warn(`⚠️  Round ${round} (${mappedCircuit}): Jolpica non disponibile - ${err.message}`); }
+    }
+
+    const w = (results.race || []).find(r => r.position === 1);
+    const winner = w ? { driver: w.driver, team: w.team } : null;
     return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}), ...(qualySource ? { qualySource } : {}) };
 }
 
@@ -147,9 +125,7 @@ async function buildYear(year) {
     }
 
     console.log(`\n=== Stagione ${year} ===`);
-    console.log(`Richiesta a https://f1api.dev/api/${year} ...`);
-    const seasonPayload = await fetchJson(`https://f1api.dev/api/${year}`);
-    const races = seasonPayload?.races || [];
+    const { races } = await loadSeasonCalendar(year);
     if (races.length === 0) {
         console.warn(`⚠️  ${year}: nessuna gara trovata, salto.`);
         return;
@@ -185,7 +161,7 @@ async function buildYear(year) {
     console.log(`✅ history/${year}.json scritto (${races.length} gare).`);
 }
 
-// Sostituisce nei file storici già scritti i risultati di gara di f1api.dev
+// Sostituisce nei file storici già scritti i risultati di gara e qualifica
 // con quelli OpenF1 (dal 2023), senza riscaricare il resto della stagione.
 // Uso: node scripts/build-history.js --refresh-race 2023 2024 2025
 async function refreshRaceResults(year) {

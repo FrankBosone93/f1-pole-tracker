@@ -31,7 +31,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
 
       # continue-on-error su ognuno dei 4 script: se uno fallisce (es. l'API
-      # esterna f1api.dev momentaneamente non ha ancora i dati di un round,
+      # esterna (OpenF1, Jolpica) momentaneamente non ha ancora i dati di un round,
       # 404 osservato in un test reale), gli altri tre vanno comunque
       # avanti invece di essere saltati tutti insieme - punto centrale di
       # questo workflow rispetto a lanciarli singolarmente.

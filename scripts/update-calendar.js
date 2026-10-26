@@ -1,144 +1,50 @@
 // scripts/update-calendar.js
 //
-// Scarica il calendario della stagione IN CORSO (rilevata automaticamente
-// tramite /api/current, quindi passa da sola a una nuova stagione l'anno
-// prossimo) da f1api.dev, con il vincitore di ogni gara già disputata, e
-// aggiorna calendar.json. Gira dopo la gara (domenica), insieme a
-// check-pole-penalty.js e update-standings.js.
+// Aggiorna calendar.json: calendario della stagione IN CORSO (rilevata da
+// sola, quindi passa all'anno nuovo appena il suo calendario è pubblicato)
+// con orari ufficiali di ogni sessione, vincitore e risultati completi di
+// prove libere (solo GP in evidenza), qualifiche e gara.
 //
-// Scarica anche i risultati completi (prove libere, qualifiche, gara) di
-// ogni sessione già disputata, riutilizzati poi dal sito per l'espansione
-// "Risultati" nel calendario e nel widget prossimo GP. I risultati sprint
-// non sono inclusi: l'API non espone un endpoint dedicato ai loro risultati
-// (provati vari nomi plausibili, tutti 404).
+// Fonti: calendario da lib/season-calendar.js (OpenF1, ripiego Jolpica);
+// risultati da OpenF1 (lib/openf1-results.js), ripiego Jolpica per qualifica
+// e gara (Jolpica non ha le prove libere). f1api.dev, la fonte di prima, è
+// stata eliminata il 2026-10-26 (orari sbagliati, risultati in ritardo di
+// giorni, penalità mancanti). I risultati sprint non sono ancora inclusi.
 //
 // Uso manuale: node scripts/update-calendar.js
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById, matchTeam, CIRCUIT_ID_MAP } = require('./lib/f1-mapping');
-const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
+const { matchCircuitById } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
-const { sleep, fetchJson } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
-const { CIRCUIT_INFO } = require('./lib/weather');
-const { loadAutoCircuits, saveAutoCircuits } = require('./lib/auto-circuits');
+const { loadSeasonCalendar } = require('./lib/season-calendar');
+const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
 const { knownDriverNames } = require('./lib/driver-names');
 const { openf1PracticeResults, openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
 
-// Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
-// invernali e si ignorano.)
-const OPENF1_SESSION_KEYS = {
-    'Practice 1': 'fp1',
-    'Practice 2': 'fp2',
-    'Practice 3': 'fp3',
-    'Sprint Qualifying': 'sprintQualy',
-    'Sprint': 'sprintRace',
-    'Qualifying': 'qualy',
-    'Race': 'race',
-};
-
-// Sessioni della stagione da OpenF1 (servono per gli orari ufficiali e per
-// riconoscere i circuiti nuovi). Se OpenF1 non risponde: lista vuota, e
-// restano gli orari di f1api.dev.
+// Sessioni della stagione da OpenF1 (per i risultati). Se OpenF1 non
+// risponde (es. sessione in corso): lista vuota, e i risultati arrivano da
+// Jolpica o restano quelli già salvati.
 async function loadOpenF1Sessions(season) {
     try {
         return await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}`);
     } catch (err) {
-        console.warn(`⚠️  Orari ufficiali OpenF1 non disponibili (${err.message}): uso quelli di f1api.dev.`);
+        console.warn(`⚠️  Sessioni OpenF1 non disponibili (${err.message}): risultati da Jolpica o in cache.`);
         return [];
     }
 }
 
-// Orari ufficiali delle sessioni da OpenF1, per circuito: { circuito: { fp1:
-// {date, time}, ... } }. f1api.dev ha a volte orari sbagliati (Austin 2026:
-// gara alle 19:00 UTC invece delle 20:00 ufficiali, cioè 20:00 invece delle
-// 21:00 italiane, e anche Prove Libere 2 e 3 sfasate di mezz'ora), mentre
-// OpenF1 li prende dal feed ufficiale F1. Se OpenF1 non risponde, restano
-// quelli di f1api.dev.
-function officialSchedule(sessions) {
-    const bySessions = new Map();
-    for (const s of sessions) {
-        const key = OPENF1_SESSION_KEYS[s.session_name];
-        const circuit = CIRCUIT_MAP[s.circuit_short_name];
-        const start = new Date(s.date_start);
-        if (!key || !circuit || isNaN(start)) continue;
-        const iso = start.toISOString();
-        if (!bySessions.has(circuit)) bySessions.set(circuit, {});
-        bySessions.get(circuit)[key] = { date: iso.slice(0, 10), time: iso.slice(11, 19) + 'Z' };
+// Risultati di un round da Jolpica (ripiego), solo se il circuito coincide.
+async function jolpicaRound(season, round, circuit, kind) {
+    try {
+        const [race] = await jolpicaRaces(`${season}/${round}/${kind === 'race' ? 'results' : 'qualifying'}`);
+        if (!race || matchCircuitById(race.Circuit?.circuitId) !== circuit) return null;
+        return race;
+    } catch (err) {
+        console.warn(`⚠️  ${circuit}: ${kind} Jolpica non disponibile - ${err.message}`);
+        return null;
     }
-    return bySessions;
-}
-
-// Circuiti nuovi: invece di fermarsi finché qualcuno non aggiunge una riga
-// alle tabelle (f1-mapping.js, openf1.js, weather.js), li riconosce da solo
-// appena compaiono nel calendario e li salva in auto-circuits.json (vedi
-// lib/auto-circuits.js). Le tabelle scritte a mano hanno la precedenza.
-const DAY_MS = 24 * 3600 * 1000;
-async function learnNewCircuits(races, sessions) {
-    const auto = loadAutoCircuits();
-    const before = JSON.stringify(auto);
-    const today = new Date().toISOString().slice(0, 10);
-
-    // 1. f1api.dev: nome del sito = città del circuito (es. "Madrid").
-    const usedNames = new Set(Object.values(CIRCUIT_ID_MAP));
-    for (const race of races) {
-        const c = race.circuit || {};
-        const id = String(c.circuitId || '').toLowerCase();
-        if (!id || CIRCUIT_ID_MAP[id]) continue;
-        let name = c.city || c.circuitName;
-        if (!name) continue;
-        // Città già usata da un altro circuito: nome completo del circuito.
-        if (usedNames.has(name)) name = c.circuitName && !usedNames.has(c.circuitName) ? c.circuitName : `${name} (${c.circuitId})`;
-        auto.f1api[id] = { name, addedAt: today };
-        CIRCUIT_ID_MAP[id] = name;
-        usedNames.add(name);
-        console.log(`🆕 Circuito nuovo riconosciuto in automatico: "${c.circuitId}" (${c.circuitName}) -> "${name}"`);
-    }
-
-    // 2. OpenF1: collegamento per data. La gara OpenF1 che si corre lo stesso
-    // giorno (±1, per orari UTC a cavallo di mezzanotte) di una sola gara del
-    // calendario è quel circuito.
-    for (const s of sessions) {
-        if (s.session_name !== 'Race' || !s.circuit_short_name || CIRCUIT_MAP[s.circuit_short_name]) continue;
-        const day = new Date(s.date_start.slice(0, 10)).getTime();
-        const matches = races.filter(r => r.schedule?.race?.date && Math.abs(new Date(r.schedule.race.date).getTime() - day) <= DAY_MS);
-        const name = matches.length === 1 ? matchCircuitById(matches[0].circuit?.circuitId) : null;
-        if (!name) {
-            console.warn(`⚠️  Circuito OpenF1 "${s.circuit_short_name}" (${s.date_start.slice(0, 10)}) non collegabile a una gara del calendario: aggiungerlo a CIRCUIT_MAP in scripts/lib/openf1.js.`);
-            continue;
-        }
-        auto.openf1[s.circuit_short_name] = name;
-        CIRCUIT_MAP[s.circuit_short_name] = name;
-        console.log(`🆕 Circuito OpenF1 "${s.circuit_short_name}" collegato in automatico a "${name}"`);
-    }
-
-    // 3. Meteo: coordinate e fuso orario dalla città (ricerca località di
-    // Open-Meteo, stesso fornitore del meteo). "Notturno" se la gara parte
-    // dalle 18 in poi, ora locale.
-    for (const race of races) {
-        const c = race.circuit || {};
-        const name = matchCircuitById(c.circuitId);
-        if (!name || CIRCUIT_INFO[name] || !c.city) continue;
-        try {
-            const geo = await fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(c.city)}&count=10&language=en&format=json`);
-            const results = geo?.results || [];
-            const place = results.find(p => p.country && c.country && p.country.toLowerCase() === c.country.toLowerCase()) || results[0];
-            if (!place) { console.warn(`⚠️  ${name}: località "${c.city}" non trovata per il meteo.`); continue; }
-            const r = race.schedule?.race;
-            const localHour = r?.date && r?.time
-                ? Number(new Intl.DateTimeFormat('en-GB', { timeZone: place.timezone, hour: '2-digit', hour12: false }).format(new Date(`${r.date}T${r.time}`)))
-                : 12;
-            const info = { lat: place.latitude, lon: place.longitude, tz: place.timezone, night: localHour >= 18 };
-            auto.weather[name] = info;
-            CIRCUIT_INFO[name] = info;
-            console.log(`🆕 Meteo di "${name}": ${place.name} (${place.country}) ${info.lat}, ${info.lon}, ${info.tz}${info.night ? ', notturno' : ''}`);
-        } catch (err) {
-            console.warn(`⚠️  ${name}: coordinate per il meteo non disponibili (${err.message}).`);
-        }
-    }
-
-    if (JSON.stringify(auto) !== before) saveAutoCircuits(auto);
 }
 
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
@@ -154,14 +60,8 @@ const RACE_RECHECK_DAYS = 7;
 const FORCE_RACE_REFRESH = process.argv.includes('--refresh-race');
 
 async function main() {
-    console.log('Richiesta a https://f1api.dev/api/current ...');
-    const currentPayload = await fetchJson('https://f1api.dev/api/current');
-    const season = currentPayload.season;
-    const races = currentPayload.races || [];
-    if (!season || races.length === 0) {
-        throw new Error('Calendario stagione corrente vuoto o senza campo "season".');
-    }
-    console.log(`Stagione corrente rilevata: ${season} (${races.length} gare in calendario)`);
+    const { season, source, races } = await loadSeasonCalendar(null, { learn: true });
+    console.log(`Stagione corrente: ${season} (${races.length} gare, calendario da ${source === 'openf1' ? 'OpenF1' : 'Jolpica'})`);
 
     // Calendario già presente: riusiamo i risultati già scaricati in run
     // precedenti invece di riscaricarli ogni volta (una volta disputata una
@@ -183,8 +83,6 @@ async function main() {
     const now = new Date();
     const driverNames = knownDriverNames();
     const openf1Sessions = await loadOpenF1Sessions(season);
-    await learnNewCircuits(races, openf1Sessions);
-    const official = officialSchedule(openf1Sessions);
     const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 
     // GP in evidenza (stessa logica di determineFeaturedRace() in index.html):
@@ -204,34 +102,12 @@ async function main() {
 
     for (const race of races) {
         const round = race.round;
-        const mappedCircuit = matchCircuitById(race.circuit?.circuitId) || race.circuit?.circuitName || 'Sconosciuto';
+        const mappedCircuit = race.circuit;
+        // Orari ufficiali UTC di ogni sessione: la conversione al fuso
+        // italiano (ora legale compresa) avviene nel sito, in index.html.
+        const schedule = race.schedule;
 
-        // Orario di ogni sessione del weekend (UTC, come fornito dall'API):
-        // la conversione al fuso orario italiano (con cambio ora legale
-        // gestito automaticamente) avviene lato client in index.html.
-        const schedule = {
-            fp1: race.schedule?.fp1?.date ? race.schedule.fp1 : null,
-            fp2: race.schedule?.fp2?.date ? race.schedule.fp2 : null,
-            fp3: race.schedule?.fp3?.date ? race.schedule.fp3 : null,
-            sprintQualy: race.schedule?.sprintQualy?.date ? race.schedule.sprintQualy : null,
-            sprintRace: race.schedule?.sprintRace?.date ? race.schedule.sprintRace : null,
-            qualy: race.schedule?.qualy?.date ? race.schedule.qualy : null,
-            race: race.schedule?.race?.date ? race.schedule.race : null,
-        };
-
-        // Orari ufficiali (OpenF1) al posto di quelli di f1api.dev quando ci
-        // sono; ogni differenza viene scritta nel log.
-        const officialTimes = official.get(mappedCircuit) || {};
-        for (const [key, o] of Object.entries(officialTimes)) {
-            if (!(key in schedule)) continue;
-            const cur = schedule[key];
-            if (!cur || cur.date !== o.date || cur.time !== o.time) {
-                console.log(`🕒 ${mappedCircuit} ${key}: ${cur ? `${cur.date} ${cur.time}` : '—'} -> ${o.date} ${o.time} (orario ufficiale OpenF1)`);
-            }
-            schedule[key] = o;
-        }
-
-        const date = schedule.race?.date || race.schedule?.race?.date || null;
+        const date = schedule.race?.date || race.date || null;
         // Inizio del weekend di gara (venerdì delle prove libere), usato dal
         // sito per decidere quando mostrare di default questo circuito invece
         // dell'ultimo GP disputato.
@@ -242,9 +118,9 @@ async function main() {
         let winner = null;
         const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
 
-        // Gara: OpenF1 come fonte principale, f1api.dev come ripiego (vedi
+        // Gara: OpenF1 come fonte principale, Jolpica come ripiego (vedi
         // openf1RaceResults). raceSource dice da dove vengono i risultati
-        // salvati: quelli di f1api.dev (anche se già in cache) vengono
+        // salvati: quelli non OpenF1 (anche se già in cache) vengono
         // sostituiti appena OpenF1 li ha, e quelli OpenF1 si ricontrollano
         // per RACE_RECHECK_DAYS giorni (penalità post-gara).
         const cachedRaceResults = existingRace?.results?.race;
@@ -268,7 +144,7 @@ async function main() {
                     if (raceSource === 'openf1') console.log(`🔁 ${mappedCircuit}: classifica di gara aggiornata da OpenF1 (es. penalità post-gara).`);
                     else {
                         const firstDiff = fromOpenF1.find((r, i) => !cachedRaceResults[i] || cachedRaceResults[i].driver !== r.driver);
-                        console.log(`📥 ${mappedCircuit}: classifica di gara da OpenF1 al posto di f1api.dev${firstDiff ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ' (distacchi/formato)'}.`);
+                        console.log(`📥 ${mappedCircuit}: classifica di gara da OpenF1 al posto di ${raceSource || 'altra fonte'}${firstDiff ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ' (distacchi/formato)'}.`);
                     }
                 } else if (!cachedRaceResults) {
                     console.log(`📥 ${mappedCircuit}: classifica di gara da OpenF1.`);
@@ -276,19 +152,13 @@ async function main() {
                 results.race = fromOpenF1;
                 raceSource = 'openf1';
             } else if (!cachedRaceResults) {
-                // Ripiego: f1api.dev.
-                try {
-                    const racePayload = await fetchJson(`https://f1api.dev/api/${season}/${round}/race`, { allow404: true });
-                    const normalized = normalizeSessionResults('race', racePayload?.races);
-                    if (normalized && normalized.length) {
-                        results.race = normalized;
-                        raceSource = 'f1api';
-                        console.log(`📥 ${mappedCircuit}: classifica di gara da f1api.dev (OpenF1 non disponibile).`);
-                    }
-                } catch (err) {
-                    console.warn(`⚠️  Round ${round} (${mappedCircuit}): errore nel recupero risultati gara - ${err.message}`);
+                // Ripiego: Jolpica.
+                const j = await jolpicaRound(season, round, mappedCircuit, 'race');
+                if (j && j.Results.length) {
+                    results.race = jolpicaRaceRows(j, driverNames);
+                    raceSource = 'jolpica';
+                    console.log(`📥 ${mappedCircuit}: classifica di gara da Jolpica (OpenF1 non disponibile).`);
                 }
-                await sleep(150);
             }
         }
         if (!results.race) raceSource = null;
@@ -298,7 +168,7 @@ async function main() {
         // Prove libere e qualifiche: una richiesta per sessione, solo se non
         // già in cache e solo se la sessione è già passata (niente 404 inutili
         // per i weekend futuri).
-        // Qualifica: come la gara, OpenF1 principale (qualySource) e f1api.dev
+        // Qualifica: come la gara, OpenF1 principale (qualySource) e Jolpica
         // ripiego; si ricontrolla per RACE_RECHECK_DAYS giorni.
         const cachedQualy = existingRace?.results?.qualy;
         let qualySource = existingRace?.qualySource || (cachedQualy ? 'f1api' : null);
@@ -316,19 +186,18 @@ async function main() {
             if (fromOpenF1) {
                 if (JSON.stringify(cachedQualy) !== JSON.stringify(fromOpenF1)) {
                     const firstDiff = fromOpenF1.find((r, i) => !cachedQualy?.[i] || cachedQualy[i].driver !== r.driver);
-                    console.log(`📥 ${mappedCircuit}: qualifica da OpenF1${cachedQualy && qualySource !== 'openf1' ? ' al posto di f1api.dev' : ''}${firstDiff && cachedQualy ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ''}.`);
+                    console.log(`📥 ${mappedCircuit}: qualifica da OpenF1${cachedQualy && qualySource !== 'openf1' ? ` al posto di ${qualySource}` : ''}${firstDiff && cachedQualy ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ''}.`);
                 }
                 results.qualy = fromOpenF1;
                 qualySource = 'openf1';
             } else if (!cachedQualy) {
-                try {
-                    const payload = await fetchJson(`https://f1api.dev/api/${season}/${round}/qualy`, { allow404: true });
-                    const normalized = normalizeSessionResults('qualy', payload?.races);
-                    if (normalized && normalized.length) { results.qualy = normalized; qualySource = 'f1api'; }
-                } catch (err) {
-                    console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati qualy: errore - ${err.message}`);
+                // Ripiego: Jolpica (ordine di qualifica, senza griglia).
+                const j = await jolpicaRound(season, round, mappedCircuit, 'qualy');
+                if (j && j.QualifyingResults.length) {
+                    results.qualy = jolpicaQualyRows(j, driverNames);
+                    qualySource = 'jolpica';
+                    console.log(`📥 ${mappedCircuit}: qualifica da Jolpica (OpenF1 non disponibile).`);
                 }
-                await sleep(150);
             }
         }
         if (!results.qualy) qualySource = null;
@@ -354,8 +223,9 @@ async function main() {
             const sessionStart = new Date(`${sessionInfo.date}T${sessionInfo.time || '23:59:59Z'}`);
             if (isNaN(sessionStart) || sessionStart > now) continue; // ancora da disputare
 
-            // Prove libere: OpenF1 principale (classifica ufficiale, di solito
-            // pubblicata poco dopo la sessione), f1api.dev ripiego.
+            // Prove libere: solo OpenF1 (classifica ufficiale, di solito
+            // pubblicata poco dopo la sessione; Jolpica non le ha). Se OpenF1
+            // non risponde si riprova al run successivo.
             const session = openf1Sessions.find(s => s.session_name === PRACTICE_SESSION_NAMES[key]
                 && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
             if (session) {
@@ -365,16 +235,6 @@ async function main() {
                 } catch (err) {
                     console.warn(`⚠️  ${mappedCircuit} ${key}: risultati OpenF1 non disponibili - ${err.message}`);
                 }
-            }
-            if (!results[key]) {
-                try {
-                    const payload = await fetchJson(`https://f1api.dev/api/${season}/${round}/${key}`, { allow404: true });
-                    results[key] = normalizeSessionResults(key, payload?.races);
-                    if (results[key]) console.log(`📥 ${mappedCircuit} ${key}: risultati da f1api.dev (OpenF1 non disponibile)`);
-                } catch (err) {
-                    console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati ${key}: errore - ${err.message}`);
-                }
-                await sleep(150);
             }
         }
 

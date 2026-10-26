@@ -9,11 +9,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById } = require('./lib/f1-mapping');
 const { fetchWeatherForCircuit } = require('./lib/weather');
-
-const { fetchJson: fetchJsonOnce, sleep } = require('./lib/http');
-const fetchJson = url => fetchJsonOnce(url, { retries: 3 });
+const { loadSeasonCalendar } = require('./lib/season-calendar');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 
@@ -24,11 +21,9 @@ async function main() {
     let updated = 0, skipped = 0, failed = 0;
 
     for (const year of years) {
-        const seasonPayload = await fetchJson(`https://f1api.dev/api/${year}`);
-        const races = seasonPayload.races || [];
+        const { races } = await loadSeasonCalendar(year);
         for (const race of races) {
-            const mappedCircuit = matchCircuitById(race.circuit?.circuitId);
-            if (!mappedCircuit) continue;
+            const mappedCircuit = race.circuit;
 
             const entry = currentData.find(d => d.year === year && d.circuit === mappedCircuit);
             if (!entry) continue;

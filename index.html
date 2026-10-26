@@ -1854,7 +1854,7 @@
             ['race', 'Gara'],
         ];
 
-        // Converte data+ora UTC di una sessione (come forniti da f1api.dev,
+        // Converte data+ora UTC di una sessione (come nel calendario,
         // es. {date:"2026-03-06", time:"01:30:00Z"}) nell'orario italiano
         // locale. Intl gestisce da solo il cambio ora legale (CET/CEST) per
         // il fuso "Europe/Rome" - non serve calcolarlo a mano.
@@ -1875,7 +1875,7 @@
         // ritiro mostra il motivo al posto del distacco.
         function renderResultsTable(results, key) {
             // Nomi, scuderie e motivi di ritiro arrivano dall'API esterna
-            // (f1api.dev): escape prima dell'innerHTML, come per le news.
+            // (OpenF1, Jolpica): escape prima dell'innerHTML, come per le news.
             const rows = results.map(r => {
                 const timeCell = r.retired
                     ? `<span class="text-orange-400 italic">${escapeHtml(r.retired)}</span>`

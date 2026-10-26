@@ -1,6 +1,6 @@
 // scripts/lib/driver-names.js
 //
-// OpenF1 scrive i nomi dei piloti in modo diverso da f1api.dev e da
+// OpenF1 e Jolpica scrivono i nomi dei piloti in modo diverso da
 // data.json ("Kimi Antonelli" invece di "Andrea Kimi Antonelli",
 // "Alexander Albon" invece di "Alex Albon"). Per non avere lo stesso pilota
 // con due nomi sul sito, i nomi OpenF1 vengono riportati a quelli già usati,

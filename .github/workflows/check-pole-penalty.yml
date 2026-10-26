@@ -4,7 +4,7 @@ on:
   schedule:
     # Orari: minuto :41, non l'ora tonda (i cron alle ore tonde sono i più ritardati/congestionati su GitHub Actions).
     # Gira DOPO la gara (a differenza di update-poles.yml, che gira dopo la
-    # qualifica del sabato), quando f1api.dev pubblica anche i risultati di
+    # qualifica del sabato), quando OpenF1 e Jolpica hanno anche i risultati di
     # gara con la griglia di partenza reale. Orari approssimativi per coprire
     # i fusi orari dei vari GP: domenica 18:00 e 22:00 UTC, più un run di
     # sicurezza lunedì mattina per le gare che finiscono più tardi (es. Messico,

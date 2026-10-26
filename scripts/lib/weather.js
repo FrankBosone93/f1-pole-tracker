@@ -7,7 +7,7 @@
 // Coordinate e fuso orario IANA del circuito, più se la sessione si disputa
 // tipicamente in notturna/twilight (per la descrizione "Notturno").
 //
-// NOTA IMPORTANTE: f1api.dev fornisce data e ora della qualifica in UTC
+// NOTA IMPORTANTE: il calendario fornisce data e ora della qualifica in UTC
 // (es. "2024-11-23" + "06:00:00Z" per Las Vegas). Per circuiti lontani da UTC
 // la data del calendario UTC può differire dalla data locale del circuito
 // (Las Vegas: 06:00 UTC del 23 novembre è le 22:00 locali del 22 novembre,
@@ -76,7 +76,7 @@ function describeWeather(weathercode, precipSum, tempMax, isNight) {
     return '☀️ Sereno';
 }
 
-// Converte una data+ora UTC (come fornite da f1api.dev, es. "2024-11-23" +
+// Converte una data+ora UTC (come nel calendario, es. "2024-11-23" +
 // "06:00:00Z") nella data di calendario LOCALE del fuso orario del circuito.
 function toLocalDateString(utcDateStr, utcTimeStr, timeZone) {
     const timePart = (utcTimeStr || '00:00:00Z').replace('Z', '');

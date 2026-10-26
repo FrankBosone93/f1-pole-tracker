@@ -5,9 +5,9 @@
 //   1. OpenF1 (championship_drivers / championship_teams dopo l'ultima gara
 //      o sprint): stessa fonte di tutti gli altri dati del weekend, aggiornata
 //      subito dopo la gara; bloccata però durante le sessioni live;
-//   2. Jolpica (api.jolpi.ca, archivio erede di Ergast);
-//   3. f1api.dev (omette i piloti non più in griglia: Tsunoda nel 2026).
-// Le tre classifiche coincidevano al 2026-10-26 (dopo Austin). Gira dopo ogni gara
+//   2. Jolpica (api.jolpi.ca, archivio erede di Ergast).
+// Le due coincidevano al 2026-10-26 (dopo Austin). Prima la fonte era
+// f1api.dev, che ometteva i piloti non più in griglia (Tsunoda nel 2026). Gira dopo ogni gara
 // (i punti si assegnano in gara, non in qualifica), insieme a
 // check-pole-penalty.js — vedi .github/workflows/update-standings.yml.
 //
@@ -15,7 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchTeam, driverFullName } = require('./lib/f1-mapping');
+const { matchTeam } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { fetchJson } = require('./lib/http');
 const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
@@ -107,8 +107,6 @@ async function standingsFromJolpica() {
 }
 
 const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
-const DRIVERS_URL = 'https://f1api.dev/api/current/drivers-championship';
-const CONSTRUCTORS_URL = 'https://f1api.dev/api/current/constructors-championship';
 
 async function main() {
     try {
@@ -120,48 +118,10 @@ async function main() {
         console.warn(`⚠️  OpenF1 non disponibile (${err.message}): provo Jolpica.`);
     }
 
-    let jolpica = null;
-    try {
-        console.log('Richiesta classifica a Jolpica (api.jolpi.ca) ...');
-        jolpica = await standingsFromJolpica();
-    } catch (err) {
-        console.warn(`⚠️  Jolpica non disponibile (${err.message}): uso f1api.dev.`);
-    }
-    if (jolpica) return save(jolpica);
-
-    console.log(`Richiesta a ${DRIVERS_URL} ...`);
-    const driversPayload = await fetchJson(DRIVERS_URL);
-    console.log(`Richiesta a ${CONSTRUCTORS_URL} ...`);
-    const constructorsPayload = await fetchJson(CONSTRUCTORS_URL);
-
-    const season = driversPayload.season;
-    const driversRaw = driversPayload.drivers_championship || [];
-    const constructorsRaw = constructorsPayload.constructors_championship || [];
-
-    if (driversRaw.length === 0 || constructorsRaw.length === 0) {
-        throw new Error('Classifica piloti o costruttori vuota nella risposta API.');
-    }
-
-    const drivers = driversRaw
-        .map(d => ({
-            position: d.position,
-            driver: driverFullName(d.driver),
-            team: matchTeam(d.team?.teamName || d.team?.teamId || ''),
-            points: d.points,
-            wins: d.wins,
-        }))
-        .sort((a, b) => a.position - b.position);
-
-    const constructors = constructorsRaw
-        .map(c => ({
-            position: c.position,
-            team: matchTeam(c.team?.teamName || c.teamId || ''),
-            points: c.points,
-            wins: c.wins,
-        }))
-        .sort((a, b) => a.position - b.position);
-
-    return save({ season, drivers, constructors });
+    console.log('Richiesta classifica a Jolpica (api.jolpi.ca) ...');
+    const jolpica = await standingsFromJolpica();
+    if (!jolpica) throw new Error('Classifica non disponibile né su OpenF1 né su Jolpica.');
+    return save(jolpica);
 }
 
 function save({ season, drivers, constructors }) {

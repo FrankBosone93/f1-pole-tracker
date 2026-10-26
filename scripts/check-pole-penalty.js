@@ -2,7 +2,8 @@
 //
 // Controlla la griglia di partenza REALE delle ultime gare: fonte principale
 // OpenF1 (starting_grid della qualifica, penalità già applicate, pubblicata
-// prima della gara), ripiego f1api.dev (campo "grid" dei risultati di gara).
+// prima della gara), ripiego Jolpica (campo "grid" dei risultati di gara;
+// prima era f1api.dev, eliminato il 2026-10-26).
 // Se il pilota che ha
 // ottenuto la pole in qualifica non è partito P1 in griglia (penalità), lo
 // segnala aggiungendo un campo "penaltyNote" alla entry corrispondente in
@@ -13,9 +14,11 @@
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById, normalize, driverFullName } = require('./lib/f1-mapping');
+const { matchCircuitById } = require('./lib/f1-mapping');
+const { loadSeasonCalendar } = require('./lib/season-calendar');
+const { jolpicaRaces } = require('./lib/jolpica');
 const { writeStatus } = require('./lib/status');
-const { HttpError, fetchJson } = require('./lib/http');
+const { HttpError } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 const { surnameKey } = require('./lib/driver-names');
 
@@ -36,7 +39,6 @@ async function gridFromOpenF1(session, poleDriver) {
 }
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
-const CURRENT_URL = 'https://f1api.dev/api/current';
 
 // Quante delle ultime gare già disputate ricontrollare a ogni run: coprono un
 // run saltato o un 404 temporaneo senza riscaricare l'intera stagione.
@@ -48,16 +50,10 @@ const PENDING_GRACE_HOURS = 72;
 
 // Controlla la penalità di un singolo round. Ritorna true se currentData
 // (in memoria) è cambiato. Il circuito viene dal calendario (/current), così
-// OpenF1 si può interrogare anche se f1api.dev non ha ancora i risultati.
+// OpenF1 si può interrogare anche se Jolpica non ha ancora i risultati.
 async function checkRound(season, race, currentData, openf1Sessions) {
     const round = race.round;
-    const mappedCircuit = matchCircuitById(race.circuit?.circuitId);
-    if (!mappedCircuit) {
-        throw new Error(
-            `Circuito con circuitId="${race.circuit?.circuitId}" non riconosciuto. ` +
-            `Aggiungere una voce a CIRCUIT_ID_MAP in scripts/lib/f1-mapping.js.`
-        );
-    }
+    const mappedCircuit = race.circuit;
     const year = parseInt(season, 10);
     if (!year || isNaN(year)) {
         throw new Error(`Anno stagione non valido: "${season}"`);
@@ -81,29 +77,26 @@ async function checkRound(season, race, currentData, openf1Sessions) {
                 return applyGrid(entry, year, mappedCircuit, g);
             }
         } catch (err) {
-            console.warn(`   ⚠️  OpenF1: ${err.message} - uso f1api.dev.`);
+            console.warn(`   ⚠️  OpenF1: ${err.message} - uso Jolpica.`);
         }
     }
 
-    // 2. f1api.dev (ripiego): griglia dai risultati di gara.
-    const url = `https://f1api.dev/api/${season}/${round}/race`;
-    console.log(`   f1api.dev: ${url}`);
-    const payload = await fetchJson(url);
-    const results = payload.races?.results || [];
-    if (!Array.isArray(results) || results.length === 0) {
-        console.log(`Round ${round}: nessun risultato di gara ancora disponibile. Nessuna azione.`);
-        return false;
-    }
-    // Trova il polista registrato (fastest in qualifica) tra i risultati di gara,
-    // confrontando per nome (case/accenti-insensitive tramite normalize).
-    const poleNormalized = normalize(entry.driver);
-    const poleResultRow = results.find(r => normalize(driverFullName(r.driver)) === poleNormalized);
-    if (!poleResultRow) {
+    // 2. Jolpica (ripiego): griglia dai risultati di gara.
+    const path = `${season}/${round}/results`;
+    console.log(`   Jolpica: ${path}`);
+    const [j] = await jolpicaRaces(path);
+    const results = j && matchCircuitById(j.Circuit?.circuitId) === mappedCircuit ? j.Results : [];
+    if (!results.length) throw new HttpError(404, `https://api.jolpi.ca/ergast/f1/${path}`);
+    const poleRow = results.find(r => surnameKey(r.Driver.familyName) === surnameKey(entry.driver));
+    if (!poleRow) {
         console.log(`⚠️  Pilota "${entry.driver}" (pole in qualifica) non trovato tra i risultati di gara. Impossibile verificare la griglia di partenza. Nessuna azione.`);
         return false;
     }
-    const frontRowRow = results.find(r => parseInt(r.grid, 10) === 1);
-    return applyGrid(entry, year, mappedCircuit, { poleGrid: parseInt(poleResultRow.grid, 10), frontRowName: frontRowRow ? driverFullName(frontRowRow.driver) : null });
+    const front = results.find(r => r.grid === '1');
+    return applyGrid(entry, year, mappedCircuit, {
+        poleGrid: parseInt(poleRow.grid, 10),
+        frontRowName: front ? `${front.Driver.givenName} ${front.Driver.familyName}` : null,
+    });
 }
 
 function applyGrid(entry, year, mappedCircuit, grid) {
@@ -138,17 +131,7 @@ function applyGrid(entry, year, mappedCircuit, grid) {
 }
 
 async function main() {
-    // Non usiamo /api/current/last/race: come per last/qualy si è rivelato
-    // inaffidabile (404 per ore/giorni dopo la gara, mentre l'endpoint per
-    // round esplicito aveva già i dati). Si trovano nel calendario le ultime
-    // gare disputate e si interrogano per round.
-    console.log(`Richiesta a ${CURRENT_URL} ...`);
-    const currentPayload = await fetchJson(CURRENT_URL);
-    const season = currentPayload.season;
-    const races = currentPayload.races || [];
-    if (!season || races.length === 0) {
-        throw new Error('Calendario stagione corrente vuoto o senza campo "season".');
-    }
+    const { season, races } = await loadSeasonCalendar();
 
     const now = new Date();
     // Gara senza orario nel calendario: disputata dal giorno dopo la sua data.
@@ -172,7 +155,7 @@ async function main() {
     try {
         openf1Sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Qualifying`);
     } catch (err) {
-        console.warn(`⚠️  OpenF1 non disponibile (${err.message}): griglia da f1api.dev.`);
+        console.warn(`⚠️  OpenF1 non disponibile (${err.message}): griglia da Jolpica.`);
     }
     let changed = false;
     const errors = [];

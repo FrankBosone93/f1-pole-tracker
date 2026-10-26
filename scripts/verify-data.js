@@ -1,137 +1,98 @@
 // scripts/verify-data.js
 //
 // Strumento di controllo manuale (NON tocca data.json, solo report a schermo):
-// scarica da f1api.dev, round per round, tutte le qualifiche delle stagioni
-// presenti in data.json e le confronta con quanto già registrato, segnalando
-// discrepanze da rivedere a mano (i dati storici richiedono giudizio umano,
-// es. casi di penalità: vedi penaltyNote e check-pole-penalty.js).
+// confronta ogni pole di data.json con due fonti indipendenti e segnala cosa
+// rivedere a mano.
+//
+//   - Jolpica (tutti gli anni): pilota, tempo e squadra del primo in
+//     qualifica; griglia di partenza della gara, per verificare che i polisti
+//     non partiti primi abbiano la nota (penaltyNote).
+//   - OpenF1 (dal 2023): pilota e tempo del primo in qualifica.
+//
+// Regola del sito: pole = il più veloce in qualifica, a prescindere dalle
+// penalità in griglia (segnalate solo dalla penaltyNote).
 //
 // Uso:
-//   node scripts/verify-data.js
-//
-// Utile per un controllo periodico "di massa", oltre al normale aggiornamento
-// automatico settimanale (che tocca solo l'ultima gara disputata).
+//   node scripts/verify-data.js            (tutti gli anni di data.json)
+//   node scripts/verify-data.js 2024 2025  (solo alcuni anni)
 
 const fs = require('fs');
 const path = require('path');
-const { matchCircuitById, matchTeam, parseQualyTime, driverFullName, normalize } = require('./lib/f1-mapping');
+const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mapping');
+const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { jolpicaRaces } = require('./lib/jolpica');
+const { surnameKey } = require('./lib/driver-names');
 
-const { fetchJson: fetchJsonOnce, sleep } = require('./lib/http');
-const fetchJson = url => fetchJsonOnce(url, { retries: 3 });
-
-// Discrepanze già verificate a mano con fonti indipendenti (Formula1.com,
-// Motorsport.com, ecc.): in questi casi l'errore è di f1api.dev e il valore di
-// data.json è quello giusto. Non vengono più riproposte come "da rivedere".
-const VERIFIED_API_ERRORS = {
-    '2024|Melbourne (Australia)': 'pole 1:15.915 (f1api.dev dà 1:15.925)',
-    '2024|Red Bull Ring': 'pole 1:04.314 (f1api.dev dà 1:04.426)',
+// Differenze già verificate a mano: il valore di data.json è quello giusto
+// (errore o scelta nota della fonte). Non vengono più riproposte.
+const KNOWN = {
+    'jolpica|2021|Red Bull Ring': 'nel 2021 a Spielberg si corsero due GP: data.json ha il GP d\'Austria, non quello di Stiria (scelta voluta)',
+    'jolpica|2025|Miami': 'Jolpica non ha il tempo di pole (1:26.204, confermato da OpenF1)',
 };
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 
 async function main() {
-    const currentData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
-    const years = [...new Set(currentData.map(d => d.year))].sort();
-
-    const unmapped = [];
-    const missingInJson = [];
-    const mismatches = [];
-    const seenKeys = new Set();
-    const matchedKeys = new Set(); // anno|circuito con almeno una gara che combacia
+    const data = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
+    const argYears = process.argv.slice(2).map(Number).filter(n => !isNaN(n));
+    const years = argYears.length ? argYears : [...new Set(data.map(d => d.year))].sort();
+    const issues = [], known = [];
+    const report = (source, year, circuit, msg) => {
+        const k = `${source}|${year}|${circuit}`;
+        (KNOWN[k] ? known : issues).push(`${year} ${circuit} [${source}]: ${msg}${KNOWN[k] ? ` — ${KNOWN[k]}` : ''}`);
+    };
     let checked = 0;
 
     for (const year of years) {
-        const seasonPayload = await fetchJson(`https://f1api.dev/api/${year}`);
-        const races = seasonPayload.races || [];
-        for (const race of races) {
-            const round = race.round;
-            let qualyPayload;
-            try {
-                qualyPayload = await fetchJson(`https://f1api.dev/api/${year}/${round}/qualy`);
-            } catch (err) {
-                console.log(`[SKIP] ${year} round ${round} (${race.raceName}): ${err.message}`);
-                continue;
-            }
-            const r = qualyPayload.races;
-            if (!r || !Array.isArray(r.qualyResults) || r.qualyResults.length === 0) {
-                continue; // gara non ancora disputata
-            }
-            const circuitInfo = Array.isArray(r.circuit) ? r.circuit[0] : r.circuit;
-            const mappedCircuit = matchCircuitById(circuitInfo?.circuitId);
-            if (!mappedCircuit) {
-                unmapped.push(`${year} round ${round}: circuitId="${circuitInfo?.circuitId}" (${race.raceName})`);
-                continue;
-            }
-
-            const poleResult = r.qualyResults.find(x => Number(x.gridPosition) === 1) || r.qualyResults[0];
-            const driver = driverFullName(poleResult.driver);
-            const team = matchTeam(poleResult.team?.teamName || poleResult.team?.teamId || '');
-            const timeCandidate = poleResult.q3 || poleResult.q2 || poleResult.q1 || poleResult.time || poleResult.fastLap;
-            const parsedTime = parseQualyTime(timeCandidate);
-
+        console.log(`Stagione ${year}...`);
+        const qualy = await jolpicaRaces(`${year}/qualifying`);
+        const results = await jolpicaRaces(`${year}/results`);
+        for (const q of qualy) {
+            const circuit = matchCircuitById(q.Circuit?.circuitId);
+            if (!circuit) { issues.push(`${year} round ${q.round}: circuito Jolpica "${q.Circuit?.circuitId}" non mappato`); continue; }
+            const entry = data.find(d => d.year === year && d.circuit === circuit);
+            const p1 = q.QualifyingResults.find(r => r.position === '1');
+            if (!entry) { if (p1) report('jolpica', year, circuit, `pole assente in data.json (Jolpica: ${p1.Driver.familyName} ${p1.Q3 || p1.Q2 || p1.Q1})`); continue; }
+            if (!p1) continue;
             checked++;
-
-            const jsonEntry = currentData.find(d => d.year === year && d.circuit === mappedCircuit);
-            if (!jsonEntry) {
-                missingInJson.push(`${year} - ${mappedCircuit} (${r.raceName}): API ha pole=${driver}/${team}/${parsedTime?.timeStr}, assente in data.json`);
-                continue;
+            const t = parseQualyTime(p1.Q3 || p1.Q2 || p1.Q1);
+            if (surnameKey(entry.driver) !== surnameKey(p1.Driver.familyName)) report('jolpica', year, circuit, `pilota ${entry.driver} vs ${p1.Driver.givenName} ${p1.Driver.familyName}`);
+            if (!t || t.seconds !== entry.seconds) report('jolpica', year, circuit, `tempo ${entry.timeStr} vs ${t ? t.timeStr : 'assente'}`);
+            if (matchTeam(p1.Constructor?.name || '') !== entry.team) report('jolpica', year, circuit, `squadra "${entry.team}" vs "${p1.Constructor?.name}"`);
+            const race = results.find(r => r.round === q.round);
+            const row = race?.Results.find(r => surnameKey(r.Driver.familyName) === surnameKey(entry.driver));
+            if (row) {
+                const grid = parseInt(row.grid, 10);
+                if (grid !== 1 && !entry.penaltyNote) report('jolpica', year, circuit, `${entry.driver} partito ${grid ? grid + '°' : 'dalla pit lane'} ma senza penaltyNote`);
+                if (grid === 1 && entry.penaltyNote) report('jolpica', year, circuit, 'penaltyNote presente ma il polista è partito primo');
             }
-            seenKeys.add(`${year}|${mappedCircuit}`);
+        }
 
-            const driverMatches = normalize(jsonEntry.driver) === normalize(driver);
-            const teamMatches = jsonEntry.team === team;
-            const timeMatches = parsedTime && jsonEntry.timeStr === parsedTime.timeStr;
-
-            if (driverMatches && teamMatches && timeMatches) matchedKeys.add(`${year}|${mappedCircuit}`);
-
-            if (!driverMatches || !teamMatches || !timeMatches) {
-                mismatches.push({
-                    year, circuit: mappedCircuit, raceName: r.raceName,
-                    json: { driver: jsonEntry.driver, team: jsonEntry.team, timeStr: jsonEntry.timeStr },
-                    api: { driver, team, timeStr: parsedTime?.timeStr, timeRaw: timeCandidate },
-                });
+        if (year >= 2023) {
+            const sessions = (await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}&session_name=Qualifying`))
+                .filter(s => new Date(s.date_end) < new Date());
+            for (const s of sessions) {
+                const circuit = CIRCUIT_MAP[s.circuit_short_name];
+                const entry = circuit && data.find(d => d.year === year && d.circuit === circuit);
+                if (!entry) continue;
+                const p1 = (await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${s.session_key}`)).find(r => r.position === 1);
+                if (!p1) continue;
+                const best = [].concat(p1.duration).reverse().find(v => typeof v === 'number');
+                const d = (await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${s.session_key}&driver_number=${p1.driver_number}`))[0] || {};
+                if (surnameKey(d.last_name) !== surnameKey(entry.driver)) report('openf1', year, circuit, `pilota ${entry.driver} vs ${d.first_name} ${d.last_name}`);
+                if (Math.abs((best || 0) - entry.seconds) > 0.0005) report('openf1', year, circuit, `tempo ${entry.seconds} vs ${best}`);
             }
-
-            await sleep(150); // rate limit gentile verso l'API pubblica
         }
     }
-
-    // Stesso circuito due volte nello stesso anno (es. Red Bull Ring 2021:
-    // GP di Stiria e GP d'Austria) ma data.json ha una sola voce per
-    // anno+circuito: se UNA delle due gare combacia, l'altra non è un errore.
-    const verified = [];
-    for (let i = mismatches.length - 1; i >= 0; i--) {
-        const key = `${mismatches[i].year}|${mismatches[i].circuit}`;
-        if (matchedKeys.has(key)) {
-            mismatches.splice(i, 1);
-        } else if (VERIFIED_API_ERRORS[key]) {
-            verified.push(`${mismatches[i].year} ${mismatches[i].circuit}: ${VERIFIED_API_ERRORS[key]}`);
-            mismatches.splice(i, 1);
-        }
-    }
-
-    const orphanEntries = currentData.filter(d => !seenKeys.has(`${d.year}|${d.circuit}`));
 
     console.log('\n========== RISULTATO VERIFICA ==========');
-    console.log(`Round controllati: ${checked}`);
-    console.log(`Circuiti non mappabili (${unmapped.length}):`);
-    unmapped.forEach(u => console.log('  - ' + u));
-    console.log(`Entry mancanti in data.json (${missingInJson.length}):`);
-    missingInJson.forEach(m => console.log('  - ' + m));
-    console.log(`Entry in data.json mai incontrate nello scan (${orphanEntries.length}, spesso perché la stagione non è ancora arrivata a quel round):`);
-    orphanEntries.forEach(o => console.log(`  - ${o.year} ${o.circuit}: ${o.driver}`));
-    console.log(`Errori noti di f1api.dev, già verificati (${verified.length}):`);
-    verified.forEach(v => console.log('  - ' + v));
-    console.log(`\nDISCREPANZE DA RIVEDERE (${mismatches.length}):`);
-    mismatches.forEach(m => {
-        console.log(`\n--- ${m.year} ${m.circuit} (${m.raceName}) ---`);
-        console.log(`  data.json: ${m.json.driver} | ${m.json.team} | ${m.json.timeStr}`);
-        console.log(`  API:       ${m.api.driver} | ${m.api.team} | ${m.api.timeStr}`);
-    });
+    console.log(`Pole controllate su Jolpica: ${checked}`);
+    console.log(`Differenze note, già verificate (${known.length}):`);
+    known.forEach(k => console.log('  - ' + k));
+    console.log(`\nDA RIVEDERE (${issues.length}):`);
+    issues.forEach(i => console.log('  - ' + i));
     console.log('==========================================');
-    console.log('\nNOTA: questo script segnala solo — non modifica data.json. Le discrepanze');
-    console.log('vanno valutate a mano (potrebbero essere errori di battitura, ma anche casi');
-    console.log('di penalità post-qualifica: vedi il campo penaltyNote e check-pole-penalty.js).');
+    console.log('Questo script segnala soltanto: data.json non viene modificato.');
 }
 
-main().catch(err => { console.error('FATAL', err); process.exit(1); });
+main().catch(err => { console.error('FATAL', err.message); process.exit(1); });

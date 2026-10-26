@@ -3,7 +3,7 @@
 // Mappature condivise tra update-poles.js, check-pole-penalty.js e verify-data.js,
 // per evitare di duplicare (e disallineare) la stessa logica in più file.
 
-// --- Mappatura Circuito: circuitId dell'API (match ESATTO, case-insensitive) -> nome usato nel sito ---
+// --- Mappatura Circuito: circuitId di Jolpica/Ergast (gli stessi usati prima da f1api.dev; match ESATTO, case-insensitive) -> nome usato nel sito ---
 // NOTA: in passato questa tabella funzionava per parole chiave cercate anche dentro
 // "country" e "raceName", ma è un approccio fragile: "country: Spain" contiene la
 // sottostringa "spa" (Spagna veniva scambiata per Spa-Francorchamps) e molte gare
@@ -50,11 +50,11 @@ const CIRCUIT_ID_MAP = {
     'istanbul': 'Istanbul (Turchia)',
 };
 
-// Circuiti nuovi riconosciuti in automatico da update-calendar.js (vedi
-// lib/auto-circuits.js): si aggiungono solo dove la tabella sopra non ha già
-// una voce, che resta sempre la scelta di riferimento.
-for (const [id, entry] of Object.entries(require('./auto-circuits').loadAutoCircuits().f1api)) {
-    if (!(id in CIRCUIT_ID_MAP) && entry && entry.name) CIRCUIT_ID_MAP[id] = entry.name;
+// Circuiti nuovi riconosciuti in automatico (vedi lib/auto-circuits.js): si
+// aggiungono solo dove la tabella sopra non ha già una voce, che resta sempre
+// la scelta di riferimento.
+for (const [id, name] of Object.entries(require('./auto-circuits').loadAutoCircuits().jolpica)) {
+    if (!(id in CIRCUIT_ID_MAP) && name) CIRCUIT_ID_MAP[id] = name;
 }
 
 // --- Mappatura Team: nome completo restituito dall'API -> nome breve usato nel sito ---
@@ -125,9 +125,6 @@ function parseQualyTime(raw) {
     return null;
 }
 
-function driverFullName(driver) {
-    return [driver?.name, driver?.surname].filter(Boolean).join(' ').trim();
-}
 
 module.exports = {
     CIRCUIT_ID_MAP,
@@ -137,5 +134,4 @@ module.exports = {
     matchByKeywords,
     matchTeam,
     parseQualyTime,
-    driverFullName,
 };
