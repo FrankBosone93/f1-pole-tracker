@@ -1,10 +1,13 @@
 // scripts/update-standings.js
 //
 // Scarica la classifica REALE del campionato piloti e costruttori (stagione
-// in corso) e aggiorna standings.json. Fonte principale Jolpica (api.jolpi.ca,
-// archivio erede di Ergast): completa, mentre f1api.dev omette i piloti che
-// non sono più in griglia (Tsunoda nel 2026, 1 punto, mancava dal sito).
-// f1api.dev resta il ripiego se Jolpica non risponde. Gira dopo ogni gara
+// in corso) e aggiorna standings.json. Fonti, in ordine:
+//   1. OpenF1 (championship_drivers / championship_teams dopo l'ultima gara
+//      o sprint): stessa fonte di tutti gli altri dati del weekend, aggiornata
+//      subito dopo la gara; bloccata però durante le sessioni live;
+//   2. Jolpica (api.jolpi.ca, archivio erede di Ergast);
+//   3. f1api.dev (omette i piloti non più in griglia: Tsunoda nel 2026).
+// Le tre classifiche coincidevano al 2026-10-26 (dopo Austin). Gira dopo ogni gara
 // (i punti si assegnano in gara, non in qualifica), insieme a
 // check-pole-penalty.js — vedi .github/workflows/update-standings.yml.
 //
@@ -16,6 +19,60 @@ const { matchTeam, driverFullName } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { fetchJson } = require('./lib/http');
 const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
+const { openf1Json } = require('./lib/openf1');
+
+// Squadra di ogni pilota e vittorie, dai risultati di gara in calendar.json
+// (OpenF1): la squadra è quella dell'ultima gara (l'elenco delle squadre di
+// Jolpica non è in ordine affidabile: Lawson 2026 "RB F1 Team", "Red Bull").
+function calendarFacts() {
+    const lastTeam = new Map(), driverWins = new Map(), teamWins = new Map();
+    try {
+        const cal = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'calendar.json'), 'utf-8'));
+        cal.races.filter(r => r.results?.race).sort((a, b) => a.date.localeCompare(b.date)).forEach(r => {
+            r.results.race.forEach(x => lastTeam.set(x.driver, x.team));
+            const w = r.results.race.find(x => x.position === 1);
+            if (w) { driverWins.set(w.driver, (driverWins.get(w.driver) || 0) + 1); teamWins.set(w.team, (teamWins.get(w.team) || 0) + 1); }
+        });
+    } catch (e) { /* senza calendario: squadre dalla fonte, vittorie 0 */ }
+    return { lastTeam, driverWins, teamWins };
+}
+
+// Classifica da OpenF1, o null se non disponibile.
+async function standingsFromOpenF1(season) {
+    const now = new Date();
+    const races = (await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_type=Race`))
+        .filter(s => new Date(s.date_end) < now)
+        .sort((a, b) => b.date_start.localeCompare(a.date_start));
+    for (const session of races.slice(0, 3)) { // l'ultima, o la precedente se non ancora calcolata
+        const drv = await openf1Json(`https://api.openf1.org/v1/championship_drivers?session_key=${session.session_key}`).catch(() => []);
+        const teams = await openf1Json(`https://api.openf1.org/v1/championship_teams?session_key=${session.session_key}`).catch(() => []);
+        if (!drv.length || !teams.length) continue;
+        const info = new Map((await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`)).map(d => [d.driver_number, d]));
+        // Piloti in classifica ma assenti dall'ultima gara (es. Tsunoda 2026):
+        // nome dalla loro ultima sessione nota.
+        for (const d of drv.filter(x => !info.has(x.driver_number))) {
+            const all = await openf1Json(`https://api.openf1.org/v1/drivers?driver_number=${d.driver_number}`).catch(() => []);
+            const last = all.sort((a, b) => b.session_key - a.session_key)[0];
+            if (last) info.set(d.driver_number, last);
+        }
+        const names = knownDriverNames();
+        const { lastTeam, driverWins, teamWins } = calendarFacts();
+        console.log(`Classifica OpenF1 dopo: ${session.session_name} di ${session.circuit_short_name} (${session.date_start.slice(0, 10)})`);
+        return {
+            season: Number(season),
+            drivers: drv.sort((a, b) => a.position_current - b.position_current).map(x => {
+                const d = info.get(x.driver_number) || {};
+                const driver = siteDriverName(d, names) || `#${x.driver_number}`;
+                return { position: x.position_current, driver, team: lastTeam.get(driver) || matchTeam(d.team_name || ''), points: x.points_current, wins: driverWins.get(driver) || 0 };
+            }),
+            constructors: teams.sort((a, b) => a.position_current - b.position_current).map(x => {
+                const team = matchTeam(x.team_name);
+                return { position: x.position_current, team, points: x.points_current, wins: teamWins.get(team) || 0 };
+            }),
+        };
+    }
+    return null;
+}
 
 // Classifica da Jolpica nel formato del sito, o null se non disponibile.
 async function standingsFromJolpica() {
@@ -27,15 +84,7 @@ async function standingsFromJolpica() {
     const cl = c?.MRData?.StandingsTable?.StandingsLists?.[0];
     if (!dl?.DriverStandings?.length || !cl?.ConstructorStandings?.length) return null;
     const names = knownDriverNames();
-    // Squadra del pilota: quella dell'ultima gara in calendar.json (OpenF1).
-    // L'elenco delle squadre di Jolpica non è in ordine affidabile (Lawson
-    // 2026: "RB F1 Team", "Red Bull" pur correndo ancora con RB).
-    const lastTeam = new Map();
-    try {
-        const cal = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'calendar.json'), 'utf-8'));
-        cal.races.filter(r => r.results?.race).sort((a, b) => a.date.localeCompare(b.date))
-            .forEach(r => r.results.race.forEach(x => lastTeam.set(x.driver, x.team)));
-    } catch (e) { /* senza calendario: squadra da Jolpica */ }
+    const { lastTeam } = calendarFacts();
     return {
         season: Number(dl.season),
         drivers: dl.DriverStandings.map(x => {
@@ -62,6 +111,15 @@ const DRIVERS_URL = 'https://f1api.dev/api/current/drivers-championship';
 const CONSTRUCTORS_URL = 'https://f1api.dev/api/current/constructors-championship';
 
 async function main() {
+    try {
+        console.log('Richiesta classifica a OpenF1 ...');
+        const fromOpenF1 = await standingsFromOpenF1(new Date().getFullYear());
+        if (fromOpenF1) return save(fromOpenF1);
+        console.warn('⚠️  OpenF1 senza classifica per l\'ultima gara: provo Jolpica.');
+    } catch (err) {
+        console.warn(`⚠️  OpenF1 non disponibile (${err.message}): provo Jolpica.`);
+    }
+
     let jolpica = null;
     try {
         console.log('Richiesta classifica a Jolpica (api.jolpi.ca) ...');
