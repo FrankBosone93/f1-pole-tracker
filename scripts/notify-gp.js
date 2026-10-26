@@ -52,22 +52,33 @@ function lastCompletedGp(calendar) {
     return done.length ? done.reduce((a, b) => (b.date > a.date ? b : a)) : null;
 }
 
-// Ultima gara del calendario già corsa (anche senza risultati ancora): serve
-// a capire se i risultati dell'ultimo weekend mancano del tutto.
-function lastRaceByDate(calendar, today) {
-    const past = (calendar.races || []).filter(r => r.date && r.date < today);
+// Ultima gara del calendario già finita (anche senza risultati ancora): serve
+// a capire se i risultati dell'ultimo weekend mancano del tutto. "Finita" =
+// almeno 2 ore e mezza dopo il via (orario UTC del calendario), così il
+// controllo può partire già la domenica sera, subito dopo i dati.
+const RACE_DURATION_MS = 2.5 * 3600000;
+const raceStart = r => new Date(`${r.schedule?.race?.date || r.date}T${r.schedule?.race?.time || '23:59:59Z'}`);
+function lastRaceByDate(calendar, now) {
+    const past = (calendar.races || []).filter(r => r.date && raceStart(r).getTime() + RACE_DURATION_MS < now.getTime());
     return past.length ? past.reduce((a, b) => (b.date > a.date ? b : a)) : null;
 }
+
+// Fino a questo momento un GP con dati incompleti NON genera il ⚠️: il
+// controllo parte dopo ogni aggiornamento dei dati (anche la domenica sera,
+// quando alcune automazioni non hanno ancora girato), e un avviso lì sarebbe
+// solo rumore. Il ✅ invece parte appena i dati sono completi. Scadenza: il
+// giorno dopo la gara alle 7:00 UTC, dopo i run di recupero del mattino.
+const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 86400000;
 
 function buildReport() {
     const calendar = readJson('calendar.json');
     if (!calendar) throw new Error('calendar.json non trovato');
-    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date();
     const year = Number(calendar.season);
 
     // Il GP da notificare è l'ultima gara già corsa. Se i suoi risultati non ci
     // sono ancora, è comunque quella (e il report dirà che mancano).
-    const race = lastRaceByDate(calendar, today) || lastCompletedGp(calendar);
+    const race = lastRaceByDate(calendar, now) || lastCompletedGp(calendar);
     if (!race) return null;
     const circuit = race.circuit;
 
@@ -113,6 +124,7 @@ function buildReport() {
     return {
         key: `${year}|${circuit}`,
         complete,
+        warnAfter: warnDeadline(race),
         // Titolo = solo il nome del GP: l'esito lo dice l'emoji (✅ tutto
         // aggiornato, ⚠️ manca qualcosa, elencato in fondo al messaggio).
         title: `${complete ? '✅' : '⚠️'} GP di ${circuit} ${year}`,
@@ -185,6 +197,10 @@ async function main() {
     // incompleto: niente doppioni.
     if (state.gp === report.key && (state.result === 'ok' || (state.result === 'warned' && !report.complete))) {
         console.log('Già notificato per questo GP: niente da inviare.');
+        return;
+    }
+    if (!report.complete && Date.now() < report.warnAfter) {
+        console.log(`Dati ancora incompleti: niente ⚠️ prima di ${new Date(report.warnAfter).toISOString()} (si riprova dopo il prossimo aggiornamento).`);
         return;
     }
     if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }

@@ -1,14 +1,34 @@
 name: Notifica aggiornamento GP
 
 on:
+  # Subito dopo ogni aggiornamento dei dati: appena pole, gara, classifica,
+  # telemetria e passo gara dell'ultimo GP sono tutti presenti parte il ✅,
+  # anche la domenica sera. Prima c'era solo l'orario fisso del lunedì, che
+  # GitHub faceva partire con 5-7 ore di ritardo (notifica nel pomeriggio).
+  # Lo script esce subito se il GP è già notificato, quindi le partenze in più
+  # (es. calendario ogni 2 ore il venerdì e sabato) non producono doppioni.
+  workflow_run:
+    workflows:
+      - "Aggiorna pole position F1"
+      - "Controlla penalità pole position F1"
+      - "Aggiorna classifica campionato F1"
+      - "Aggiorna calendario F1"
+      - "Aggiorna telemetria pole position F1"
+      - "Aggiorna passo gara F1"
+      - "Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, passo gara, news)"
+    types: [completed]
   schedule:
-    # Lunedì alle 8:13 UTC, dopo tutti i run di recupero del lunedì mattina
-    # (l'ultimo è archive-finished-season alle 6:53), quando i dati dell'ultimo
-    # GP dovrebbero essere tutti al loro posto. Martedì un secondo controllo:
-    # se lunedì mancava qualcosa ed è arrivato dopo, parte il ✅.
+    # Rete di sicurezza: lunedì e martedì mattina. Se i dati sono ancora
+    # incompleti dopo il lunedì alle 7:00 UTC parte il ⚠️ (vedi notify-gp.js).
     - cron: '13 8 * * 1'
     - cron: '13 8 * * 2'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+# Un controllo alla volta: più aggiornamenti che finiscono insieme non devono
+# mandare la stessa notifica due volte.
+concurrency:
+  group: notify-gp
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -19,6 +39,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # L'ultima versione di main (con status/notified.json aggiornato da
+          # un eventuale controllo appena finito), non il commit che ha
+          # avviato l'aggiornamento dei dati.
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
