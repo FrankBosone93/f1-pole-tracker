@@ -501,7 +501,8 @@
     "team": "Mercedes",
     "timeStr": "1:26.134",
     "seconds": 86.134,
-    "weather": "☁️ Nuvoloso"
+    "weather": "☁️ Nuvoloso",
+    "penaltyNote": "Pole in qualifica (venerdì), ma partito 2°: nel 2021 la griglia della gara era decisa dalla Sprint, vinta da Max Verstappen, che è partito al palo."
   },
   {
     "year": 2022,
@@ -609,7 +610,8 @@
     "team": "Red Bull",
     "timeStr": "1:43.665",
     "seconds": 103.665,
-    "weather": "☁️ Nuvoloso"
+    "weather": "☁️ Nuvoloso",
+    "penaltyNote": "Pole in qualifica, ma partito 14° per la sostituzione di componenti della power unit: il via al palo è stato di Carlos Sainz."
   },
   {
     "year": 2023,
@@ -628,7 +630,8 @@
     "team": "Red Bull",
     "timeStr": "1:53.159",
     "seconds": 113.159,
-    "weather": "🌧️ Pioggia Battente"
+    "weather": "🌧️ Pioggia Battente",
+    "penaltyNote": "Pole in qualifica, ma partito 11° per una penalità di 10 posizioni (sostituzione del motore): il via al palo è stato di Charles Leclerc."
   },
   {
     "year": 2025,
@@ -700,7 +703,8 @@
     "team": "Mercedes",
     "timeStr": "1:19.555",
     "seconds": 79.555,
-    "weather": "☁️ Nuvoloso"
+    "weather": "☁️ Nuvoloso",
+    "penaltyNote": "Pole in qualifica (venerdì) e vittoria nella Sprint, ma partito 19° per la sostituzione di componenti della power unit: il via al palo è stato di Max Verstappen."
   },
   {
     "year": 2022,
@@ -916,7 +920,8 @@
     "team": "Mercedes",
     "timeStr": "1:07.934",
     "seconds": 67.934,
-    "weather": "🌧️ Pioggia"
+    "weather": "🌧️ Pioggia",
+    "penaltyNote": "Tempo più veloce in qualifica, ma squalificato dalla qualifica per l'ala posteriore (DRS) non regolamentare: ultimo al via della Sprint e 10° in gara (anche 5 posizioni di penalità per il motore). Il via al palo è stato di Valtteri Bottas."
   },
   {
     "year": 2022,
@@ -925,7 +930,8 @@
     "team": "Haas",
     "timeStr": "1:11.674",
     "seconds": 71.674,
-    "weather": "🌧️ Pioggia"
+    "weather": "🌧️ Pioggia",
+    "penaltyNote": "Pole in qualifica (venerdì), ma partito 8°: la griglia della gara era decisa dalla Sprint, vinta da George Russell, che è partito al palo."
   },
   {
     "year": 2023,
@@ -1006,7 +1012,8 @@
     "team": "Red Bull",
     "timeStr": "1:20.520",
     "seconds": 80.52,
-    "weather": "☁️ Notturno Nuvoloso"
+    "weather": "☁️ Notturno Nuvoloso",
+    "penaltyNote": "Pole in qualifica, ma partito 2° per una penalità di una posizione (ha ostacolato George Russell in qualifica): il via al palo è stato di George Russell."
   },
   {
     "year": 2025,

@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-26T00:45:38.412Z",
+  "updatedAt": "2026-10-26T19:15:04.604Z",
   "drivers": [
     {
       "position": 1,
@@ -133,6 +133,13 @@
       "driver": "Alex Albon",
       "team": "Williams",
       "points": 5,
+      "wins": 0
+    },
+    {
+      "position": 20,
+      "driver": "Yuki Tsunoda",
+      "team": "RB",
+      "points": 1,
       "wins": 0
     },
     {

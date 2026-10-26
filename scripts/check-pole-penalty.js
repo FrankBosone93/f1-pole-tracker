@@ -1,8 +1,9 @@
 // scripts/check-pole-penalty.js
 //
-// Gira DOPO la gara (a differenza di update-poles.js, che gira dopo la
-// qualifica), quando f1api.dev ha anche i risultati di gara con la griglia di
-// partenza REALE (campo "grid" in "{anno}/{round}/race"). Se il pilota che ha
+// Controlla la griglia di partenza REALE delle ultime gare: fonte principale
+// OpenF1 (starting_grid della qualifica, penalità già applicate, pubblicata
+// prima della gara), ripiego f1api.dev (campo "grid" dei risultati di gara).
+// Se il pilota che ha
 // ottenuto la pole in qualifica non è partito P1 in griglia (penalità), lo
 // segnala aggiungendo un campo "penaltyNote" alla entry corrispondente in
 // data.json — la pole resta assegnata al più veloce in qualifica (invariata),
@@ -15,6 +16,24 @@ const path = require('path');
 const { matchCircuitById, normalize, driverFullName } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { HttpError, fetchJson } = require('./lib/http');
+const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { surnameKey } = require('./lib/driver-names');
+
+// Griglia da OpenF1: { poleGrid, frontRowName } del polista registrato, o
+// null se OpenF1 non ha (ancora) la griglia.
+async function gridFromOpenF1(session, poleDriver) {
+    let grid;
+    try { grid = await openf1Json(`https://api.openf1.org/v1/starting_grid?session_key=${session.session_key}`); }
+    catch (err) { if (err.status === 404) return null; throw err; }
+    if (!grid.length) return null;
+    const drivers = await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
+    const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
+    const pole = grid.find(g => surnameKey(byNumber.get(g.driver_number)?.last_name) === surnameKey(poleDriver));
+    const front = grid.find(g => g.position === 1);
+    if (!pole || !front) return null;
+    const f = byNumber.get(front.driver_number) || {};
+    return { poleGrid: pole.position, frontRowName: [f.first_name, f.last_name].filter(Boolean).join(' ') };
+}
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
 const CURRENT_URL = 'https://f1api.dev/api/current';
@@ -28,59 +47,69 @@ const RECENT_RACES = 3;
 const PENDING_GRACE_HOURS = 72;
 
 // Controlla la penalità di un singolo round. Ritorna true se currentData
-// (in memoria) è cambiato.
-async function checkRound(season, round, currentData) {
-    const url = `https://f1api.dev/api/${season}/${round}/race`;
-    console.log(`Richiesta a ${url} ...`);
-    const payload = await fetchJson(url);
-
-    const racesNode = payload.races;
-    if (!racesNode) {
-        throw new Error('Campo "races" non trovato nella risposta API.');
-    }
-
-    const circuitInfo = Array.isArray(racesNode.circuit) ? racesNode.circuit[0] : racesNode.circuit;
-    const mappedCircuit = matchCircuitById(circuitInfo?.circuitId);
+// (in memoria) è cambiato. Il circuito viene dal calendario (/current), così
+// OpenF1 si può interrogare anche se f1api.dev non ha ancora i risultati.
+async function checkRound(season, race, currentData, openf1Sessions) {
+    const round = race.round;
+    const mappedCircuit = matchCircuitById(race.circuit?.circuitId);
     if (!mappedCircuit) {
         throw new Error(
-            `Circuito con circuitId="${circuitInfo?.circuitId}" non riconosciuto. ` +
+            `Circuito con circuitId="${race.circuit?.circuitId}" non riconosciuto. ` +
             `Aggiungere una voce a CIRCUIT_ID_MAP in scripts/lib/f1-mapping.js.`
         );
     }
-
     const year = parseInt(season, 10);
     if (!year || isNaN(year)) {
         throw new Error(`Anno stagione non valido: "${season}"`);
     }
+    console.log(`Round ${round} (${mappedCircuit}):`);
 
-    const results = racesNode.results || [];
+    // --- Carica la entry già scritta da update-poles.js per questo anno+circuito ---
+    const entry = currentData.find(d => d.year === year && d.circuit === mappedCircuit);
+    if (!entry) {
+        console.log(`Nessuna entry in data.json per ${year} - ${mappedCircuit} (la qualifica non è ancora stata registrata?). Nessuna azione.`);
+        return false;
+    }
+
+    // 1. OpenF1 (principale)
+    const session = (openf1Sessions || []).find(s => CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit);
+    if (session) {
+        try {
+            const g = await gridFromOpenF1(session, entry.driver);
+            if (g) {
+                console.log(`   griglia da OpenF1: ${entry.driver} parte ${g.poleGrid}°`);
+                return applyGrid(entry, year, mappedCircuit, g);
+            }
+        } catch (err) {
+            console.warn(`   ⚠️  OpenF1: ${err.message} - uso f1api.dev.`);
+        }
+    }
+
+    // 2. f1api.dev (ripiego): griglia dai risultati di gara.
+    const url = `https://f1api.dev/api/${season}/${round}/race`;
+    console.log(`   f1api.dev: ${url}`);
+    const payload = await fetchJson(url);
+    const results = payload.races?.results || [];
     if (!Array.isArray(results) || results.length === 0) {
         console.log(`Round ${round}: nessun risultato di gara ancora disponibile. Nessuna azione.`);
         return false;
     }
-
-    // --- Carica la entry già scritta da update-poles.js per questo anno+circuito ---
-    const existingIndex = currentData.findIndex(d => d.year === year && d.circuit === mappedCircuit);
-    if (existingIndex === -1) {
-        console.log(`Nessuna entry in data.json per ${year} - ${mappedCircuit} (la qualifica non è ancora stata registrata?). Nessuna azione.`);
-        return false;
-    }
-    const entry = currentData[existingIndex];
-
     // Trova il polista registrato (fastest in qualifica) tra i risultati di gara,
     // confrontando per nome (case/accenti-insensitive tramite normalize).
     const poleNormalized = normalize(entry.driver);
     const poleResultRow = results.find(r => normalize(driverFullName(r.driver)) === poleNormalized);
-
     if (!poleResultRow) {
         console.log(`⚠️  Pilota "${entry.driver}" (pole in qualifica) non trovato tra i risultati di gara. Impossibile verificare la griglia di partenza. Nessuna azione.`);
         return false;
     }
-
-    const poleGrid = parseInt(poleResultRow.grid, 10);
     const frontRowRow = results.find(r => parseInt(r.grid, 10) === 1);
+    return applyGrid(entry, year, mappedCircuit, { poleGrid: parseInt(poleResultRow.grid, 10), frontRowName: frontRowRow ? driverFullName(frontRowRow.driver) : null });
+}
 
-    if (!frontRowRow || poleGrid === 1) {
+function applyGrid(entry, year, mappedCircuit, grid) {
+    if (!grid) return false;
+    const { poleGrid, frontRowName } = grid;
+    if (!frontRowName || poleGrid === 1) {
         // Nessuna penalità: il polista è partito davanti. Rimuovi un eventuale
         // avviso stale (non dovrebbe succedere, ma per sicurezza).
         if (entry.penaltyNote) {
@@ -92,8 +121,13 @@ async function checkRound(season, round, currentData) {
         return false;
     }
 
-    const frontRowName = driverFullName(frontRowRow.driver);
-    const note = `Pole in qualifica, ma partito P${poleGrid} in griglia per una penalità: il via al palo è stato di ${frontRowName}.`;
+    // Una nota già presente (spesso scritta a mano con il motivo preciso) non
+    // si sovrascrive con quella generica.
+    if (entry.penaltyNote) {
+        console.log(`Polista partito ${poleGrid}°: nota già presente, lasciata com'è.`);
+        return false;
+    }
+    const note = `Pole in qualifica, ma partito ${poleGrid}° in griglia per una penalità: il via al palo è stato di ${frontRowName}.`;
     if (entry.penaltyNote !== note) {
         entry.penaltyNote = note;
         console.log(`🚩 Penalità rilevata per ${entry.driver} (${year} - ${mappedCircuit}): ${note}`);
@@ -134,11 +168,17 @@ async function main() {
     }
 
     const currentData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
+    let openf1Sessions = null;
+    try {
+        openf1Sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Qualifying`);
+    } catch (err) {
+        console.warn(`⚠️  OpenF1 non disponibile (${err.message}): griglia da f1api.dev.`);
+    }
     let changed = false;
     const errors = [];
     for (const race of recent) {
         try {
-            if (await checkRound(season, race.round, currentData)) changed = true;
+            if (await checkRound(season, race, currentData, openf1Sessions)) changed = true;
         } catch (err) {
             const hoursSince = (now - raceStart(race)) / 3600000;
             if (err instanceof HttpError && err.status === 404 && hoursSince < PENDING_GRACE_HOURS) {
