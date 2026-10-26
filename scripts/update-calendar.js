@@ -354,27 +354,27 @@ async function main() {
             const sessionStart = new Date(`${sessionInfo.date}T${sessionInfo.time || '23:59:59Z'}`);
             if (isNaN(sessionStart) || sessionStart > now) continue; // ancora da disputare
 
-            try {
-                const payload = await fetchJson(`https://f1api.dev/api/${season}/${round}/${key}`, { allow404: true });
-                results[key] = normalizeSessionResults(key, payload?.races);
-            } catch (err) {
-                console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati ${key}: errore - ${err.message}`);
-            }
-            await sleep(150);
-
-            // Prove libere senza risultati su f1api.dev: si prendono da
-            // OpenF1, solo a sessione finita.
-            if (!results[key] && PRACTICE_SESSION_NAMES[key]) {
-                const session = openf1Sessions.find(s => s.session_name === PRACTICE_SESSION_NAMES[key]
-                    && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
-                if (session) {
-                    try {
-                        results[key] = await openf1PracticeResults(session, driverNames);
-                        if (results[key]) console.log(`📥 ${mappedCircuit} ${key}: risultati da OpenF1 (non ancora su f1api.dev)`);
-                    } catch (err) {
-                        console.warn(`⚠️  ${mappedCircuit} ${key}: risultati OpenF1 non disponibili - ${err.message}`);
-                    }
+            // Prove libere: OpenF1 principale (classifica ufficiale, di solito
+            // pubblicata poco dopo la sessione), f1api.dev ripiego.
+            const session = openf1Sessions.find(s => s.session_name === PRACTICE_SESSION_NAMES[key]
+                && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
+            if (session) {
+                try {
+                    results[key] = await openf1PracticeResults(session, driverNames);
+                    if (results[key]) console.log(`📥 ${mappedCircuit} ${key}: risultati da OpenF1`);
+                } catch (err) {
+                    console.warn(`⚠️  ${mappedCircuit} ${key}: risultati OpenF1 non disponibili - ${err.message}`);
                 }
+            }
+            if (!results[key]) {
+                try {
+                    const payload = await fetchJson(`https://f1api.dev/api/${season}/${round}/${key}`, { allow404: true });
+                    results[key] = normalizeSessionResults(key, payload?.races);
+                    if (results[key]) console.log(`📥 ${mappedCircuit} ${key}: risultati da f1api.dev (OpenF1 non disponibile)`);
+                } catch (err) {
+                    console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati ${key}: errore - ${err.message}`);
+                }
+                await sleep(150);
             }
         }
 
