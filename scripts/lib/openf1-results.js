@@ -93,17 +93,30 @@ async function openf1RaceResults(session, driverNames) {
     });
 }
 
-// Classifica della qualifica da OpenF1 (ufficiale, come per la pole):
-// posizione di qualifica e tempo migliore nell'ultima fase disputata da
-// ciascun pilota (Q3, Q2 o Q1). Formato del sito: {position, driver, team, time}.
+// Qualifica da OpenF1, mostrata come GRIGLIA DI PARTENZA (starting_grid,
+// con le penalità già applicate): ordine della griglia, tempo migliore della
+// qualifica nell'ultima fase disputata (Q3, Q2 o Q1), penalty: true per chi
+// parte più indietro della sua posizione di qualifica (chi avanza solo per
+// effetto degli arretramenti altrui non è marcato). Finché la griglia non è
+// pubblicata, l'ordine è quello della qualifica. La pole del sito (data.json)
+// resta invece il più veloce in qualifica, a prescindere dalle penalità.
+// Formato del sito: {position, driver, team, time, penalty?}.
 async function openf1QualyResults(session, driverNames) {
     const rows = await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`);
     if (!rows.length) return null;
     const drivers = await openf1Json(`https://api.openf1.org/v1/drivers?session_key=${session.session_key}`);
+    let grid = [];
+    try { grid = await openf1Json(`https://api.openf1.org/v1/starting_grid?session_key=${session.session_key}`); }
+    catch (err) { if (err.status !== 404) throw err; } // 404 = griglia non ancora pubblicata
+    const gridPos = new Map(grid.map(g => [g.driver_number, g.position]));
     const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
     const classified = rows.filter(r => r.position).sort((a, b) => a.position - b.position);
     const others = rows.filter(r => !r.position);
-    return [...classified, ...others].map((r, i) => {
+    const qualyOrder = [...classified, ...others];
+    const ordered = gridPos.size
+        ? qualyOrder.slice().sort((a, b) => (gridPos.get(a.driver_number) ?? 99) - (gridPos.get(b.driver_number) ?? 99))
+        : qualyOrder;
+    return ordered.map((r, i) => {
         const d = byNumber.get(r.driver_number) || {};
         const best = [].concat(r.duration).reverse().find(v => typeof v === 'number');
         return {
@@ -116,6 +129,7 @@ async function openf1QualyResults(session, driverNames) {
             // distinguere un incidente senza tempo da una squalifica:
             // "Squalificato" solo se OpenF1 lo dice, altrimenti "Non classificato".
             time: r.dsq ? 'Squalificato' : !r.position ? 'Non classificato' : (best ? fmtLap(best) : '-'),
+            ...(gridPos.size && (!r.position || (gridPos.get(r.driver_number) ?? 99) > r.position) ? { penalty: true } : {}),
         };
     });
 }

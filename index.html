@@ -1882,13 +1882,18 @@
                     : `<span class="text-gray-300">${escapeHtml(r.time || '-')}</span>`;
                 return `<tr class="border-t border-gray-800">
                     <td class="py-1 pl-2 pr-1 text-gray-500 text-right">${escapeHtml(String(r.position))}</td>
-                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${escapeHtml(r.driver)}</td>
+                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${escapeHtml(r.driver)}${r.penalty ? '<span class="text-orange-400" title="Arretrato in griglia per penalità">*</span>' : ''}</td>
                     <td class="py-1 px-1 text-gray-500 truncate max-w-[90px]">${escapeHtml(r.team)}</td>
                     <td class="py-1 pl-1 pr-2 text-right whitespace-nowrap">${timeCell}</td>
                 </tr>`;
             }).join('');
+            // Qualifiche: ordine della griglia di partenza; * = arretrato per
+            // penalità (vedi openf1QualyResults negli script).
+            const note = results.some(r => r.penalty)
+                ? `<div class="px-2 py-1 text-[10px] text-gray-500 border-t border-gray-800"><span class="text-orange-400">*</span> penalità in griglia: posizione di partenza, il tempo è quello della qualifica</div>`
+                : '';
             return `<div class="mt-1 mb-2 max-h-56 overflow-y-auto rounded border border-gray-800 bg-black/20">
-                <table class="w-full text-[11px]"><tbody>${rows}</tbody></table>
+                <table class="w-full text-[11px]"><tbody>${rows}</tbody></table>${note}
             </div>`;
         }
 

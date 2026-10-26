@@ -1,6 +1,6 @@
 {
   "season": 2024,
-  "updatedAt": "2026-10-26T00:21:56.600Z",
+  "updatedAt": "2026-10-26T19:00:04.265Z",
   "races": [
     {
       "round": 1,
@@ -447,7 +447,8 @@
             "position": 20,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
-            "time": "Non classificato"
+            "time": "Non classificato",
+            "penalty": true
           }
         ],
         "race": [
@@ -640,27 +641,28 @@
           },
           {
             "position": 3,
-            "driver": "Sergio Pérez",
-            "team": "Red Bull",
-            "time": "1:16.274"
-          },
-          {
-            "position": 4,
             "driver": "Lando Norris",
             "team": "McLaren",
             "time": "1:16.315"
           },
           {
-            "position": 5,
+            "position": 4,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
             "time": "1:16.435"
           },
           {
-            "position": 6,
+            "position": 5,
             "driver": "Oscar Piastri",
             "team": "McLaren",
             "time": "1:16.572"
+          },
+          {
+            "position": 6,
+            "driver": "Sergio Pérez",
+            "team": "Red Bull",
+            "time": "1:16.274",
+            "penalty": true
           },
           {
             "position": 7,
@@ -1608,21 +1610,22 @@
           },
           {
             "position": 18,
-            "driver": "Daniel Ricciardo",
-            "team": "RB",
-            "time": "1:28.617"
-          },
-          {
-            "position": 19,
             "driver": "Kevin Magnussen",
             "team": "Haas",
             "time": "1:28.619"
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:28.824"
+          },
+          {
+            "position": 20,
+            "driver": "Daniel Ricciardo",
+            "team": "RB",
+            "time": "1:28.617",
+            "penalty": true
           }
         ],
         "race": [
@@ -1809,27 +1812,28 @@
           },
           {
             "position": 2,
-            "driver": "Oscar Piastri",
-            "team": "McLaren",
-            "time": "1:14.820"
-          },
-          {
-            "position": 3,
             "driver": "Lando Norris",
             "team": "McLaren",
             "time": "1:14.837"
           },
           {
-            "position": 4,
+            "position": 3,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
             "time": "1:14.970"
           },
           {
-            "position": 5,
+            "position": 4,
             "driver": "Carlos Sainz",
             "team": "Ferrari",
             "time": "1:15.233"
+          },
+          {
+            "position": 5,
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": "1:14.820",
+            "penalty": true
           },
           {
             "position": 6,
@@ -1911,15 +1915,17 @@
           },
           {
             "position": 19,
-            "driver": "Fernando Alonso",
-            "team": "Aston Martin",
-            "time": "1:16.917"
+            "driver": "Logan Sargeant",
+            "team": "Williams",
+            "time": "Non classificato",
+            "penalty": true
           },
           {
             "position": 20,
-            "driver": "Logan Sargeant",
-            "team": "Williams",
-            "time": "Non classificato"
+            "driver": "Fernando Alonso",
+            "team": "Aston Martin",
+            "time": "1:16.917",
+            "penalty": true
           }
         ],
         "race": [
@@ -2210,13 +2216,15 @@
             "position": 19,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "Non classificato"
+            "time": "Non classificato",
+            "penalty": true
           },
           {
             "position": 20,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Non classificato"
+            "time": "Non classificato",
+            "penalty": true
           }
         ],
         "race": [
@@ -2493,9 +2501,9 @@
           },
           {
             "position": 17,
-            "driver": "Valtteri Bottas",
-            "team": "Kick Sauber",
-            "time": "1:13.366"
+            "driver": "Nico Hulkenberg",
+            "team": "Haas",
+            "time": "1:13.978"
           },
           {
             "position": 18,
@@ -2505,9 +2513,10 @@
           },
           {
             "position": 19,
-            "driver": "Nico Hulkenberg",
-            "team": "Haas",
-            "time": "1:13.978"
+            "driver": "Valtteri Bottas",
+            "team": "Kick Sauber",
+            "time": "1:13.366",
+            "penalty": true
           },
           {
             "position": 20,
@@ -2736,27 +2745,28 @@
           },
           {
             "position": 8,
-            "driver": "Sergio Pérez",
-            "team": "Red Bull",
-            "time": "1:12.061"
-          },
-          {
-            "position": 9,
             "driver": "Esteban Ocon",
             "team": "Alpine",
             "time": "1:12.125"
           },
           {
-            "position": 10,
+            "position": 9,
             "driver": "Oscar Piastri",
             "team": "McLaren",
             "time": "1:12.011"
           },
           {
-            "position": 11,
+            "position": 10,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "1:12.128"
+          },
+          {
+            "position": 11,
+            "driver": "Sergio Pérez",
+            "team": "Red Bull",
+            "time": "1:12.061",
+            "penalty": true
           },
           {
             "position": 12,
@@ -2802,15 +2812,16 @@
           },
           {
             "position": 19,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "1:13.153"
-          },
-          {
-            "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
             "time": "1:13.509"
+          },
+          {
+            "position": 20,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "1:13.153",
+            "penalty": true
           }
         ],
         "race": [
@@ -3882,69 +3893,70 @@
         "qualy": [
           {
             "position": 1,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "1:53.159"
-          },
-          {
-            "position": 2,
             "driver": "Charles Leclerc",
             "team": "Ferrari",
             "time": "1:53.754"
           },
           {
-            "position": 3,
+            "position": 2,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
             "time": "1:53.765"
           },
           {
-            "position": 4,
+            "position": 3,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
             "time": "1:53.835"
           },
           {
-            "position": 5,
+            "position": 4,
             "driver": "Lando Norris",
             "team": "McLaren",
             "time": "1:53.981"
           },
           {
-            "position": 6,
+            "position": 5,
             "driver": "Oscar Piastri",
             "team": "McLaren",
             "time": "1:54.027"
           },
           {
-            "position": 7,
+            "position": 6,
             "driver": "George Russell",
             "team": "Mercedes",
             "time": "1:54.184"
           },
           {
-            "position": 8,
+            "position": 7,
             "driver": "Carlos Sainz",
             "team": "Ferrari",
             "time": "1:54.477"
           },
           {
-            "position": 9,
+            "position": 8,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "1:54.765"
           },
           {
-            "position": 10,
+            "position": 9,
             "driver": "Esteban Ocon",
             "team": "Alpine",
             "time": "1:54.810"
           },
           {
-            "position": 11,
+            "position": 10,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "1:54.473"
+          },
+          {
+            "position": 11,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "1:53.159",
+            "penalty": true
           },
           {
             "position": 12,
@@ -3984,21 +3996,22 @@
           },
           {
             "position": 18,
-            "driver": "Yuki Tsunoda",
-            "team": "RB",
-            "time": "1:56.593"
-          },
-          {
-            "position": 19,
             "driver": "Logan Sargeant",
             "team": "Williams",
             "time": "1:57.230"
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:57.775"
+          },
+          {
+            "position": 20,
+            "driver": "Yuki Tsunoda",
+            "team": "RB",
+            "time": "1:56.593",
+            "penalty": true
           }
         ],
         "race": [
@@ -4239,57 +4252,60 @@
           },
           {
             "position": 11,
-            "driver": "Lewis Hamilton",
-            "team": "Mercedes",
-            "time": "1:10.948"
-          },
-          {
-            "position": 12,
             "driver": "Yuki Tsunoda",
             "team": "RB",
             "time": "1:10.955"
           },
           {
-            "position": 13,
+            "position": 12,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
             "time": "1:11.215"
           },
           {
-            "position": 14,
-            "driver": "Kevin Magnussen",
-            "team": "Haas",
-            "time": "1:11.295"
-          },
-          {
-            "position": 15,
+            "position": 13,
             "driver": "Daniel Ricciardo",
             "team": "RB",
             "time": "1:11.943"
           },
           {
-            "position": 16,
+            "position": 14,
+            "driver": "Lewis Hamilton",
+            "team": "Mercedes",
+            "time": "1:10.948",
+            "penalty": true
+          },
+          {
+            "position": 15,
             "driver": "Esteban Ocon",
             "team": "Alpine",
             "time": "1:11.995"
           },
           {
-            "position": 17,
+            "position": 16,
             "driver": "Valtteri Bottas",
             "team": "Kick Sauber",
             "time": "1:12.168"
           },
           {
-            "position": 18,
+            "position": 17,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:13.261"
           },
           {
-            "position": 19,
+            "position": 18,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Non classificato"
+            "time": "Non classificato",
+            "penalty": true
+          },
+          {
+            "position": 19,
+            "driver": "Kevin Magnussen",
+            "team": "Haas",
+            "time": "1:11.295",
+            "penalty": true
           }
         ],
         "race": [
@@ -4803,87 +4819,90 @@
           },
           {
             "position": 7,
-            "driver": "Lewis Hamilton",
-            "team": "Mercedes",
-            "time": "1:42.289"
-          },
-          {
-            "position": 8,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "1:42.369"
           },
           {
-            "position": 9,
+            "position": 8,
             "driver": "Franco Colapinto",
             "team": "Williams",
             "time": "1:42.530"
           },
           {
-            "position": 10,
+            "position": 9,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "1:42.859"
           },
           {
-            "position": 11,
+            "position": 10,
             "driver": "Oliver Bearman",
             "team": "Haas",
             "time": "1:42.968"
           },
           {
-            "position": 12,
+            "position": 11,
             "driver": "Yuki Tsunoda",
             "team": "RB",
             "time": "1:43.035"
           },
           {
-            "position": 13,
+            "position": 12,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
             "time": "1:43.191"
           },
           {
-            "position": 14,
+            "position": 13,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
             "time": "1:43.404"
           },
           {
-            "position": 15,
+            "position": 14,
             "driver": "Daniel Ricciardo",
             "team": "RB",
             "time": "1:43.547"
           },
           {
-            "position": 16,
+            "position": 15,
             "driver": "Lando Norris",
             "team": "McLaren",
             "time": "1:43.609"
           },
           {
-            "position": 17,
+            "position": 16,
             "driver": "Valtteri Bottas",
             "team": "Kick Sauber",
             "time": "1:43.618"
           },
           {
-            "position": 18,
+            "position": 17,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:44.246"
           },
           {
-            "position": 19,
-            "driver": "Esteban Ocon",
+            "position": 18,
+            "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "1:44.504"
+            "time": "Non classificato",
+            "penalty": true
+          },
+          {
+            "position": 19,
+            "driver": "Lewis Hamilton",
+            "team": "Mercedes",
+            "time": "1:42.289",
+            "penalty": true
           },
           {
             "position": 20,
-            "driver": "Pierre Gasly",
+            "driver": "Esteban Ocon",
             "team": "Alpine",
-            "time": "Non classificato"
+            "time": "1:44.504",
+            "penalty": true
           }
         ],
         "race": [
@@ -5391,93 +5410,95 @@
           },
           {
             "position": 6,
-            "driver": "George Russell",
-            "team": "Mercedes",
-            "time": "1:32.974"
-          },
-          {
-            "position": 7,
             "driver": "Pierre Gasly",
             "team": "Alpine",
             "time": "1:33.018"
           },
           {
-            "position": 8,
+            "position": 7,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "1:33.309"
           },
           {
-            "position": 9,
+            "position": 8,
             "driver": "Kevin Magnussen",
             "team": "Haas",
             "time": "1:33.481"
           },
           {
-            "position": 10,
+            "position": 9,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
             "time": "1:33.020"
           },
           {
-            "position": 11,
+            "position": 10,
             "driver": "Yuki Tsunoda",
             "team": "RB",
             "time": "1:33.506"
           },
           {
-            "position": 12,
+            "position": 11,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
             "time": "1:33.544"
           },
           {
-            "position": 13,
+            "position": 12,
             "driver": "Esteban Ocon",
             "team": "Alpine",
             "time": "1:33.597"
           },
           {
-            "position": 14,
+            "position": 13,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
             "time": "1:33.759"
           },
           {
-            "position": 15,
-            "driver": "Liam Lawson",
-            "team": "RB",
-            "time": "1:33.339"
-          },
-          {
-            "position": 16,
+            "position": 14,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "1:34.051"
           },
           {
-            "position": 17,
+            "position": 15,
             "driver": "Franco Colapinto",
             "team": "Williams",
             "time": "1:34.062"
           },
           {
-            "position": 18,
+            "position": 16,
             "driver": "Valtteri Bottas",
             "team": "Kick Sauber",
             "time": "1:34.152"
           },
           {
-            "position": 19,
+            "position": 17,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
             "time": "1:34.154"
           },
           {
-            "position": 20,
+            "position": 18,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:34.228"
+          },
+          {
+            "position": 19,
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "1:33.339",
+            "penalty": true
+          },
+          {
+            "position": 20,
+            "driver": "George Russell",
+            "team": "Mercedes",
+            "time": "1:32.974",
+            "penalty": true
           }
         ],
         "race": [
@@ -5766,15 +5787,16 @@
           },
           {
             "position": 19,
-            "driver": "Esteban Ocon",
-            "team": "Alpine",
-            "time": "1:17.617"
-          },
-          {
-            "position": 20,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:18.072"
+          },
+          {
+            "position": 20,
+            "driver": "Esteban Ocon",
+            "team": "Alpine",
+            "time": "1:17.617",
+            "penalty": true
           }
         ],
         "race": [
@@ -6021,57 +6043,59 @@
           },
           {
             "position": 12,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "1:27.771"
-          },
-          {
-            "position": 13,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
             "time": "1:28.158"
           },
           {
-            "position": 14,
-            "driver": "Carlos Sainz",
-            "team": "Ferrari",
-            "time": "1:29.406"
-          },
-          {
-            "position": 15,
+            "position": 13,
             "driver": "Pierre Gasly",
             "team": "Alpine",
             "time": "1:29.614"
           },
           {
-            "position": 16,
+            "position": 14,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
             "time": "1:31.150"
           },
           {
-            "position": 17,
+            "position": 15,
             "driver": "Oliver Bearman",
             "team": "Haas",
             "time": "1:31.229"
           },
           {
-            "position": 18,
+            "position": 16,
             "driver": "Franco Colapinto",
             "team": "Williams",
             "time": "1:31.270"
           },
           {
-            "position": 19,
+            "position": 17,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "1:27.771",
+            "penalty": true
+          },
+          {
+            "position": 18,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
             "time": "1:31.623"
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:32.263"
+          },
+          {
+            "position": 20,
+            "driver": "Carlos Sainz",
+            "team": "Ferrari",
+            "time": "1:29.406",
+            "penalty": true
           }
         ],
         "race": [
@@ -6330,33 +6354,33 @@
           },
           {
             "position": 14,
-            "driver": "Franco Colapinto",
-            "team": "Williams",
-            "time": "1:33.749"
-          },
-          {
-            "position": 15,
             "driver": "Liam Lawson",
             "team": "RB",
             "time": "1:34.257"
           },
           {
-            "position": 16,
+            "position": 15,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
             "time": "1:34.155"
           },
           {
-            "position": 17,
+            "position": 16,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
             "time": "1:34.258"
           },
           {
-            "position": 18,
+            "position": 17,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "1:34.425"
+          },
+          {
+            "position": 18,
+            "driver": "Lance Stroll",
+            "team": "Aston Martin",
+            "time": "1:34.484"
           },
           {
             "position": 19,
@@ -6366,9 +6390,10 @@
           },
           {
             "position": 20,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "1:34.484"
+            "driver": "Franco Colapinto",
+            "team": "Williams",
+            "time": "1:33.749",
+            "penalty": true
           }
         ],
         "race": [
@@ -6549,15 +6574,16 @@
         "qualy": [
           {
             "position": 1,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "1:20.520"
-          },
-          {
-            "position": 2,
             "driver": "George Russell",
             "team": "Mercedes",
             "time": "1:20.575"
+          },
+          {
+            "position": 2,
+            "driver": "Max Verstappen",
+            "team": "Red Bull",
+            "time": "1:20.520",
+            "penalty": true
           },
           {
             "position": 3,
@@ -6864,27 +6890,28 @@
           },
           {
             "position": 4,
-            "driver": "Nico Hulkenberg",
-            "team": "Haas",
-            "time": "1:22.886"
-          },
-          {
-            "position": 5,
             "driver": "Max Verstappen",
             "team": "Red Bull",
             "time": "1:22.945"
           },
           {
-            "position": 6,
+            "position": 5,
             "driver": "Pierre Gasly",
             "team": "Alpine",
             "time": "1:22.984"
           },
           {
-            "position": 7,
+            "position": 6,
             "driver": "George Russell",
             "team": "Mercedes",
             "time": "1:23.132"
+          },
+          {
+            "position": 7,
+            "driver": "Nico Hulkenberg",
+            "team": "Haas",
+            "time": "1:22.886",
+            "penalty": true
           },
           {
             "position": 8,
@@ -6924,45 +6951,48 @@
           },
           {
             "position": 14,
-            "driver": "Charles Leclerc",
-            "team": "Ferrari",
-            "time": "1:23.833"
-          },
-          {
-            "position": 15,
             "driver": "Kevin Magnussen",
             "team": "Haas",
             "time": "1:23.877"
           },
           {
-            "position": 16,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "1:23.821"
-          },
-          {
-            "position": 17,
+            "position": 15,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
             "time": "1:23.880"
           },
           {
-            "position": 18,
+            "position": 16,
             "driver": "Lewis Hamilton",
             "team": "Mercedes",
             "time": "1:23.887"
           },
           {
-            "position": 19,
-            "driver": "Franco Colapinto",
-            "team": "Williams",
-            "time": "1:23.912"
-          },
-          {
-            "position": 20,
+            "position": 17,
             "driver": "Jack Doohan",
             "team": "Alpine",
             "time": "1:24.105"
+          },
+          {
+            "position": 18,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "1:23.821",
+            "penalty": true
+          },
+          {
+            "position": 19,
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": "1:23.833",
+            "penalty": true
+          },
+          {
+            "position": 20,
+            "driver": "Franco Colapinto",
+            "team": "Williams",
+            "time": "1:23.912",
+            "penalty": true
           }
         ],
         "race": [
