@@ -82,6 +82,12 @@
             <h1 class="text-2xl md:text-4xl font-bold text-[#E10600] tracking-wider"><a href="./" onclick="goHome(event)" title="Torna alla home e ricarica" class="hover:opacity-80 transition-opacity">F1 POLE TRACKER</a></h1>
             <p id="siteSubtitle" class="text-gray-400 text-sm md:text-base">Qualifiche & Passo Gara 2021-2026</p>
             <p id="dataSourceBadge" class="text-[10px] text-gray-600 mt-1">Caricamento dati...</p>
+            <!-- Novità del sito (changelog.json, versione per gli utenti):
+                 una riga discreta che apre l'elenco; pallino rosso se c'è un
+                 changelog non ancora visto su questo dispositivo. -->
+            <p id="changelogLink" class="hidden text-[10px] mt-0.5">
+                <button type="button" onclick="openChangelog()" class="text-gray-500 hover:text-gray-300 hover:underline cursor-pointer">📝 Novità<span id="changelogDate"></span></button><span id="changelogDot" class="hidden inline-block w-1.5 h-1.5 rounded-full bg-[#E10600] ml-1 align-middle"></span>
+            </p>
 
             <!-- Widget "Prossimo GP" versione MOBILE (riquadro con bordo,
                  come le altre card impilate su mobile): qui, sopra il
@@ -3097,7 +3103,69 @@
             }
         }
 
+        // --- NOVITÀ (changelog.json) ------------------------------------------
+        // Versione per gli utenti dei changelog: categorie e punti in testo
+        // semplice (**grassetto** ammesso). Il più recente è aperto, gli altri
+        // si aprono toccando la data. "Visto" ricordato su questo dispositivo.
+        let changelogData = null;
+        const CHANGELOG_SEEN_KEY = 'changelogSeen';
+
+        async function loadChangelog() {
+            try {
+                const res = await fetch('changelog.json', { cache: 'no-cache' });
+                if (!res.ok) return;
+                changelogData = await res.json();
+            } catch (e) { return; }
+            const latest = changelogData?.entries?.[0];
+            if (!latest) return;
+            const d = new Date(`${latest.date}T12:00:00`);
+            document.getElementById('changelogDate').innerText = ` · ${d.getDate()} ${d.toLocaleString('it-IT', { month: 'short' }).replace('.', '')}`;
+            let seen = null;
+            try { seen = localStorage.getItem(CHANGELOG_SEEN_KEY); } catch (e) {}
+            document.getElementById('changelogDot').classList.toggle('hidden', seen === latest.date);
+            document.getElementById('changelogLink').classList.remove('hidden');
+        }
+
+        function changelogItemHtml(text) {
+            return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
+        }
+
+        function openChangelog() {
+            const entries = changelogData?.entries || [];
+            if (!entries.length) return;
+            document.getElementById('changelogDialog')?.remove();
+            const el = document.createElement('div');
+            el.id = 'changelogDialog';
+            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
+            el.innerHTML = `
+                <div class="bg-[#1E1E1E] border border-gray-700 rounded-xl w-full max-w-lg max-h-[85vh] flex flex-col text-sm text-gray-300">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+                        <div class="font-semibold text-white">📝 Novità del sito</div>
+                        <button type="button" data-close class="text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
+                    </div>
+                    <div class="overflow-y-auto px-4 py-2">
+                        ${entries.map((e, i) => `
+                            <details class="border-b border-gray-800 last:border-0 py-2" ${i === 0 ? 'open' : ''}>
+                                <summary class="cursor-pointer font-semibold text-gray-100">${escapeHtml(e.title)}</summary>
+                                ${(e.sections || []).map(sec => `
+                                    <div class="mt-2">
+                                        <div class="text-[13px] font-semibold text-[#E10600]">${escapeHtml(sec.title)}</div>
+                                        <ul class="list-disc pl-5 mt-1 space-y-1 text-[13px] leading-snug">
+                                            ${(sec.items || []).map(it => `<li>${changelogItemHtml(it)}</li>`).join('')}
+                                        </ul>
+                                    </div>`).join('')}
+                                ${e.status ? `<div class="mt-2 text-[12px] text-gray-400">${changelogItemHtml(e.status)}</div>` : ''}
+                            </details>`).join('')}
+                    </div>
+                </div>`;
+            el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) el.remove(); });
+            document.body.appendChild(el);
+            try { localStorage.setItem(CHANGELOG_SEEN_KEY, entries[0].date); } catch (e) {}
+            document.getElementById('changelogDot').classList.add('hidden');
+        }
+
         initApp();
+        loadChangelog();
 
         // Registra il service worker (sw.js) per l'installazione come PWA -
         // vedi manifest.json. Non blocca né rallenta il caricamento della

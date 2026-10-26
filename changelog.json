@@ -1,0 +1,71 @@
+{
+  "entries": [
+    {
+      "date": "2026-10-26",
+      "title": "Changelog — 26 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Dati più precisi e più veloci",
+          "items": [
+            "Pole, risultati di qualifiche, prove libere e gara, classifica del mondiale e calendario ora arrivano dal **timing ufficiale della F1**: sono più precisi e arrivano poco dopo la fine delle sessioni.",
+            "Corrette le classifiche di diverse gare con **penalità e squalifiche** decise dopo il traguardo che prima mancavano (es. Brasile 2024, Singapore e Las Vegas 2025, Barcellona e Miami 2026).",
+            "Nella classifica del mondiale ora compaiono anche i piloti non più in griglia (es. Tsunoda 2026)."
+          ]
+        },
+        {
+          "title": "Qualifiche",
+          "items": [
+            "Nel dettaglio delle qualifiche vedi la **griglia di partenza** vera: i piloti arretrati per una penalità hanno un asterisco *, con il tempo fatto in qualifica.",
+            "La pole nel grafico e nei riquadri per anno resta sempre il tempo più veloce in qualifica.",
+            "Aggiunte le note sui polisti che non sono partiti primi (es. Spa e Qatar 2024, Silverstone e Monza 2021)."
+          ]
+        },
+        {
+          "title": "Notifiche",
+          "items": [
+            "La notifica dopo ogni GP arriva appena i dati sono completi, spesso già la **domenica sera** invece che il lunedì pomeriggio."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-10-25",
+      "title": "Changelog — 25 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Notifiche nella web app",
+          "items": [
+            "Aggiungendo il sito alla schermata Home (iPhone o Android) puoi ricevere una **notifica dopo ogni GP** con pole, podio e mondiale: tocca **🔔 Notifiche** in fondo alla pagina.",
+            "Toccando la notifica si apre direttamente il sito sul GP."
+          ]
+        },
+        {
+          "title": "Mappa del tracciato",
+          "items": [
+            "Aprendo la telemetria la mappa compare con un'animazione fluida invece che di colpo."
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-10-21",
+      "title": "Changelog — 21 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Mappa del tracciato nella telemetria",
+          "items": [
+            "Sotto i grafici della telemetria c'è la **mappa del circuito**: un puntino segue il punto del giro indicato sui grafici.",
+            "Le mappe sono orientate come nelle grafiche ufficiali F1 e mostrano i **numeri delle curve**.",
+            "Funziona anche al contrario: scorrendo col mouse o col dito sul tracciato, grafici e riquadri mostrano quel punto del giro."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "La telemetria si apre sempre sull'ultimo anno disponibile per il circuito scelto, e resta aperta anche sui circuiti non ancora corsi quest'anno."
+          ]
+        }
+      ]
+    }
+  ]
+}
