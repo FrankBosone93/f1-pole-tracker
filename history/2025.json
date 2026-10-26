@@ -1,6 +1,6 @@
 {
   "season": 2025,
-  "updatedAt": "2026-10-25T23:28:35.858Z",
+  "updatedAt": "2026-10-26T00:25:20.407Z",
   "races": [
     {
       "round": 1,
@@ -119,7 +119,7 @@
           {
             "position": 15,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:17.520"
           },
           {
@@ -131,7 +131,7 @@
           {
             "position": 17,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:16.579"
           },
           {
@@ -150,7 +150,7 @@
             "position": 20,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -296,7 +296,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 2,
@@ -397,7 +398,7 @@
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:31.632"
           },
           {
@@ -439,7 +440,7 @@
           {
             "position": 19,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:32.141"
           },
           {
@@ -592,7 +593,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 3,
@@ -717,13 +719,13 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:28.570"
           },
           {
             "position": 17,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:28.622"
           },
           {
@@ -888,7 +890,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 4,
@@ -1013,8 +1016,8 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
-            "time": "1:31.998"
+            "team": "Kick Sauber",
+            "time": "1:32.067"
           },
           {
             "position": 17,
@@ -1025,7 +1028,7 @@
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:32.186"
           },
           {
@@ -1184,7 +1187,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 5,
@@ -1321,7 +1325,7 @@
           {
             "position": 18,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:28.782"
           },
           {
@@ -1333,7 +1337,7 @@
           {
             "position": 20,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:29.462"
           }
         ],
@@ -1480,7 +1484,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 6,
@@ -1587,7 +1592,7 @@
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:27.151"
           },
           {
@@ -1605,7 +1610,7 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:27.473"
           },
           {
@@ -1776,7 +1781,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 7,
@@ -1889,7 +1895,7 @@
           {
             "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:16.260"
           },
           {
@@ -1907,7 +1913,7 @@
           {
             "position": 17,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:16.518"
           },
           {
@@ -1926,7 +1932,7 @@
             "position": 20,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -2072,7 +2078,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 8,
@@ -2179,7 +2186,7 @@
           {
             "position": 13,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:11.596"
           },
           {
@@ -2197,7 +2204,7 @@
           {
             "position": 16,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:11.902"
           },
           {
@@ -2368,7 +2375,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 9,
@@ -2469,7 +2477,7 @@
           {
             "position": 12,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:12.756"
           },
           {
@@ -2493,7 +2501,7 @@
           {
             "position": 16,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:13.190"
           },
           {
@@ -2657,7 +2665,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 10,
@@ -2764,7 +2773,7 @@
           {
             "position": 13,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:12.183"
           },
           {
@@ -2782,7 +2791,7 @@
           {
             "position": 16,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:12.385"
           },
           {
@@ -2953,7 +2962,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 11,
@@ -3030,7 +3040,7 @@
           {
             "position": 8,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:05.132"
           },
           {
@@ -3102,7 +3112,7 @@
           {
             "position": 20,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:05.606"
           }
         ],
@@ -3249,7 +3259,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 12,
@@ -3380,7 +3391,7 @@
           {
             "position": 17,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:26.446"
           },
           {
@@ -3392,7 +3403,7 @@
           {
             "position": 19,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:26.574"
           },
           {
@@ -3545,7 +3556,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 13,
@@ -3634,7 +3646,7 @@
           {
             "position": 10,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:42.387"
           },
           {
@@ -3658,7 +3670,7 @@
           {
             "position": 14,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:41.707"
           },
           {
@@ -3841,7 +3853,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 14,
@@ -3912,7 +3925,7 @@
           {
             "position": 7,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:15.725"
           },
           {
@@ -3984,7 +3997,7 @@
           {
             "position": 19,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:16.081"
           },
           {
@@ -4137,7 +4150,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 15,
@@ -4244,7 +4258,7 @@
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:09.622"
           },
           {
@@ -4268,7 +4282,7 @@
           {
             "position": 17,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:10.195"
           },
           {
@@ -4287,7 +4301,7 @@
             "position": 20,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -4433,7 +4447,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 16,
@@ -4510,7 +4525,7 @@
           {
             "position": 8,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:19.390"
           },
           {
@@ -4534,7 +4549,7 @@
           {
             "position": 12,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:19.498"
           },
           {
@@ -4729,7 +4744,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 17,
@@ -4836,7 +4852,7 @@
           {
             "position": 13,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:42.277"
           },
           {
@@ -4860,26 +4876,26 @@
           {
             "position": 17,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:42.916"
           },
           {
             "position": 18,
-            "driver": "Esteban Ocon",
-            "team": "Haas",
-            "time": "1:43.004"
-          },
-          {
-            "position": 19,
             "driver": "Pierre Gasly",
             "team": "Alpine",
             "time": "1:43.139"
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "1:43.778"
+          },
+          {
+            "position": 20,
+            "driver": "Esteban Ocon",
+            "team": "Haas",
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -5025,7 +5041,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 18,
@@ -5120,62 +5137,62 @@
           {
             "position": 11,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:30.141"
           },
           {
             "position": 12,
-            "driver": "Alex Albon",
-            "team": "Williams",
-            "time": "1:30.202"
-          },
-          {
-            "position": 13,
-            "driver": "Carlos Sainz",
-            "team": "Williams",
-            "time": "1:30.235"
-          },
-          {
-            "position": 14,
             "driver": "Liam Lawson",
             "team": "RB",
             "time": "1:30.320"
           },
           {
-            "position": 15,
+            "position": 13,
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
             "time": "1:30.353"
           },
           {
-            "position": 16,
+            "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:30.820"
           },
           {
-            "position": 17,
+            "position": 15,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
             "time": "1:30.949"
           },
           {
-            "position": 18,
+            "position": 16,
             "driver": "Franco Colapinto",
             "team": "Alpine",
             "time": "1:30.982"
           },
           {
-            "position": 19,
+            "position": 17,
             "driver": "Esteban Ocon",
             "team": "Haas",
             "time": "1:30.989"
           },
           {
-            "position": 20,
+            "position": 18,
             "driver": "Pierre Gasly",
             "team": "Alpine",
             "time": "1:31.261"
+          },
+          {
+            "position": 19,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "Non classificato"
+          },
+          {
+            "position": 20,
+            "driver": "Carlos Sainz",
+            "team": "Williams",
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -5321,7 +5338,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 19,
@@ -5416,7 +5434,7 @@
           {
             "position": 11,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:33.334"
           },
           {
@@ -5446,7 +5464,7 @@
           {
             "position": 16,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:34.125"
           },
           {
@@ -5471,7 +5489,7 @@
             "position": 20,
             "driver": "Isack Hadjar",
             "team": "RB",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -5617,7 +5635,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 20,
@@ -5724,7 +5743,7 @@
           {
             "position": 13,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:17.016"
           },
           {
@@ -5742,7 +5761,7 @@
           {
             "position": 16,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:17.412"
           },
           {
@@ -5913,7 +5932,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 21,
@@ -6002,7 +6022,7 @@
           {
             "position": 10,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:10.039"
           },
           {
@@ -6058,12 +6078,6 @@
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
             "time": "1:10.711"
-          },
-          {
-            "position": 20,
-            "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
-            "time": "-"
           }
         ],
         "race": [
@@ -6209,7 +6223,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 22,
@@ -6304,7 +6319,7 @@
           {
             "position": 11,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:52.781"
           },
           {
@@ -6346,7 +6361,7 @@
           {
             "position": 18,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:56.674"
           },
           {
@@ -6505,7 +6520,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 23,
@@ -6600,7 +6616,7 @@
           {
             "position": 11,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:20.353"
           },
           {
@@ -6618,7 +6634,7 @@
           {
             "position": 14,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:20.534"
           },
           {
@@ -6801,7 +6817,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 24,
@@ -6872,7 +6889,7 @@
           {
             "position": 7,
             "driver": "Gabriel Bortoleto",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:22.904"
           },
           {
@@ -6938,7 +6955,7 @@
           {
             "position": 18,
             "driver": "Nico Hulkenberg",
-            "team": "Sauber F1 Team",
+            "team": "Kick Sauber",
             "time": "1:23.450"
           },
           {
@@ -7097,7 +7114,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     }
   ]
 }

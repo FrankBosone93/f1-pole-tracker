@@ -1,6 +1,6 @@
 {
   "season": 2023,
-  "updatedAt": "2026-10-25T23:25:10.045Z",
+  "updatedAt": "2026-10-26T00:18:32.899Z",
   "races": [
     {
       "round": 1,
@@ -296,7 +296,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 2,
@@ -446,7 +447,7 @@
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "2:08.510"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -592,7 +593,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 3,
@@ -742,7 +744,7 @@
             "position": 20,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -888,7 +890,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 4,
@@ -1038,7 +1041,7 @@
             "position": 20,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -1184,7 +1187,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 5,
@@ -1480,7 +1484,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 6,
@@ -1776,7 +1781,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 7,
@@ -2072,7 +2078,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 8,
@@ -2368,7 +2375,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 9,
@@ -2664,7 +2672,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 10,
@@ -2782,39 +2791,39 @@
           },
           {
             "position": 15,
-            "driver": "Valtteri Bottas",
-            "team": "Alfa Romeo",
-            "time": "1:29.798"
-          },
-          {
-            "position": 16,
             "driver": "Sergio Pérez",
             "team": "Red Bull",
             "time": "1:29.968"
           },
           {
-            "position": 17,
+            "position": 16,
             "driver": "Yuki Tsunoda",
             "team": "AlphaTauri",
             "time": "1:30.025"
           },
           {
-            "position": 18,
+            "position": 17,
             "driver": "Guanyu Zhou",
             "team": "Alfa Romeo",
             "time": "1:30.123"
           },
           {
-            "position": 19,
+            "position": 18,
             "driver": "Nyck de Vries",
             "team": "AlphaTauri",
             "time": "1:30.513"
           },
           {
-            "position": 20,
+            "position": 19,
             "driver": "Kevin Magnussen",
             "team": "Haas",
             "time": "1:32.378"
+          },
+          {
+            "position": 20,
+            "driver": "Valtteri Bottas",
+            "team": "Alfa Romeo",
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -2960,7 +2969,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 11,
@@ -3256,7 +3266,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 12,
@@ -3552,7 +3563,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 13,
@@ -3848,7 +3860,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 14,
@@ -4144,7 +4157,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 15,
@@ -4433,7 +4447,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 16,
@@ -4583,7 +4598,7 @@
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -4729,7 +4744,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 17,
@@ -5025,7 +5041,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 18,
@@ -5321,7 +5338,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 19,
@@ -5471,7 +5489,7 @@
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -5617,7 +5635,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 20,
@@ -5913,7 +5932,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 21,
@@ -6209,7 +6229,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 22,
@@ -6359,7 +6380,7 @@
             "position": 20,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -6505,7 +6526,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     }
   ]
 }

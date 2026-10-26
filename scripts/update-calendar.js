@@ -24,7 +24,7 @@ const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 const { CIRCUIT_INFO } = require('./lib/weather');
 const { loadAutoCircuits, saveAutoCircuits } = require('./lib/auto-circuits');
 const { knownDriverNames } = require('./lib/driver-names');
-const { openf1PracticeResults, openf1RaceResults } = require('./lib/openf1-results');
+const { openf1PracticeResults, openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
 
 // Nomi delle sessioni OpenF1 -> chiavi di schedule. ("Day 1/2/3" sono i test
 // invernali e si ignorano.)
@@ -298,7 +298,42 @@ async function main() {
         // Prove libere e qualifiche: una richiesta per sessione, solo se non
         // già in cache e solo se la sessione è già passata (niente 404 inutili
         // per i weekend futuri).
-        for (const key of ['fp1', 'fp2', 'fp3', 'qualy']) {
+        // Qualifica: come la gara, OpenF1 principale (qualySource) e f1api.dev
+        // ripiego; si ricontrolla per RACE_RECHECK_DAYS giorni.
+        const cachedQualy = existingRace?.results?.qualy;
+        let qualySource = existingRace?.qualySource || (cachedQualy ? 'f1api' : null);
+        if (cachedQualy) results.qualy = cachedQualy;
+        const qualyStart = schedule.qualy?.date ? new Date(`${schedule.qualy.date}T${schedule.qualy.time || '23:59:59Z'}`) : null;
+        const qualySettled = !FORCE_RACE_REFRESH && cachedQualy && qualySource === 'openf1' && qualyStart && (now - qualyStart) > RACE_RECHECK_DAYS * 86400000;
+        if (qualyStart && qualyStart <= now && !qualySettled) {
+            const session = openf1Sessions.find(s => s.session_name === 'Qualifying'
+                && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
+            let fromOpenF1 = null;
+            if (session) {
+                try { fromOpenF1 = await openf1QualyResults(session, driverNames); }
+                catch (err) { console.warn(`⚠️  ${mappedCircuit}: qualifica OpenF1 non disponibile - ${err.message}`); }
+            }
+            if (fromOpenF1) {
+                if (JSON.stringify(cachedQualy) !== JSON.stringify(fromOpenF1)) {
+                    const firstDiff = fromOpenF1.find((r, i) => !cachedQualy?.[i] || cachedQualy[i].driver !== r.driver);
+                    console.log(`📥 ${mappedCircuit}: qualifica da OpenF1${cachedQualy && qualySource !== 'openf1' ? ' al posto di f1api.dev' : ''}${firstDiff && cachedQualy ? ` (prima differenza: P${firstDiff.position} ${firstDiff.driver})` : ''}.`);
+                }
+                results.qualy = fromOpenF1;
+                qualySource = 'openf1';
+            } else if (!cachedQualy) {
+                try {
+                    const payload = await fetchJson(`https://f1api.dev/api/${season}/${round}/qualy`, { allow404: true });
+                    const normalized = normalizeSessionResults('qualy', payload?.races);
+                    if (normalized && normalized.length) { results.qualy = normalized; qualySource = 'f1api'; }
+                } catch (err) {
+                    console.warn(`⚠️  Round ${round} (${mappedCircuit}) - risultati qualy: errore - ${err.message}`);
+                }
+                await sleep(150);
+            }
+        }
+        if (!results.qualy) qualySource = null;
+
+        for (const key of ['fp1', 'fp2', 'fp3']) {
             // I risultati delle prove libere si scartano (anche se già in
             // cache da un run precedente) per ogni gara che non è più quella
             // in evidenza: il sito li nasconde comunque, quindi non ha senso
@@ -343,7 +378,7 @@ async function main() {
             }
         }
 
-        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}) });
+        calendarRaces.push({ round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}), ...(qualySource ? { qualySource } : {}) });
         console.log(`Round ${round} - ${mappedCircuit}: ${winner ? `${winner.driver} (${winner.team})` : 'da disputare'}`);
     }
 

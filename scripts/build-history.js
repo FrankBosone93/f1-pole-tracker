@@ -35,7 +35,7 @@ const { matchCircuitById, matchTeam } = require('./lib/f1-mapping');
 const { driverFullName, normalizeSessionResults } = require('./lib/session-results');
 const { fetchJson } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
-const { openf1RaceResults } = require('./lib/openf1-results');
+const { openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
 const { knownDriverNames } = require('./lib/driver-names');
 
 // Risultati di gara dal 2023: fonte principale OpenF1 (classifica ufficiale
@@ -45,7 +45,8 @@ const OPENF1_FIRST_YEAR = 2023;
 async function openf1RaceSessions(year) {
     if (year < OPENF1_FIRST_YEAR) return [];
     try {
-        return await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}&session_name=Race`);
+        const all = await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}`);
+        return all.filter(s => s.session_name === 'Race' || s.session_name === 'Qualifying');
     } catch (err) {
         console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso f1api.dev.`);
         return [];
@@ -53,8 +54,8 @@ async function openf1RaceSessions(year) {
 }
 // Gara OpenF1 dello stesso circuito e della stessa data (±2 giorni: nello
 // stesso anno un circuito può ospitare due GP, es. Red Bull Ring 2021).
-function findRaceSession(sessions, circuit, date) {
-    return sessions.find(s => CIRCUIT_MAP[s.circuit_short_name] === circuit && date
+function findRaceSession(sessions, circuit, date, sessionName = 'Race') {
+    return sessions.find(s => s.session_name === sessionName && CIRCUIT_MAP[s.circuit_short_name] === circuit && date
         && Math.abs(new Date(s.date_start.slice(0, 10)) - new Date(date)) <= 2 * 86400000);
 }
 
@@ -122,7 +123,19 @@ async function buildRaceEntry(year, race, raceSessions = []) {
         }
     }
 
-    return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}) };
+    let qualySource = results.qualy ? 'f1api' : null;
+    const qSession = findRaceSession(raceSessions, mappedCircuit, date, 'Qualifying');
+    if (qSession) {
+        try {
+            const names = knownDriverNames([...(results.race || []), ...(results.qualy || [])].map(r => r.driver));
+            const q = await openf1QualyResults(qSession, names);
+            if (q) { results.qualy = q; qualySource = 'openf1'; }
+        } catch (err) {
+            console.warn(`⚠️  Round ${round} (${mappedCircuit}): qualifica OpenF1 non disponibile - ${err.message}`);
+        }
+    }
+
+    return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}), ...(qualySource ? { qualySource } : {}) };
 }
 
 async function buildYear(year) {
@@ -197,6 +210,18 @@ async function refreshRaceResults(year) {
         race.winner = { driver: fromOpenF1[0].driver, team: fromOpenF1[0].team };
         race.raceSource = 'openf1';
         changed++;
+        const qSession = findRaceSession(sessions, race.circuit, race.date, 'Qualifying');
+        if (qSession) {
+            try {
+                const q = await openf1QualyResults(qSession, names);
+                if (q) {
+                    const qMoved = q.filter((r, i) => race.results.qualy?.[i] && race.results.qualy[i].driver !== r.driver).map(r => `P${r.position} ${r.driver}`);
+                    if (qMoved.length) console.log(`${year} ${race.circuit}: qualifica - ordine: ${qMoved.join(', ')}`);
+                    race.results.qualy = q;
+                    race.qualySource = 'openf1';
+                }
+            } catch (err) { console.warn(`⚠️  ${year} ${race.circuit} qualifica: ${err.message}`); }
+        }
         console.log(`${year} ${race.circuit}: ${diffs.length} righe cambiate${moved.length ? ` - ordine: ${moved.join(', ')}` : ''}`);
     }
     history.updatedAt = new Date().toISOString();

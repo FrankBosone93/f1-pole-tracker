@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-25T23:30:23.980Z",
+  "updatedAt": "2026-10-26T00:15:27.970Z",
   "races": [
     {
       "round": 1,
@@ -154,24 +154,6 @@
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
             "time": "1:23.244"
-          },
-          {
-            "position": 20,
-            "driver": "Max Verstappen",
-            "team": "Red Bull",
-            "time": "-"
-          },
-          {
-            "position": 21,
-            "driver": "Carlos Sainz",
-            "team": "Williams",
-            "time": "-"
-          },
-          {
-            "position": 22,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "-"
           }
         ],
         "race": [
@@ -331,7 +313,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 2,
@@ -662,7 +645,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 3,
@@ -993,7 +977,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 4,
@@ -1164,7 +1149,7 @@
             "position": 22,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
-            "time": "-"
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -1324,7 +1309,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 5,
@@ -1655,7 +1641,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 6,
@@ -1986,7 +1973,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 7,
@@ -2317,7 +2305,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 8,
@@ -2648,7 +2637,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 9,
@@ -2979,7 +2969,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 10,
@@ -3310,7 +3301,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 11,
@@ -3641,7 +3633,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 12,
@@ -3972,7 +3965,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 13,
@@ -4303,7 +4297,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 14,
@@ -4463,18 +4458,6 @@
             "driver": "Valtteri Bottas",
             "team": "Cadillac",
             "time": "1:38.011"
-          },
-          {
-            "position": 21,
-            "driver": "Lance Stroll",
-            "team": "Aston Martin",
-            "time": "-"
-          },
-          {
-            "position": 22,
-            "driver": "Oliver Bearman",
-            "team": "Haas",
-            "time": "-"
           }
         ],
         "race": [
@@ -4634,7 +4617,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 15,
@@ -4965,7 +4949,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 16,
@@ -5296,7 +5281,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 17,
@@ -5627,7 +5613,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 18,
@@ -5958,7 +5945,8 @@
           }
         ]
       },
-      "raceSource": "openf1"
+      "raceSource": "openf1",
+      "qualySource": "openf1"
     },
     {
       "round": 19,
