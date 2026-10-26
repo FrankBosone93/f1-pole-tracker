@@ -25,6 +25,13 @@
           "items": [
             "La notifica dopo ogni GP arriva appena i dati sono completi, spesso già la **domenica sera** invece che il lunedì pomeriggio."
           ]
+        },
+        {
+          "title": "Novità del sito",
+          "items": [
+            "Nuova sezione **Novità**: sotto il titolo trovi \"📝 Novità · Clicca per i dettagli.\" con l'elenco di tutte le novità del sito, dalla più recente. Un pallino rosso indica che c'è qualcosa di nuovo da leggere.",
+            "L'indicatore dei dati sotto il titolo è più breve: \"🟢 Dati aggiornati al…\"."
+          ]
         }
       ]
     },
