@@ -151,6 +151,7 @@ Lo stesso messaggio arriva anche alla web app installata sulla schermata Home, i
 - **Elenco leggibile:** il segreto non si può rileggere, quindi una copia con nomi e codici sta in `private/webpush-subscriptions.json`, solo sul Mac di sviluppo (cartella `private/` esclusa da git). Si aggiorna insieme al segreto: `gh secret set WEBPUSH_SUBSCRIPTIONS < private/webpush-subscriptions.json`.
 - **Iscrizione scaduta** (iOS può invalidarla): il log dice "iscrizione scaduta", si riattiva dal tasto 🔔 e si aggiorna il segreto.
 - Basta un canale riuscito (ntfy o web app) perché il GP risulti notificato.
+- **Notifica delle Novità** (nuovo changelog), solo manuale: `node scripts/send-push.js --to Francesco --title "📝 Novità su F1 Pole Tracker" --body "…" --url "#novita"` per la prova, poi `--all` dopo l'ok. Il link `#novita` apre il sito con la finestra delle Novità già aperta (anche con la web app già aperta). Lo script legge iscrizioni e chiave da `private/`.
 - Prova solo alla web app, senza toccare lo stato: `node scripts/notify-gp.js --test-push` (con `VAPID_PRIVATE_KEY` e `WEBPUSH_SUBSCRIPTIONS` nell'ambiente).
 - In futuro, per aprire l'attivazione a chiunque senza passare dai segreti, servirà un piccolo servizio che raccolga le iscrizioni (es. Cloudflare Workers).
 - Idea per il futuro: lo stesso controllo potrebbe anche scrivere un commento su una issue fissa con @menzione, per ricevere il riepilogo via email da GitHub.

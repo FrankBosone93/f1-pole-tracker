@@ -1363,6 +1363,9 @@
             // Hash incollato/modificato a mano nella stessa scheda (replaceState
             // non lo fa scattare, quindi nessun ciclo con syncUrlState).
             window.addEventListener('hashchange', () => {
+                // #novita (link della notifica delle novità con la web app già
+                // aperta): apre le Novità e rimette l'indirizzo della vista.
+                if (location.hash === '#novita') { openChangelog(); syncUrlState(); return; }
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
                 if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
@@ -3109,6 +3112,9 @@
         // si aprono toccando la data. "Visto" ricordato su questo dispositivo.
         let changelogData = null;
         const CHANGELOG_SEEN_KEY = 'changelogSeen';
+        // Link della notifica delle novità (…/#novita): letto subito, prima
+        // che l'app riscriva l'indirizzo con circuito e vista.
+        const OPEN_CHANGELOG_ON_LOAD = location.hash === '#novita';
 
         async function loadChangelog() {
             try {
@@ -3126,6 +3132,7 @@
             // (necessario per le dimensioni) la classe non lo nascondeva.
             document.getElementById('changelogDot').style.display = seen === latest.date ? 'none' : 'inline-block';
             document.getElementById('changelogLink').classList.remove('hidden');
+            if (OPEN_CHANGELOG_ON_LOAD) openChangelog();
         }
 
         function changelogItemHtml(text) {
