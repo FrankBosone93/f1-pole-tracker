@@ -2516,12 +2516,21 @@
         }
 
         // Mescole Pirelli: colori ufficiali e sigla.
+        // Gomma del giro di pole nel riquadro dell'anno (dal 2023, da
+        // telemetry.json): pallino con il colore della mescola, come nel passo
+        // gara. Niente riga se il dato non c'è (2021-2022, o OpenF1 senza stint).
+        function poleTyreHtml(compound) {
+            if (!compound) return '';
+            const c = compoundOf(compound);
+            return `<div class="text-xs text-gray-400 mt-1 flex items-center gap-1">Gomma: <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span><span class="text-gray-300 font-medium">${escapeHtml(c.label)}</span></div>`;
+        }
+
         const COMPOUNDS = {
             SOFT: { color: '#DA291C', letter: 'S', label: 'Soft' },
             MEDIUM: { color: '#FFD12E', letter: 'M', label: 'Medium' },
             HARD: { color: '#F0F0EC', letter: 'H', label: 'Hard' },
             INTERMEDIATE: { color: '#43B02A', letter: 'I', label: 'Intermedia' },
-            WET: { color: '#0067AD', letter: 'W', label: 'Bagnato' },
+            WET: { color: '#0067AD', letter: 'W', label: 'Da bagnato' },
         };
         const compoundOf = c => COMPOUNDS[c] || { color: '#6b7280', letter: '?', label: 'Sconosciuta' };
         function compoundAtLap(race, n, lap) {
@@ -2997,6 +3006,7 @@
                     </div>
                     <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${escapeHtml(d.driver)}</span></div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
+                    ${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${escapeHtml(d.weather)}</div>
                     ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${escapeHtml(d.penaltyNote)}</span></div>` : ''}
                     ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">🏎️ Clicca per la telemetria</div>' : ''}

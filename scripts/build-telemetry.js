@@ -193,6 +193,18 @@ async function buildTrack(session, season, poleLap) {
     return { ...((await fetchCircuitMap(session, season)) || {}), points };
 }
 
+// Gomma del giro di pole (OpenF1 /stints): mescola dello stint che contiene
+// quel giro, es. "SOFT", "INTERMEDIATE". null se OpenF1 non ha gli stint.
+// I confini tra stint sono giri di rientro/uscita, mai il giro di pole,
+// quindi un giro che cade su due stint non è mai quello cercato.
+async function fetchPoleTyre(session, poleLap) {
+    const stints = await openf1Json(`https://api.openf1.org/v1/stints?session_key=${session.session_key}&driver_number=${poleLap.driver_number}`);
+    const n = poleLap.lap_number;
+    const stint = stints.filter(s => s.lap_start <= n && n <= s.lap_end)
+        .sort((a, b) => b.stint_number - a.stint_number)[0];
+    return stint?.compound || null;
+}
+
 async function buildCircuitTelemetry(session, season) {
     const circuitName = CIRCUIT_MAP[session.circuit_short_name];
     if (!circuitName) {
@@ -251,6 +263,7 @@ async function buildCircuitTelemetry(session, season) {
         lapTime: Math.round(poleLap.lap_duration * 1000) / 1000,
         samples,
         track: await buildTrack(session, season, poleLap),
+        tyre: await fetchPoleTyre(session, poleLap).catch(() => null),
     };
 }
 
@@ -322,6 +335,28 @@ async function buildSeason(season, existingCircuits, saveProgress) {
             }
         } catch (err) {
             console.warn(`  ⚠️  ${name}: errore tracciato - ${err.message}`);
+        }
+    }
+
+    // Gomma del giro di pole per i giri già in archivio (aggiunta il
+    // 2026-10-28): una volta sola per circuito; tyre: null = OpenF1 senza
+    // dati sugli stint, non si riprova.
+    const tyreTodo = mainQualy.filter(session => {
+        const name = CIRCUIT_MAP[session.circuit_short_name];
+        return name && circuits[name] && !('tyre' in circuits[name]);
+    });
+    if (tyreTodo.length) console.log(`${tyreTodo.length} gomme del giro di pole da recuperare.`);
+    for (const session of tyreTodo) {
+        const name = CIRCUIT_MAP[session.circuit_short_name];
+        try {
+            const found = await findPoleLap(session, season, name);
+            if (!found) continue;
+            const tyre = await fetchPoleTyre(session, found.poleLap);
+            circuits[name] = { ...circuits[name], tyre };
+            saveProgress(circuits);
+            console.log(`  🛞 ${name}: ${tyre || 'gomma non disponibile'}`);
+        } catch (err) {
+            console.warn(`  ⚠️  ${name}: errore gomma - ${err.message}`);
         }
     }
 
