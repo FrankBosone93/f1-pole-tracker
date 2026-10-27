@@ -1,6 +1,31 @@
 {
   "entries": [
     {
+      "date": "2026-10-27",
+      "title": "Changelog — 27 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Dettagli Qualifiche",
+          "items": [
+            "Nel riquadro di ogni anno, tra Scuderia e Meteo, c'è la **gomma usata nel giro di pole**, con il pallino del colore della mescola (dal 2023). Es. Interlagos 2024: Intermedia."
+          ]
+        },
+        {
+          "title": "Prossimo GP",
+          "items": [
+            "Il conto alla rovescia della gara è su una riga a sé, sotto il nome del circuito e le date del weekend."
+          ]
+        },
+        {
+          "title": "Grafica",
+          "items": [
+            "Tolta la linea scura che compariva lungo l'asse dei tempi nei grafici.",
+            "Con le **Novità** aperte la pagina sotto resta ferma; chiudendole torni allo stesso punto."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-10-26",
       "title": "Changelog — 26 Ottobre 2026",
       "sections": [
