@@ -3142,7 +3142,7 @@
         function openChangelog() {
             const entries = changelogData?.entries || [];
             if (!entries.length) return;
-            document.getElementById('changelogDialog')?.remove();
+            if (document.getElementById('changelogDialog')) return; // già aperta
             const el = document.createElement('div');
             el.id = 'changelogDialog';
             el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
@@ -3152,7 +3152,7 @@
                         <div class="font-semibold text-white">📝 Novità del sito</div>
                         <button type="button" data-close class="text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
                     </div>
-                    <div class="overflow-y-auto px-4 py-2">
+                    <div class="overflow-y-auto overscroll-contain px-4 py-2">
                         ${entries.map((e, i) => `
                             <details class="border-b border-gray-800 last:border-0 py-2" ${i === 0 ? 'open' : ''}>
                                 <summary class="cursor-pointer font-semibold text-gray-100">${escapeHtml(e.title)}</summary>
@@ -3167,7 +3167,18 @@
                             </details>`).join('')}
                     </div>
                 </div>`;
-            el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) el.remove(); });
+            // Pagina sotto bloccata mentre le Novità sono aperte (desktop e
+            // telefono): position fixed sul body, perché su iPhone il solo
+            // overflow hidden non ferma lo scorrimento col dito. Alla chiusura
+            // si torna allo stesso punto della pagina.
+            const scrollY = window.scrollY;
+            Object.assign(document.body.style, { position: 'fixed', top: `-${scrollY}px`, left: '0', right: '0', overflow: 'hidden' });
+            const close = () => {
+                el.remove();
+                Object.assign(document.body.style, { position: '', top: '', left: '', right: '', overflow: '' });
+                window.scrollTo(0, scrollY);
+            };
+            el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) close(); });
             document.body.appendChild(el);
             try { localStorage.setItem(CHANGELOG_SEEN_KEY, entries[0].date); } catch (e) {}
             document.getElementById('changelogDot').style.display = 'none';
