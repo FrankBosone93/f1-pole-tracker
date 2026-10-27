@@ -2267,7 +2267,8 @@
 
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${escapeHtml(race.circuit)}</span>
                 <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>` +
-                (countdown ? `<span class="text-gray-400"> · ⏳ ${countdown}</span>` : '');
+                // Countdown su una riga a sé, sotto nome e date del weekend.
+                (countdown ? `<div class="text-gray-400 mt-0.5">⏳ ${countdown}</div>` : '');
 
             // idPrefix diverso per mobile/desktop: la stessa gara compare in
             // entrambi i contenitori contemporaneamente (uno nascosto via CSS,
