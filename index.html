@@ -742,6 +742,12 @@
 
         // Linea verticale sullo stesso istante in tutti e tre i grafici della
         // telemetria, sia scorrendo su un grafico sia sul tracciato.
+        // Niente bordo degli assi in tutti i grafici: Chart.js lo disegna di
+        // serie in nero semitrasparente (rgba(0,0,0,0.1)), che sullo sfondo
+        // scuro del sito appariva come una linea nera sull'asse Y. Le righe
+        // orizzontali della griglia restano.
+        Chart.defaults.scale.border.display = false;
+
         let telemetryCursorT = null;
         const telemetryCharts = () => [telemetrySpeedChart, telemetryThrottleBrakeChart, telemetryGearChart].filter(Boolean);
         Chart.register({
