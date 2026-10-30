@@ -3004,12 +3004,12 @@
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
                         <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
                     </div>
-                    <div class="text-sm text-gray-200 mt-1">🏎️ <span class="font-semibold text-white">${escapeHtml(d.driver)}</span></div>
+                    <div class="text-sm text-gray-200 mt-1"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span></div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
                     ${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${escapeHtml(d.weather)}</div>
                     ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${escapeHtml(d.penaltyNote)}</span></div>` : ''}
-                    ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">🏎️ Clicca per la telemetria</div>' : ''}
+                    ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
                 `;
                 detailsList.appendChild(card);
             });
