@@ -1079,10 +1079,10 @@
 
             if (caption) {
                 if (compareEntry) {
-                    caption.innerHTML = `<span style="color:#E10600">🏎️ ${escapeHtml(entry.driver)} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
+                    caption.innerHTML = `<span style="color:#E10600">${escapeHtml(entry.driver)} '${yy(telemetryPrimarySeason)} — ${formatSecondsToTime(entry.lapTime)}</span>`
                         + ` &nbsp;vs&nbsp; <span style="color:#3b82f6">${escapeHtml(compareEntry.driver)} '${yy(telemetryCompareYear)} — ${formatSecondsToTime(compareEntry.lapTime)}</span>`;
                 } else {
-                    caption.innerText = `🏎️ ${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
+                    caption.innerText = `${entry.driver} (${entry.team}) — ${formatSecondsToTime(entry.lapTime)}`;
                 }
                 caption.insertAdjacentHTML('beforeend', dropoutNote(entry, compareEntry ? `${escapeHtml(entry.driver)} '${yy(telemetryPrimarySeason)}: ` : '')
                     + (compareEntry ? dropoutNote(compareEntry, `${escapeHtml(compareEntry.driver)} '${yy(telemetryCompareYear)}: `) : ''));
@@ -2517,12 +2517,13 @@
 
         // Mescole Pirelli: colori ufficiali e sigla.
         // Gomma del giro di pole nel riquadro dell'anno (dal 2023, da
-        // telemetry.json): pallino con il colore della mescola, come nel passo
-        // gara. Niente riga se il dato non c'è (2021-2022, o OpenF1 senza stint).
+        // telemetry.json), accanto al nome del pilota: pallino con il colore
+        // della mescola, come nel passo gara, e nome della mescola. Niente se
+        // il dato non c'è (2021-2022, o OpenF1 senza stint).
         function poleTyreHtml(compound) {
             if (!compound) return '';
             const c = compoundOf(compound);
-            return `<div class="text-xs text-gray-400 mt-1 flex items-center gap-1">Gomma: <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span><span class="text-gray-300 font-medium">${escapeHtml(c.label)}</span></div>`;
+            return `<span class="inline-flex items-center gap-1 text-xs text-gray-400 font-normal" title="Gomma del giro di pole"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span>${escapeHtml(c.label)}</span>`;
         }
 
         const COMPOUNDS = {
@@ -3004,9 +3005,8 @@
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
                         <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
                     </div>
-                    <div class="text-sm text-gray-200 mt-1"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span></div>
+                    <div class="text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span>${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}</div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
-                    ${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${escapeHtml(d.weather)}</div>
                     ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${escapeHtml(d.penaltyNote)}</span></div>` : ''}
                     ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
