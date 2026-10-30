@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-26T19:58:16.988Z",
+  "updatedAt": "2026-10-30T19:36:41.753Z",
   "races": [
     {
       "round": 1,
@@ -1012,7 +1012,7 @@
         },
         "race": {
           "date": "2026-05-03",
-          "time": "17:00:00Z"
+          "time": "20:00:00Z"
         }
       },
       "results": {
@@ -4974,7 +4974,7 @@
     {
       "round": 16,
       "circuit": "Sepang (Malesia)",
-      "raceName": "Bahrain Grand Prix",
+      "raceName": "Bahrain Grand Prix in Malaysia",
       "date": "2026-10-04",
       "weekendStart": "2026-10-02",
       "winner": {
@@ -6018,7 +6018,7 @@
     {
       "round": 20,
       "circuit": "Interlagos (San Paolo)",
-      "raceName": "São Paulo Grand Prix",
+      "raceName": "Brazilian Grand Prix",
       "date": "2026-11-08",
       "weekendStart": "2026-11-06",
       "winner": null,
