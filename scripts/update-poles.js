@@ -31,7 +31,7 @@ const path = require('path');
 const { matchCircuitById, matchTeam, parseQualyTime } = require('./lib/f1-mapping');
 const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces, jolpicaDriver } = require('./lib/jolpica');
-const { fetchWeatherForCircuit } = require('./lib/weather');
+const { fetchQualyWeather } = require('./lib/weather');
 const { writeStatus } = require('./lib/status');
 const { HttpError } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
@@ -64,6 +64,7 @@ async function poleFromOpenF1(session, names) {
         parsedTime,
         qualyDate: start.toISOString().slice(0, 10),
         qualyTime: start.toISOString().slice(11, 19) + 'Z',
+        openf1: { sessionKey: session.session_key, driverNumber: p1.driver_number },
     };
 }
 
@@ -139,18 +140,26 @@ async function processRound(season, race, raceLabel, currentData, openf1Sessions
 
     console.log(`Pole rilevata (${fromOpenF1 ? 'OpenF1' : 'Jolpica'}): ${year} - ${mappedCircuit} - ${driverFullName} (${mappedTeam}) - ${parsedTime.timeStr}`);
 
-    // --- Meteo reale (Open-Meteo) del giorno locale di qualifica, non un placeholder ---
+    // --- Meteo della qualifica (lib/weather.js): pioggia e gomma da OpenF1,
+    // nuvole e temperatura da Open-Meteo all'ora della qualifica ---
     const qualyDate = pole.qualyDate;
     const qualyTime = pole.qualyTime;
+    const existingIndex = currentData.findIndex(d => d.year === year && d.circuit === mappedCircuit);
     let weatherDescription = null;
     if (qualyDate) {
         try {
-            const weather = await fetchWeatherForCircuit(mappedCircuit, qualyDate, qualyTime);
-            if (weather) {
-                weatherDescription = weather.description;
-                console.log(`Meteo (${weather.raw.localDate} locale): ${weather.description} [wc=${weather.raw.weathercode} precip=${weather.raw.precipSum}mm tmax=${weather.raw.tempMax}°C]`);
-            } else {
+            const start = new Date(`${qualyDate}T${qualyTime || '12:00:00Z'}`);
+            const weather = await fetchQualyWeather(mappedCircuit, start, pole.openf1 || null);
+            if (!weather) {
                 console.warn(`⚠️  Nessuna coordinata nota per "${mappedCircuit}", impossibile calcolare il meteo.`);
+            } else if (!weather.complete && existingIndex > -1) {
+                // Senza i dati di pista non si sa se ha piovuto: si tiene il
+                // meteo già salvato (magari calcolato con OpenF1 in un run precedente).
+                console.log(`Meteo: dati di pista OpenF1 non disponibili, tengo "${currentData[existingIndex].weather}".`);
+            } else {
+                weatherDescription = weather.description;
+                const r = weather.raw;
+                console.log(`Meteo: ${weather.description} [gomma=${r.tyre} pioggia=${r.rainFrac == null ? 'n.d.' : Math.round(r.rainFrac * 100) + '%'} temp=${r.temp}°C nuvole=${r.cloud}%]`);
             }
         } catch (err) {
             console.warn(`⚠️  Errore nel recupero meteo: ${err.message}`);
@@ -160,7 +169,6 @@ async function processRound(season, race, raceLabel, currentData, openf1Sessions
     }
 
     // --- Aggiornamento data.json (in memoria) ---
-    const existingIndex = currentData.findIndex(d => d.year === year && d.circuit === mappedCircuit);
     const existingWeather = existingIndex > -1 ? currentData[existingIndex].weather : '☀️ Sereno';
     const finalWeather = weatherDescription || existingWeather;
 
