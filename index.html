@@ -1634,6 +1634,7 @@
         // parte più in basso. Calcolato a runtime (non un valore fisso)
         // perché l'altezza del primo riquadro varia da circuito a circuito
         // (una entry con penaltyNote ha una riga in più).
+        let detailsPushDown = 0;
         function alignChartTop() {
             if (!isDesktopLayout()) {
                 chartCard.style.marginTop = '';
@@ -1643,7 +1644,10 @@
             const firstDetailCard = detailsList.firstElementChild;
             if (!firstDetailCard) return;
             const naturalTop = chartCard.getBoundingClientRect().top;
-            const targetTop = firstDetailCard.getBoundingClientRect().top;
+            // Se i dettagli sono scesi per far posto ai risultati aperti nel
+            // widget "Prossimo GP", il grafico non li segue: resta dove
+            // starebbe col widget chiuso.
+            const targetTop = firstDetailCard.getBoundingClientRect().top - detailsPushDown;
             // Il selettore circuito (label + select) sopra il grafico è più
             // alto dell'intestazione "Dettagli Qualifiche" sopra il primo
             // riquadro: allineare del tutto i due bordi superiori
@@ -1665,8 +1669,13 @@
         // "Dettagli Qualifiche" (segnalato dall'utente). Si tira su
         // detailsColumn di conseguenza, mai più in basso della sua
         // posizione naturale (solo per "chiudere" lo spazio in eccesso, non
-        // per spingere i dettagli più giù del normale).
+        // per spingere i dettagli più giù del normale). Eccezione: quando il
+        // widget si allunga oltre quella posizione (risultati di una sessione
+        // aperti) i dettagli scendono sotto di lui, come su mobile, invece di
+        // finirci sotto coperti. detailsPushDown (dichiarato prima di
+        // alignChartTop, che lo usa) = di quanto sono scesi.
         function alignDetailsColumnTop() {
+            detailsPushDown = 0;
             if (!isDesktopLayout()) {
                 detailsColumn.style.marginTop = '';
                 return;
@@ -1679,7 +1688,12 @@
             }
             const naturalTop = detailsColumn.getBoundingClientRect().top;
             const targetTop = widget.getBoundingClientRect().bottom + 8;
-            const delta = Math.min(targetTop - naturalTop, 0);
+            const delta = targetTop - naturalTop;
+            // Spostamento che si avrebbe a pannelli dei risultati chiusi: la
+            // differenza è lo spazio occupato dai risultati aperti.
+            const openResults = [...widget.querySelectorAll('[id*="-results-"]:not(.hidden)')]
+                .reduce((h, el) => h + el.getBoundingClientRect().height, 0);
+            detailsPushDown = delta - Math.min(delta - openResults, 0);
             detailsColumn.style.marginTop = delta + 'px';
         }
         // Un solo handler di resize, al massimo una volta per frame: prima
@@ -1920,6 +1934,13 @@
             const panel = document.getElementById(panelId);
             if (!panel) return;
             panel.classList.toggle('hidden');
+            // Su desktop il widget "Prossimo GP" è in posizione assoluta:
+            // aprendo i risultati si allunga e la colonna dei dettagli sotto
+            // va spostata a mano (vedi alignDetailsColumnTop).
+            if (panelId.startsWith('widget-desktop')) {
+                alignDetailsColumnTop();
+                alignChartTop();
+            }
             scheduleReposition(); // l'altezza del contenitore è cambiata
         }
 
