@@ -1936,11 +1936,10 @@
             panel.classList.toggle('hidden');
             // Su desktop il widget "Prossimo GP" è in posizione assoluta:
             // aprendo i risultati si allunga e la colonna dei dettagli sotto
-            // va spostata a mano (vedi alignDetailsColumnTop).
-            if (panelId.startsWith('widget-desktop')) {
-                alignDetailsColumnTop();
-                alignChartTop();
-            }
+            // va spostata a mano (vedi alignDetailsColumnTop). Il grafico no:
+            // non deve muoversi, e ricalcolarne l'allineamento a pagina
+            // scrollata (colonna sinistra "sticky") lo spostava di qualche px.
+            if (panelId.startsWith('widget-desktop')) alignDetailsColumnTop();
             scheduleReposition(); // l'altezza del contenitore è cambiata
         }
 
