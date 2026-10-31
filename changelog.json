@@ -1,6 +1,34 @@
 {
   "entries": [
     {
+      "date": "2026-10-31",
+      "title": "Changelog — 31 Ottobre 2026",
+      "sections": [
+        {
+          "title": "Meteo delle qualifiche",
+          "items": [
+            "Rivisto il meteo di **tutte le pole** dal 2021: ora si basa sulle condizioni reali in pista durante la qualifica e sulla gomma usata nel giro di pole, non più sul meteo dell'intera giornata. Corrette 79 pole su 131.",
+            "La **pioggia** compare solo quando ha davvero piovuto in qualifica: tante pole fatte sull'asciutto non sono più segnate come piovose.",
+            "Nuova voce **🌦️ Pista umida**: ha piovuto durante la qualifica, ma la pole è arrivata con le gomme da asciutto (es. Hungaroring 2024).",
+            "Nuvole e caldo ora si riferiscono all'ora della qualifica."
+          ]
+        },
+        {
+          "title": "Dettagli Qualifiche",
+          "items": [
+            "La gomma del giro di pole è accanto al nome del pilota.",
+            "Tolte le icone delle auto dai riquadri e dalla telemetria, per una lettura più pulita."
+          ]
+        },
+        {
+          "title": "Prossimo GP",
+          "items": [
+            "Su computer, aprendo i risultati di una sessione i Dettagli Qualifiche scendono sotto il riquadro invece di restarne coperti, come su telefono. Il grafico resta fermo."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-10-27",
       "title": "Changelog — 27 Ottobre 2026",
       "sections": [
