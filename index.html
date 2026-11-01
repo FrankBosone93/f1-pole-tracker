@@ -373,7 +373,7 @@
          stats.json (scripts/build-stats.js, ricalcolato dopo ogni
          aggiornamento dei dati), scaricato solo alla prima apertura. -->
     <div id="statsView" class="mt-4 md:mt-6">
-        <div id="statsContent" class="md:grid md:grid-cols-2 md:gap-4 md:items-start text-left">
+        <div id="statsContent" class="flex flex-col md:grid md:grid-cols-2 md:gap-4 md:items-start text-left">
             <p class="text-sm text-gray-500">Caricamento statistiche...</p>
         </div>
     </div>
@@ -2540,8 +2540,11 @@
                 '<p class="text-[11px] text-gray-500 mt-1">Chi si è qualificato davanti al compagno, gara per gara (posizione in qualifica, prima delle penalità in griglia).</p>');
 
             const updated = new Date(data.updatedAt);
-            box.innerHTML = `<div>${lastGpCard}${duelsCard}</div><div>${seasonCard}
-                <p class="text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
+            // Su computer due colonne (GP e duelli | stagione); su telefono le
+            // colonne si sciolgono (contents) e l'ordine è GP, stagione, duelli.
+            box.innerHTML = `<div class="contents md:block"><div class="order-1">${lastGpCard}</div><div class="order-3">${duelsCard}</div></div>
+                <div class="contents md:block"><div class="order-2">${seasonCard}</div>
+                <p class="order-4 text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
         }
 
         async function paceStateFromQualiCircuit() {
