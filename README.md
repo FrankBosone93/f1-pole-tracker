@@ -10,6 +10,8 @@
 | [Open-Meteo](https://open-meteo.com) | meteo e fuso orario dei circuiti |
 | FormulaPassion.it | news |
 
+**Condizioni d'uso (verificate il 2026-11-01):** OpenF1 (CC BY-NC-SA 4.0), Jolpica (dati CC BY-NC-SA 4.0) e Open-Meteo (API gratuita, dati CC BY 4.0) sono gratuite **solo per uso non commerciale**; un uso con pubblicità, abbonamenti o vendite richiede un accordo con OpenF1/Jolpica e un piano a pagamento di Open-Meteo. Jolpica e Open-Meteo richiedono la citazione: le fonti sono elencate nel footer di `index.html`.
+
 f1api.dev, la fonte originale di calendario e risultati, è stata **eliminata il 2026-10-26** dopo i confronti con OpenF1 e Jolpica: orari sbagliati (Austin, Miami 2026), risultati pubblicati con giorni di ritardo (Austin 2026), tempi di pole sbagliati (Melbourne e Red Bull Ring 2024), penalità e squalifiche mancanti (Brasile 2024, Singapore e Las Vegas 2025…), round rinumerati a stagione in corso. Calendario 2026 di OpenF1 e Jolpica identico a quello che si usava (gare, round, sessioni, orari); stagioni 2021-2022 già salvate identiche a Jolpica (a parte un distacco sbagliato di Jolpica, Portimão 2021).
 
 ## Struttura dei file
