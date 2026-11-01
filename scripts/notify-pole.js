@@ -70,7 +70,7 @@ function buildReport() {
     const tyre = telemetry?.tyre;
     const raceAt = sessionStart(race.schedule?.race);
 
-    const lines = [`⏱️ ${pole.timeStr} · ${pole.team}`];
+    const lines = [`⏱️ ${pole.driver} · ${pole.timeStr} · ${pole.team}`];
     const conditions = [tyre && TYRES[tyre], pole.weather].filter(Boolean).join(' · ');
     if (conditions) lines.push(conditions);
     if (raceAt) lines.push(`🏎️ Gara: ${italianDateTime(raceAt)}`);
@@ -78,7 +78,7 @@ function buildReport() {
 
     return {
         key: `${year}|${race.circuit}`,
-        title: `🏁 Pole a ${race.circuit}: ${pole.driver}`,
+        title: `🏁 Pole a ${race.circuit}`,
         message: lines.join('\n'),
         click: `${SITE_URL}#c=${encodeURIComponent(race.circuit)}`,
     };
