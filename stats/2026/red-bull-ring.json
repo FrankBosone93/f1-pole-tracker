@@ -1,0 +1,66 @@
+{
+  "round": 8,
+  "circuit": "Red Bull Ring",
+  "date": "2026-06-28",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:06.113: 2,142 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: George Russell."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Max Verstappen, da 5° a 2° (+3)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Charles Leclerc, da 2° a 8° (-6)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:10.374 (giro 59)."
+    },
+    {
+      "icon": "🛞",
+      "text": "George Russell ha vinto con 2 soste (Medium → Hard → Hard)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 2 soste (15 piloti su 18 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 329 km/h (2025: 324 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 25,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 26,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 41,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Fernando Alonso - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 52,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 53,
+      "messaggio": "VSC ENDING"
+    }
+  ],
+  "story": {
+    "text": "George Russell ha vinto al Red Bull Ring, ottava gara della stagione, trasformando in vittoria la pole conquistata in 1:06.113 con una strategia a 2 soste (Medium, Hard, Hard). Alle sue spalle Max Verstappen, risalito dal 5° al 2° posto e staccato di 1,611 s, precede Andrea Kimi Antonelli, terzo a 1,986 s e autore del giro più veloce in 1:10.374. Giornata difficile per Charles Leclerc, scattato secondo e finito ottavo: nessuno ha perso più posizioni di lui.",
+    "model": "claude-opus-5-5",
+    "hash": "4c41dd4246cb02ef"
+  }
+}

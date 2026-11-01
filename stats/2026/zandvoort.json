@@ -1,0 +1,82 @@
+{
+  "round": 12,
+  "circuit": "Zandvoort",
+  "date": "2026-08-23",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:11.163: 2,501 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Lando Norris."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Fernando Alonso, da 18° a 9° (+9)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Gabriel Bortoleto, da 9° a 13° (-4)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Charles Leclerc in 1:14.230 (giro 60)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Lando Norris ha vinto con 3 soste (Medium → Soft → Hard → Hard)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 3 soste (11 piloti su 17 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 316 km/h (2025: 326 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 5,
+      "messaggio": "FIA STEWARDS: DRIVE THROUGH PENALTY FOR Arvid Lindblad - YELLOW FLAG INFRINGEMENT"
+    },
+    {
+      "giro": 7,
+      "messaggio": "FIA STEWARDS: DRIVE THROUGH PENALTY FOR Franco Colapinto - YELLOW FLAG INFRINGEMENT"
+    },
+    {
+      "giro": 55,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 57,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 68,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Franco Colapinto - YELLOW FLAG INFRINGEMENT"
+    },
+    {
+      "giro": 70,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 70,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Liam Lawson - YELLOW FLAG INFRINGEMENT"
+    },
+    {
+      "giro": 70,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 71,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Carlos Sainz - CAUSING A COLLISION"
+    }
+  ],
+  "story": {
+    "text": "Lando Norris ha trasformato in vittoria la pole di Zandvoort, chiudendo in 2:04:44.859 con una strategia a 3 soste, la più usata in gara. Alle sue spalle le due Mercedes, con Andrea Kimi Antonelli secondo a 11,536 s e George Russell terzo a 15,906 s, davanti alle Ferrari di Lewis Hamilton e Charles Leclerc, autore del giro più veloce in 1:14.230. Fernando Alonso ha recuperato nove posizioni, da 18° a 9°, mentre Max Verstappen si è ritirato. In gara anche due virtual safety car, ai giri 55 e 70.",
+    "model": "claude-opus-5-5",
+    "hash": "d27e57df9ac8f68b"
+  }
+}

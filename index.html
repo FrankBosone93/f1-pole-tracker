@@ -2421,6 +2421,8 @@
         // calcolati da scripts/build-stats.js in stats.json (il sito li mostra
         // soltanto). Il file si scarica alla prima apertura della vista.
         let statsData = null;
+        // GP archiviati già scaricati (stats/{anno}/{circuito}.json), per file.
+        const statsGpCache = {};
 
         async function openStatsView() {
             const box = document.getElementById('statsContent');
@@ -2437,28 +2439,54 @@
             renderStats(statsData);
         }
 
-        function renderStats(data) {
-            const box = document.getElementById('statsContent');
-            const card = (title, body) => `<div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-4">
+        const statsCard = (title, body) => `<div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-4">
                 <h2 class="text-sm font-bold text-[#E10600] mb-3">${title}</h2>${body}</div>`;
-            const gp = data.lastGp, s = data.season;
 
-            // Ultimo GP: il racconto scritto da Claude (se c'è), un fatto per
-            // riga, poi i link alle viste del GP.
-            let lastGpCard = card('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
-            if (gp) {
-                const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
-                const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
-                const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
-                lastGpCard = card(`Ultimo GP · ${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
-                    `${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
+        // Scheda di un GP: menu per scegliere il GP (l'ultimo all'apertura, gli
+        // altri dall'archivio), il racconto scritto da Claude (se c'è), un
+        // fatto per riga, poi i link alle viste del GP.
+        function statsGpCardHtml(data, gp) {
+            if (!gp) return statsCard('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
+            const isLast = gp.circuit === data.lastGp?.circuit;
+            const gps = (data.gps || []).slice().reverse();
+            const menu = gps.length > 1 ? `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="mb-4 w-full bg-[#121212] text-white text-sm border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-[#E10600]">
+                ${gps.map(g => `<option value="${escapeHtml(g.file)}"${g.circuit === gp.circuit ? ' selected' : ''}>${g.round}. ${escapeHtml(g.circuit)}${g.circuit === data.lastGp?.circuit ? ' (ultimo)' : ''}</option>`).join('')}
+            </select>` : '';
+            const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
+            const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
+            const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
+            return statsCard(`${isLast ? 'Ultimo GP' : 'GP'} · ${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
+                    `${menu}${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
                     <p class="text-[11px] text-gray-500 mt-1.5 mb-4 pb-4 border-b border-gray-800">Racconto scritto con l'IA dai dati del sito.</p>` : ''}
                     <ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
                     <div class="flex gap-4 mt-4 text-xs">
                         <a href="${qualiLink}" class="text-gray-400 hover:text-white underline">Qualifiche →</a>
                         <a href="${paceLink}" class="text-gray-400 hover:text-white underline">Passo gara →</a>
                     </div>`);
+        }
+
+        async function selectStatsGp(file) {
+            const box = document.getElementById('statsGpCard');
+            const ref = (statsData.gps || []).find(g => g.file === file);
+            let gp = ref && ref.circuit === statsData.lastGp?.circuit ? statsData.lastGp : statsGpCache[file];
+            if (!gp) {
+                try {
+                    const res = await fetch(file, { cache: 'no-cache' });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    gp = statsGpCache[file] = await res.json();
+                } catch (err) {
+                    box.querySelector('ul')?.insertAdjacentHTML('beforebegin', '<p class="text-sm text-gray-500 mb-3">GP non disponibile al momento.</p>');
+                    return;
+                }
             }
+            box.innerHTML = statsGpCardHtml(statsData, gp);
+        }
+
+        function renderStats(data) {
+            const box = document.getElementById('statsContent');
+            const card = statsCard;
+            const s = data.season;
+            const lastGpCard = `<div id="statsGpCard">${statsGpCardHtml(data, data.lastGp)}</div>`;
 
             // Riquadri con i numeri chiave della stagione.
             const tile = (value, label) => `<div class="bg-[#121212] rounded-lg border border-gray-800 p-2.5">

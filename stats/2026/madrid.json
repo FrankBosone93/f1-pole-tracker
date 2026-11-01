@@ -1,0 +1,58 @@
+{
+  "round": 14,
+  "circuit": "Madrid",
+  "date": "2026-09-13",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "Prima pole di sempre a Madrid nei nostri dati: Lando Norris in 1:31.824."
+    },
+    {
+      "icon": "🏁",
+      "text": "Lando Norris, autore della pole, chiude 3°."
+    },
+    {
+      "icon": "🚀",
+      "text": "Andrea Kimi Antonelli vince partendo 2°."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: George Russell in 1:35.587 (giro 49)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (14 piloti su 18 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 334 km/h."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 14,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 15,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 20,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Carlos Sainz"
+    },
+    {
+      "giro": 57,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Pierre Gasly - SPEEDING IN THE PIT LANE"
+    }
+  ],
+  "story": {
+    "text": "Andrea Kimi Antonelli vince il Gran Premio di Madrid partendo 2° con la Mercedes, in 1:34:23.754 con una sola sosta (Medium → Hard), precedendo Max Verstappen di 4,351 s. Lando Norris, autore della prima pole di sempre a Madrid nei nostri dati in 1:31.824, chiude 3° a 5,089 s. Charles Leclerc è 4°, mentre Lewis Hamilton, partito 4°, si ritira. Il giro più veloce è di George Russell, 5°, in 1:35.587 al giro 49, in una gara con virtual safety car tra i giri 14 e 15.",
+    "model": "claude-opus-5-5",
+    "hash": "a118e3ef77305bce"
+  }
+}

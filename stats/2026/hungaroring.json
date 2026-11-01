@@ -1,0 +1,62 @@
+{
+  "round": 11,
+  "circuit": "Hungaroring",
+  "date": "2026-07-26",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:17.207: 1,835 s più lenta della pole 2025 (Charles Leclerc), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Lando Norris."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Lance Stroll, da 20° a 13° (+7)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Charles Leclerc in 1:22.000 (giro 58)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Lando Norris ha vinto con 3 soste (Medium → Hard → Hard → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 2 soste (12 piloti su 19 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 331 km/h (2025: 315 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 44,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Carlos Sainz - CAUSING A COLLISION"
+    },
+    {
+      "giro": 56,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 57,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 58,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Oliver Bearman - IGNORING BLUE FLAGS"
+    },
+    {
+      "giro": 66,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lewis Hamilton - SPEEDING IN THE PIT LANE"
+    }
+  ],
+  "story": {
+    "text": "All'Hungaroring Lando Norris ha trasformato la pole in vittoria, chiudendo con 15,080 s su Max Verstappen grazie a una strategia a 3 soste, mentre la maggioranza dei classificati ne ha scelte 2. Terzo Andrea Kimi Antonelli, partito settimo; Charles Leclerc ha chiuso quarto firmando il giro più veloce in 1:22.000. Lewis Hamilton, quinto, è stato penalizzato di 5 secondi per eccesso di velocità in pit lane. In casa McLaren si è ritirato Oscar Piastri, partito terzo.",
+    "model": "claude-opus-5-5",
+    "hash": "17eabe0519e177cd"
+  }
+}

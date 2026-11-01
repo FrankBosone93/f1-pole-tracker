@@ -1,0 +1,74 @@
+{
+  "round": 10,
+  "circuit": "Spa-Francorchamps",
+  "date": "2026-07-19",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:44.361: 3,799 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Isack Hadjar, da 21° a 6° (+15)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Liam Lawson, da 9° a 12° (-3)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Lando Norris in 1:48.890 (giro 44)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (14 piloti su 19 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 336 km/h (2025: 339 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 1,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 4,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 9,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lewis Hamilton - CAUSING A COLLISION"
+    },
+    {
+      "giro": 18,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 18,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 20,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 21,
+      "messaggio": "VSC ENDING"
+    }
+  ],
+  "story": {
+    "text": "A Spa-Francorchamps Andrea Kimi Antonelli ha trasformato la pole in vittoria con una sola sosta, chiudendo con 1,952 s di margine su Charles Leclerc, mentre Max Verstappen ha completato il podio a 11,586 s. Dopo la safety car al primo giro, Lewis Hamilton ha ricevuto al giro 9 una penalità di 5 secondi per aver causato una collisione e ha chiuso quarto. La rimonta di giornata è di Isack Hadjar, sesto partendo dal 21° posto. In casa Mercedes si è invece ritirato George Russell, scattato terzo.",
+    "model": "claude-opus-5-5",
+    "hash": "48cfbf11929dc727"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "round": 13,
+  "circuit": "Monza",
+  "date": "2026-09-06",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:21.786: 2,994 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Pierre Gasly, autore della pole, chiude 7°."
+    },
+    {
+      "icon": "🚀",
+      "text": "Andrea Kimi Antonelli vince partendo 19°: rimonta di 18 posizioni."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Andrea Kimi Antonelli, da 19° a 1° (+18)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Pierre Gasly, da 1° a 7° (-6)."
+    },
+    {
+      "icon": "🤝",
+      "text": "Doppietta Mercedes: Antonelli davanti a Russell."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:23.504 (giro 53)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 2 soste (Hard → Medium → Medium)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (10 piloti su 19 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 342 km/h (2025: 348 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 3,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 28,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 29,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 30,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Sergio Pérez - FAILING TO FOLLOW RACE DIRECTORS INSTRUCTIONS – ESCAPE ROAD INSTRUCTIONS"
+    }
+  ],
+  "story": {
+    "text": "A Monza Andrea Kimi Antonelli vince partendo 19°, rimonta di 18 posizioni, con 2 soste (Hard → Medium → Medium) e il giro più veloce in 1:23.504. È doppietta Mercedes, con George Russell secondo a 3,857 s e Max Verstappen terzo a 14,718 s. Giornata amara per il poleman Pierre Gasly, settimo e con il peggior bilancio della gara: sei posizioni perse. Tra i ritirati c'è Charles Leclerc, che partiva terzo, in una corsa con la safety car in pista al giro 3.",
+    "model": "claude-opus-5-5",
+    "hash": "9a007429a59441a6"
+  }
+}

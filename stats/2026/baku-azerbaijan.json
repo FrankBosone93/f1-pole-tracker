@@ -1,0 +1,66 @@
+{
+  "round": 15,
+  "circuit": "Baku (Azerbaijan)",
+  "date": "2026-09-26",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:42.526: 1,409 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: George Russell."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Andrea Kimi Antonelli, da 16° a 5° (+11)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Oscar Piastri, da 3° a 13° (-10)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: George Russell in 1:44.916 (giro 49)."
+    },
+    {
+      "icon": "🛞",
+      "text": "George Russell ha vinto con 2 soste (Medium → Soft → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 2 soste (15 piloti su 16 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 331 km/h (2024: 339 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 31,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 35,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 36,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 38,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 51,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Franco Colapinto - CAUSING A COLLISION"
+    }
+  ],
+  "story": {
+    "text": "A Baku, quindicesima gara del 2026, George Russell ha trasformato la pole in vittoria con la Mercedes, firmando anche il giro più veloce in 1:44.916 e precedendo di appena 0,196 s Max Verstappen, risalito dall'ottava casella. Completa il podio Isack Hadjar con l'altra Red Bull, mentre Charles Leclerc, partito secondo, chiude quarto. In una gara con due safety car, ai giri 31 e 36, spicca la rimonta di Andrea Kimi Antonelli, da 16° a 5°. Sette i ritirati, tra cui Lando Norris.",
+    "model": "claude-opus-5-5",
+    "hash": "a9bfd139a8db93d4"
+  }
+}

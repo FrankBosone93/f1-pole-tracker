@@ -1,0 +1,98 @@
+{
+  "round": 6,
+  "circuit": "Monaco",
+  "date": "2026-06-07",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:12.051: 2,097 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Fernando Alonso, da 21° a 10° (+11)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: George Russell, da 6° a 12° (-6)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:13.481 (giro 76)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 4 soste (Medium → Hard → Soft → Soft → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 5 soste (7 piloti su 16 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 289 km/h (2025: 289 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 9,
+      "messaggio": "FIA STEWARDS: DRIVE THROUGH PENALTY FOR Sergio Pérez - FALSE START - OUT OF POSITION"
+    },
+    {
+      "giro": 34,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lewis Hamilton - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 38,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR George Russell - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 43,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Franco Colapinto - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 52,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Pierre Gasly - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 54,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lance Stroll - TRACK LIMITS"
+    },
+    {
+      "giro": 55,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Oscar Piastri - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 60,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 65,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 66,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 68,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Pierre Gasly - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 68,
+      "messaggio": "FIA STEWARDS: DRIVE THROUGH PENALTY FOR George Russell - FAILING TO SERVE TIME PENALTY CORRECTLY"
+    },
+    {
+      "giro": 78,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - CAUSING A COLLISION"
+    }
+  ],
+  "story": {
+    "text": "Andrea Kimi Antonelli ha trasformato in vittoria la pole di Monaco (1:12.051), vincendo con 4 soste e firmando il giro più veloce in 1:13.481. Secondo Lewis Hamilton a 6,271 s, pur penalizzato di 5 secondi per eccesso di velocità in pit lane; terzo Isack Hadjar a 23,394 s. Ritirati invece Max Verstappen e Charles Leclerc, scattati secondo e quarto. In una gara con due safety car, ai giri 60 e 66, spicca la rimonta di Fernando Alonso da 21° a 10°.",
+    "model": "claude-opus-5-5",
+    "hash": "c15edc4028737ac7"
+  }
+}

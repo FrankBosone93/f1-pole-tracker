@@ -1,0 +1,58 @@
+{
+  "round": 4,
+  "circuit": "Miami",
+  "date": "2026-05-03",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:27.798: 1,594 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Gabriel Bortoleto, da 21° a 12° (+9)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Charles Leclerc, da 3° a 8° (-5)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Lando Norris in 1:31.869 (giro 35)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (16 piloti su 18 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 343 km/h (2025: 340 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 6,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 11,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 30,
+      "messaggio": "FIA STEWARDS: DRIVE THROUGH PENALTY FOR Valtteri Bottas - SPEEDING IN THE PIT LANE"
+    }
+  ],
+  "story": {
+    "text": "A Miami Andrea Kimi Antonelli ha trasformato la pole in 1:27.798 in vittoria con la Mercedes, con una sola sosta (Medium → Hard) in una gara con la safety car in pista tra i giri 6 e 11. Lando Norris è secondo a 3,264 s e firma il giro più veloce in 1:31.869, davanti a Oscar Piastri, terzo partendo settimo. Giornata difficile per Charles Leclerc, scivolato dal 3° all'8° posto, mentre Gabriel Bortoleto ha recuperato nove posizioni, da 21° a 12°.",
+    "model": "claude-opus-5-5",
+    "hash": "aa7578b8cd24c00a"
+  }
+}

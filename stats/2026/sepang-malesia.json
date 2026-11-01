@@ -1,0 +1,70 @@
+{
+  "round": 16,
+  "circuit": "Sepang (Malesia)",
+  "date": "2026-10-04",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "Prima pole di sempre a Sepang (Malesia) nei nostri dati: Max Verstappen in 1:35.130."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Max Verstappen."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Arvid Lindblad, da 22° a 10° (+12)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Gabriel Bortoleto, da 10° a 18° (-8)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Max Verstappen in 1:38.220 (giro 55)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Max Verstappen ha vinto con 3 soste (Intermedia → Soft → Soft → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 3 soste (12 piloti su 20 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 321 km/h."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 9,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 12,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 21,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Gabriel Bortoleto - CAUSING A COLLISION"
+    },
+    {
+      "giro": 43,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 45,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 51,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    }
+  ],
+  "story": {
+    "text": "Max Verstappen ha trasformato in vittoria la pole conquistata in 1:35.130 a Sepang, chiudendo in 1:47:14.808 con tre soste, partendo su gomme intermedie, e firmando il giro più veloce in 1:38.220. Alle sue spalle Andrea Kimi Antonelli a 2,307 s e Lewis Hamilton a 4,919 s, davanti all'altra Ferrari di Charles Leclerc. La gara è stata segnata da due safety car, ai giri 9 e 45, e da una virtual safety car al giro 43. Notevole la rimonta di Arvid Lindblad, decimo dopo essere partito ventiduesimo.",
+    "model": "claude-opus-5-5",
+    "hash": "a6d8dedf7361e849"
+  }
+}

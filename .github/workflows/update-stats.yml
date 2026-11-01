@@ -55,14 +55,14 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/build-stats.js
 
-      - name: Commit e push se stats.json o lo stato sono cambiati
+      - name: Commit e push se stats.json, l'archivio dei GP o lo stato sono cambiati
         run: |
-          if [ -z "$(git status --porcelain -- stats.json status/stats.json)" ]; then
+          if [ -z "$(git status --porcelain -- stats.json stats status/stats.json)" ]; then
             echo "Nessuna modifica, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add stats.json status/stats.json
+            git add stats.json stats status/stats.json
             git commit -m "📊 Aggiornamento automatico statistiche"
             source scripts/lib/push-with-retry.sh
             push_with_retry

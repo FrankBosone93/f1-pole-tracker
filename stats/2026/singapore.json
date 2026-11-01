@@ -1,0 +1,62 @@
+{
+  "round": 17,
+  "circuit": "Singapore",
+  "date": "2026-10-11",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:31.373: 2,215 s più lenta della pole 2025 (George Russell), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Max Verstappen."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Isack Hadjar, da 22° a 10° (+12)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Arvid Lindblad, da 9° a 15° (-6)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Charles Leclerc in 1:35.202 (giro 41)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Max Verstappen ha vinto con 1 sosta (Soft → Medium)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (14 piloti su 19 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 308 km/h (2025: 316 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 8,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 9,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 39,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 40,
+      "messaggio": "VSC ENDING"
+    }
+  ],
+  "story": {
+    "text": "Max Verstappen ha trasformato la pole in vittoria a Singapore, gara 17 del 2026, chiudendo in 1:42:00.785 con una sola sosta (Soft → Medium). Charles Leclerc è secondo a 7,335 s e firma anche il giro più veloce in 1:35.202 al giro 41, mentre Andrea Kimi Antonelli completa il podio a 24,573 s. La rimonta più ampia è di Isack Hadjar, da 22° a 10°, con George Russell nono partendo 19°. Lewis Hamilton, terzo in griglia, chiude invece sesto.",
+    "model": "claude-opus-5-5",
+    "hash": "56f980dd7ab8c126"
+  }
+}

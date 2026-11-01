@@ -15,9 +15,13 @@ const relevant = m =>
     m.flag === 'RED' ||
     (/^FIA STEWARDS: .*(PENALTY FOR|DRIVE THROUGH|STOP AND GO|DISQUALIFIED)/.test(m.message) && !/PENALTY SERVED/.test(m.message));
 
+// Gare della stagione su OpenF1, una richiesta per stagione per ogni run.
+const sessionsBySeason = {};
+
 // raceResults = righe di calendar.json (results.race), per i nomi.
 async function raceControlEvents(season, circuit, raceResults) {
-    const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
+    sessionsBySeason[season] ??= await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
+    const sessions = sessionsBySeason[season];
     const session = sessions.find(s => CIRCUIT_MAP[s.circuit_short_name] === circuit);
     if (!session) throw new Error(`gara OpenF1 non trovata per ${circuit}`);
     const messages = await openf1Json(`https://api.openf1.org/v1/race_control?session_key=${session.session_key}`);

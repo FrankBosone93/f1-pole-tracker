@@ -1,0 +1,106 @@
+{
+  "round": 9,
+  "circuit": "Silverstone",
+  "date": "2026-07-05",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:28.111: 3,219 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Andrea Kimi Antonelli, autore della pole, chiude 15°."
+    },
+    {
+      "icon": "🚀",
+      "text": "Charles Leclerc vince partendo 2°."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Franco Colapinto, da 19° a 9° (+10)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Andrea Kimi Antonelli, da 1° a 15° (-14)."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:31.777 (giro 37)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Charles Leclerc ha vinto con 2 soste (Medium → Hard → Soft)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 2 soste (16 piloti su 20 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 317 km/h (2025: 324 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 5,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Alex Albon"
+    },
+    {
+      "giro": 7,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lewis Hamilton - FALSE START - MOVING BEFORE SIGNAL"
+    },
+    {
+      "giro": 22,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 22,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 38,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lance Stroll - TRACK LIMITS"
+    },
+    {
+      "giro": 39,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 39,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 40,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lance Stroll - TRACK LIMITS (5TH OFFENCE)"
+    },
+    {
+      "giro": 42,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Lance Stroll - TRACK LIMITS (6TH OFFENCE)"
+    },
+    {
+      "giro": 47,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Andrea Kimi Antonelli - TRACK LIMITS"
+    },
+    {
+      "giro": 48,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 51,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    },
+    {
+      "giro": 51,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 52,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    }
+  ],
+  "story": {
+    "text": "Charles Leclerc vince a Silverstone partendo 2°, davanti a George Russell (+0,427 s) e Lewis Hamilton (+0,772 s), terzo nonostante una penalità di 5 secondi per falsa partenza. Giornata amara per Andrea Kimi Antonelli, autore della pole in 1:28.111: chiude 15° pur firmando il giro più veloce in 1:31.777. Leclerc ha vinto con 2 soste, la strategia più usata (16 piloti su 20 classificati), mentre la rimonta più ampia è di Franco Colapinto, da 19° a 9°.",
+    "model": "claude-opus-5-5",
+    "hash": "8396ae3ba5028b2e"
+  }
+}

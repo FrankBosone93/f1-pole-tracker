@@ -1,0 +1,102 @@
+{
+  "round": 5,
+  "circuit": "Montreal (Canada)",
+  "date": "2026-05-24",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:12.578: 1,679 s più lenta della pole 2025 (George Russell), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "George Russell, autore della pole: ritirato."
+    },
+    {
+      "icon": "🚀",
+      "text": "Andrea Kimi Antonelli vince partendo 2°."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Lance Stroll, da 22° a 15° (+7)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Oscar Piastri, da 4° a 11° (-7)."
+    },
+    {
+      "icon": "🔒",
+      "text": "Prima fila tutta Mercedes."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:14.210 (giro 68)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Soft → Medium)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (8 piloti su 16 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 332 km/h (2025: 332 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 13,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Nico Hulkenberg - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 23,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Oscar Piastri - CAUSING A COLLISION"
+    },
+    {
+      "giro": 31,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 32,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 44,
+      "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Isack Hadjar - MORE THAN ONE CHANGE OF DIRECTION"
+    },
+    {
+      "giro": 46,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 46,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 47,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Valtteri Bottas - SPEEDING IN THE PIT LANE"
+    },
+    {
+      "giro": 53,
+      "messaggio": "VSC DEPLOYED"
+    },
+    {
+      "giro": 54,
+      "messaggio": "VSC ENDING"
+    },
+    {
+      "giro": 62,
+      "messaggio": "FIA STEWARDS: STOP-AND-GO PENALTY FOR Isack Hadjar - YELLOW FLAG INFRINGEMENT"
+    },
+    {
+      "giro": 68,
+      "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Gabriel Bortoleto - VSC INFRINGEMENT"
+    }
+  ],
+  "story": {
+    "text": "A Montreal Andrea Kimi Antonelli vince il quinto GP del 2026 con la Mercedes, partendo 2° e chiudendo con una sola sosta (Soft → Medium) e il giro più veloce in 1:14.210. Sul podio salgono Lewis Hamilton, a 10,768 s, e Max Verstappen, a 11,276 s. Si ritira invece George Russell, autore della pole in 1:12.578 in una prima fila tutta Mercedes. La gara è stata segnata da tre virtual safety car, con Isack Hadjar quinto nonostante una penalità di 10 secondi e uno stop-and-go.",
+    "model": "claude-opus-5-5",
+    "hash": "3dc2385b66bbf502"
+  }
+}

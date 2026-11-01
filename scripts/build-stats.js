@@ -1,10 +1,12 @@
 // scripts/build-stats.js
 //
-// Calcola stats.json per la sezione "Stats" del sito:
+// Calcola stats.json per la sezione "Statistiche" del sito:
 //   - lastGp: i fatti dell'ultimo GP disputato (pole confrontata con gli anni
 //     passati sullo stesso circuito, pole e vincitore in gara, rimonte,
 //     doppiette, giro più veloce, velocità massima, strategie, mondiale) e un
 //     breve racconto scritto da Claude con gli stessi dati (lib/gp-story.js);
+//   - gps: l'elenco dei GP archiviati in stats/{anno}/{circuito}.json (fatti,
+//     direzione gara e racconto di ogni GP della stagione, vedi main);
 //   - season: la stagione in numeri (vittorie, podi e pole per pilota e
 //     squadra, pole trasformate in vittoria, prime file monopolizzate, duelli
 //     in qualifica tra compagni di squadra).
@@ -27,6 +29,7 @@ const { knownDriverNames, surnameKey } = require('./lib/driver-names');
 const { matchTeam } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
+const { circuitSlug } = require('./lib/openf1');
 
 const ROOT = path.join(__dirname, '..');
 const STATS_PATH = path.join(ROOT, 'stats.json');
@@ -290,6 +293,51 @@ async function qualyDuels(season, names) {
         .sort((x, y) => (y.aAhead + y.bAhead) - (x.aAhead + x.bAhead) || x.team.localeCompare(y.team));
 }
 
+// Un GP: fatti, messaggi della direzione gara e racconto di Claude. prev = la
+// stessa gara salvata in precedenza (archivio o stats.json): se OpenF1 o
+// l'API di Anthropic non rispondono si tengono i suoi messaggi e il suo
+// racconto. Frasi sul mondiale e classifica nel racconto solo per l'ultimo GP
+// (standings.json è la classifica attuale, non quella di allora); facts = i
+// fatti già archiviati, da non ricalcolare.
+async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null) {
+    const pole = poles.find(p => p.year === season && p.circuit === race.circuit);
+    const gp = {
+        round: race.round,
+        circuit: race.circuit,
+        date: race.date,
+        facts: facts || [
+            poleFact(season, race.circuit, poles),
+            ...raceFacts(race, pole),
+            ...paceFacts(season, race.circuit, race.results.race),
+            topSpeedFact(season, race.circuit),
+            ...(isLast ? championshipFacts(season, race, races, standings) : []),
+        ].filter(Boolean),
+    };
+    gp.raceControl = prev?.raceControl;
+    try {
+        gp.raceControl = await raceControlEvents(season, race.circuit, race.results.race);
+    } catch (err) {
+        console.warn(`⚠️  ${race.circuit}: direzione gara da OpenF1 non disponibile (${err.message})${gp.raceControl ? ', tengo i messaggi precedenti' : ''}.`);
+    }
+    try {
+        const { gpStory } = require('./lib/gp-story');
+        const input = storyInput(season, race, pole, gp.facts, isLast ? standings : null, gp.raceControl);
+        gp.story = await gpStory(input, prev?.story) || prev?.story || undefined;
+    } catch (err) {
+        console.warn(`⚠️  ${race.circuit}: racconto del GP non disponibile (${err.message}).`);
+        gp.story = prev?.story || undefined;
+    }
+    return gp;
+}
+
+const writeJsonIfChanged = (rel, data) => {
+    const p = path.join(ROOT, rel);
+    const json = JSON.stringify(data, null, 2) + '\n';
+    if (fs.existsSync(p) && fs.readFileSync(p, 'utf-8') === json) return;
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, json, 'utf-8');
+};
+
 async function main() {
     const calendar = readJson('calendar.json');
     if (!calendar) throw new Error('calendar.json non trovato');
@@ -299,46 +347,28 @@ async function main() {
     const standings = readJson('standings.json');
     const previous = readJson('stats.json', {});
 
+    // Archivio per GP in stats/{anno}/{circuito}.json, per rileggere i GP
+    // precedenti dal sito. L'ultimo GP si ricalcola a ogni giro; un GP già
+    // archiviato e non più l'ultimo resta com'era quando lo era (frasi sul
+    // mondiale di allora comprese), salvo ricevere il racconto se ancora non
+    // ce l'ha. Un GP passato mai archiviato (recupero del 2026-11-01) si
+    // ricostruisce senza le frasi sul mondiale.
     const done = races.filter(r => r.results?.race?.length);
-    const last = done[done.length - 1];
+    const gps = [];
     let lastGp = null;
-    if (last) {
-        const pole = poles.find(p => p.year === season && p.circuit === last.circuit);
-        lastGp = {
-            round: last.round,
-            circuit: last.circuit,
-            date: last.date,
-            facts: [
-                poleFact(season, last.circuit, poles),
-                ...raceFacts(last, pole),
-                ...paceFacts(season, last.circuit, last.results.race),
-                topSpeedFact(season, last.circuit),
-                ...championshipFacts(season, last, races, standings),
-            ].filter(Boolean),
-        };
-    }
-
-    // Racconto di Claude: se manca (niente chiave, API giù) per lo stesso GP
-    // resta quello del giro precedente, altrimenti il sito mostra solo i fatti.
-    // Messaggi della direzione gara: se OpenF1 non risponde (401 durante le
-    // sessioni live) si tengono quelli già scaricati per lo stesso GP.
-    if (lastGp) {
-        const prevGp = previous.year === season && previous.lastGp?.circuit === lastGp.circuit ? previous.lastGp : null;
-        const prevStory = prevGp?.story || null;
-        lastGp.raceControl = prevGp?.raceControl;
-        try {
-            lastGp.raceControl = await raceControlEvents(season, last.circuit, last.results.race);
-        } catch (err) {
-            console.warn(`⚠️  Direzione gara da OpenF1 non disponibile (${err.message})${lastGp.raceControl ? ': tengo i messaggi precedenti' : ''}.`);
+    for (const race of done) {
+        const isLast = race === done[done.length - 1];
+        const file = `stats/${season}/${circuitSlug(race.circuit)}.json`;
+        const archived = readJson(file);
+        const frozen = !isLast && archived;
+        let gp = archived;
+        if (!frozen || !archived.story) {
+            const prev = archived || (previous.year === season && previous.lastGp?.circuit === race.circuit ? previous.lastGp : null);
+            gp = await buildGp(season, race, races, poles, standings, isLast, prev, frozen ? archived.facts : null);
+            writeJsonIfChanged(file, gp);
         }
-        try {
-            const { gpStory } = require('./lib/gp-story');
-            const pole = poles.find(p => p.year === season && p.circuit === last.circuit);
-            lastGp.story = await gpStory(storyInput(season, last, pole, lastGp.facts, standings, lastGp.raceControl), prevStory) || prevStory || undefined;
-        } catch (err) {
-            console.warn(`⚠️  Racconto del GP non disponibile (${err.message}).`);
-            lastGp.story = prevStory || undefined;
-        }
+        gps.push({ round: race.round, circuit: race.circuit, file });
+        if (isLast) lastGp = gp;
     }
 
     const stats = seasonStats(season, races, poles);
@@ -349,7 +379,7 @@ async function main() {
         stats.qualyDuels = previous.season?.qualyDuels || [];
     }
 
-    const payload = { year: season, updatedAt: new Date().toISOString(), lastGp, season: stats };
+    const payload = { year: season, updatedAt: new Date().toISOString(), lastGp, gps, season: stats };
     const json = JSON.stringify(payload, null, 2) + '\n';
     // Si riscrive solo se cambia qualcosa oltre all'orario.
     const strip = s => JSON.stringify({ ...s, updatedAt: null });

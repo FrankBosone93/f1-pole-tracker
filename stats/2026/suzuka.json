@@ -1,0 +1,58 @@
+{
+  "round": 3,
+  "circuit": "Suzuka",
+  "date": "2026-03-29",
+  "facts": [
+    {
+      "icon": "⏱️",
+      "text": "1:28.778: 1,795 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+    },
+    {
+      "icon": "🏁",
+      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+    },
+    {
+      "icon": "📈",
+      "text": "Più posizioni guadagnate: Liam Lawson, da 14° a 9° (+5)."
+    },
+    {
+      "icon": "📉",
+      "text": "Più posizioni perse: Isack Hadjar, da 8° a 12° (-4)."
+    },
+    {
+      "icon": "🔒",
+      "text": "Prima fila tutta Mercedes."
+    },
+    {
+      "icon": "⚡",
+      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:32.432 (giro 49)."
+    },
+    {
+      "icon": "🛞",
+      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+    },
+    {
+      "icon": "🔧",
+      "text": "Strategia più usata: 1 sosta (18 piloti su 20 classificati)."
+    },
+    {
+      "icon": "💨",
+      "text": "Velocità massima nel giro di pole: 321 km/h (2025: 325 km/h)."
+    }
+  ],
+  "raceControl": [
+    {
+      "giro": 22,
+      "messaggio": "SAFETY CAR DEPLOYED"
+    },
+    {
+      "giro": 27,
+      "messaggio": "SAFETY CAR IN THIS LAP"
+    }
+  ],
+  "story": {
+    "text": "A Suzuka, terza gara della stagione, Andrea Kimi Antonelli ha trasformato la pole in vittoria con la Mercedes, firmando anche il giro più veloce in 1:32.432 e precedendo Oscar Piastri di 13,722 s. Completa il podio Charles Leclerc con la Ferrari, a 15,270 s, mentre George Russell, secondo in una prima fila tutta Mercedes, chiude quarto. La safety car è entrata al giro 22 ed è rientrata al 27. Antonelli ha vinto con una sosta (Medium-Hard), e Liam Lawson ha guadagnato più di tutti, da 14° a 9°.",
+    "model": "claude-opus-5-5",
+    "hash": "46d4e8c508481e41"
+  }
+}

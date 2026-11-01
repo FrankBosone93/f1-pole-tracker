@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-01T17:30:19.408Z",
+  "updatedAt": "2026-11-01T17:53:10.005Z",
   "lastGp": {
     "round": 18,
     "circuit": "Austin (COTA)",
@@ -79,6 +79,98 @@
       "hash": "7330c5c1fb747b2f"
     }
   },
+  "gps": [
+    {
+      "round": 1,
+      "circuit": "Melbourne (Australia)",
+      "file": "stats/2026/melbourne-australia.json"
+    },
+    {
+      "round": 2,
+      "circuit": "Shanghai (Cina)",
+      "file": "stats/2026/shanghai-cina.json"
+    },
+    {
+      "round": 3,
+      "circuit": "Suzuka",
+      "file": "stats/2026/suzuka.json"
+    },
+    {
+      "round": 4,
+      "circuit": "Miami",
+      "file": "stats/2026/miami.json"
+    },
+    {
+      "round": 5,
+      "circuit": "Montreal (Canada)",
+      "file": "stats/2026/montreal-canada.json"
+    },
+    {
+      "round": 6,
+      "circuit": "Monaco",
+      "file": "stats/2026/monaco.json"
+    },
+    {
+      "round": 7,
+      "circuit": "Barcellona",
+      "file": "stats/2026/barcellona.json"
+    },
+    {
+      "round": 8,
+      "circuit": "Red Bull Ring",
+      "file": "stats/2026/red-bull-ring.json"
+    },
+    {
+      "round": 9,
+      "circuit": "Silverstone",
+      "file": "stats/2026/silverstone.json"
+    },
+    {
+      "round": 10,
+      "circuit": "Spa-Francorchamps",
+      "file": "stats/2026/spa-francorchamps.json"
+    },
+    {
+      "round": 11,
+      "circuit": "Hungaroring",
+      "file": "stats/2026/hungaroring.json"
+    },
+    {
+      "round": 12,
+      "circuit": "Zandvoort",
+      "file": "stats/2026/zandvoort.json"
+    },
+    {
+      "round": 13,
+      "circuit": "Monza",
+      "file": "stats/2026/monza.json"
+    },
+    {
+      "round": 14,
+      "circuit": "Madrid",
+      "file": "stats/2026/madrid.json"
+    },
+    {
+      "round": 15,
+      "circuit": "Baku (Azerbaijan)",
+      "file": "stats/2026/baku-azerbaijan.json"
+    },
+    {
+      "round": 16,
+      "circuit": "Sepang (Malesia)",
+      "file": "stats/2026/sepang-malesia.json"
+    },
+    {
+      "round": 17,
+      "circuit": "Singapore",
+      "file": "stats/2026/singapore.json"
+    },
+    {
+      "round": 18,
+      "circuit": "Austin (COTA)",
+      "file": "stats/2026/austin-cota.json"
+    }
+  ],
   "season": {
     "racesDone": 18,
     "racesTotal": 23,
