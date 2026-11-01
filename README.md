@@ -227,7 +227,7 @@ Il sito non chiama mai direttamente le API esterne (OpenF1, Jolpica, Open-Meteo)
 Un file per automazione (mai uno condiviso) evita che due workflow schedulati a ridosso l'uno dell'altro (es. `update-poles.yml` e `update-telemetry.yml`) rischino di scontrarsi al push su git.
 
 Il sito scarica i 6 file all'avvio e li combina in un solo indicatore sotto il titolo:
-- 🟢 se tutti `ok:true` → "Dati aggiornati al [giorno] alle [ora]" (l'orario mostrato è il più vecchio tra i 7 `lastRun`: il momento fino al quale TUTTE le automazioni sono confermate funzionanti).
+- 🟢 se tutti `ok:true` → "Dati aggiornati al [giorno] alle [ora]" (l'orario mostrato è il più recente tra i 7 `lastRun`, cioè l'ultimo aggiornamento riuscito. Fino al 1 novembre 2026 era il più vecchio, ma così nel weekend il badge restava fermo alla domenica precedente, perché classifica, penalità, storico e passo gara girano solo domenica sera e lunedì).
 - 🔴 se anche solo una è `ok:false` → mostra quale, col messaggio d'errore nel tooltip.
 
 Ogni workflow schedulato usa `continue-on-error` sullo step dello script e committa comunque il file di stato (con `ok:false` se lo script è fallito) prima di far fallire esplicitamente il run — altrimenti, in caso di errore, lo step del commit non verrebbe mai raggiunto e il sito non saprebbe mai che quell'automazione è KO.

@@ -1252,14 +1252,15 @@
 
             const failing = results.filter(r => !r.ok);
             if (failing.length === 0) {
-                // Mostriamo la più vecchia delle 5 ultime esecuzioni riuscite:
-                // è il momento fino al quale possiamo dire con certezza che
-                // TUTTE le automazioni erano confermate funzionanti.
-                const oldestRun = results.reduce((oldest, r) => {
-                    const t = new Date(r.lastRun).getTime();
-                    return (oldest === null || t < oldest) ? t : oldest;
-                }, null);
-                const d = new Date(oldestRun);
+                // L'ultimo aggiornamento riuscito tra tutte le automazioni.
+                // Prima era il più vecchio: classifica, penalità, storico e
+                // passo gara girano solo domenica sera e lunedì, quindi nel
+                // weekend il badge restava fermo alla domenica precedente
+                // anche con prove libere e qualifiche già aggiornate.
+                // L'eventuale errore di una qualsiasi automazione resta
+                // segnalato dal pallino rosso qui sotto.
+                const latestRun = Math.max(...results.map(r => new Date(r.lastRun).getTime()).filter(t => !isNaN(t)));
+                const d = new Date(latestRun);
                 const dateStr = `${d.getDate()} ${ITALIAN_MONTHS[d.getMonth()].toLowerCase()}`;
                 const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
                 dataSourceBadge.innerText = `🟢 Dati aggiornati al ${dateStr} alle ${timeStr}`;
