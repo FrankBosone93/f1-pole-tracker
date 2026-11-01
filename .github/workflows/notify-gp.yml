@@ -7,6 +7,8 @@ on:
   # GitHub faceva partire con 5-7 ore di ritardo (notifica nel pomeriggio).
   # Lo script esce subito se il GP è già notificato, quindi le partenze in più
   # (es. calendario ogni 2 ore il venerdì e sabato) non producono doppioni.
+  # Dal 2026-11-01 lo stesso run manda anche la notifica della pole
+  # (notify-pole.js), appena la pole del weekend è salvata.
   workflow_run:
     workflows:
       - "Aggiorna pole position F1"
@@ -50,6 +52,19 @@ jobs:
         with:
           node-version: '22'
 
+      # Notifica della pole (scripts/notify-pole.js): appena la pole del
+      # weekend è in data.json e la gara non è ancora partita, una volta per
+      # GP. continue-on-error: un suo errore non deve bloccare la notifica
+      # dopo il GP qui sotto (il run fallisce comunque in fondo).
+      - name: Notifica della pole appena salvata
+        id: pole
+        continue-on-error: true
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WEBPUSH_SUBSCRIPTIONS: ${{ secrets.WEBPUSH_SUBSCRIPTIONS }}
+        run: node scripts/notify-pole.js
+
       - name: Controlla i dati dell'ultimo GP e invia la notifica
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
@@ -61,15 +76,22 @@ jobs:
 
       # Lo stato (ultimo GP notificato) va in git, così la notifica non si
       # ripete ai run successivi.
+      # always(): se la pole è stata notificata ma la notifica dopo il GP
+      # fallisce, lo stato della pole va salvato comunque (niente doppioni).
       - name: Commit dello stato delle notifiche (se cambiato)
+        if: always()
         run: |
-          if [ -z "$(git status --porcelain -- status/notified.json)" ]; then
+          if [ -z "$(git status --porcelain -- status/notified.json status/notified-pole.json)" ]; then
             echo "Nessuna notifica inviata, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add status/notified.json
-            git commit -m "🔔 Notifica aggiornamento GP inviata"
+            git add status/notified.json status/notified-pole.json
+            git commit -m "🔔 Notifica inviata"
             source scripts/lib/push-with-retry.sh
             push_with_retry
           fi
+
+      - name: Fallisci il run se la notifica della pole è fallita
+        if: steps.pole.outcome == 'failure'
+        run: exit 1

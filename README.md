@@ -131,7 +131,7 @@ L'interruttore **Qualifiche / Passo gara** (su desktop a destra del menu del cir
 - **Automazione:** `.github/workflows/update-race-pace.yml` dopo ogni gara (domenica 18:27 e 22:27 UTC, lunedì 6:27), più un passo in `update-all.yml`. Scarica solo le gare nuove; una gara appena finita senza dati su OpenF1 resta in attesa per 72 ore senza far fallire il run. Scrive `status/pace.json` per l'indicatore in alto.
 - `scripts/lib/openf1.js` raccoglie il codice condiviso con la telemetria: richieste distanziate per il limite del piano gratuito, mappa dei nomi dei circuiti, nome dei file per circuito.
 
-## Notifica dopo ogni GP (ntfy)
+## Notifiche: dopo ogni GP e dopo la qualifica (ntfy)
 
 Subito dopo ogni aggiornamento dei dati (trigger `workflow_run` sulle automazioni di pole, penalità, classifica, calendario, telemetria e passo gara, più una rete di sicurezza lunedì e martedì alle 8:13 UTC) `.github/workflows/notify-gp.yml` esegue `scripts/notify-gp.js`, che controlla l'ultima gara finita (almeno 2 ore e mezza dopo il via): pole in `data.json`, risultati di gara, classifica aggiornata dopo la gara, telemetria della pole e passo gara. Poi invia una notifica push con [ntfy](https://ntfy.sh) (gratuito, nessun account):
 
@@ -142,6 +142,15 @@ Subito dopo ogni aggiornamento dei dati (trigger `workflow_run` sulle automazion
 - **Canale:** nome lungo e casuale nel segreto del repository `NTFY_TOPIC` (Settings → Secrets and variables → Actions), mai nel codice pubblico: chi conosce il nome può leggere e scrivere nel canale. Per ricevere le notifiche: app ntfy (iPhone, Android, web) → "+" → iscrizione a quel canale sul server ntfy.sh. Per aggiungere persone basta dar loro il nome del canale; per toglierle, si cambia nome (nuovo segreto). Senza segreto lo script non invia nulla e non fallisce.
 - **ℹ️ "Circuito nuovo aggiunto in automatico: …"** in più se il GP si è corso su un circuito riconosciuto in automatico quest'anno (vedi sotto), per poterne cambiare il nome.
 - Prova senza inviare: `node scripts/notify-gp.js --dry-run`.
+
+### Notifica della pole (sabato)
+
+Dal 2026-11-01 `scripts/notify-pole.js`, primo passaggio di `notify-gp.yml`, manda anche una notifica appena la pole del weekend è salvata in `data.json` (di solito il sabato, subito dopo i risultati della qualifica grazie a `scripts/pole-pending.js` nel workflow del calendario), stessi canali (ntfy e web app, codice condiviso in `scripts/lib/notify-channels.js`):
+
+- **🏁 "Pole a Interlagos (San Paolo): <pilota>"** con tempo e squadra, gomma del giro (solo se la telemetria è già pronta, senza aspettarla) e meteo, orario della gara in ora italiana; il tocco apre il sito su quel circuito.
+- Solo se la gara **non è ancora partita**: una pole salvata in ritardo (es. lunedì) è già nella notifica dopo il GP.
+- **Una sola per GP:** stato in `status/notified-pole.json`. Un errore di questo passaggio non blocca la notifica dopo il GP (il run fallisce comunque in fondo), e lo stato si salva anche se fallisce l'altra.
+- Prova senza inviare: `node scripts/notify-pole.js --dry-run` (`--gp "<circuito>"` per una pole qualsiasi della stagione).
 
 ### Notifiche nella web app (schermata Home)
 
