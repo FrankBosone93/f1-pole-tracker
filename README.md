@@ -49,7 +49,8 @@ f1api.dev, la fonte originale di calendario e risultati, è stata **eliminata il
 - `.github/workflows/update-telemetry.yml` — automazione GitHub Actions che esegue `build-telemetry.js` ogni sabato sera (stesse ore di `update-poles.yml` ma 16 minuti dopo, perché usa la pole appena scritta in `data.json`, essendo la telemetria dello stesso giro di pole), più un run di recupero domenica e lunedì mattina.
 - `.github/workflows/check-pole-penalty.yml` — automazione GitHub Actions che esegue `check-pole-penalty.js` ogni domenica sera / lunedì mattina.
 - `.github/workflows/update-standings.yml` — automazione GitHub Actions che esegue `update-standings.js` ogni domenica sera / lunedì mattina.
-- `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni 2 ore venerdì e sabato, poi domenica sera / lunedì mattina.
+- `scripts/pole-pending.js` — controllo locale usato da `update-calendar.yml`: `poles` stampa `true` se manca la pole di una qualifica con risultati già salvati, `telemetry` se manca la telemetria di una pole delle ultime 72 ore.
+- `.github/workflows/update-calendar.yml` — automazione GitHub Actions che esegue `update-calendar.js` ogni 2 ore venerdì e sabato, poi domenica sera / lunedì mattina. Subito dopo, se `scripts/pole-pending.js` (legge solo i file locali, nessuna API) trova una qualifica con i risultati già in `calendar.json` ma senza pole in `data.json`, esegue nello stesso run `update-poles.js`; se una pole con qualifica nelle ultime 72 ore non ha ancora la telemetria, esegue `build-telemetry.js`. Introdotto il 2026-11-01: con i soli orari fissi di `update-poles.yml` (che GitHub fa partire anche con ore di ritardo) la pole del Messico 2026 era arrivata alle 2 di notte, ore dopo i tempi delle qualifiche già visibili nel Prossimo GP. Gli orari fissi di pole e telemetria restano come recupero.
 - `.github/workflows/update-news.yml` — automazione GitHub Actions che esegue `update-news.js` ogni 4 ore.
 - `.github/workflows/update-all.yml` — solo manuale (nessuno schedule proprio): esegue in sequenza tutti e sette gli script sopra in un unico run, per aggiornare tutto con un solo "Run workflow" invece di lanciarli uno alla volta. È il workflow a cui punta il tasto "🔄 Full Update" del sito.
 
@@ -83,6 +84,7 @@ f1api.dev, la fonte originale di calendario e risultati, è stata **eliminata il
    scripts/check-pole-penalty.js
    scripts/update-standings.js
    scripts/update-calendar.js
+   scripts/pole-pending.js
    scripts/verify-data.js
    scripts/build-history.js
    scripts/archive-finished-season.js
@@ -193,7 +195,7 @@ Link non validi non rompono nulla: un circuito inesistente viene ignorato (si ap
 
 Ci sono quattro momenti distinti, perché prove libere, qualifica e gara di un weekend F1 non finiscono mai nello stesso momento, e le news escono in continuazione:
 
-**0. Durante tutto il weekend di gara (venerdì e sabato, ogni 2 ore)** — `update-calendar.yml` esegue `scripts/update-calendar.js`. Gira a orario fisso tutto il giorno (non solo subito dopo ogni sessione) perché gli orari delle sessioni cambiano moltissimo da circuito a circuito (es. Melbourne alle prime ore UTC, Austin nel tardo pomeriggio UTC): non è possibile agganciarsi all'orario esatto di fine di ogni sessione per tutti i 22 GP con un cron fisso, quindi si accetta un ritardo massimo di circa 2 ore rispetto alla fine reale della sessione. Ogni run scarica solo le sessioni nuove già disputate dall'ultimo giro, quindi nei weekend senza gara è un no-op istantaneo.
+**0. Durante tutto il weekend di gara (venerdì e sabato, ogni 2 ore)** — `update-calendar.yml` esegue `scripts/update-calendar.js`. Gira a orario fisso tutto il giorno (non solo subito dopo ogni sessione) perché gli orari delle sessioni cambiano moltissimo da circuito a circuito (es. Melbourne alle prime ore UTC, Austin nel tardo pomeriggio UTC): non è possibile agganciarsi all'orario esatto di fine di ogni sessione per tutti i 22 GP con un cron fisso, quindi si accetta un ritardo massimo di circa 2 ore rispetto alla fine reale della sessione. Dopo la qualifica, lo stesso run salva anche pole e telemetria appena i risultati sono disponibili (vedi `scripts/pole-pending.js`). Ogni run scarica solo le sessioni nuove già disputate dall'ultimo giro, quindi nei weekend senza gara è un no-op istantaneo.
 
 **1. Dopo la qualifica (sabato)** — girano due workflow, con 16 minuti di scarto (prima la pole, poi la telemetria che la usa):
 - `update-poles.yml` esegue `scripts/update-poles.js`:
