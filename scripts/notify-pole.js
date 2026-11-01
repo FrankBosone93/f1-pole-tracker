@@ -69,7 +69,7 @@ function buildReport() {
     const tyre = readJson('telemetry.json')?.seasons?.[year]?.circuits?.[race.circuit]?.tyre;
     const raceAt = sessionStart(race.schedule?.race);
 
-    const lines = [`⏱️ ${pole.driver} · ${pole.timeStr} · ${pole.team}`];
+    const lines = [`⏱️ ${pole.driver} (${pole.team}) · ${pole.timeStr}`];
     const conditions = [tyre && TYRES[tyre], pole.weather].filter(Boolean).join(' · ');
     if (conditions) lines.push(conditions);
     if (raceAt) lines.push(`🏎️ Gara: ${italianDateTime(raceAt)}`);
