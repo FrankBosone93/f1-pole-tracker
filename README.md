@@ -147,7 +147,7 @@ Subito dopo ogni aggiornamento dei dati (trigger `workflow_run` sulle automazion
 
 Dal 2026-11-01 `scripts/notify-pole.js`, primo passaggio di `notify-gp.yml`, manda anche una notifica appena la pole del weekend è salvata in `data.json` (di solito il sabato, subito dopo i risultati della qualifica grazie a `scripts/pole-pending.js` nel workflow del calendario), stessi canali (ntfy e web app, codice condiviso in `scripts/lib/notify-channels.js`):
 
-- **🏁 "Pole a Interlagos (San Paolo): <pilota>"** con tempo e squadra, gomma del giro (solo se la telemetria è già pronta, senza aspettarla) e meteo, orario della gara in ora italiana; il tocco apre il sito su quel circuito.
+- **🏁 "Pole a Interlagos (San Paolo): <pilota>"** con tempo e squadra, gomma del giro (solo se la telemetria è già pronta, senza aspettarla) e meteo, orario della gara in ora italiana; il tocco apre il sito su quel circuito. Ultima riga "Tocca per vedere il giro di pole." solo se la telemetria è già pronta, altrimenti "Tocca per i dettagli." (il grafico arriva al giro successivo).
 - Solo se la gara **non è ancora partita**: una pole salvata in ritardo (es. lunedì) è già nella notifica dopo il GP.
 - **Una sola per GP:** stato in `status/notified-pole.json`. Un errore di questo passaggio non blocca la notifica dopo il GP (il run fallisce comunque in fondo), e lo stato si salva anche se fallisce l'altra.
 - Prova senza inviare: `node scripts/notify-pole.js --dry-run` (`--gp "<circuito>"` per una pole qualsiasi della stagione).
