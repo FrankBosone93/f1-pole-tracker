@@ -2450,7 +2450,6 @@
         // fatto per riga, poi i link alle viste del GP.
         function statsGpCardHtml(data, gp) {
             if (!gp) return statsCard('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
-            const isLast = gp.circuit === data.lastGp?.circuit;
             const gps = (data.gps || []).slice().reverse();
             const menu = gps.length > 1 ? `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="shrink-0 max-w-[45%] bg-[#121212] text-gray-300 text-xs border border-gray-700 rounded-md px-1.5 py-1 focus:outline-none focus:border-[#E10600]">
                 ${gps.map(g => `<option value="${escapeHtml(g.file)}"${g.circuit === gp.circuit ? ' selected' : ''}>${g.round}. ${escapeHtml(g.circuit)}</option>`).join('')}
@@ -2458,7 +2457,7 @@
             const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
             const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
-            return statsCard(`${isLast ? 'Ultimo GP' : 'GP'} · ${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
+            return statsCard(`${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
                     `${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
                     <p class="text-[11px] text-gray-500 mt-1.5 mb-4 pb-4 border-b border-gray-800">Racconto scritto con l'IA dai dati del sito.</p>` : ''}
                     <ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
