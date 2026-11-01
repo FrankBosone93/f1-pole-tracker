@@ -1,0 +1,8 @@
+{
+  "name": "f1-pole-tracker",
+  "private": true,
+  "description": "Script delle automazioni GitHub Actions (le altre usano solo Node, build-stats.js anche l'SDK di Anthropic per il racconto del GP)",
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.3.0"
+  }
+}

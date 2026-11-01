@@ -2443,14 +2443,17 @@
                 <h2 class="text-sm font-bold text-[#E10600] mb-3">${title}</h2>${body}</div>`;
             const gp = data.lastGp, s = data.season;
 
-            // Ultimo GP: un fatto per riga, poi i link alle viste del GP.
+            // Ultimo GP: il racconto scritto da Claude (se c'è), un fatto per
+            // riga, poi i link alle viste del GP.
             let lastGpCard = card('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
             if (gp) {
                 const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
                 const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
                 const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
                 lastGpCard = card(`Ultimo GP · ${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
-                    `<ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
+                    `${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
+                    <p class="text-[11px] text-gray-500 mt-1.5 mb-4 pb-4 border-b border-gray-800">Racconto scritto con l'IA dai dati del sito.</p>` : ''}
+                    <ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
                     <div class="flex gap-4 mt-4 text-xs">
                         <a href="${qualiLink}" class="text-gray-400 hover:text-white underline">Qualifiche →</a>
                         <a href="${paceLink}" class="text-gray-400 hover:text-white underline">Passo gara →</a>

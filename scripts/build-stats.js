@@ -3,7 +3,8 @@
 // Calcola stats.json per la sezione "Stats" del sito:
 //   - lastGp: i fatti dell'ultimo GP disputato (pole confrontata con gli anni
 //     passati sullo stesso circuito, pole e vincitore in gara, rimonte,
-//     doppiette, giro più veloce, velocità massima, strategie, mondiale);
+//     doppiette, giro più veloce, velocità massima, strategie, mondiale) e un
+//     breve racconto scritto da Claude con gli stessi dati (lib/gp-story.js);
 //   - season: la stagione in numeri (vittorie, podi e pole per pilota e
 //     squadra, pole trasformate in vittoria, prime file monopolizzate, duelli
 //     in qualifica tra compagni di squadra).
@@ -193,6 +194,23 @@ function championshipFacts(season, race, races, standings) {
     return facts;
 }
 
+// Dati passati a Claude per il racconto del GP: solo quello che il sito sa.
+// La classifica solo se aggiornata dopo la gara (come championshipFacts).
+function storyInput(season, race, pole, facts, standings) {
+    const results = race.results.race;
+    const grid = race.results.qualy || [];
+    const gridOf = driver => grid.find(g => same(g.driver, driver))?.position ?? null;
+    const fresh = standings && String(standings.season) === String(season) && standings.updatedAt.slice(0, 10) >= race.date;
+    return {
+        gp: `${race.circuit} ${season}, gara ${race.round} della stagione`,
+        pole: pole ? { pilota: pole.driver, squadra: pole.team, tempo: pole.timeStr, meteoQualifica: pole.weather || null } : null,
+        arrivo: results.filter(r => !r.retired).slice(0, 10).map(r => ({ pos: r.position, pilota: r.driver, squadra: r.team, griglia: gridOf(r.driver), tempo: r.time })),
+        nonClassificati: results.filter(r => r.retired).map(r => ({ pilota: r.driver, squadra: r.team, esito: r.retired, griglia: gridOf(r.driver) })),
+        fatti: facts.map(f => f.text),
+        mondialePilotiDopoLaGara: fresh ? standings.drivers.slice(0, 5).map(d => ({ pos: d.position, pilota: d.driver, punti: d.points })) : null,
+    };
+}
+
 // --- Stagione ----------------------------------------------------------------
 
 function seasonStats(season, races, poles) {
@@ -297,6 +315,20 @@ async function main() {
         };
     }
 
+    // Racconto di Claude: se manca (niente chiave, API giù) per lo stesso GP
+    // resta quello del giro precedente, altrimenti il sito mostra solo i fatti.
+    if (lastGp) {
+        const prevStory = previous.year === season && previous.lastGp?.circuit === lastGp.circuit ? previous.lastGp.story : null;
+        try {
+            const { gpStory } = require('./lib/gp-story');
+            const pole = poles.find(p => p.year === season && p.circuit === last.circuit);
+            lastGp.story = await gpStory(storyInput(season, last, pole, lastGp.facts, standings), prevStory) || prevStory || undefined;
+        } catch (err) {
+            console.warn(`⚠️  Racconto del GP non disponibile (${err.message}).`);
+            lastGp.story = prevStory || undefined;
+        }
+    }
+
     const stats = seasonStats(season, races, poles);
     try {
         stats.qualyDuels = await qualyDuels(season, knownDriverNames());
@@ -311,6 +343,7 @@ async function main() {
     const strip = s => JSON.stringify({ ...s, updatedAt: null });
     if (strip(payload) !== strip(previous)) fs.writeFileSync(STATS_PATH, json, 'utf-8');
     console.log(`Ultimo GP: ${lastGp ? `${lastGp.circuit} (${lastGp.facts.length} fatti)` : 'nessuno'}`);
+    if (lastGp?.story) console.log(`  📝 ${lastGp.story.text}`);
     (lastGp?.facts || []).forEach(f => console.log(`  ${f.icon} ${f.text}`));
     console.log(`Stagione ${season}: ${stats.racesDone}/${stats.racesTotal} GP, ${stats.drivers.length} piloti, ${stats.qualyDuels.length} duelli in qualifica.`);
 }
