@@ -1186,5 +1186,14 @@
     "timeStr": "1:34.035",
     "seconds": 94.035,
     "weather": "☀️ Sereno"
+  },
+  {
+    "year": 2026,
+    "circuit": "Città del Messico",
+    "driver": "Lewis Hamilton",
+    "team": "Ferrari",
+    "timeStr": "1:16.514",
+    "seconds": 76.514,
+    "weather": "☁️ Nuvoloso"
   }
 ]
