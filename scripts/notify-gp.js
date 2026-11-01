@@ -64,6 +64,20 @@ function lastRaceByDate(calendar, now) {
 // giorno dopo la gara alle 7:00 UTC, dopo i run di recupero del mattino.
 const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 86400000;
 
+// Dove porta il tocco: il passo gara del GP con il confronto tra i primi due
+// classificati (stessa forma dei link di condivisione del sito,
+// #mode=pace&y=…&c=…&a=SIGLA&b=SIGLA); senza passo gara ancora pronto,
+// l'andamento dei tempi del circuito.
+function clickUrl(year, circuit, paceIndex) {
+    const fallback = `${SITE_URL}#c=${encodeURIComponent(circuit)}`;
+    const entry = (paceIndex?.races?.[year] || []).find(r => r.circuit === circuit);
+    const drivers = entry && readJson(entry.file)?.drivers;
+    const code = pos => (drivers || []).find(d => d.pos === pos)?.code;
+    if (!code(1) || !code(2)) return fallback;
+    const p = new URLSearchParams({ mode: 'pace', y: String(year), c: circuit, a: code(1), b: code(2) });
+    return `${SITE_URL}#${p.toString().replace(/\+/g, '%20')}`;
+}
+
 function buildReport() {
     const calendar = readJson('calendar.json');
     if (!calendar) throw new Error('calendar.json non trovato');
@@ -128,7 +142,7 @@ function buildReport() {
         // aggiornato, ⚠️ manca qualcosa, elencato in fondo al messaggio).
         title: `${complete ? '✅' : '⚠️'} GP di ${circuit} ${year}`,
         message: lines.join('\n'),
-        click: `${SITE_URL}#c=${encodeURIComponent(circuit)}`,
+        click: clickUrl(year, circuit, paceIndex),
     };
 }
 
