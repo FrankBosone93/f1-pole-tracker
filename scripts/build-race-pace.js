@@ -19,6 +19,9 @@
 // Uso:
 //   node scripts/build-race-pace.js             (2023 - stagione in corso)
 //   node scripts/build-race-pace.js 2025        (solo il 2025)
+//   node scripts/build-race-pace.js 2026 --refresh
+//                                               (riscarica anche le gare già
+//                                               presenti, es. dopo una correzione)
 
 const fs = require('fs');
 const path = require('path');
@@ -38,6 +41,7 @@ async function openf1Optional(url) {
 }
 
 const ROOT = path.join(__dirname, '..');
+const REFRESH = process.argv.includes('--refresh');
 const PACE_DIR = path.join(ROOT, 'pace');
 const INDEX_PATH = path.join(PACE_DIR, 'index.json');
 const DATA_JSON_PATH = path.join(ROOT, 'data.json');
@@ -57,8 +61,10 @@ function displayName(d) {
 
 // Periodi neutralizzati dai messaggi della direzione gara: "SAFETY CAR
 // DEPLOYED" ... "SAFETY CAR IN THIS LAP", "VIRTUAL SAFETY CAR DEPLOYED" ...
-// "VIRTUAL SAFETY CAR ENDING". Un periodo ancora aperto a fine gara si chiude
-// sull'ultimo giro.
+// "VIRTUAL SAFETY CAR ENDING" (dal 2026 abbreviato in "VSC DEPLOYED" ...
+// "VSC ENDING": prima della correzione del 2026-11-01 nessuna VSC 2026 veniva
+// riconosciuta). Un periodo ancora aperto a fine gara si chiude sull'ultimo
+// giro.
 function neutralizedPeriods(raceControl, totalLaps) {
     const periods = [];
     let open = null;
@@ -67,11 +73,11 @@ function neutralizedPeriods(raceControl, totalLaps) {
         const msg = (m.message || '').toUpperCase();
         const lap = m.lap_number || null;
         if (!lap) continue;
-        const isVsc = msg.includes('VIRTUAL SAFETY CAR');
-        if (msg.includes('SAFETY CAR DEPLOYED')) {
+        const isVsc = msg.includes('VIRTUAL SAFETY CAR') || /^VSC\b/.test(msg);
+        if (msg.includes('SAFETY CAR DEPLOYED') || msg.startsWith('VSC DEPLOYED')) {
             if (open) periods.push({ ...open, to: lap });
             open = { type: isVsc ? 'VSC' : 'SC', from: lap };
-        } else if (open && (msg.includes('SAFETY CAR IN THIS LAP') || msg.includes('VIRTUAL SAFETY CAR ENDING'))) {
+        } else if (open && (msg.includes('SAFETY CAR IN THIS LAP') || msg.includes('VIRTUAL SAFETY CAR ENDING') || msg.startsWith('VSC ENDING'))) {
             periods.push({ ...open, to: lap });
             open = null;
         }
@@ -180,7 +186,7 @@ async function main() {
     const errors = [];
     for (const season of seasons) {
         const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
-        const known = new Set((index.races[season] || []).map(r => r.circuit));
+        const known = new Set(REFRESH ? [] : (index.races[season] || []).map(r => r.circuit));
         const todo = sessions
             .filter(s => new Date(s.date_end) < now)
             .map(s => ({ session: s, circuit: CIRCUIT_MAP[s.circuit_short_name] }))
