@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-01T16:37:22.452Z",
+  "updatedAt": "2026-11-01T16:43:10.649Z",
   "lastGp": {
     "round": 18,
     "circuit": "Austin (COTA)",
@@ -127,35 +127,30 @@
     "teams": [
       {
         "name": "Mercedes",
-        "team": null,
         "wins": 12,
         "podiums": 23,
         "poles": 12
       },
       {
         "name": "Red Bull",
-        "team": null,
         "wins": 2,
         "podiums": 12,
         "poles": 2
       },
       {
         "name": "Ferrari",
-        "team": null,
         "wins": 2,
         "podiums": 12,
         "poles": 1
       },
       {
         "name": "McLaren",
-        "team": null,
         "wins": 2,
         "podiums": 7,
         "poles": 3
       },
       {
         "name": "Alpine",
-        "team": null,
         "wins": 0,
         "podiums": 0,
         "poles": 1
