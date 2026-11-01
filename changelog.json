@@ -1,6 +1,43 @@
 {
   "entries": [
     {
+      "date": "2026-11-01",
+      "title": "Changelog — 1 Novembre 2026",
+      "sections": [
+        {
+          "title": "Statistiche",
+          "items": [
+            "Nuova sezione **Statistiche**, il terzo tasto accanto a Qualifiche e Passo gara.",
+            "Per ogni GP un **breve racconto della gara scritto con l'intelligenza artificiale** partendo dai dati del sito, seguito dai fatti principali: pole confrontata con gli anni passati, rimonte, giro più veloce, strategie, safety car e penalità, mondiale.",
+            "Dal menu **Scegli un circuito**, in alto a destra, puoi rileggere tutti i GP 2026 già disputati.",
+            "**Stagione in numeri**: vittorie, podi e pole per pilota e squadra, pole trasformate in vittoria e **duelli in qualifica** tra compagni di squadra.",
+            "Le pole si confrontano solo con gli anni che avevano le stesse regole tecniche: le auto 2026 sono più lente, quindi un confronto con il 2025 sarebbe fuorviante."
+          ]
+        },
+        {
+          "title": "Notifiche",
+          "items": [
+            "Nuova notifica **il sabato**, appena c'è la pole: pilota, squadra, tempo, gomma, meteo e orario della gara.",
+            "La notifica dopo il GP non ripete la pole se è già arrivata il sabato e, toccandola, apre il **passo gara** con il confronto tra primo e secondo."
+          ]
+        },
+        {
+          "title": "Passo gara",
+          "items": [
+            "Nel grafico compaiono anche le **virtual safety car** del 2026, che prima mancavano."
+          ]
+        },
+        {
+          "title": "Dati",
+          "items": [
+            "Pole e telemetria arrivano **subito dopo la qualifica**, senza più ore di attesa.",
+            "La scritta «Dati aggiornati al…» in alto indica l'aggiornamento più recente.",
+            "In fondo alla pagina sono indicate le **fonti dei dati**."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-10-31",
       "title": "Changelog — 31 Ottobre 2026",
       "sections": [
