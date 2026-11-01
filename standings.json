@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-10-26T19:15:04.604Z",
+  "updatedAt": "2026-11-01T22:25:36.636Z",
   "drivers": [
     {
       "position": 1,
@@ -160,6 +160,13 @@
       "position": 23,
       "driver": "Sergio Pérez",
       "team": "Cadillac",
+      "points": 0,
+      "wins": 0
+    },
+    {
+      "position": 24,
+      "driver": "Ryo Hirakawa",
+      "team": "Haas",
       "points": 0,
       "wins": 0
     }
