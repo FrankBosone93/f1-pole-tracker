@@ -10,9 +10,10 @@
 //     in qualifica tra compagni di squadra).
 //
 // Legge i file già scaricati dalle altre automazioni (calendar.json,
-// data.json, standings.json, telemetry.json, pace/): l'unica richiesta
-// esterna è la classifica delle qualifiche della stagione da Jolpica, per i
-// duelli tra compagni (calendar.json ha la griglia di partenza, che con le
+// data.json, standings.json, telemetry.json, pace/). Richieste esterne: i
+// messaggi della direzione gara dell'ultimo GP da OpenF1, per il racconto
+// (lib/race-control.js), e la classifica delle qualifiche della stagione da
+// Jolpica, per i duelli tra compagni (calendar.json ha la griglia di partenza, che con le
 // penalità non dice chi è andato più forte in qualifica). Se Jolpica non
 // risponde si tengono i duelli calcolati al giro precedente.
 //
@@ -25,6 +26,7 @@ const { jolpicaRaces, jolpicaDriver } = require('./lib/jolpica');
 const { knownDriverNames, surnameKey } = require('./lib/driver-names');
 const { matchTeam } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
+const { raceControlEvents } = require('./lib/race-control');
 
 const ROOT = path.join(__dirname, '..');
 const STATS_PATH = path.join(ROOT, 'stats.json');
@@ -196,7 +198,7 @@ function championshipFacts(season, race, races, standings) {
 
 // Dati passati a Claude per il racconto del GP: solo quello che il sito sa.
 // La classifica solo se aggiornata dopo la gara (come championshipFacts).
-function storyInput(season, race, pole, facts, standings) {
+function storyInput(season, race, pole, facts, standings, raceControl) {
     const results = race.results.race;
     const grid = race.results.qualy || [];
     const gridOf = driver => grid.find(g => same(g.driver, driver))?.position ?? null;
@@ -207,6 +209,7 @@ function storyInput(season, race, pole, facts, standings) {
         arrivo: results.filter(r => !r.retired).slice(0, 10).map(r => ({ pos: r.position, pilota: r.driver, squadra: r.team, griglia: gridOf(r.driver), tempo: r.time })),
         nonClassificati: results.filter(r => r.retired).map(r => ({ pilota: r.driver, squadra: r.team, esito: r.retired, griglia: gridOf(r.driver) })),
         fatti: facts.map(f => f.text),
+        direzioneGara: raceControl || null,
         mondialePilotiDopoLaGara: fresh ? standings.drivers.slice(0, 5).map(d => ({ pos: d.position, pilota: d.driver, punti: d.points })) : null,
     };
 }
@@ -317,12 +320,21 @@ async function main() {
 
     // Racconto di Claude: se manca (niente chiave, API giù) per lo stesso GP
     // resta quello del giro precedente, altrimenti il sito mostra solo i fatti.
+    // Messaggi della direzione gara: se OpenF1 non risponde (401 durante le
+    // sessioni live) si tengono quelli già scaricati per lo stesso GP.
     if (lastGp) {
-        const prevStory = previous.year === season && previous.lastGp?.circuit === lastGp.circuit ? previous.lastGp.story : null;
+        const prevGp = previous.year === season && previous.lastGp?.circuit === lastGp.circuit ? previous.lastGp : null;
+        const prevStory = prevGp?.story || null;
+        lastGp.raceControl = prevGp?.raceControl;
+        try {
+            lastGp.raceControl = await raceControlEvents(season, last.circuit, last.results.race);
+        } catch (err) {
+            console.warn(`⚠️  Direzione gara da OpenF1 non disponibile (${err.message})${lastGp.raceControl ? ': tengo i messaggi precedenti' : ''}.`);
+        }
         try {
             const { gpStory } = require('./lib/gp-story');
             const pole = poles.find(p => p.year === season && p.circuit === last.circuit);
-            lastGp.story = await gpStory(storyInput(season, last, pole, lastGp.facts, standings), prevStory) || prevStory || undefined;
+            lastGp.story = await gpStory(storyInput(season, last, pole, lastGp.facts, standings, lastGp.raceControl), prevStory) || prevStory || undefined;
         } catch (err) {
             console.warn(`⚠️  Racconto del GP non disponibile (${err.message}).`);
             lastGp.story = prevStory || undefined;

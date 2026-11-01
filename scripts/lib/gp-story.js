@@ -2,7 +2,9 @@
 //
 // Racconto dell'ultimo GP per la sezione "Statistiche": un breve paragrafo
 // scritto da Claude (API di Anthropic) partendo SOLO dai dati del sito
-// (pole, griglia, risultati, ritiri, fatti già calcolati, classifica). Sopra
+// (pole, griglia, risultati, ritiri, fatti già calcolati, classifica) e dai
+// messaggi della direzione gara di OpenF1 (safety car, bandiere rosse,
+// penalità: lib/race-control.js). Sopra
 // l'elenco dei fatti, che resta comunque: se l'API non risponde o la chiave
 // non c'è, il sito mostra solo l'elenco come prima.
 //
@@ -19,7 +21,8 @@ const MODEL = 'claude-opus-5-5';
 
 const SYSTEM = `Sei un giornalista di Formula 1 che scrive per un sito italiano di statistiche.
 Scrivi un breve racconto del Gran Premio in italiano: un solo paragrafo, 3-4 frasi, al massimo 90 parole, testo semplice senza titoli, elenchi, grassetti o emoji.
-Usa SOLO i dati forniti. Non aggiungere nulla che non sia nei dati: niente safety car, bandiere, incidenti, sorpassi specifici, meteo in gara, dichiarazioni o cause dei ritiri. Non inventare record o confronti con altri anni oltre a quelli già presenti nei fatti.
+Usa SOLO i dati forniti. Non aggiungere nulla che non sia nei dati: niente sorpassi specifici, meteo in gara, dichiarazioni o cause dei ritiri.
+Safety car, virtual safety car, bandiere rosse e penalità solo se compaiono in "direzioneGara" (messaggi ufficiali in inglese, con il giro): citali solo se contano per il racconto, senza inventarne cause, dinamiche o conseguenze sulla classifica che i dati non dicono. Se "direzioneGara" è null o vuoto, non parlarne. Non inventare record o confronti con altri anni oltre a quelli già presenti nei fatti.
 Riporta nomi, posizioni, tempi e punti esattamente come nei dati. Scrivi i distacchi con la virgola come in italiano (1,525 s). Usa "ad" davanti a parole che iniziano per a (ad Austin, ad Abu Dhabi).
 Dai al racconto un filo: chi ha vinto e come, il risultato dell'autore della pole, la cosa più notevole tra i fatti, cosa cambia nel mondiale.`;
 
