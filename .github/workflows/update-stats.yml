@@ -1,0 +1,64 @@
+name: Aggiorna statistiche F1
+
+on:
+  # Subito dopo ogni aggiornamento dei dati (stessa idea di notify-gp.yml):
+  # le statistiche della sezione "Stats" leggono calendario, pole, classifica,
+  # telemetria e passo gara, quindi si ricalcolano quando cambia uno di loro.
+  # Se non cambia nulla, stats.json non viene riscritto e non c'è commit.
+  workflow_run:
+    workflows:
+      - "Aggiorna pole position F1"
+      - "Controlla penalità pole position F1"
+      - "Aggiorna classifica campionato F1"
+      - "Aggiorna calendario F1"
+      - "Aggiorna telemetria pole position F1"
+      - "Aggiorna passo gara F1"
+      - "Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, passo gara, news)"
+    types: [completed]
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+concurrency:
+  group: update-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # L'ultima versione di main, con i dati appena aggiornati.
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # continue-on-error: lo script scrive comunque status/stats.json (con
+      # ok:false in caso di errore), che va committato per l'indicatore del sito.
+      - name: Calcola le statistiche
+        id: run
+        continue-on-error: true
+        run: node scripts/build-stats.js
+
+      - name: Commit e push se stats.json o lo stato sono cambiati
+        run: |
+          if [ -z "$(git status --porcelain -- stats.json status/stats.json)" ]; then
+            echo "Nessuna modifica, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add stats.json status/stats.json
+            git commit -m "📊 Aggiornamento automatico statistiche"
+            source scripts/lib/push-with-retry.sh
+            push_with_retry
+          fi
+
+      - name: Fallisci il run se lo script è fallito
+        if: steps.run.outcome != 'success'
+        run: exit 1

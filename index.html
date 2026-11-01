@@ -52,6 +52,14 @@
         body.pace-mode #featuredRaceWidget,
         body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.pace-mode) #paceView { display: none; }
+        /* Modalità "Stats" (classe stats-mode, vedi setSiteMode): come il
+           passo gara, sostituisce la vista Qualifiche. */
+        body.stats-mode #mainGrid,
+        body.stats-mode #qualiSelector,
+        body.stats-mode #qualiSelectorLabel,
+        body.stats-mode #featuredRaceWidget,
+        body.stats-mode #featuredRaceWidgetDesktop { display: none !important; }
+        body:not(.stats-mode) #statsView { display: none; }
         /* Mappa del tracciato: si apre scorrendo verso il basso e sfumando
            (righe della griglia da 0fr a 1fr = altezza reale del contenuto),
            invece di comparire di colpo. */
@@ -113,6 +121,7 @@
                         <div class="flex md:min-h-[40px] rounded-lg border border-gray-700 overflow-hidden text-sm" role="group" aria-label="Modalità del sito">
                             <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors">Qualifiche</button>
                             <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
+                            <button id="modeBtnStats" type="button" onclick="setSiteMode('stats')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Stats</button>
                         </div>
                     </div>
                     <div id="qualiSelector" class="order-2 md:order-1 w-full md:w-96 text-left">
@@ -360,6 +369,15 @@
         </div>
     </div>
 
+    <!-- Modalità "Stats": fatti dell'ultimo GP e stagione in numeri, da
+         stats.json (scripts/build-stats.js, ricalcolato dopo ogni
+         aggiornamento dei dati), scaricato solo alla prima apertura. -->
+    <div id="statsView" class="mt-4 md:mt-6">
+        <div id="statsContent" class="md:grid md:grid-cols-2 md:gap-4 md:items-start text-left">
+            <p class="text-sm text-gray-500">Caricamento statistiche...</p>
+        </div>
+    </div>
+
     <!-- Fonti dei dati: Jolpica (CC BY-NC-SA 4.0) e Open-Meteo (CC BY 4.0)
          richiedono la citazione; OpenF1 e MultiViewer citati per correttezza. -->
     <footer class="mt-10 text-center text-[11px] text-gray-500">
@@ -472,6 +490,7 @@
 
         function buildUrlHash() {
             const p = new URLSearchParams();
+            if (siteMode === 'stats') return '#mode=stats';
             if (siteMode === 'pace' && paceState.year) {
                 p.set('mode', 'pace');
                 p.set('y', paceState.year);
@@ -529,7 +548,8 @@
             syncUrlState();
             const url = location.href;
             const view = chartViewMode === 'telemetry' ? ` - telemetria ${telemetryPrimarySeason}${telemetryCompareYear ? ' vs ' + telemetryCompareYear : ''}` : '';
-            const title = siteMode === 'pace'
+            const title = siteMode === 'stats' ? 'F1 Pole Tracker - Stats'
+                : siteMode === 'pace'
                 ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a}${paceState.b ? ' vs ' + paceState.b : ''}`
                 : `F1 Pole Tracker - ${select.value}${view}`;
             if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
@@ -1235,6 +1255,7 @@
             { key: 'history', label: 'Storico stagioni' },
             { key: 'telemetry', label: 'Telemetria' },
             { key: 'pace', label: 'Passo gara' },
+            { key: 'stats', label: 'Statistiche' },
         ];
 
         async function updateApiHealthBadge() {
@@ -1374,9 +1395,10 @@
                 : (defaultCircuit && uniqueCircuits.includes(defaultCircuit)) ? defaultCircuit : uniqueCircuits[0];
             select.value = initialCircuit;
             updateChartViewToggleIcon();
-            updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) && urlState.site !== 'pace' ? urlState : null);
+            updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) && !urlState.site ? urlState : null);
             updateModeToggle();
             if (urlState.site === 'pace') await setSiteMode('pace', { state: { year: urlState.year, circuit: urlState.circuit, a: urlState.a, b: urlState.b } });
+            else if (urlState.site === 'stats') await setSiteMode('stats');
 
             // Hash incollato/modificato a mano nella stessa scheda (replaceState
             // non lo fa scattare, quindi nessun ciclo con syncUrlState).
@@ -1387,7 +1409,8 @@
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
                 if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
-                if (siteMode === 'pace') setSiteMode('quali');
+                if (state.site === 'stats') { setSiteMode('stats'); return; }
+                if (siteMode !== 'quali') setSiteMode('quali');
                 if (!uniqueCircuits.includes(state.circuit)) { syncUrlState(); return; } // riscrive l'indirizzo con lo stato reale
                 select.value = state.circuit;
                 updateApp(state.circuit, state);
@@ -2357,7 +2380,7 @@
             // prima si distingueva appena dallo sfondo, il rosso era troppo forte.
             const active = ['bg-gray-600', 'text-white', 'font-semibold'];
             const inactive = ['text-gray-400', 'hover:text-white', 'hover:bg-gray-800'];
-            [['modeBtnQuali', 'quali'], ['modeBtnPace', 'pace']].forEach(([id, mode]) => {
+            [['modeBtnQuali', 'quali'], ['modeBtnPace', 'pace'], ['modeBtnStats', 'stats']].forEach(([id, mode]) => {
                 const btn = document.getElementById(id);
                 if (!btn) return;
                 const on = siteMode === mode;
@@ -2368,10 +2391,13 @@
         }
 
         async function setSiteMode(mode, { state = null } = {}) {
-            siteMode = mode === 'pace' ? 'pace' : 'quali';
+            siteMode = ['pace', 'stats'].includes(mode) ? mode : 'quali';
             document.body.classList.toggle('pace-mode', siteMode === 'pace');
+            document.body.classList.toggle('stats-mode', siteMode === 'stats');
             updateModeToggle();
-            if (siteMode === 'pace') {
+            if (siteMode === 'stats') {
+                await openStatsView();
+            } else if (siteMode === 'pace') {
                 // Aperta dall'interruttore (non da un link): stesso circuito
                 // scelto nelle Qualifiche. Anno: quello già aperto nel passo
                 // gara se ha quel circuito, altrimenti il più recente in cui
@@ -2388,6 +2414,99 @@
                 applyChartHeight();
             }
             syncUrlState();
+        }
+
+        // --- MODALITÀ "STATS" ----------------------------------------------
+        // Terza vista: i fatti dell'ultimo GP e la stagione in numeri, già
+        // calcolati da scripts/build-stats.js in stats.json (il sito li mostra
+        // soltanto). Il file si scarica alla prima apertura della vista.
+        let statsData = null;
+
+        async function openStatsView() {
+            const box = document.getElementById('statsContent');
+            if (!statsData) {
+                try {
+                    const res = await fetch('stats.json', { cache: 'no-cache' });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    statsData = await res.json();
+                } catch (err) {
+                    box.innerHTML = '<p class="text-sm text-gray-500">Statistiche non disponibili al momento.</p>';
+                    return;
+                }
+            }
+            renderStats(statsData);
+        }
+
+        function renderStats(data) {
+            const box = document.getElementById('statsContent');
+            const card = (title, body) => `<div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-4">
+                <h2 class="text-sm font-bold text-[#E10600] mb-3">${title}</h2>${body}</div>`;
+            const gp = data.lastGp, s = data.season;
+
+            // Ultimo GP: un fatto per riga, poi i link alle viste del GP.
+            let lastGpCard = card('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
+            if (gp) {
+                const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
+                const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
+                const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
+                lastGpCard = card(`Ultimo GP · ${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
+                    `<ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
+                    <div class="flex gap-4 mt-4 text-xs">
+                        <a href="${qualiLink}" class="text-gray-400 hover:text-white underline">Qualifiche →</a>
+                        <a href="${paceLink}" class="text-gray-400 hover:text-white underline">Passo gara →</a>
+                    </div>`);
+            }
+
+            // Riquadri con i numeri chiave della stagione.
+            const tile = (value, label) => `<div class="bg-[#121212] rounded-lg border border-gray-800 p-2.5">
+                <div class="text-lg font-bold text-white leading-tight">${value}</div>
+                <div class="text-[11px] text-gray-500 leading-snug">${label}</div></div>`;
+            const tiles = `<div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                ${tile(`${s.racesDone}<span class="text-sm text-gray-500">/${s.racesTotal}</span>`, 'GP disputati')}
+                ${tile(s.winners, 'vincitori diversi')}
+                ${tile(s.poleSitters, 'piloti diversi in pole')}
+                ${tile(`${s.poleToWin.converted}<span class="text-sm text-gray-500">/${s.poleToWin.of}</span>`, 'pole trasformate in vittoria')}
+                ${tile(s.frontRowLockouts, 'prime file tutte di una squadra')}
+                ${tile(s.wetQualifyings, 'qualifiche sul bagnato')}
+            </div>`;
+
+            const table = (rows, label, showTeam) => `<table class="w-full text-sm mb-4">
+                <thead><tr class="text-[11px] text-gray-500 text-left">
+                    <th class="font-normal pb-1">${label}</th>
+                    <th class="font-normal pb-1 text-right w-12">Vittorie</th>
+                    <th class="font-normal pb-1 text-right w-12">Podi</th>
+                    <th class="font-normal pb-1 text-right w-12">Pole</th>
+                </tr></thead>
+                <tbody>${rows.map(r => `<tr class="border-t border-gray-800">
+                    <td class="py-1.5 pr-2"><span class="text-gray-200">${escapeHtml(r.name)}</span>${showTeam ? `<span class="block text-[11px] text-gray-500">${escapeHtml(r.team || '')}</span>` : ''}</td>
+                    <td class="py-1.5 text-right text-white font-semibold">${r.wins}</td>
+                    <td class="py-1.5 text-right text-gray-300">${r.podiums}</td>
+                    <td class="py-1.5 text-right text-gray-300">${r.poles}</td>
+                </tr>`).join('')}</tbody></table>`;
+            const seasonCard = card(`Stagione ${data.year} in numeri`,
+                tiles + table(s.drivers, 'Pilota', true) + table(s.teams, 'Squadra', false));
+
+            // Duelli in qualifica: barra divisa in proporzione, chi è avanti a sinistra.
+            const duels = (s.qualyDuels || []).map(d => {
+                const tot = d.aAhead + d.bAhead || 1;
+                return `<div class="mb-3">
+                    <div class="text-[11px] text-gray-500 mb-0.5">${escapeHtml(d.team)}</div>
+                    <div class="flex justify-between text-sm text-gray-200">
+                        <span>${escapeHtml(d.a)} <b class="text-white">${d.aAhead}</b></span>
+                        <span><b class="text-white">${d.bAhead}</b> ${escapeHtml(d.b)}</span>
+                    </div>
+                    <div class="flex h-1.5 rounded-full overflow-hidden bg-gray-700 mt-1">
+                        <div class="bg-[#E10600]" style="width:${(d.aAhead / tot * 100).toFixed(1)}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+            const duelsCard = card('Duelli in qualifica tra compagni',
+                (duels || '<p class="text-sm text-gray-500">Nessun dato disponibile.</p>') +
+                '<p class="text-[11px] text-gray-500 mt-1">Chi si è qualificato davanti al compagno, gara per gara (posizione in qualifica, prima delle penalità in griglia).</p>');
+
+            const updated = new Date(data.updatedAt);
+            box.innerHTML = `<div>${lastGpCard}${duelsCard}</div><div>${seasonCard}
+                <p class="text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
         }
 
         async function paceStateFromQualiCircuit() {
