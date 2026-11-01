@@ -1,0 +1,383 @@
+{
+  "year": 2026,
+  "updatedAt": "2026-11-01T18:53:03.961Z",
+  "lastGp": {
+    "round": 18,
+    "circuit": "Austin (COTA)",
+    "date": "2026-10-25",
+    "facts": [
+      {
+        "icon": "⏱️",
+        "text": "1:34.035: 1,525 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+      },
+      {
+        "icon": "🏁",
+        "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+      },
+      {
+        "icon": "📈",
+        "text": "Più posizioni guadagnate: Gabriel Bortoleto, da 22° a 13° (+9)."
+      },
+      {
+        "icon": "📉",
+        "text": "Più posizioni perse: Fernando Alonso, da 12° a 16° (-4)."
+      },
+      {
+        "icon": "⚡",
+        "text": "Giro più veloce: Charles Leclerc in 1:37.976 (giro 42)."
+      },
+      {
+        "icon": "🛞",
+        "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+      },
+      {
+        "icon": "🔧",
+        "text": "Strategia più usata: 1 sosta (10 piloti su 19 classificati)."
+      },
+      {
+        "icon": "💨",
+        "text": "Velocità massima nel giro di pole: 341 km/h (2025: 324 km/h)."
+      },
+      {
+        "icon": "📊",
+        "text": "Andrea Kimi Antonelli guida il mondiale con 123 punti su George Russell (+21 in questo GP)."
+      },
+      {
+        "icon": "🏆",
+        "text": "Titolo già a Città del Messico se Antonelli ne esce con più di 100 punti di vantaggio su tutti gli avversari."
+      }
+    ],
+    "raceControl": [
+      {
+        "giro": 2,
+        "messaggio": "VSC DEPLOYED"
+      },
+      {
+        "giro": 2,
+        "messaggio": "VSC ENDING"
+      },
+      {
+        "giro": 9,
+        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR George Russell - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
+      },
+      {
+        "giro": 19,
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Oliver Bearman - CAUSING A COLLISION"
+      },
+      {
+        "giro": 51,
+        "messaggio": "VSC DEPLOYED"
+      },
+      {
+        "giro": 53,
+        "messaggio": "VSC ENDING"
+      }
+    ],
+    "story": {
+      "text": "Ad Austin Andrea Kimi Antonelli ha trasformato la pole in vittoria con una sola sosta (Medium → Hard), chiudendo con 13,078 s su Charles Leclerc. Il ferrarista, partito quarto, ha firmato il giro più veloce in 1:37.976, mentre Max Verstappen ha chiuso terzo a 17,485 s. George Russell, penalizzato di 5 secondi al giro 9, è arrivato ottavo. Antonelli sale a 365 punti, 123 più di Russell, e potrà prendersi il titolo già a Città del Messico se ne uscirà con più di 100 punti di vantaggio su tutti.",
+      "model": "claude-opus-5-5",
+      "hash": "7330c5c1fb747b2f"
+    }
+  },
+  "gps": [
+    {
+      "round": 1,
+      "circuit": "Melbourne (Australia)",
+      "file": "stats/2026/melbourne-australia.json"
+    },
+    {
+      "round": 2,
+      "circuit": "Shanghai (Cina)",
+      "file": "stats/2026/shanghai-cina.json"
+    },
+    {
+      "round": 3,
+      "circuit": "Suzuka",
+      "file": "stats/2026/suzuka.json"
+    },
+    {
+      "round": 4,
+      "circuit": "Miami",
+      "file": "stats/2026/miami.json"
+    },
+    {
+      "round": 5,
+      "circuit": "Montreal (Canada)",
+      "file": "stats/2026/montreal-canada.json"
+    },
+    {
+      "round": 6,
+      "circuit": "Monaco",
+      "file": "stats/2026/monaco.json"
+    },
+    {
+      "round": 7,
+      "circuit": "Barcellona",
+      "file": "stats/2026/barcellona.json"
+    },
+    {
+      "round": 8,
+      "circuit": "Red Bull Ring",
+      "file": "stats/2026/red-bull-ring.json"
+    },
+    {
+      "round": 9,
+      "circuit": "Silverstone",
+      "file": "stats/2026/silverstone.json"
+    },
+    {
+      "round": 10,
+      "circuit": "Spa-Francorchamps",
+      "file": "stats/2026/spa-francorchamps.json"
+    },
+    {
+      "round": 11,
+      "circuit": "Hungaroring",
+      "file": "stats/2026/hungaroring.json"
+    },
+    {
+      "round": 12,
+      "circuit": "Zandvoort",
+      "file": "stats/2026/zandvoort.json"
+    },
+    {
+      "round": 13,
+      "circuit": "Monza",
+      "file": "stats/2026/monza.json"
+    },
+    {
+      "round": 14,
+      "circuit": "Madrid",
+      "file": "stats/2026/madrid.json"
+    },
+    {
+      "round": 15,
+      "circuit": "Baku (Azerbaijan)",
+      "file": "stats/2026/baku-azerbaijan.json"
+    },
+    {
+      "round": 16,
+      "circuit": "Sepang (Malesia)",
+      "file": "stats/2026/sepang-malesia.json"
+    },
+    {
+      "round": 17,
+      "circuit": "Singapore",
+      "file": "stats/2026/singapore.json"
+    },
+    {
+      "round": 18,
+      "circuit": "Austin (COTA)",
+      "file": "stats/2026/austin-cota.json"
+    }
+  ],
+  "season": {
+    "racesDone": 18,
+    "racesTotal": 23,
+    "winners": 6,
+    "poleSitters": 6,
+    "poleToWin": {
+      "converted": 13,
+      "of": 18
+    },
+    "frontRowLockouts": 4,
+    "wetQualifyings": 0,
+    "drivers": [
+      {
+        "name": "Andrea Kimi Antonelli",
+        "team": "Mercedes",
+        "wins": 9,
+        "podiums": 15,
+        "poles": 7
+      },
+      {
+        "name": "George Russell",
+        "team": "Mercedes",
+        "wins": 3,
+        "podiums": 8,
+        "poles": 5
+      },
+      {
+        "name": "Max Verstappen",
+        "team": "Red Bull",
+        "wins": 2,
+        "podiums": 10,
+        "poles": 2
+      },
+      {
+        "name": "Lando Norris",
+        "team": "McLaren",
+        "wins": 2,
+        "podiums": 5,
+        "poles": 3
+      },
+      {
+        "name": "Lewis Hamilton",
+        "team": "Ferrari",
+        "wins": 1,
+        "podiums": 6,
+        "poles": 1
+      },
+      {
+        "name": "Charles Leclerc",
+        "team": "Ferrari",
+        "wins": 1,
+        "podiums": 6,
+        "poles": 0
+      },
+      {
+        "name": "Isack Hadjar",
+        "team": "Red Bull",
+        "wins": 0,
+        "podiums": 2,
+        "poles": 0
+      },
+      {
+        "name": "Oscar Piastri",
+        "team": "McLaren",
+        "wins": 0,
+        "podiums": 2,
+        "poles": 0
+      },
+      {
+        "name": "Pierre Gasly",
+        "team": "Alpine",
+        "wins": 0,
+        "podiums": 0,
+        "poles": 1
+      }
+    ],
+    "teams": [
+      {
+        "name": "Mercedes",
+        "wins": 12,
+        "podiums": 23,
+        "poles": 12
+      },
+      {
+        "name": "Red Bull",
+        "wins": 2,
+        "podiums": 12,
+        "poles": 2
+      },
+      {
+        "name": "Ferrari",
+        "wins": 2,
+        "podiums": 12,
+        "poles": 1
+      },
+      {
+        "name": "McLaren",
+        "wins": 2,
+        "podiums": 7,
+        "poles": 3
+      },
+      {
+        "name": "Alpine",
+        "wins": 0,
+        "podiums": 0,
+        "poles": 1
+      }
+    ],
+    "qualyDuels": [
+      {
+        "team": "Alpine",
+        "a": "Pierre Gasly",
+        "b": "Franco Colapinto",
+        "aAhead": 15,
+        "bAhead": 4
+      },
+      {
+        "team": "Audi",
+        "a": "Nico Hulkenberg",
+        "b": "Gabriel Bortoleto",
+        "aAhead": 10,
+        "bAhead": 9
+      },
+      {
+        "team": "Cadillac",
+        "a": "Sergio Pérez",
+        "b": "Valtteri Bottas",
+        "aAhead": 11,
+        "bAhead": 8
+      },
+      {
+        "team": "Ferrari",
+        "a": "Charles Leclerc",
+        "b": "Lewis Hamilton",
+        "aAhead": 10,
+        "bAhead": 9
+      },
+      {
+        "team": "McLaren",
+        "a": "Lando Norris",
+        "b": "Oscar Piastri",
+        "aAhead": 12,
+        "bAhead": 7
+      },
+      {
+        "team": "Mercedes",
+        "a": "Andrea Kimi Antonelli",
+        "b": "George Russell",
+        "aAhead": 11,
+        "bAhead": 8
+      },
+      {
+        "team": "Williams",
+        "a": "Carlos Sainz",
+        "b": "Alex Albon",
+        "aAhead": 15,
+        "bAhead": 3
+      },
+      {
+        "team": "Aston Martin",
+        "a": "Fernando Alonso",
+        "b": "Lance Stroll",
+        "aAhead": 15,
+        "bAhead": 2
+      },
+      {
+        "team": "Haas",
+        "a": "Oliver Bearman",
+        "b": "Esteban Ocon",
+        "aAhead": 13,
+        "bAhead": 4
+      },
+      {
+        "team": "RB",
+        "a": "Liam Lawson",
+        "b": "Arvid Lindblad",
+        "aAhead": 10,
+        "bAhead": 6
+      },
+      {
+        "team": "Red Bull",
+        "a": "Max Verstappen",
+        "b": "Isack Hadjar",
+        "aAhead": 12,
+        "bAhead": 3
+      },
+      {
+        "team": "RB",
+        "a": "Arvid Lindblad",
+        "b": "Yuki Tsunoda",
+        "aAhead": 3,
+        "bAhead": 0
+      },
+      {
+        "team": "Red Bull",
+        "a": "Max Verstappen",
+        "b": "Liam Lawson",
+        "aAhead": 3,
+        "bAhead": 0
+      },
+      {
+        "team": "Haas",
+        "a": "Oliver Bearman",
+        "b": "Ryo Hirakawa",
+        "aAhead": 1,
+        "bAhead": 0
+      }
+    ]
+  }
+}

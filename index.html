@@ -2420,7 +2420,10 @@
         // Terza vista: i fatti dell'ultimo GP e la stagione in numeri, già
         // calcolati da scripts/build-stats.js in stats.json (il sito li mostra
         // soltanto). Il file si scarica alla prima apertura della vista.
-        let statsData = null;
+        let statsData = null;   // stats.json: stagione in corso, con i GP delle stagioni passate
+        let statsView = null;   // dati della stagione mostrata (statsData o una passata)
+        // Stagioni passate già scaricate (stats/{anno}/index.json), per anno.
+        const statsYearCache = {};
         // GP archiviati già scaricati (stats/{anno}/{circuito}.json), per file.
         const statsGpCache = {};
 
@@ -2436,7 +2439,26 @@
                     return;
                 }
             }
-            renderStats(statsData);
+            // Pausa invernale: stagione nuova senza GP disputati, si parte
+            // dall'ultima stagione passata.
+            const past = statsData.pastSeasons || [];
+            if (!statsView && !statsData.lastGp && past.length) {
+                try {
+                    renderStats(await statsYearData(past[0].year));
+                    return;
+                } catch (err) { /* si mostra la stagione nuova, vuota */ }
+            }
+            renderStats(statsView || statsData);
+        }
+
+        async function statsYearData(year) {
+            if (year === statsData.year) return statsData;
+            if (!statsYearCache[year]) {
+                const res = await fetch(`stats/${year}/index.json`, { cache: 'no-cache' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                statsYearCache[year] = await res.json();
+            }
+            return statsYearCache[year];
         }
 
         // corner = elemento facoltativo in alto a destra, sulla riga del titolo.
@@ -2445,17 +2467,26 @@
                     <h2 class="text-sm font-bold text-[#E10600] min-w-0">${title}</h2>${corner}
                 </div>${body}</div>`;
 
-        // Scheda di un GP: menu in alto a destra per scegliere il GP (l'ultimo
-        // all'apertura, gli altri dall'archivio; mostra sempre "Scegli un
-        // circuito", il GP scelto è nel titolo), il racconto scritto da Claude (se c'è), un
-        // fatto per riga, poi i link alle viste del GP.
-        function statsGpCardHtml(data, gp) {
-            if (!gp) return statsCard('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
-            const gps = (data.gps || []).slice().reverse();
-            const menu = gps.length > 1 ? `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="shrink-0 max-w-[45%] bg-[#121212] text-gray-300 text-xs border border-gray-700 rounded-md px-1.5 py-1 focus:outline-none focus:border-[#E10600]">
+        // Menu in alto a destra per scegliere il GP: mostra sempre "Scegli un
+        // circuito" (il GP scelto è nel titolo); i GP della stagione in corso e,
+        // divisi per anno, quelli delle stagioni passate (pastSeasons).
+        function statsGpMenuHtml() {
+            const seasons = [{ year: statsData.year, gps: statsData.gps || [] }, ...(statsData.pastSeasons || [])]
+                .filter(season => season.gps.length);
+            if (seasons.reduce((n, season) => n + season.gps.length, 0) < 2) return '';
+            const options = season => season.gps.slice().reverse()
+                .map(g => `<option value="${escapeHtml(g.file)}">${g.round}. ${escapeHtml(g.circuit)}</option>`).join('');
+            return `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="shrink-0 w-[8.5rem] bg-[#121212] text-gray-300 text-xs border border-gray-700 rounded-md px-1.5 py-1 focus:outline-none focus:border-[#E10600]">
                 <option value="" selected disabled hidden>Scegli un circuito</option>
-                ${gps.map(g => `<option value="${escapeHtml(g.file)}">${g.round}. ${escapeHtml(g.circuit)}</option>`).join('')}
-            </select>` : '';
+                ${seasons.length > 1 ? seasons.map(season => `<optgroup label="${season.year}">${options(season)}</optgroup>`).join('') : options(seasons[0])}
+            </select>`;
+        }
+
+        // Scheda di un GP: il racconto scritto da Claude (se c'è), un fatto per
+        // riga, poi i link alle viste del GP.
+        function statsGpCardHtml(data, gp) {
+            const menu = statsGpMenuHtml();
+            if (!gp) return statsCard(`GP ${data.year}`, '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>', menu);
             const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
             const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
@@ -2469,24 +2500,28 @@
                     </div>`, menu);
         }
 
+        // Un GP di un'altra stagione porta con sé la sua stagione in numeri e
+        // i suoi duelli.
         async function selectStatsGp(file) {
-            const box = document.getElementById('statsGpCard');
-            const ref = (statsData.gps || []).find(g => g.file === file);
-            let gp = ref && ref.circuit === statsData.lastGp?.circuit ? statsData.lastGp : statsGpCache[file];
-            if (!gp) {
-                try {
+            const year = Number(file.split('/')[1]);
+            try {
+                const data = year === statsView.year ? statsView : await statsYearData(year);
+                const ref = (data.gps || []).find(g => g.file === file);
+                let gp = ref && ref.circuit === data.lastGp?.circuit ? data.lastGp : statsGpCache[file];
+                if (!gp) {
                     const res = await fetch(file, { cache: 'no-cache' });
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     gp = statsGpCache[file] = await res.json();
-                } catch (err) {
-                    box.querySelector('ul')?.insertAdjacentHTML('beforebegin', '<p class="text-sm text-gray-500 mb-3">GP non disponibile al momento.</p>');
-                    return;
                 }
+                if (data !== statsView) renderStats(data);
+                document.getElementById('statsGpCard').innerHTML = statsGpCardHtml(data, gp);
+            } catch (err) {
+                document.querySelector('#statsGpCard ul')?.insertAdjacentHTML('beforebegin', '<p class="text-sm text-gray-500 mb-3">GP non disponibile al momento.</p>');
             }
-            box.innerHTML = statsGpCardHtml(statsData, gp);
         }
 
         function renderStats(data) {
+            statsView = data;
             const box = document.getElementById('statsContent');
             const card = statsCard;
             const s = data.season;

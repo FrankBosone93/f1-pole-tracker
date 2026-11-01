@@ -32,7 +32,6 @@ const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
 
 const ROOT = path.join(__dirname, '..');
-const STATS_PATH = path.join(ROOT, 'stats.json');
 const readJson = (rel, fallback = null) => {
     const p = path.join(ROOT, rel);
     return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf-8')) : fallback;
@@ -330,6 +329,14 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
     return gp;
 }
 
+// Si riscrive solo se cambia qualcosa oltre all'orario.
+const writeStatsFile = (rel, payload) => {
+    const strip = s => JSON.stringify({ ...s, updatedAt: null });
+    if (strip(payload) === strip(readJson(rel, {}))) return;
+    fs.mkdirSync(path.dirname(path.join(ROOT, rel)), { recursive: true });
+    fs.writeFileSync(path.join(ROOT, rel), JSON.stringify(payload, null, 2) + '\n', 'utf-8');
+};
+
 const writeJsonIfChanged = (rel, data) => {
     const p = path.join(ROOT, rel);
     const json = JSON.stringify(data, null, 2) + '\n';
@@ -376,14 +383,22 @@ async function main() {
         stats.qualyDuels = await qualyDuels(season, knownDriverNames());
     } catch (err) {
         console.warn(`⚠️  Duelli in qualifica da Jolpica non disponibili (${err.message}): tengo quelli precedenti.`);
-        stats.qualyDuels = previous.season?.qualyDuels || [];
+        stats.qualyDuels = previous.year === season ? previous.season?.qualyDuels || [] : [];
     }
 
+    // La stagione si salva anche in stats/{anno}/index.json: quando arriva la
+    // stagione nuova quella vecchia non si tocca più e i suoi GP restano nel
+    // menu del sito, divisi per anno. stats.json = stagione in corso +
+    // pastSeasons (anno ed elenco dei GP di ogni stagione passata).
     const payload = { year: season, updatedAt: new Date().toISOString(), lastGp, gps, season: stats };
-    const json = JSON.stringify(payload, null, 2) + '\n';
-    // Si riscrive solo se cambia qualcosa oltre all'orario.
-    const strip = s => JSON.stringify({ ...s, updatedAt: null });
-    if (strip(payload) !== strip(previous)) fs.writeFileSync(STATS_PATH, json, 'utf-8');
+    writeStatsFile(`stats/${season}/index.json`, payload);
+    const pastSeasons = fs.readdirSync(path.join(ROOT, 'stats'))
+        .filter(y => /^\d{4}$/.test(y) && Number(y) !== season)
+        .map(y => readJson(`stats/${y}/index.json`))
+        .filter(Boolean)
+        .sort((a, b) => b.year - a.year)
+        .map(p => ({ year: p.year, gps: p.gps || [] }));
+    writeStatsFile('stats.json', { ...payload, pastSeasons });
     console.log(`Ultimo GP: ${lastGp ? `${lastGp.circuit} (${lastGp.facts.length} fatti)` : 'nessuno'}`);
     if (lastGp?.story) console.log(`  📝 ${lastGp.story.text}`);
     (lastGp?.facts || []).forEach(f => console.log(`  ${f.icon} ${f.text}`));

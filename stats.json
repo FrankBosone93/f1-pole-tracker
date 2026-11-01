@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-01T17:53:10.005Z",
+  "updatedAt": "2026-11-01T18:59:58.678Z",
   "lastGp": {
     "round": 18,
     "circuit": "Austin (COTA)",
@@ -379,5 +379,6 @@
         "bAhead": 0
       }
     ]
-  }
+  },
+  "pastSeasons": []
 }
