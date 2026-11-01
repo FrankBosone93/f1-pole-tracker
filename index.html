@@ -2446,13 +2446,15 @@
                 </div>${body}</div>`;
 
         // Scheda di un GP: menu in alto a destra per scegliere il GP (l'ultimo
-        // all'apertura, gli altri dall'archivio), il racconto scritto da Claude (se c'è), un
+        // all'apertura, gli altri dall'archivio; mostra sempre "Scegli un
+        // circuito", il GP scelto è nel titolo), il racconto scritto da Claude (se c'è), un
         // fatto per riga, poi i link alle viste del GP.
         function statsGpCardHtml(data, gp) {
             if (!gp) return statsCard('Ultimo GP', '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>');
             const gps = (data.gps || []).slice().reverse();
             const menu = gps.length > 1 ? `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="shrink-0 max-w-[45%] bg-[#121212] text-gray-300 text-xs border border-gray-700 rounded-md px-1.5 py-1 focus:outline-none focus:border-[#E10600]">
-                ${gps.map(g => `<option value="${escapeHtml(g.file)}"${g.circuit === gp.circuit ? ' selected' : ''}>${g.round}. ${escapeHtml(g.circuit)}</option>`).join('')}
+                <option value="" selected disabled hidden>Scegli un circuito</option>
+                ${gps.map(g => `<option value="${escapeHtml(g.file)}">${g.round}. ${escapeHtml(g.circuit)}</option>`).join('')}
             </select>` : '';
             const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
