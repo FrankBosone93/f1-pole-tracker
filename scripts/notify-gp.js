@@ -133,6 +133,8 @@ function buildReport() {
     // manca: con tutto aggiornato basta il ✅ del titolo.
     const missingLabels = checks.filter(([, ok]) => !ok).map(([label]) => label);
     if (missingLabels.length) lines.push(`❌ Non aggiornati: ${missingLabels.join(', ')}`);
+    const click = clickUrl(year, circuit, paceIndex);
+    lines.push(click.includes('mode=pace') ? 'Tocca per il passo gara.' : 'Tocca per i dettagli.');
 
     return {
         key: `${year}|${circuit}`,
@@ -142,7 +144,7 @@ function buildReport() {
         // aggiornato, ⚠️ manca qualcosa, elencato in fondo al messaggio).
         title: `${complete ? '✅' : '⚠️'} GP di ${circuit} ${year}`,
         message: lines.join('\n'),
-        click: clickUrl(year, circuit, paceIndex),
+        click,
     };
 }
 
