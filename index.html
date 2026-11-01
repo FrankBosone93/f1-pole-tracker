@@ -52,7 +52,7 @@
         body.pace-mode #featuredRaceWidget,
         body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.pace-mode) #paceView { display: none; }
-        /* Modalità "Stats" (classe stats-mode, vedi setSiteMode): come il
+        /* Modalità "Statistiche" (classe stats-mode, vedi setSiteMode): come il
            passo gara, sostituisce la vista Qualifiche. */
         body.stats-mode #mainGrid,
         body.stats-mode #qualiSelector,
@@ -121,7 +121,7 @@
                         <div class="flex md:min-h-[40px] rounded-lg border border-gray-700 overflow-hidden text-sm" role="group" aria-label="Modalità del sito">
                             <button id="modeBtnQuali" type="button" onclick="setSiteMode('quali')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors">Qualifiche</button>
                             <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
-                            <button id="modeBtnStats" type="button" onclick="setSiteMode('stats')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Stats</button>
+                            <button id="modeBtnStats" type="button" onclick="setSiteMode('stats')" class="flex-1 md:flex-none px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Statistiche</button>
                         </div>
                     </div>
                     <div id="qualiSelector" class="order-2 md:order-1 w-full md:w-96 text-left">
@@ -369,7 +369,7 @@
         </div>
     </div>
 
-    <!-- Modalità "Stats": fatti dell'ultimo GP e stagione in numeri, da
+    <!-- Modalità "Statistiche": fatti dell'ultimo GP e stagione in numeri, da
          stats.json (scripts/build-stats.js, ricalcolato dopo ogni
          aggiornamento dei dati), scaricato solo alla prima apertura. -->
     <div id="statsView" class="mt-4 md:mt-6">
@@ -548,7 +548,7 @@
             syncUrlState();
             const url = location.href;
             const view = chartViewMode === 'telemetry' ? ` - telemetria ${telemetryPrimarySeason}${telemetryCompareYear ? ' vs ' + telemetryCompareYear : ''}` : '';
-            const title = siteMode === 'stats' ? 'F1 Pole Tracker - Stats'
+            const title = siteMode === 'stats' ? 'F1 Pole Tracker - Statistiche'
                 : siteMode === 'pace'
                 ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a}${paceState.b ? ' vs ' + paceState.b : ''}`
                 : `F1 Pole Tracker - ${select.value}${view}`;
