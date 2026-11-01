@@ -389,7 +389,7 @@
         <span class="block md:inline"><span class="hidden md:inline">· </span>News: <a href="https://www.formulapassion.it" target="_blank" rel="noopener" class="hover:text-gray-300 underline">FormulaPassion.it</a></span>
     </footer>
 
-    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-[60] bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
 
     <script>
         // --- LAYOUT: desktop, telefono verticale, telefono ruotato ---------
@@ -552,6 +552,10 @@
                 : siteMode === 'pace'
                 ? `F1 Pole Tracker - passo gara ${paceState.circuit} ${paceState.year}: ${paceState.a}${paceState.b ? ' vs ' + paceState.b : ''}`
                 : `F1 Pole Tracker - ${select.value}${view}`;
+            await shareLink(title, url);
+        }
+
+        async function shareLink(title, url) {
             if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
                 try {
                     await navigator.share({ title, url });
@@ -1405,7 +1409,8 @@
             window.addEventListener('hashchange', () => {
                 // #novita (link della notifica delle novità con la web app già
                 // aperta): apre le Novità e rimette l'indirizzo della vista.
-                if (location.hash === '#novita') { openChangelog(); syncUrlState(); return; }
+                const novita = changelogHashDate();
+                if (novita !== undefined) { openChangelog(novita); syncUrlState(); return; }
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
                 if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
@@ -3350,12 +3355,20 @@
         // --- NOVITÀ (changelog.json) ------------------------------------------
         // Versione per gli utenti dei changelog: categorie e punti in testo
         // semplice (**grassetto** ammesso). Il più recente è aperto, gli altri
-        // si aprono toccando la data. "Visto" ricordato su questo dispositivo.
+        // si aprono toccando la data, uno alla volta. "Visto" ricordato su
+        // questo dispositivo. Il tasto di condivisione manda il link al
+        // changelog aperto (…/#novita=AAAA-MM-GG).
         let changelogData = null;
         const CHANGELOG_SEEN_KEY = 'changelogSeen';
-        // Link della notifica delle novità (…/#novita): letto subito, prima
-        // che l'app riscriva l'indirizzo con circuito e vista.
-        const OPEN_CHANGELOG_ON_LOAD = location.hash === '#novita';
+        // Link delle novità: …/#novita (notifica, apre il più recente) o
+        // …/#novita=AAAA-MM-GG (condiviso, apre quel changelog). undefined se
+        // l'indirizzo non è un link delle novità, null senza data.
+        function changelogHashDate() {
+            const m = location.hash.match(/^#novita(?:=(\d{4}-\d{2}-\d{2}))?$/);
+            return m ? (m[1] || null) : undefined;
+        }
+        // Letto subito, prima che l'app riscriva l'indirizzo con circuito e vista.
+        const OPEN_CHANGELOG_ON_LOAD = changelogHashDate();
 
         async function loadChangelog() {
             try {
@@ -3373,17 +3386,19 @@
             // (necessario per le dimensioni) la classe non lo nascondeva.
             document.getElementById('changelogDot').style.display = seen === latest.date ? 'none' : 'inline-block';
             document.getElementById('changelogLink').classList.remove('hidden');
-            if (OPEN_CHANGELOG_ON_LOAD) openChangelog();
+            if (OPEN_CHANGELOG_ON_LOAD !== undefined) openChangelog(OPEN_CHANGELOG_ON_LOAD);
         }
 
         function changelogItemHtml(text) {
             return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
         }
 
-        function openChangelog() {
+        // date = changelog da aprire (link condiviso); altrimenti il più recente.
+        function openChangelog(date = null) {
             const entries = changelogData?.entries || [];
             if (!entries.length) return;
             if (document.getElementById('changelogDialog')) return; // già aperta
+            const openIndex = Math.max(0, entries.findIndex(e => e.date === date));
             const el = document.createElement('div');
             el.id = 'changelogDialog';
             el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
@@ -3391,11 +3406,14 @@
                 <div class="bg-[#1E1E1E] border border-gray-700 rounded-xl w-full max-w-lg max-h-[85vh] flex flex-col text-sm text-gray-300">
                     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
                         <div class="font-semibold text-white">📝 Novità del sito</div>
-                        <button type="button" data-close class="text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
+                        <div class="flex items-center gap-3">
+                            <button type="button" data-share title="Condividi questo changelog" aria-label="Condividi questo changelog" class="text-gray-200 hover:text-white transition-colors cursor-pointer p-1 -m-1 rounded"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg></button>
+                            <button type="button" data-close class="text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
+                        </div>
                     </div>
                     <div class="overflow-y-auto overscroll-contain px-4 py-2">
                         ${entries.map((e, i) => `
-                            <details class="border-b border-gray-800 last:border-0 py-2" ${i === 0 ? 'open' : ''}>
+                            <details data-date="${escapeHtml(e.date)}" class="border-b border-gray-800 last:border-0 py-2" ${i === openIndex ? 'open' : ''}>
                                 <summary class="cursor-pointer font-semibold text-gray-100">${escapeHtml(e.title)}</summary>
                                 ${(e.sections || []).map(sec => `
                                     <div class="mt-2">
@@ -3420,6 +3438,15 @@
                 window.scrollTo(0, scrollY);
             };
             el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) close(); });
+            // Un changelog alla volta: aprendone uno si chiudono gli altri.
+            el.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => {
+                if (d.open) el.querySelectorAll('details[open]').forEach(o => { if (o !== d) o.open = false; });
+            }));
+            // Condivide il changelog aperto (il più recente se sono tutti chiusi).
+            el.querySelector('[data-share]').onclick = () => {
+                const entry = entries.find(e => e.date === el.querySelector('details[open]')?.dataset.date) || entries[0];
+                shareLink(`F1 Pole Tracker - ${entry.title}`, `${location.origin}${location.pathname}#novita=${entry.date}`);
+            };
             document.body.appendChild(el);
             try { localStorage.setItem(CHANGELOG_SEEN_KEY, entries[0].date); } catch (e) {}
             document.getElementById('changelogDot').style.display = 'none';
