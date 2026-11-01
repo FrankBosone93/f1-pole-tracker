@@ -12,8 +12,8 @@
 //     dopo il GP, inutile mandarla da sola;
 //   - una sola volta per GP: stato in status/notified-pole.json;
 //   - la gomma (da telemetry.json) c'è solo se la telemetria è già pronta,
-//     senza aspettarla; senza telemetria l'ultima riga non promette il giro
-//     di pole ("Tocca per i dettagli."), che sul sito non ci sarebbe ancora.
+//     senza aspettarla;
+//   - il tocco apre il circuito sull'andamento dei tempi.
 //
 // Uso:
 //   node scripts/notify-pole.js            (controlla e, se serve, invia)
@@ -66,15 +66,14 @@ function buildReport() {
     if (!race) return null;
 
     const pole = poles.find(p => p.year === year && p.circuit === race.circuit);
-    const telemetry = readJson('telemetry.json')?.seasons?.[year]?.circuits?.[race.circuit];
-    const tyre = telemetry?.tyre;
+    const tyre = readJson('telemetry.json')?.seasons?.[year]?.circuits?.[race.circuit]?.tyre;
     const raceAt = sessionStart(race.schedule?.race);
 
     const lines = [`⏱️ ${pole.driver} · ${pole.timeStr} · ${pole.team}`];
     const conditions = [tyre && TYRES[tyre], pole.weather].filter(Boolean).join(' · ');
     if (conditions) lines.push(conditions);
     if (raceAt) lines.push(`🏎️ Gara: ${italianDateTime(raceAt)}`);
-    lines.push(telemetry ? 'Tocca per vedere il giro di pole.' : 'Tocca per i dettagli.');
+    lines.push('Tocca per i dettagli.');
 
     return {
         key: `${year}|${race.circuit}`,
