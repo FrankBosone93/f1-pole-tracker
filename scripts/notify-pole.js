@@ -97,7 +97,7 @@ async function main() {
     const { configured, delivered } = await sendAll(report);
     if (!configured) { console.warn('⚠️  Nessun canale di notifica configurato: notifica non inviata.'); return; }
     if (!delivered) throw new Error('notifica non consegnata su nessun canale');
-    fs.writeFileSync(STATE_PATH, JSON.stringify({ pole: report.key, at: new Date().toISOString() }, null, 2) + '\n', 'utf-8');
+    fs.writeFileSync(STATE_PATH, JSON.stringify({ pole: report.key, sent: true, at: new Date().toISOString() }, null, 2) + '\n', 'utf-8');
     console.log('✅ Notifica della pole inviata.');
 }
 

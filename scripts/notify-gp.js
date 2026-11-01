@@ -98,7 +98,12 @@ function buildReport() {
     const complete = missing.length === 0;
 
     const lines = [];
-    if (pole) lines.push(`🏁 Pole: ${pole.driver} (${pole.team}) ${pole.timeStr}${pole.penaltyNote ? ' · penalità in griglia' : ''}`);
+    // La pole già arrivata con la notifica del sabato (notify-pole.js) non si
+    // ripete; resta comunque tra i dati controllati qui sopra.
+    // (sent: false = segnata senza inviarla, la pole va mostrata qui).
+    const poleState = readJson('status/notified-pole.json', {});
+    const poleNotified = poleState.pole === `${year}|${circuit}` && poleState.sent !== false;
+    if (pole && !poleNotified) lines.push(`🏁 Pole: ${pole.driver} (${pole.team}) ${pole.timeStr}${pole.penaltyNote ? ' · penalità in griglia' : ''}`);
     if (results) {
         const podium = results.slice(0, 3).map(r => `${r.position}° ${r.driver}`).join(' · ');
         lines.push(`🏆 Gara: ${podium}`);
