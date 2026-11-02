@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-01T17:43:53.391Z",
+  "updatedAt": "2026-11-02T01:37:35.671Z",
   "races": {
     "2023": [
       {
@@ -447,6 +447,11 @@
         "circuit": "Austin (COTA)",
         "date": "2026-10-25",
         "file": "pace/2026/austin-cota.json"
+      },
+      {
+        "circuit": "Città del Messico",
+        "date": "2026-11-01",
+        "file": "pace/2026/citta-del-messico.json"
       }
     ]
   }
