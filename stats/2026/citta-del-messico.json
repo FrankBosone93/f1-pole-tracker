@@ -66,6 +66,10 @@
       "messaggio": "SAFETY CAR DEPLOYED"
     },
     {
+      "giro": 45,
+      "messaggio": "RED FLAG - RACE SUSPENDED"
+    },
+    {
       "giro": 46,
       "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Sergio Pérez - SPEEDING IN THE PIT LANE"
     },
@@ -83,8 +87,8 @@
     }
   ],
   "story": {
-    "text": "Max Verstappen vince a Città del Messico partendo 5° e con 2 soste, davanti a Lewis Hamilton, autore della pole con la Ferrari, secondo a 0,799 s e autore del giro più veloce in 1:19.268. Terzo Andrea Kimi Antonelli, ora matematicamente Campione del Mondo 2026 con 4 gare d'anticipo. Da segnalare la rimonta di Liam Lawson, 7° dopo essere partito 22°. In classifica Antonelli ha 380 punti, mentre Verstappen è secondo con 261, due in più di Hamilton.",
+    "text": "Max Verstappen vince il Gran Premio di Città del Messico partendo 5° e con 2 soste, precedendo di 0,799 s Lewis Hamilton, autore della pole in 1:16.514 e del giro più veloce in 1:19.268. Andrea Kimi Antonelli è terzo a 4,006 s e diventa matematicamente Campione del Mondo 2026 con 4 gare d'anticipo, a quota 380 punti. In una gara interrotta da una bandiera rossa al giro 45, Liam Lawson risale da 22° a 7°. Nel mondiale Verstappen è secondo con 261 punti, davanti a Hamilton con 259.",
     "model": "claude-opus-5-5",
-    "hash": "9b22930c25169056"
+    "hash": "d80b634c9b96c387"
   }
 }

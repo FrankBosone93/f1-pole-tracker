@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-02T16:29:16.249Z",
+  "updatedAt": "2026-11-02T20:15:22.197Z",
   "races": [
     {
       "round": 1,
@@ -6216,8 +6216,8 @@
           },
           {
             "position": 10,
-            "driver": "#50",
-            "team": "",
+            "driver": "Ryo Hirakawa",
+            "team": "Haas",
             "time": "+25.373",
             "retired": null
           },

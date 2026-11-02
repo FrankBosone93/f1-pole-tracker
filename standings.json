@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-02T01:53:57.648Z",
+  "updatedAt": "2026-11-02T20:15:32.852Z",
   "drivers": [
     {
       "position": 1,
@@ -48,28 +48,28 @@
       "position": 7,
       "driver": "Oscar Piastri",
       "team": "McLaren",
-      "points": 150,
+      "points": 144,
       "wins": 0
     },
     {
       "position": 8,
       "driver": "Isack Hadjar",
       "team": "Red Bull",
-      "points": 105,
+      "points": 107,
       "wins": 0
     },
     {
       "position": 9,
       "driver": "Liam Lawson",
       "team": "RB",
-      "points": 79,
+      "points": 83,
       "wins": 0
     },
     {
       "position": 10,
       "driver": "Pierre Gasly",
       "team": "Alpine",
-      "points": 43,
+      "points": 42,
       "wins": 0
     },
     {
@@ -83,7 +83,7 @@
       "position": 12,
       "driver": "Franco Colapinto",
       "team": "Alpine",
-      "points": 31,
+      "points": 27,
       "wins": 0
     },
     {
@@ -95,16 +95,16 @@
     },
     {
       "position": 14,
-      "driver": "Nico Hulkenberg",
+      "driver": "Gabriel Bortoleto",
       "team": "Audi",
-      "points": 13,
+      "points": 14,
       "wins": 0
     },
     {
       "position": 15,
-      "driver": "Gabriel Bortoleto",
+      "driver": "Nico Hulkenberg",
       "team": "Audi",
-      "points": 10,
+      "points": 13,
       "wins": 0
     },
     {
@@ -158,8 +158,8 @@
     },
     {
       "position": 23,
-      "driver": "#50",
-      "team": "",
+      "driver": "Ryo Hirakawa",
+      "team": "Haas",
       "points": 0,
       "wins": 0
     },
@@ -187,37 +187,37 @@
     {
       "position": 3,
       "team": "Red Bull",
-      "points": 380,
+      "points": 382,
       "wins": 3
     },
     {
       "position": 4,
       "team": "McLaren",
-      "points": 371,
+      "points": 365,
       "wins": 2
     },
     {
       "position": 5,
       "team": "RB",
-      "points": 104,
+      "points": 108,
       "wins": 0
     },
     {
       "position": 6,
       "team": "Alpine",
-      "points": 74,
+      "points": 69,
       "wins": 0
     },
     {
       "position": 7,
       "team": "Haas",
-      "points": 30,
+      "points": 31,
       "wins": 0
     },
     {
       "position": 8,
       "team": "Audi",
-      "points": 23,
+      "points": 27,
       "wins": 0
     },
     {

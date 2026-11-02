@@ -12,7 +12,7 @@ const { surnameKey } = require('./driver-names');
 
 const relevant = m =>
     m.category === 'SafetyCar' ||
-    m.flag === 'RED' ||
+    m.flag === 'RED' || /^RED FLAG\b/.test(m.message) || // dal 2026 senza flag
     (/^FIA STEWARDS: .*(PENALTY FOR|DRIVE THROUGH|STOP AND GO|DISQUALIFIED)/.test(m.message) && !/PENALTY SERVED/.test(m.message));
 
 // Gare della stagione su OpenF1, una richiesta per stagione per ogni run.

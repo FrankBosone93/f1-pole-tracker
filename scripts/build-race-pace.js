@@ -12,7 +12,7 @@
 // 6 richieste per gara, distanziate per il rate limit (vedi lib/openf1.js).
 //
 // Le gare già presenti nell'indice non vengono riscaricate: ogni run scarica
-// solo quelle nuove. Una gara senza pole in data.json è stata annullata
+// solo quelle nuove (e ricontrolla quelle degli ultimi 2 giorni). Una gara senza pole in data.json è stata annullata
 // (OpenF1 elenca comunque la sessione, ma senza giri): si salta senza
 // richieste, come per la telemetria.
 //
@@ -22,6 +22,8 @@
 //   node scripts/build-race-pace.js 2026 --refresh
 //                                               (riscarica anche le gare già
 //                                               presenti, es. dopo una correzione)
+//   node scripts/build-race-pace.js 2026 --refresh --only=monza,citta-del-messico
+//                                               (riscarica solo quelle gare)
 
 const fs = require('fs');
 const path = require('path');
@@ -42,11 +44,18 @@ async function openf1Optional(url) {
 
 const ROOT = path.join(__dirname, '..');
 const REFRESH = process.argv.includes('--refresh');
+// --only=slug1,slug2: solo queste gare (slug del file, es. citta-del-messico).
+const ONLY = (process.argv.find(a => a.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
 const PACE_DIR = path.join(ROOT, 'pace');
 const INDEX_PATH = path.join(PACE_DIR, 'index.json');
 const DATA_JSON_PATH = path.join(ROOT, 'data.json');
 const FIRST_SEASON = 2023; // OpenF1 non ha dati prima del 2023
 const PENDING_GRACE_HOURS = 72;
+// Gare degli ultimi 2 giorni riscaricate a ogni run: il primo download, la
+// notte dopo la gara, può avere la classifica provvisoria e piloti non ancora
+// in OpenF1 (Città del Messico 2026: Piastri 7° invece di 13° dopo le
+// penalità, Hirakawa senza squadra). Il run del lunedì mattina la corregge.
+const RECHECK_DAYS = 2;
 
 const poleData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
 const hasPole = (season, circuit) => poleData.some(d => d.year === season && d.circuit === circuit);
@@ -65,6 +74,14 @@ function displayName(d) {
 // "VSC ENDING": prima della correzione del 2026-11-01 nessuna VSC 2026 veniva
 // riconosciuta). Un periodo ancora aperto a fine gara si chiude sull'ultimo
 // giro.
+// Bandiere rosse: fino al 2025 messaggi con flag "RED"; dal 2026 "RED FLAG -
+// RACE SUSPENDED" senza flag (Monaco, Zandvoort, Monza e Città del Messico
+// 2026 risultavano senza bandiera rossa). La bandiera rossa chiude la safety
+// car in corso: la gara riparte con la partenza da fermo, senza "SAFETY CAR
+// IN THIS LAP", e il periodo restava aperto fino alla safety car successiva
+// (Città del Messico 2026: giri 44-59 invece di 44-45).
+const isRedFlag = m => m.flag === 'RED' || /^RED FLAG\b/i.test(m.message || '');
+
 function neutralizedPeriods(raceControl, totalLaps) {
     const periods = [];
     let open = null;
@@ -74,7 +91,10 @@ function neutralizedPeriods(raceControl, totalLaps) {
         const lap = m.lap_number || null;
         if (!lap) continue;
         const isVsc = msg.includes('VIRTUAL SAFETY CAR') || /^VSC\b/.test(msg);
-        if (msg.includes('SAFETY CAR DEPLOYED') || msg.startsWith('VSC DEPLOYED')) {
+        if (isRedFlag(m)) {
+            if (open) periods.push({ ...open, to: lap });
+            open = null;
+        } else if (msg.includes('SAFETY CAR DEPLOYED') || msg.startsWith('VSC DEPLOYED')) {
             if (open) periods.push({ ...open, to: lap });
             open = { type: isVsc ? 'VSC' : 'SC', from: lap };
         } else if (open && (msg.includes('SAFETY CAR IN THIS LAP') || msg.includes('VIRTUAL SAFETY CAR ENDING') || msg.startsWith('VSC ENDING'))) {
@@ -83,7 +103,7 @@ function neutralizedPeriods(raceControl, totalLaps) {
         }
     }
     if (open) periods.push({ ...open, to: totalLaps });
-    const redFlags = [...new Set(sorted.filter(m => m.flag === 'RED' && m.lap_number).map(m => m.lap_number))];
+    const redFlags = [...new Set(sorted.filter(m => isRedFlag(m) && m.lap_number).map(m => m.lap_number))];
     return { periods, redFlags };
 }
 
@@ -158,6 +178,35 @@ async function buildRace(session, season, circuit) {
         if (l.lap_number >= 1 && l.lap_number <= totalLaps) out.laps[n][l.lap_number - 1] = round3(l.lap_duration);
         if (l.is_pit_out_lap && l.lap_number > 1) (out.pitOut[n] = out.pitOut[n] || []).push(l.lap_number);
     }
+    // Giri senza tempo su OpenF1 (record assente o lap_duration null, es.
+    // Città del Messico 2026: giro 5 mancante per 9 piloti, e il distacco tra
+    // due piloti si fermava lì): tempo = inizio del giro dopo - inizio di
+    // questo, dagli orari date_start. L'inizio di un giro senza record è la
+    // fine del giro prima. Il primo giro resta vuoto (nessun giro prima) e
+    // l'ultimo pure se OpenF1 non ha il giro dopo la bandiera a scacchi.
+    // Solo se gli orari tornano: il giro dopo deve finire quando inizia quello
+    // successivo (entro 1 s) e il tempo ricavato non può essere più veloce del
+    // giro migliore del pilota. Zandvoort 2026, Lindblad giro 4: orari OpenF1
+    // incoerenti dopo la bandiera rossa, sarebbe venuto 55 s (giro normale
+    // ~77 s), quindi resta vuoto.
+    const starts = {};
+    for (const l of laps) {
+        if (l.date_start && l.lap_number >= 1) (starts[l.driver_number] = starts[l.driver_number] || [])[l.lap_number - 1] = Date.parse(l.date_start);
+    }
+    for (const n in out.laps) {
+        const st = starts[n] || [], lt = out.laps[n];
+        const best = Math.min(...lt.filter(v => v !== null));
+        const fits = (k, ms) => st[k] == null || Math.abs(st[k] - ms) <= 1000;
+        for (let k = 1; k < totalLaps; k++) {
+            if (lt[k] !== null) continue;
+            const from = st[k] ?? (st[k - 1] != null && lt[k - 1] != null ? st[k - 1] + lt[k - 1] * 1000 : null);
+            const to = st[k + 1];
+            if (from == null || to == null) continue;
+            const sec = (to - from) / 1000;
+            const nextOk = lt[k + 1] == null || fits(k + 2, to + lt[k + 1] * 1000);
+            if (sec >= best && nextOk) lt[k] = round3(sec);
+        }
+    }
     for (const p of pits) {
         if (p.lap_number) (out.pitIn[p.driver_number] = out.pitIn[p.driver_number] || []).push(p.lap_number);
     }
@@ -186,12 +235,14 @@ async function main() {
     const errors = [];
     for (const season of seasons) {
         const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
-        const known = new Set(REFRESH ? [] : (index.races[season] || []).map(r => r.circuit));
+        const recent = r => (now - new Date(`${r.date}T23:59:59Z`)) / 86400000 < RECHECK_DAYS;
+        const known = new Set(REFRESH ? [] : (index.races[season] || []).filter(r => !recent(r)).map(r => r.circuit));
         const todo = sessions
             .filter(s => new Date(s.date_end) < now)
             .map(s => ({ session: s, circuit: CIRCUIT_MAP[s.circuit_short_name] }))
             .filter(({ session, circuit }) => {
                 if (!circuit) { console.warn(`⚠️  ${season}: circuito OpenF1 "${session.circuit_short_name}" non mappato, salto.`); return false; }
+                if (ONLY.length && !ONLY.includes(circuitSlug(circuit))) return false;
                 return !known.has(circuit) && hasPole(season, circuit);
             });
         console.log(`=== ${season}: ${todo.length} gare da scaricare (${known.size} già presenti)`);
