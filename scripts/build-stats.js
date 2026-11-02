@@ -61,7 +61,7 @@ function poleFact(season, circuit, poles) {
     const pole = poles.find(p => p.year === season && p.circuit === circuit);
     if (!pole) return null;
     if (isWet(pole.weather)) {
-        return { icon: '🌧️', text: `Pole sul bagnato per ${pole.driver} (${pole.timeStr}): tempo non confrontabile con le qualifiche asciutte.` };
+        return { icon: '🌧️', text: `**Pole sul bagnato** per ${pole.driver} (${pole.timeStr}): tempo non confrontabile con le qualifiche asciutte.` };
     }
     const past = poles.filter(p => p.circuit === circuit && p.year < season && !isWet(p.weather)).sort((a, b) => b.year - a.year);
     if (!past.length) return { icon: '⏱️', text: `**Prima pole di sempre** a ${circuit} nei nostri dati: ${pole.driver} in ${pole.timeStr}.` };
@@ -92,9 +92,9 @@ function raceFacts(race, pole) {
 
     if (pole) {
         const row = results.find(r => same(r.driver, pole.driver));
-        if (row && row.position === 1) facts.push({ icon: '🏁', text: `Pole e vittoria: ${pole.driver}.` });
-        else if (row?.retired) facts.push({ icon: '🏁', text: `${pole.driver}, autore della pole: ${row.retired.toLowerCase()}.` });
-        else if (row) facts.push({ icon: '🏁', text: `${pole.driver}, autore della pole, chiude ${row.position}°.` });
+        if (row && row.position === 1) facts.push({ icon: '🏁', text: `**Pole e vittoria**: ${pole.driver}.` });
+        else if (row?.retired) facts.push({ icon: '🏁', text: `**${pole.driver}**, autore della pole: ${row.retired.toLowerCase()}.` });
+        else if (row) facts.push({ icon: '🏁', text: `**${pole.driver}**, autore della pole, chiude ${row.position}°.` });
     }
 
     const winnerGrid = winner && gridOf(winner.driver);
@@ -109,9 +109,9 @@ function raceFacts(race, pole) {
     if (down && down.gain <= -3) facts.push({ icon: '📉', text: `**Più posizioni perse**: ${down.r.driver}, da ${down.r.position + down.gain}° a ${down.r.position}° (${down.gain}).` });
 
     const p2 = results.find(r => r.position === 2);
-    if (winner && p2 && winner.team === p2.team) facts.push({ icon: '🤝', text: `Doppietta ${winner.team}: ${surname(winner.driver)} davanti a ${surname(p2.driver)}.` });
+    if (winner && p2 && winner.team === p2.team) facts.push({ icon: '🤝', text: `**Doppietta ${winner.team}**: ${surname(winner.driver)} davanti ${/^a/i.test(surname(p2.driver)) ? 'ad' : 'a'} ${surname(p2.driver)}.` });
     const front = grid.filter(g => g.position <= 2);
-    if (front.length === 2 && front[0].team === front[1].team) facts.push({ icon: '🔒', text: `Prima fila tutta ${front[0].team}.` });
+    if (front.length === 2 && front[0].team === front[1].team) facts.push({ icon: '🔒', text: `**Prima fila** tutta ${front[0].team}.` });
     return facts;
 }
 
@@ -135,7 +135,10 @@ function paceFacts(year, circuit, results) {
     const winner = pace.drivers.find(d => d.pos === 1);
     if (winner) {
         const stops = (pace.pitIn?.[winner.n] || []).length;
-        const tyres = (pace.stints?.[winner.n] || []).map(s => TYRES[s[2]] || s[2]).join(' → ');
+        // Sequenza delle gomme solo se OpenF1 ha la mescola di ogni stint
+        // (Melbourne 2026: primo stint senza mescola, usciva "( → Hard)").
+        const stints = pace.stints?.[winner.n] || [];
+        const tyres = stints.every(st => st[2]) ? stints.map(st => TYRES[st[2]] || st[2]).join(' → ') : '';
         facts.push({ icon: '🛞', text: `**${nameOf(winner.n)}** ha vinto con ${stops === 1 ? '1 sosta' : `${stops} soste`}${tyres ? ` (${tyres})` : ''}.` });
     }
     const finishers = pace.drivers.filter(d => d.pos);
@@ -171,10 +174,10 @@ function championshipFacts(season, race, races, standings) {
     const gap = d1.points - d2.points;
     if (gap > maxLeft) {
         facts.push({ icon: '🏆', text: remaining.length
-            ? `${d1.driver} è matematicamente Campione del Mondo ${season}, con ${remaining.length} ${remaining.length === 1 ? 'gara' : 'gare'} d'anticipo.`
-            : `${d1.driver} è Campione del Mondo ${season}.` });
+            ? `**${d1.driver}** è matematicamente Campione del Mondo ${season}, con ${remaining.length} ${remaining.length === 1 ? 'gara' : 'gare'} d'anticipo.`
+            : `**${d1.driver}** è Campione del Mondo ${season}.` });
     } else {
-        let text = `${d1.driver} guida il mondiale con ${gap} punti su ${d2.driver}`;
+        let text = `**${d1.driver}** guida il mondiale con ${gap} punti su ${d2.driver}`;
         if (!hasSprint(race)) {
             const pts = name => RACE_POINTS[(race.results.race.find(r => same(r.driver, name))?.position || 99) - 1] || 0;
             const delta = pts(d1.driver) - pts(d2.driver);
@@ -186,14 +189,14 @@ function championshipFacts(season, race, races, standings) {
             const after = remaining.slice(1);
             const threshold = after.length * MAX_RACE + after.filter(hasSprint).length * MAX_SPRINT;
             if (threshold < gap + MAX_RACE + (hasSprint(next) ? MAX_SPRINT : 0)) {
-                facts.push({ icon: '🏆', text: `Titolo già a ${next.circuit} se ${surname(d1.driver)} ne esce con più di ${threshold} punti di vantaggio su tutti gli avversari.` });
+                facts.push({ icon: '🏆', text: `**Titolo già a ${next.circuit}** se ${surname(d1.driver)} ne esce con più di ${threshold} punti di vantaggio su tutti gli avversari.` });
             }
         }
     }
     const [c1, c2] = standings.constructors || [];
     if (c1 && c2) {
         const teamMax = remaining.length * MAX_TEAM_RACE + remaining.filter(hasSprint).length * MAX_TEAM_SPRINT;
-        if (c1.points - c2.points > teamMax) facts.push({ icon: '🏆', text: `${c1.team} è Campione del Mondo Costruttori ${season}.` });
+        if (c1.points - c2.points > teamMax) facts.push({ icon: '🏆', text: `**${c1.team}** è Campione del Mondo Costruttori ${season}.` });
     }
     return facts;
 }

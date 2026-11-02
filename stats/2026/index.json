@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-02T20:40:29.424Z",
+  "updatedAt": "2026-11-02T20:44:25.816Z",
   "lastGp": {
     "round": 19,
     "circuit": "Città del Messico",
@@ -12,7 +12,7 @@
       },
       {
         "icon": "🏁",
-        "text": "Lewis Hamilton, autore della pole, chiude 2°."
+        "text": "**Lewis Hamilton**, autore della pole, chiude 2°."
       },
       {
         "icon": "🚀",
@@ -44,7 +44,7 @@
       },
       {
         "icon": "🏆",
-        "text": "Andrea Kimi Antonelli è matematicamente Campione del Mondo 2026, con 4 gare d'anticipo."
+        "text": "**Andrea Kimi Antonelli** è matematicamente Campione del Mondo 2026, con 4 gare d'anticipo."
       }
     ],
     "raceControl": [
