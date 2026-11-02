@@ -50,6 +50,10 @@
       "messaggio": "SAFETY CAR DEPLOYED"
     },
     {
+      "giro": 3,
+      "messaggio": "RED FLAG - RACE SUSPENDED"
+    },
+    {
       "giro": 28,
       "messaggio": "VSC DEPLOYED"
     },
@@ -63,8 +67,8 @@
     }
   ],
   "story": {
-    "text": "A Monza Andrea Kimi Antonelli vince partendo 19°, rimonta di 18 posizioni, con 2 soste (Hard → Medium → Medium) e il giro più veloce in 1:23.504. È doppietta Mercedes, con George Russell secondo a 3,857 s e Max Verstappen terzo a 14,718 s. Giornata amara per il poleman Pierre Gasly, settimo e con il peggior bilancio della gara: sei posizioni perse. Tra i ritirati c'è Charles Leclerc, che partiva terzo, in una corsa con la safety car in pista al giro 3.",
+    "text": "Andrea Kimi Antonelli vince a Monza partendo 19° e firma una rimonta di 18 posizioni, completata con 2 soste (Hard → Medium → Medium) e il giro più veloce in 1:23.504. Alle sue spalle George Russell, staccato di 3,857 s, completa la doppietta Mercedes, mentre Max Verstappen chiude terzo a 14,718 s. La gara è stata sospesa con bandiera rossa al giro 3 e ha visto poi una virtual safety car tra i giri 28 e 29. Domenica amara per il poleman Pierre Gasly, che passa dal 1° al 7° posto.",
     "model": "claude-opus-5-5",
-    "hash": "9a007429a59441a6"
+    "hash": "a0e52507bc4d65e5"
   }
 }
