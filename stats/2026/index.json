@@ -1,82 +1,94 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-01T18:53:03.961Z",
+  "updatedAt": "2026-11-02T01:42:33.284Z",
   "lastGp": {
-    "round": 18,
-    "circuit": "Austin (COTA)",
-    "date": "2026-10-25",
+    "round": 19,
+    "circuit": "Città del Messico",
+    "date": "2026-11-01",
     "facts": [
       {
         "icon": "⏱️",
-        "text": "1:34.035: 1,525 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+        "text": "1:16.514: 0,928 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
       },
       {
         "icon": "🏁",
-        "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+        "text": "Lewis Hamilton, autore della pole, chiude 2°."
+      },
+      {
+        "icon": "🚀",
+        "text": "Max Verstappen vince partendo 5°."
       },
       {
         "icon": "📈",
-        "text": "Più posizioni guadagnate: Gabriel Bortoleto, da 22° a 13° (+9)."
+        "text": "Più posizioni guadagnate: Liam Lawson, da 22° a 9° (+13)."
       },
       {
         "icon": "📉",
-        "text": "Più posizioni perse: Fernando Alonso, da 12° a 16° (-4)."
+        "text": "Più posizioni perse: Nico Hulkenberg, da 10° a 16° (-6)."
       },
       {
         "icon": "⚡",
-        "text": "Giro più veloce: Charles Leclerc in 1:37.976 (giro 42)."
+        "text": "Giro più veloce: Lewis Hamilton in 1:19.268 (giro 50)."
       },
       {
         "icon": "🛞",
-        "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+        "text": "Max Verstappen ha vinto con 2 soste (Medium → Soft → Soft)."
       },
       {
         "icon": "🔧",
-        "text": "Strategia più usata: 1 sosta (10 piloti su 19 classificati)."
+        "text": "Strategia più usata: 3 soste (8 piloti su 17 classificati)."
       },
       {
         "icon": "💨",
-        "text": "Velocità massima nel giro di pole: 341 km/h (2025: 324 km/h)."
-      },
-      {
-        "icon": "📊",
-        "text": "Andrea Kimi Antonelli guida il mondiale con 123 punti su George Russell (+21 in questo GP)."
+        "text": "Velocità massima nel giro di pole: 350 km/h (2025: 351 km/h)."
       },
       {
         "icon": "🏆",
-        "text": "Titolo già a Città del Messico se Antonelli ne esce con più di 100 punti di vantaggio su tutti gli avversari."
+        "text": "Andrea Kimi Antonelli è matematicamente Campione del Mondo 2026, con 4 gare d'anticipo."
       }
     ],
     "raceControl": [
       {
-        "giro": 2,
+        "giro": 7,
         "messaggio": "VSC DEPLOYED"
       },
       {
-        "giro": 2,
+        "giro": 8,
         "messaggio": "VSC ENDING"
       },
       {
-        "giro": 9,
-        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR George Russell - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
+        "giro": 12,
+        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Charles Leclerc - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
       },
       {
-        "giro": 19,
-        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Oliver Bearman - CAUSING A COLLISION"
+        "giro": 13,
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR George Russell - CAUSING A COLLISION"
+      },
+      {
+        "giro": 44,
+        "messaggio": "SAFETY CAR DEPLOYED"
+      },
+      {
+        "giro": 46,
+        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Sergio Pérez - SPEEDING IN THE PIT LANE"
       },
       {
         "giro": 51,
-        "messaggio": "VSC DEPLOYED"
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - CAUSING A COLLISION"
       },
       {
-        "giro": 53,
-        "messaggio": "VSC ENDING"
+        "giro": 59,
+        "messaggio": "SAFETY CAR DEPLOYED"
+      },
+      {
+        "giro": 62,
+        "messaggio": "SAFETY CAR IN THIS LAP"
       }
     ],
     "story": {
-      "text": "Ad Austin Andrea Kimi Antonelli ha trasformato la pole in vittoria con una sola sosta (Medium → Hard), chiudendo con 13,078 s su Charles Leclerc. Il ferrarista, partito quarto, ha firmato il giro più veloce in 1:37.976, mentre Max Verstappen ha chiuso terzo a 17,485 s. George Russell, penalizzato di 5 secondi al giro 9, è arrivato ottavo. Antonelli sale a 365 punti, 123 più di Russell, e potrà prendersi il titolo già a Città del Messico se ne uscirà con più di 100 punti di vantaggio su tutti.",
+      "text": "Max Verstappen vince il Gran Premio di Città del Messico partendo quinto con la Red Bull, con una strategia a 2 soste, e precede di 0,799 s Lewis Hamilton. Il poleman della Ferrari chiude 2° e firma anche il giro più veloce in 1:19.268. Terzo Andrea Kimi Antonelli, che con la Mercedes è matematicamente Campione del Mondo 2026 con 4 gare d'anticipo e sale a 365 punti. Nel mondiale George Russell è secondo con 242 punti, uno in più di Hamilton.",
       "model": "claude-opus-5-5",
-      "hash": "7330c5c1fb747b2f"
+      "hash": "8ec7cefe8be4d114"
     }
   },
   "gps": [
@@ -169,16 +181,21 @@
       "round": 18,
       "circuit": "Austin (COTA)",
       "file": "stats/2026/austin-cota.json"
+    },
+    {
+      "round": 19,
+      "circuit": "Città del Messico",
+      "file": "stats/2026/citta-del-messico.json"
     }
   ],
   "season": {
-    "racesDone": 18,
+    "racesDone": 19,
     "racesTotal": 23,
     "winners": 6,
     "poleSitters": 6,
     "poleToWin": {
       "converted": 13,
-      "of": 18
+      "of": 19
     },
     "frontRowLockouts": 4,
     "wetQualifyings": 0,
@@ -187,8 +204,15 @@
         "name": "Andrea Kimi Antonelli",
         "team": "Mercedes",
         "wins": 9,
-        "podiums": 15,
+        "podiums": 16,
         "poles": 7
+      },
+      {
+        "name": "Max Verstappen",
+        "team": "Red Bull",
+        "wins": 3,
+        "podiums": 11,
+        "poles": 2
       },
       {
         "name": "George Russell",
@@ -196,13 +220,6 @@
         "wins": 3,
         "podiums": 8,
         "poles": 5
-      },
-      {
-        "name": "Max Verstappen",
-        "team": "Red Bull",
-        "wins": 2,
-        "podiums": 10,
-        "poles": 2
       },
       {
         "name": "Lando Norris",
@@ -215,7 +232,7 @@
         "name": "Lewis Hamilton",
         "team": "Ferrari",
         "wins": 1,
-        "podiums": 6,
+        "podiums": 7,
         "poles": 1
       },
       {
@@ -251,19 +268,19 @@
       {
         "name": "Mercedes",
         "wins": 12,
-        "podiums": 23,
+        "podiums": 24,
         "poles": 12
       },
       {
         "name": "Red Bull",
-        "wins": 2,
-        "podiums": 12,
+        "wins": 3,
+        "podiums": 13,
         "poles": 2
       },
       {
         "name": "Ferrari",
         "wins": 2,
-        "podiums": 12,
+        "podiums": 13,
         "poles": 1
       },
       {
