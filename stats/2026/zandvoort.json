@@ -5,35 +5,35 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:11.163: 2,501 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:11.163**: 2,501 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
-      "text": "Dalla pole alla vittoria: Lando Norris."
+      "text": "Pole e vittoria: Lando Norris."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Fernando Alonso, da 18° a 9° (+9)."
+      "text": "**Più posizioni guadagnate**: Fernando Alonso, da 18° a 9° (+9)."
     },
     {
       "icon": "📉",
-      "text": "Più posizioni perse: Gabriel Bortoleto, da 9° a 13° (-4)."
+      "text": "**Più posizioni perse**: Gabriel Bortoleto, da 9° a 13° (-4)."
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Charles Leclerc in 1:14.230 (giro 60)."
+      "text": "**Giro più veloce**: Charles Leclerc in 1:14.230 (giro 60)."
     },
     {
       "icon": "🛞",
-      "text": "Lando Norris ha vinto con 3 soste (Medium → Soft → Hard → Hard)."
+      "text": "**Lando Norris** ha vinto con 3 soste (Medium → Soft → Hard → Hard)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 3 soste (11 piloti su 17 classificati)."
+      "text": "**Strategia più usata**: 3 soste (11 piloti su 17 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 316 km/h (2025: 326 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 316 km/h (2025: 326 km/h)."
     }
   ],
   "raceControl": [

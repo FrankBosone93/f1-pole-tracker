@@ -5,19 +5,19 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:18.518: 3,422 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:18.518**: 3,422 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
-      "text": "Dalla pole alla vittoria: George Russell."
+      "text": "Pole e vittoria: George Russell."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Oliver Bearman, da 12° a 7° (+5)."
+      "text": "**Più posizioni guadagnate**: Oliver Bearman, da 12° a 7° (+5)."
     },
     {
       "icon": "📉",
-      "text": "Più posizioni perse: Liam Lawson, da 8° a 13° (-5)."
+      "text": "**Più posizioni perse**: Liam Lawson, da 8° a 13° (-5)."
     },
     {
       "icon": "🤝",
@@ -29,19 +29,19 @@
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Max Verstappen in 1:22.091 (giro 42)."
+      "text": "**Giro più veloce**: Max Verstappen in 1:22.091 (giro 42)."
     },
     {
       "icon": "🛞",
-      "text": "George Russell ha vinto con 1 sosta ( → Hard)."
+      "text": "**George Russell** ha vinto con 1 sosta ( → Hard)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 2 soste (9 piloti su 16 classificati)."
+      "text": "**Strategia più usata**: 2 soste (9 piloti su 16 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 327 km/h (2025: 329 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 327 km/h (2025: 329 km/h)."
     }
   ],
   "raceControl": [

@@ -2485,7 +2485,8 @@
         function statsGpCardHtml(data, gp) {
             const menu = statsGpMenuHtml();
             if (!gp) return statsCard(`GP ${data.year}`, '<p class="text-sm text-gray-500">Nessun GP ancora disputato in questa stagione.</p>', menu);
-            const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${escapeHtml(f.text)}</span></li>`).join('');
+            // **grassetto** nei fatti, come nelle Novità.
+            const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${changelogItemHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
             const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
             return statsCard(`${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,

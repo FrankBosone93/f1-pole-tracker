@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-02T20:19:14.163Z",
+  "updatedAt": "2026-11-02T20:40:29.424Z",
   "lastGp": {
     "round": 19,
     "circuit": "Città del Messico",
@@ -8,7 +8,7 @@
     "facts": [
       {
         "icon": "⏱️",
-        "text": "1:16.514: 0,928 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+        "text": "**Pole 1:16.514**: 0,928 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
       },
       {
         "icon": "🏁",
@@ -16,31 +16,31 @@
       },
       {
         "icon": "🚀",
-        "text": "Max Verstappen vince partendo 5°."
+        "text": "**Max Verstappen** vince partendo 5°."
       },
       {
         "icon": "📈",
-        "text": "Più posizioni guadagnate: Liam Lawson, da 22° a 7° (+15)."
+        "text": "**Più posizioni guadagnate**: Liam Lawson, da 22° a 7° (+15)."
       },
       {
         "icon": "📉",
-        "text": "Più posizioni perse: Pierre Gasly, da 9° a 17° (-8)."
+        "text": "**Più posizioni perse**: Pierre Gasly, da 9° a 17° (-8)."
       },
       {
         "icon": "⚡",
-        "text": "Giro più veloce: Lewis Hamilton in 1:19.268 (giro 50)."
+        "text": "**Giro più veloce**: Lewis Hamilton in 1:19.268 (giro 50)."
       },
       {
         "icon": "🛞",
-        "text": "Max Verstappen ha vinto con 2 soste (Medium → Soft → Soft)."
+        "text": "**Max Verstappen** ha vinto con 2 soste (Medium → Soft → Soft)."
       },
       {
         "icon": "🔧",
-        "text": "Strategia più usata: 3 soste (8 piloti su 17 classificati)."
+        "text": "**Strategia più usata**: 3 soste (8 piloti su 17 classificati)."
       },
       {
         "icon": "💨",
-        "text": "Velocità massima nel giro di pole: 350 km/h (2025: 351 km/h)."
+        "text": "**Velocità massima** nel giro di pole: 350 km/h (2025: 351 km/h)."
       },
       {
         "icon": "🏆",
@@ -90,9 +90,9 @@
       }
     ],
     "story": {
-      "text": "Max Verstappen vince il Gran Premio di Città del Messico partendo 5° e con 2 soste, precedendo di 0,799 s Lewis Hamilton, autore della pole in 1:16.514 e del giro più veloce in 1:19.268. Andrea Kimi Antonelli è terzo a 4,006 s e diventa matematicamente Campione del Mondo 2026 con 4 gare d'anticipo, a quota 380 punti. In una gara interrotta da una bandiera rossa al giro 45, Liam Lawson risale da 22° a 7°. Nel mondiale Verstappen è secondo con 261 punti, davanti a Hamilton con 259.",
+      "text": "Max Verstappen vince a Città del Messico partendo quinto con la Red Bull, in una gara interrotta dalla bandiera rossa al giro 45. Lewis Hamilton, in pole con la Ferrari, chiude secondo a 0,799 s e firma il giro più veloce in 1:19.268. Andrea Kimi Antonelli è terzo a 4,006 s e diventa matematicamente Campione del Mondo 2026 con 4 gare d'anticipo e 380 punti. Alle sue spalle Verstappen sale a 261, davanti a Hamilton con 259, mentre Liam Lawson rimonta dal 22° al 7° posto.",
       "model": "claude-opus-5-5",
-      "hash": "d80b634c9b96c387"
+      "hash": "d05e88a19f67507d"
     }
   },
   "gps": [

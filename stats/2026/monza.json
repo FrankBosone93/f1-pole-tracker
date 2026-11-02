@@ -5,7 +5,7 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:21.786: 2,994 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:21.786**: 2,994 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
@@ -13,15 +13,15 @@
     },
     {
       "icon": "🚀",
-      "text": "Andrea Kimi Antonelli vince partendo 19°: rimonta di 18 posizioni."
+      "text": "**Andrea Kimi Antonelli** vince partendo 19°: rimonta di 18 posizioni."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Andrea Kimi Antonelli, da 19° a 1° (+18)."
+      "text": "**Più posizioni guadagnate**: Andrea Kimi Antonelli, da 19° a 1° (+18)."
     },
     {
       "icon": "📉",
-      "text": "Più posizioni perse: Pierre Gasly, da 1° a 7° (-6)."
+      "text": "**Più posizioni perse**: Pierre Gasly, da 1° a 7° (-6)."
     },
     {
       "icon": "🤝",
@@ -29,19 +29,19 @@
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:23.504 (giro 53)."
+      "text": "**Giro più veloce**: Andrea Kimi Antonelli in 1:23.504 (giro 53)."
     },
     {
       "icon": "🛞",
-      "text": "Andrea Kimi Antonelli ha vinto con 2 soste (Hard → Medium → Medium)."
+      "text": "**Andrea Kimi Antonelli** ha vinto con 2 soste (Hard → Medium → Medium)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 1 sosta (10 piloti su 19 classificati)."
+      "text": "**Strategia più usata**: 1 sosta (10 piloti su 19 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 342 km/h (2025: 348 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 342 km/h (2025: 348 km/h)."
     }
   ],
   "raceControl": [

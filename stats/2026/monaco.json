@@ -5,35 +5,35 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:12.051: 2,097 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:12.051**: 2,097 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
-      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+      "text": "Pole e vittoria: Andrea Kimi Antonelli."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Fernando Alonso, da 21° a 10° (+11)."
+      "text": "**Più posizioni guadagnate**: Fernando Alonso, da 21° a 10° (+11)."
     },
     {
       "icon": "📉",
-      "text": "Più posizioni perse: George Russell, da 6° a 12° (-6)."
+      "text": "**Più posizioni perse**: George Russell, da 6° a 12° (-6)."
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:13.481 (giro 76)."
+      "text": "**Giro più veloce**: Andrea Kimi Antonelli in 1:13.481 (giro 76)."
     },
     {
       "icon": "🛞",
-      "text": "Andrea Kimi Antonelli ha vinto con 4 soste (Medium → Hard → Soft → Soft → Soft)."
+      "text": "**Andrea Kimi Antonelli** ha vinto con 4 soste (Medium → Hard → Soft → Soft → Soft)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 5 soste (7 piloti su 16 classificati)."
+      "text": "**Strategia più usata**: 5 soste (7 piloti su 16 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 289 km/h (2025: 289 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 289 km/h (2025: 289 km/h)."
     }
   ],
   "raceControl": [

@@ -5,7 +5,7 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:28.111: 3,219 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:28.111**: 3,219 s più lenta della pole 2025 (Max Verstappen), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
@@ -13,31 +13,31 @@
     },
     {
       "icon": "🚀",
-      "text": "Charles Leclerc vince partendo 2°."
+      "text": "**Charles Leclerc** vince partendo 2°."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Franco Colapinto, da 19° a 9° (+10)."
+      "text": "**Più posizioni guadagnate**: Franco Colapinto, da 19° a 9° (+10)."
     },
     {
       "icon": "📉",
-      "text": "Più posizioni perse: Andrea Kimi Antonelli, da 1° a 15° (-14)."
+      "text": "**Più posizioni perse**: Andrea Kimi Antonelli, da 1° a 15° (-14)."
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:31.777 (giro 37)."
+      "text": "**Giro più veloce**: Andrea Kimi Antonelli in 1:31.777 (giro 37)."
     },
     {
       "icon": "🛞",
-      "text": "Charles Leclerc ha vinto con 2 soste (Medium → Hard → Soft)."
+      "text": "**Charles Leclerc** ha vinto con 2 soste (Medium → Hard → Soft)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 2 soste (16 piloti su 20 classificati)."
+      "text": "**Strategia più usata**: 2 soste (16 piloti su 20 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 317 km/h (2025: 324 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 317 km/h (2025: 324 km/h)."
     }
   ],
   "raceControl": [

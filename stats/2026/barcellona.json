@@ -5,7 +5,7 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:14.679: 3,133 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:14.679**: 3,133 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
@@ -13,27 +13,27 @@
     },
     {
       "icon": "🚀",
-      "text": "Lewis Hamilton vince partendo 2°."
+      "text": "**Lewis Hamilton** vince partendo 2°."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Pierre Gasly, da 14° a 7° (+7)."
+      "text": "**Più posizioni guadagnate**: Pierre Gasly, da 14° a 7° (+7)."
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Lewis Hamilton in 1:20.122 (giro 44)."
+      "text": "**Giro più veloce**: Lewis Hamilton in 1:20.122 (giro 44)."
     },
     {
       "icon": "🛞",
-      "text": "Lewis Hamilton ha vinto con 3 soste (Soft → Hard → Medium → Hard)."
+      "text": "**Lewis Hamilton** ha vinto con 3 soste (Soft → Hard → Medium → Hard)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 2 soste (10 piloti su 17 classificati)."
+      "text": "**Strategia più usata**: 2 soste (10 piloti su 17 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 341 km/h (2025: 328 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 341 km/h (2025: 328 km/h)."
     }
   ],
   "raceControl": [

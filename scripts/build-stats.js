@@ -64,23 +64,23 @@ function poleFact(season, circuit, poles) {
         return { icon: '🌧️', text: `Pole sul bagnato per ${pole.driver} (${pole.timeStr}): tempo non confrontabile con le qualifiche asciutte.` };
     }
     const past = poles.filter(p => p.circuit === circuit && p.year < season && !isWet(p.weather)).sort((a, b) => b.year - a.year);
-    if (!past.length) return { icon: '⏱️', text: `Prima pole di sempre a ${circuit} nei nostri dati: ${pole.driver} in ${pole.timeStr}.` };
+    if (!past.length) return { icon: '⏱️', text: `**Prima pole di sempre** a ${circuit} nei nostri dati: ${pole.driver} in ${pole.timeStr}.` };
     const era = eraOf(season);
     const sameEra = past.filter(p => eraOf(p.year) === era);
     if (!sameEra.length) {
         const prev = past[0];
         const d = pole.seconds - prev.seconds;
-        return { icon: '⏱️', text: `${pole.timeStr}: ${secs(d)} s ${d > 0 ? 'più lenta' : 'più veloce'} della pole ${prev.year} (${prev.driver}), prima stagione qui con le regole ${era}.` };
+        return { icon: '⏱️', text: `**Pole ${pole.timeStr}**: ${secs(d)} s ${d > 0 ? 'più lenta' : 'più veloce'} della pole ${prev.year} (${prev.driver}), prima stagione qui con le regole ${era}.` };
     }
     const best = sameEra.reduce((a, b) => (b.seconds < a.seconds ? b : a));
     if (pole.seconds < best.seconds) {
-        return { icon: '⏱️', text: `Pole più veloce a ${circuit} con le regole attuali (dal ${era}): ${pole.timeStr}, ${secs(best.seconds - pole.seconds)} s meglio di ${best.driver} nel ${best.year}.` };
+        return { icon: '⏱️', text: `**Pole più veloce** a ${circuit} con le regole attuali (dal ${era}): ${pole.timeStr}, ${secs(best.seconds - pole.seconds)} s meglio di ${best.driver} nel ${best.year}.` };
     }
     const prev = sameEra[0];
     const d = pole.seconds - prev.seconds;
     const vsPrev = `${secs(d)} s ${d > 0 ? 'più lenta' : 'più veloce'} della pole ${prev.year}`;
     const record = best === prev ? '' : `; il riferimento dal ${era} resta ${best.timeStr} di ${best.driver} (${best.year})`;
-    return { icon: '⏱️', text: `${pole.timeStr}: ${vsPrev}${record}.` };
+    return { icon: '⏱️', text: `**Pole ${pole.timeStr}**: ${vsPrev}${record}.` };
 }
 
 function raceFacts(race, pole) {
@@ -92,21 +92,21 @@ function raceFacts(race, pole) {
 
     if (pole) {
         const row = results.find(r => same(r.driver, pole.driver));
-        if (row && row.position === 1) facts.push({ icon: '🏁', text: `Dalla pole alla vittoria: ${pole.driver}.` });
+        if (row && row.position === 1) facts.push({ icon: '🏁', text: `Pole e vittoria: ${pole.driver}.` });
         else if (row?.retired) facts.push({ icon: '🏁', text: `${pole.driver}, autore della pole: ${row.retired.toLowerCase()}.` });
         else if (row) facts.push({ icon: '🏁', text: `${pole.driver}, autore della pole, chiude ${row.position}°.` });
     }
 
     const winnerGrid = winner && gridOf(winner.driver);
     if (winner && winnerGrid > 1 && !(pole && same(pole.driver, winner.driver))) {
-        facts.push({ icon: '🚀', text: `${winner.driver} vince partendo ${winnerGrid}°${winnerGrid >= 6 ? `: rimonta di ${winnerGrid - 1} posizioni` : ''}.` });
+        facts.push({ icon: '🚀', text: `**${winner.driver}** vince partendo ${winnerGrid}°${winnerGrid >= 6 ? `: rimonta di ${winnerGrid - 1} posizioni` : ''}.` });
     }
 
     const moves = results.filter(r => !r.retired && gridOf(r.driver)).map(r => ({ r, gain: gridOf(r.driver) - r.position }));
     const up = moves.reduce((a, b) => (!a || b.gain > a.gain ? b : a), null);
     const down = moves.reduce((a, b) => (!a || b.gain < a.gain ? b : a), null);
-    if (up && up.gain >= 3) facts.push({ icon: '📈', text: `Più posizioni guadagnate: ${up.r.driver}, da ${up.r.position + up.gain}° a ${up.r.position}° (+${up.gain}).` });
-    if (down && down.gain <= -3) facts.push({ icon: '📉', text: `Più posizioni perse: ${down.r.driver}, da ${down.r.position + down.gain}° a ${down.r.position}° (${down.gain}).` });
+    if (up && up.gain >= 3) facts.push({ icon: '📈', text: `**Più posizioni guadagnate**: ${up.r.driver}, da ${up.r.position + up.gain}° a ${up.r.position}° (+${up.gain}).` });
+    if (down && down.gain <= -3) facts.push({ icon: '📉', text: `**Più posizioni perse**: ${down.r.driver}, da ${down.r.position + down.gain}° a ${down.r.position}° (${down.gain}).` });
 
     const p2 = results.find(r => r.position === 2);
     if (winner && p2 && winner.team === p2.team) facts.push({ icon: '🤝', text: `Doppietta ${winner.team}: ${surname(winner.driver)} davanti a ${surname(p2.driver)}.` });
@@ -130,19 +130,19 @@ function paceFacts(year, circuit, results) {
     for (const [n, laps] of Object.entries(pace.laps || {})) {
         laps.forEach((t, i) => { if (typeof t === 'number' && (!best || t < best.t)) best = { n, t, lap: i + 1 }; });
     }
-    if (best) facts.push({ icon: '⚡', text: `Giro più veloce: ${nameOf(best.n)} in ${lapStr(best.t)} (giro ${best.lap}).` });
+    if (best) facts.push({ icon: '⚡', text: `**Giro più veloce**: ${nameOf(best.n)} in ${lapStr(best.t)} (giro ${best.lap}).` });
 
     const winner = pace.drivers.find(d => d.pos === 1);
     if (winner) {
         const stops = (pace.pitIn?.[winner.n] || []).length;
         const tyres = (pace.stints?.[winner.n] || []).map(s => TYRES[s[2]] || s[2]).join(' → ');
-        facts.push({ icon: '🛞', text: `${nameOf(winner.n)} ha vinto con ${stops === 1 ? '1 sosta' : `${stops} soste`}${tyres ? ` (${tyres})` : ''}.` });
+        facts.push({ icon: '🛞', text: `**${nameOf(winner.n)}** ha vinto con ${stops === 1 ? '1 sosta' : `${stops} soste`}${tyres ? ` (${tyres})` : ''}.` });
     }
     const finishers = pace.drivers.filter(d => d.pos);
     const byStops = {};
     finishers.forEach(d => { const s = (pace.pitIn?.[d.n] || []).length; byStops[s] = (byStops[s] || 0) + 1; });
     const common = Object.entries(byStops).sort((a, b) => b[1] - a[1])[0];
-    if (common && finishers.length) facts.push({ icon: '🔧', text: `Strategia più usata: ${common[0] === '1' ? '1 sosta' : `${common[0]} soste`} (${common[1]} piloti su ${finishers.length} classificati).` });
+    if (common && finishers.length) facts.push({ icon: '🔧', text: `**Strategia più usata**: ${common[0] === '1' ? '1 sosta' : `${common[0]} soste`} (${common[1]} piloti su ${finishers.length} classificati).` });
     return facts;
 }
 
@@ -155,7 +155,7 @@ function topSpeedFact(year, circuit) {
     const now = top(year);
     if (!now) return null;
     const prevYear = Object.keys(tel).map(Number).filter(y => y < year && top(y)).sort((a, b) => b - a)[0];
-    return { icon: '💨', text: `Velocità massima nel giro di pole: ${now} km/h${prevYear ? ` (${prevYear}: ${top(prevYear)} km/h)` : ''}.` };
+    return { icon: '💨', text: `**Velocità massima** nel giro di pole: ${now} km/h${prevYear ? ` (${prevYear}: ${top(prevYear)} km/h)` : ''}.` };
 }
 
 // Mondiale dopo la gara: distacco, variazione nel GP (solo senza sprint nel
@@ -210,7 +210,7 @@ function storyInput(season, race, pole, facts, standings, raceControl) {
         pole: pole ? { pilota: pole.driver, squadra: pole.team, tempo: pole.timeStr, meteoQualifica: pole.weather || null } : null,
         arrivo: results.filter(r => !r.retired).slice(0, 10).map(r => ({ pos: r.position, pilota: r.driver, squadra: r.team, griglia: gridOf(r.driver), tempo: r.time })),
         nonClassificati: results.filter(r => r.retired).map(r => ({ pilota: r.driver, squadra: r.team, esito: r.retired, griglia: gridOf(r.driver) })),
-        fatti: facts.map(f => f.text),
+        fatti: facts.map(f => f.text.replace(/\*\*/g, '')), // senza il grassetto del sito
         direzioneGara: raceControl || null,
         mondialePilotiDopoLaGara: fresh ? standings.drivers.slice(0, 5).map(d => ({ pos: d.position, pilota: d.driver, punti: d.points })) : null,
     };

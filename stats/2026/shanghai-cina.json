@@ -5,15 +5,15 @@
   "facts": [
     {
       "icon": "⏱️",
-      "text": "1:32.064: 1,423 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
+      "text": "**Pole 1:32.064**: 1,423 s più lenta della pole 2025 (Oscar Piastri), prima stagione qui con le regole 2026."
     },
     {
       "icon": "🏁",
-      "text": "Dalla pole alla vittoria: Andrea Kimi Antonelli."
+      "text": "Pole e vittoria: Andrea Kimi Antonelli."
     },
     {
       "icon": "📈",
-      "text": "Più posizioni guadagnate: Carlos Sainz, da 17° a 9° (+8)."
+      "text": "**Più posizioni guadagnate**: Carlos Sainz, da 17° a 9° (+8)."
     },
     {
       "icon": "🤝",
@@ -25,19 +25,19 @@
     },
     {
       "icon": "⚡",
-      "text": "Giro più veloce: Andrea Kimi Antonelli in 1:35.275 (giro 52)."
+      "text": "**Giro più veloce**: Andrea Kimi Antonelli in 1:35.275 (giro 52)."
     },
     {
       "icon": "🛞",
-      "text": "Andrea Kimi Antonelli ha vinto con 1 sosta (Medium → Hard)."
+      "text": "**Andrea Kimi Antonelli** ha vinto con 1 sosta (Medium → Hard)."
     },
     {
       "icon": "🔧",
-      "text": "Strategia più usata: 1 sosta (13 piloti su 15 classificati)."
+      "text": "**Strategia più usata**: 1 sosta (13 piloti su 15 classificati)."
     },
     {
       "icon": "💨",
-      "text": "Velocità massima nel giro di pole: 332 km/h (2025: 330 km/h)."
+      "text": "**Velocità massima** nel giro di pole: 332 km/h (2025: 330 km/h)."
     }
   ],
   "raceControl": [
