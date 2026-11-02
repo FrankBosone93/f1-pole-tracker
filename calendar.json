@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-02T01:42:03.452Z",
+  "updatedAt": "2026-11-02T16:29:16.249Z",
   "races": [
     {
       "round": 1,
@@ -6195,79 +6195,79 @@
           },
           {
             "position": 7,
-            "driver": "Oscar Piastri",
-            "team": "McLaren",
-            "time": "+19.475",
-            "retired": null
-          },
-          {
-            "position": 8,
-            "driver": "Franco Colapinto",
-            "team": "Alpine",
-            "time": "+20.204",
-            "retired": null
-          },
-          {
-            "position": 9,
             "driver": "Liam Lawson",
             "team": "RB",
             "time": "+20.899",
             "retired": null
           },
           {
-            "position": 10,
-            "driver": "Pierre Gasly",
-            "team": "Alpine",
-            "time": "+21.483",
-            "retired": null
-          },
-          {
-            "position": 11,
+            "position": 8,
             "driver": "Gabriel Bortoleto",
             "team": "Audi",
             "time": "+22.041",
             "retired": null
           },
           {
-            "position": 12,
+            "position": 9,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
             "time": "+22.503",
             "retired": null
           },
           {
-            "position": 13,
+            "position": 10,
             "driver": "#50",
             "team": "",
             "time": "+25.373",
             "retired": null
           },
           {
-            "position": 14,
+            "position": 11,
             "driver": "Alex Albon",
             "team": "Williams",
             "time": "+27.562",
             "retired": null
           },
           {
-            "position": 15,
+            "position": 12,
             "driver": "Carlos Sainz",
             "team": "Williams",
             "time": "+28.638",
             "retired": null
           },
           {
-            "position": 16,
+            "position": 13,
+            "driver": "Oscar Piastri",
+            "team": "McLaren",
+            "time": "+29.475",
+            "retired": null
+          },
+          {
+            "position": 14,
             "driver": "Nico Hulkenberg",
             "team": "Audi",
             "time": "+29.977",
             "retired": null
           },
           {
-            "position": 17,
+            "position": 15,
+            "driver": "Franco Colapinto",
+            "team": "Alpine",
+            "time": "+30.204",
+            "retired": null
+          },
+          {
+            "position": 16,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
             "time": "+30.695",
+            "retired": null
+          },
+          {
+            "position": 17,
+            "driver": "Pierre Gasly",
+            "team": "Alpine",
+            "time": "+51.483",
             "retired": null
           },
           {
