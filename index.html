@@ -70,6 +70,9 @@
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
         @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
+        /* Desktop, vista Telemetria: tracciato a destra dei tre grafici
+           (#telemetryMapSide, vedi placeTrackMap), che si stringono. */
+        body.telemetry-side #telemetryPanels { right: calc(40% + 12px) !important; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -190,6 +193,10 @@
                         <div class="flex-[2] relative min-h-0"><canvas id="telemetryThrottleBrakeChart"></canvas></div>
                         <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
                     </div>
+                    <!-- Desktop: qui viene spostato il riquadro del tracciato
+                         (#telemetryMapBox), accanto ai grafici e alto quanto
+                         loro. Su mobile il tracciato resta sotto i riquadri. -->
+                    <div id="telemetryMapSide" class="hidden absolute inset-y-0 right-0 w-[40%]"></div>
                 </div>
                 <!-- Statistiche del giro (solo in vista Telemetria): valori
                      riassuntivi a riposo, valori nel punto indicato quando si
@@ -204,7 +211,7 @@
                          arriva dopo i grafici (file scaricato a parte), e prima
                          compariva di colpo spingendo giù il resto della pagina. -->
                     <div id="telemetryMapWrap"><div>
-                    <div class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
+                    <div id="telemetryMapBox" class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
                         <div class="flex items-center justify-between gap-2 text-[11px] text-gray-400 mb-1">
                             <span id="telemetryMapTitle">Tracciato</span>
                             <span id="telemetryMapHint" class="text-gray-500">Scorri sui grafici o sul tracciato</span>
@@ -946,8 +953,9 @@
             ].filter(Boolean).map(it => ({ ...it, track: getTrack(it.season, select.value) }))
                 .map(it => ({ ...it, pts: it.track ? it.track.points : null }));
             const baseTrack = items[0].track;
-            if (!baseTrack) { wrap.classList.remove('map-open'); return; }
-            wrap.classList.add('map-open');
+            if (!baseTrack) { wrap.classList.remove('map-open'); placeTrackMap(false); return; }
+            if (useSideMap()) placeTrackMap(true);
+            else wrap.classList.add('map-open');
             const base = baseTrack.points;
 
             // Coordinate ruotate, poi in un riquadro di 1000 unità sul lato
@@ -1000,6 +1008,26 @@
             const years = items.filter(it => it.pts).map(it => it.season).join(' vs ');
             document.getElementById('telemetryMapTitle').innerText = `Tracciato · giro di pole ${years}`;
             trackMapCtx = { items };
+        }
+
+        // Desktop: in Telemetria il tracciato sta a destra dei tre grafici,
+        // alto quanto loro, così il punto in pista si segue mentre si scorre
+        // sui grafici. Su mobile (e senza tracciato) resta sotto i riquadri.
+        // Si sposta lo stesso riquadro, con i suoi eventi.
+        const useSideMap = () => isDesktopLayout() && chartViewMode === 'telemetry';
+        function placeTrackMap(side) {
+            const box = document.getElementById('telemetryMapBox');
+            const svg = document.getElementById('telemetryMap');
+            const sideEl = document.getElementById('telemetryMapSide');
+            const wrap = document.getElementById('telemetryMapWrap');
+            document.body.classList.toggle('telemetry-side', side);
+            sideEl.classList.toggle('hidden', !side);
+            const target = side ? sideEl : wrap.firstElementChild;
+            if (box.parentElement !== target) target.appendChild(box);
+            ['h-full', 'flex', 'flex-col'].forEach(c => box.classList.toggle(c, side));
+            Object.assign(svg.style, side ? { height: 'auto', flex: '1 1 0', minHeight: '0' } : { height: '', flex: '', minHeight: '' });
+            if (side) wrap.classList.remove('map-open');
+            else if (chartViewMode === 'telemetry' && trackMapCtx) wrap.classList.add('map-open');
         }
 
         // t = secondo del giro sotto il puntatore, o null (nessun puntino).
@@ -1734,6 +1762,9 @@
             requestAnimationFrame(() => {
                 resizeFramePending = false;
                 applyLayoutMode();
+                // Passando da desktop a mobile (o viceversa) il tracciato
+                // cambia posto.
+                if (chartViewMode === 'telemetry' && useSideMap() !== document.body.classList.contains('telemetry-side')) placeTrackMap(useSideMap() && !!trackMapCtx);
                 applyClassificaPanelWidth();
                 applyDetailsColumnWidth();
                 applyFeaturedWidgetWidth();
@@ -3054,6 +3085,7 @@
                 // stretta per 3 pannelli leggibili: qui serve più spazio,
                 // ripristinato quando si torna alla vista normale sotto.
                 chartContainer.style.height = chartContainerHeight();
+                placeTrackMap(useSideMap());
                 renderTelemetryCharts();
                 scheduleReposition();
                 return;
@@ -3065,6 +3097,7 @@
             document.getElementById('telemetryStats').classList.add('hidden');
             // Chiusa uscendo dalla telemetria, così alla prossima apertura
             // si riapre con l'animazione (e non mostra il circuito di prima).
+            placeTrackMap(false);
             document.getElementById('telemetryMapWrap').classList.remove('map-open');
             toggleIconBtn.classList.remove('hidden');
             updateChartViewToggleIcon();
