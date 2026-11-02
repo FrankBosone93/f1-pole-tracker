@@ -70,6 +70,20 @@
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
         @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
+        /* Desktop, vista Telemetria (body.telemetry-wide, vedi
+           applyTelemetryWide): il box del grafico prende tutta la riga, fino
+           al bordo destro della colonna dei dettagli (= quello del widget
+           "Prossimo GP"), senza maniglie; i box "Dettagli Qualifiche" vanno
+           sotto, affiancati. !important dove JS imposta stili inline. */
+        body.telemetry-wide #leftColumn { grid-column: 1 / -1; position: static; }
+        body.telemetry-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
+        body.telemetry-wide #resizeHandle, body.telemetry-wide #vResizeHandle { display: none !important; }
+        body.telemetry-wide #detailsList { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .75rem; }
+        body.telemetry-wide #detailsList > * { margin-top: 0 !important; }
+        /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
+        body.telemetry-wide #detailsList > * { padding: .75rem; }
+        body.telemetry-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
+        body.telemetry-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -178,7 +192,12 @@
                         </button>
                     </div>
                 </div>
-                <div id="chartContainer" class="relative w-full h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
+                <!-- Desktop, Telemetria: il tracciato (#telemetryMapBox) viene
+                     spostato in #telemetryMapSide, a destra dei grafici e alto
+                     quanto loro (vedi placeTrackMap). Altrimenti la riga
+                     contiene solo il grafico. -->
+                <div class="flex gap-3">
+                <div id="chartContainer" class="relative w-full min-w-0 flex-1 h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
                     <canvas id="poleChart"></canvas>
                     <!-- Pannelli telemetria (nascosti finché non si attiva la
                          vista "Telemetria"): velocità, acceleratore/freno,
@@ -190,6 +209,8 @@
                         <div class="flex-[2] relative min-h-0"><canvas id="telemetryThrottleBrakeChart"></canvas></div>
                         <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
                     </div>
+                </div>
+                <div id="telemetryMapSide" class="hidden w-[36%] shrink-0"></div>
                 </div>
                 <!-- Statistiche del giro (solo in vista Telemetria): valori
                      riassuntivi a riposo, valori nel punto indicato quando si
@@ -204,7 +225,7 @@
                          arriva dopo i grafici (file scaricato a parte), e prima
                          compariva di colpo spingendo giù il resto della pagina. -->
                     <div id="telemetryMapWrap"><div>
-                    <div class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
+                    <div id="telemetryMapBox" class="bg-gray-900 rounded-lg border border-gray-800 px-3 py-2">
                         <div class="flex items-center justify-between gap-2 text-[11px] text-gray-400 mb-1">
                             <span id="telemetryMapTitle">Tracciato</span>
                             <span id="telemetryMapHint" class="text-gray-500">Scorri sui grafici o sul tracciato</span>
@@ -935,6 +956,38 @@
             return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
         }
 
+        // Desktop, Telemetria: layout largo (CSS body.telemetry-wide) con il
+        // tracciato a destra dei grafici. Su mobile tutto come prima.
+        function applyTelemetryWide() {
+            const wide = isDesktopLayout() && chartViewMode === 'telemetry' && siteMode === 'quali';
+            const changed = wide !== document.body.classList.contains('telemetry-wide');
+            document.body.classList.toggle('telemetry-wide', wide);
+            // Spazio del tracciato riservato subito (i grafici si disegnano
+            // già stretti); renderTrackMap lo toglie se il circuito non ha tracciato.
+            placeTrackMap(wide);
+            if (!wide && chartViewMode === 'telemetry' && trackMapCtx) document.getElementById('telemetryMapWrap').classList.add('map-open');
+            if (changed) {
+                applyFeaturedWidgetWidth();
+                alignDetailsColumnTop();
+                alignChartTop();
+                scheduleReposition();
+            }
+        }
+        // Sposta lo stesso riquadro del tracciato (con i suoi eventi) a lato
+        // dei grafici (side) o sotto i riquadri del giro.
+        function placeTrackMap(side) {
+            const box = document.getElementById('telemetryMapBox');
+            const svg = document.getElementById('telemetryMap');
+            const sideEl = document.getElementById('telemetryMapSide');
+            const wrap = document.getElementById('telemetryMapWrap');
+            sideEl.classList.toggle('hidden', !side);
+            const target = side ? sideEl : wrap.firstElementChild;
+            if (box.parentElement !== target) target.appendChild(box);
+            ['h-full', 'flex', 'flex-col'].forEach(c => box.classList.toggle(c, side));
+            Object.assign(svg.style, side ? { height: 'auto', flex: '1 1 0', minHeight: '0' } : { height: '', flex: '', minHeight: '' });
+            if (side) wrap.classList.remove('map-open');
+        }
+
         function renderTrackMap() {
             const wrap = document.getElementById('telemetryMapWrap');
             const svg = document.getElementById('telemetryMap');
@@ -946,8 +999,10 @@
             ].filter(Boolean).map(it => ({ ...it, track: getTrack(it.season, select.value) }))
                 .map(it => ({ ...it, pts: it.track ? it.track.points : null }));
             const baseTrack = items[0].track;
-            if (!baseTrack) { wrap.classList.remove('map-open'); return; }
-            wrap.classList.add('map-open');
+            if (!baseTrack) { wrap.classList.remove('map-open'); placeTrackMap(false); return; }
+            // Visibile prima di disegnare: getBBox (viewBox) misura l'SVG.
+            if (document.body.classList.contains('telemetry-wide')) placeTrackMap(true);
+            else wrap.classList.add('map-open');
             const base = baseTrack.points;
 
             // Coordinate ruotate, poi in un riquadro di 1000 unità sul lato
@@ -1514,7 +1569,18 @@
             // ai riquadri di "Dettagli Qualifiche". Misurando direttamente
             // detailsColumn il risultato resta corretto anche se gap/misure
             // cambiassero in futuro.
-            const detailsRect = detailsColumn.getBoundingClientRect();
+            let detailsRect = detailsColumn.getBoundingClientRect();
+            // Layout largo della Telemetria: detailsColumn è sotto il grafico,
+            // larga quanto la pagina. Si usa la misura che avrebbe nella sua
+            // colonna (applyDetailsColumnWidth), con il bordo destro del
+            // grafico allargato, che finisce dove finiva la colonna.
+            if (document.body.classList.contains('telemetry-wide')) {
+                const totalWidth = mainGrid.getBoundingClientRect().width;
+                detailsRect = {
+                    width: (totalWidth - 12) * (1 - Math.max(leftRatio, DEFAULT_LEFT_RATIO)),
+                    right: document.getElementById('leftColumn').getBoundingClientRect().right,
+                };
+            }
             const parentRect = featuredRaceWidgetDesktop.parentElement.getBoundingClientRect();
             // In modalità Passo gara la colonna dei dettagli è nascosta (misura
             // 0): niente da allineare, si lasciano le misure precedenti.
@@ -1660,7 +1726,8 @@
         // (una entry con penaltyNote ha una riga in più).
         let detailsPushDown = 0;
         function alignChartTop() {
-            if (!isDesktopLayout()) {
+            // Layout largo della Telemetria: dettagli sotto il grafico, niente da allineare.
+            if (!isDesktopLayout() || document.body.classList.contains('telemetry-wide')) {
                 chartCard.style.marginTop = '';
                 return;
             }
@@ -1735,6 +1802,7 @@
                 resizeFramePending = false;
                 applyLayoutMode();
                 applyClassificaPanelWidth();
+                applyTelemetryWide();
                 applyDetailsColumnWidth();
                 applyFeaturedWidgetWidth();
                 alignDetailsColumnTop();
@@ -2414,6 +2482,7 @@
             siteMode = ['pace', 'stats'].includes(mode) ? mode : 'quali';
             document.body.classList.toggle('pace-mode', siteMode === 'pace');
             document.body.classList.toggle('stats-mode', siteMode === 'stats');
+            applyTelemetryWide();
             updateModeToggle();
             if (siteMode === 'stats') {
                 await openStatsView();
@@ -3050,6 +3119,7 @@
                 document.getElementById('telemetryStats').classList.remove('hidden');
                 toggleIconBtn.classList.add('hidden');
                 if (currentChart) { currentChart.destroy(); currentChart = null; }
+                applyTelemetryWide();
                 // Su mobile l'altezza normale (200px, dal CSS) è troppo
                 // stretta per 3 pannelli leggibili: qui serve più spazio,
                 // ripristinato quando si torna alla vista normale sotto.
@@ -3062,6 +3132,8 @@
             chartContainer.style.height = chartContainerHeight();
             poleCanvas.style.display = '';
             telemetryPanels.classList.add('hidden');
+            placeTrackMap(false);
+            applyTelemetryWide();
             document.getElementById('telemetryStats').classList.add('hidden');
             // Chiusa uscendo dalla telemetria, così alla prossima apertura
             // si riapre con l'animazione (e non mostra il circuito di prima).
