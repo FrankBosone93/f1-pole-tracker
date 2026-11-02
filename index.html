@@ -79,7 +79,7 @@
         body.telemetry-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
         body.telemetry-wide #resizeHandle, body.telemetry-wide #vResizeHandle { display: none !important; }
         body.telemetry-wide #detailsList { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .75rem; }
-        body.telemetry-wide #detailsList > * { margin-top: 0 !important; }
+        body.telemetry-wide #detailsList > * { margin: 0 !important; }
         /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
         body.telemetry-wide #detailsList > * { padding: .75rem; }
         body.telemetry-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
@@ -194,9 +194,12 @@
                 </div>
                 <!-- Desktop, Telemetria: il tracciato (#telemetryMapBox) viene
                      spostato in #telemetryMapSide, a destra dei grafici e alto
-                     quanto loro (vedi placeTrackMap). Altrimenti la riga
-                     contiene solo il grafico. -->
-                <div class="flex gap-3">
+                     quanto loro (vedi placeTrackMap), e sotto i grafici, nella
+                     stessa colonna (#telemetryMainCol), vanno i riquadri del
+                     giro (#telemetryStats, vedi applyTelemetryWide).
+                     Altrimenti la riga contiene solo il grafico. -->
+                <div id="telemetryRow" class="flex gap-3">
+                <div id="telemetryMainCol" class="flex-1 min-w-0">
                 <div id="chartContainer" class="relative w-full min-w-0 flex-1 h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
                     <canvas id="poleChart"></canvas>
                     <!-- Pannelli telemetria (nascosti finché non si attiva la
@@ -209,6 +212,7 @@
                         <div class="flex-[2] relative min-h-0"><canvas id="telemetryThrottleBrakeChart"></canvas></div>
                         <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
                     </div>
+                </div>
                 </div>
                 <div id="telemetryMapSide" class="hidden w-[36%] shrink-0"></div>
                 </div>
@@ -962,6 +966,10 @@
             const wide = isDesktopLayout() && chartViewMode === 'telemetry' && siteMode === 'quali';
             const changed = wide !== document.body.classList.contains('telemetry-wide');
             document.body.classList.toggle('telemetry-wide', wide);
+            // Riquadri del giro sotto i grafici (layout largo) o sotto tutta la riga.
+            const stats = document.getElementById('telemetryStats');
+            if (wide) document.getElementById('telemetryMainCol').appendChild(stats);
+            else document.getElementById('telemetryRow').after(stats);
             // Spazio del tracciato riservato subito (i grafici si disegnano
             // già stretti); renderTrackMap lo toglie se il circuito non ha tracciato.
             placeTrackMap(wide);
@@ -1235,6 +1243,14 @@
                 speedDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareSpeedPoints, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.15, borderDash: [5, 3] });
             }
 
+            // Tetto dell'asse appena sopra la velocità massima (decina
+            // successiva, con qualche km/h di margine per la curva): lasciato
+            // a Chart.js saliva al multiplo di 50 seguente (351 -> 400,
+            // 317 -> 350) e la curva restava schiacciata in basso. Le
+            // etichette restano sui multipli di 50 (afterBuildTicks).
+            const speedValues = speedDatasets.flatMap(d => d.data.map(p => p?.y)).filter(v => v != null);
+            const speedAxisMax = speedValues.length ? Math.ceil((Math.max(...speedValues) + 3) / 10) * 10 : undefined;
+
             telemetrySpeedChart = new Chart(poleCanvas.getContext('2d'), {
                 type: 'line',
                 data: { datasets: speedDatasets },
@@ -1242,7 +1258,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { display: false } },
-                        y: { ...fixedYAxisWidth, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => compactAxis ? v : v + ' km/h' } }
+                        y: { ...fixedYAxisWidth, max: speedAxisMax, afterBuildTicks: scale => { scale.ticks = scale.ticks.filter(t => t.value % 50 === 0); }, grid: { color: '#2a2a2a' }, ticks: { color: '#a0aec0', font: tickFont, callback: v => compactAxis ? v : v + ' km/h' } }
                     },
                     plugins: {
                         legend: { display: false },
