@@ -1,6 +1,50 @@
 {
   "entries": [
     {
+      "date": "2026-11-02",
+      "title": "Changelog — 2 Novembre 2026",
+      "sections": [
+        {
+          "title": "Qualifiche",
+          "items": [
+            "**Classifica**, **Calendario**, **Stagioni** e **News** diventano quattro tasti compatti sotto i tasti delle sezioni, visibili solo in Qualifiche; i pannelli si aprono in una finestra sopra la pagina.",
+            "Su computer i tasti **Qualifiche, Passo gara e Statistiche** stanno sopra il menu del circuito, più corto e con lo stesso stile.",
+            "Su computer il riquadro del **prossimo GP** ha lo stesso sfondo della versione da telefono."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "Su computer la telemetria si apre in un **box largo**: il **tracciato** sta in alto a destra accanto ai grafici, così il punto in pista si segue mentre scorri sui grafici senza muovere la pagina.",
+            "Sotto i grafici restano i quattro riquadri del giro, mentre i box di **Dettagli Qualifiche** scendono sotto, tutti in fila; pilota e tempo sono centrati in alto.",
+            "L'asse della **velocità** si adatta alla velocità massima del giro: la curva non è più schiacciata in basso e non supera mai l'ultima etichetta."
+          ]
+        },
+        {
+          "title": "Statistiche",
+          "items": [
+            "Nel menu **Scegli un circuito** ci sono anche i GP delle **stagioni passate**, divisi per anno.",
+            "Fatti del GP più leggibili: nomi e voci principali in **grassetto**, «**Pole e vittoria**» e il tempo della pole con «Pole» davanti.",
+            "Su telefono la **stagione in numeri** viene prima dei duelli in qualifica.",
+            "I racconti dei GP di **Monaco, Zandvoort, Monza e Città del Messico** ora tengono conto della bandiera rossa."
+          ]
+        },
+        {
+          "title": "Passo gara",
+          "items": [
+            "Riconosciute le **bandiere rosse** del 2026: niente più fasce di safety car troppo lunghe, come in Messico.",
+            "Distacchi tra i piloti completi anche quando la fonte salta qualche giro; Città del Messico con la **classifica ufficiale** dopo le penalità."
+          ]
+        },
+        {
+          "title": "Novità",
+          "items": [
+            "Si apre **un changelog alla volta**, e un tasto permette di **condividere** quello che stai leggendo."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-01",
       "title": "Changelog — 1 Novembre 2026",
       "sections": [
