@@ -70,9 +70,6 @@
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
         @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
-        /* Desktop, vista Telemetria: tracciato a destra dei tre grafici
-           (#telemetryMapSide, vedi placeTrackMap), che si stringono. */
-        body.telemetry-side #telemetryPanels { right: calc(40% + 12px) !important; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -193,10 +190,6 @@
                         <div class="flex-[2] relative min-h-0"><canvas id="telemetryThrottleBrakeChart"></canvas></div>
                         <div class="flex-[1] relative min-h-0"><canvas id="telemetryGearChart"></canvas></div>
                     </div>
-                    <!-- Desktop: qui viene spostato il riquadro del tracciato
-                         (#telemetryMapBox), accanto ai grafici e alto quanto
-                         loro. Su mobile il tracciato resta sotto i riquadri. -->
-                    <div id="telemetryMapSide" class="hidden absolute inset-y-0 right-0 w-[40%]"></div>
                 </div>
                 <!-- Statistiche del giro (solo in vista Telemetria): valori
                      riassuntivi a riposo, valori nel punto indicato quando si
@@ -245,6 +238,11 @@
              (margin-left: auto), così resta sempre nella stessa posizione e non
              si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
         <div id="detailsColumn">
+            <!-- Desktop, vista Telemetria: qui viene spostato il riquadro del
+                 tracciato (#telemetryMapBox), in cima alla colonna e alto
+                 quanto il blocco della telemetria; i box dei dettagli
+                 scendono sotto. Su mobile il tracciato resta sotto i riquadri. -->
+            <div id="telemetryMapSide" class="hidden mb-6"></div>
             <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
             <div id="detailsList" class="space-y-3">
                 <!-- I dettagli compariranno qui -->
@@ -1010,9 +1008,10 @@
             trackMapCtx = { items };
         }
 
-        // Desktop: in Telemetria il tracciato sta a destra dei tre grafici,
-        // alto quanto loro, così il punto in pista si segue mentre si scorre
-        // sui grafici. Su mobile (e senza tracciato) resta sotto i riquadri.
+        // Desktop: in Telemetria il tracciato sta nella colonna di destra,
+        // sopra i box "Dettagli Qualifiche" e alto quanto il blocco della
+        // telemetria, così il punto in pista si segue mentre si scorre sui
+        // grafici. Su mobile (e senza tracciato) resta sotto i riquadri.
         // Si sposta lo stesso riquadro, con i suoi eventi.
         const useSideMap = () => isDesktopLayout() && chartViewMode === 'telemetry';
         function placeTrackMap(side) {
@@ -1024,11 +1023,23 @@
             sideEl.classList.toggle('hidden', !side);
             const target = side ? sideEl : wrap.firstElementChild;
             if (box.parentElement !== target) target.appendChild(box);
-            ['h-full', 'flex', 'flex-col'].forEach(c => box.classList.toggle(c, side));
+            // A lato prende lo stile del blocco del grafico (#chartCard).
+            ['h-full', 'flex', 'flex-col', 'bg-[#1E1E1E]', 'rounded-xl', 'p-4'].forEach(c => box.classList.toggle(c, side));
+            ['bg-gray-900', 'rounded-lg', 'px-3', 'py-2'].forEach(c => box.classList.toggle(c, !side));
+            syncSideMapHeight();
             Object.assign(svg.style, side ? { height: 'auto', flex: '1 1 0', minHeight: '0' } : { height: '', flex: '', minHeight: '' });
             if (side) wrap.classList.remove('map-open');
             else if (chartViewMode === 'telemetry' && trackMapCtx) wrap.classList.add('map-open');
+            alignChartTop();
         }
+
+        // Il tracciato a lato è alto quanto il blocco della telemetria
+        // (che cambia col ridimensionamento del grafico).
+        function syncSideMapHeight() {
+            const sideEl = document.getElementById('telemetryMapSide');
+            sideEl.style.height = sideEl.classList.contains('hidden') ? '' : document.getElementById('chartCard').offsetHeight + 'px';
+        }
+        new ResizeObserver(syncSideMapHeight).observe(document.getElementById('chartCard'));
 
         // t = secondo del giro sotto il puntatore, o null (nessun puntino).
         function updateTrackDots(t) {
@@ -1693,7 +1704,12 @@
                 return;
             }
             chartCard.style.marginTop = '0px';
-            const firstDetailCard = detailsList.firstElementChild;
+            // In Telemetria su desktop il primo elemento della colonna di
+            // destra è il tracciato (vedi placeTrackMap): ci si allinea a lui.
+            const sideMap = document.getElementById('telemetryMapSide');
+            const sideOn = !sideMap.classList.contains('hidden');
+            sideMap.style.marginTop = '';
+            const firstDetailCard = sideOn ? sideMap : detailsList.firstElementChild;
             if (!firstDetailCard) return;
             const naturalTop = chartCard.getBoundingClientRect().top;
             // Se i dettagli sono scesi per far posto ai risultati aperti nel
@@ -1713,6 +1729,10 @@
             const desiredTop = Math.max(targetTop, minTop);
             const delta = desiredTop - naturalTop;
             chartCard.style.marginTop = delta + 'px';
+            // Il grafico non può salire fino al tracciato (selettore sopra):
+            // scende il tracciato, così i due blocchi partono alla stessa altezza.
+            const sideGap = desiredTop - firstDetailCard.getBoundingClientRect().top;
+            if (sideOn && sideGap > 0) sideMap.style.marginTop = sideGap + 'px';
         }
 
         // Il widget "Prossimo GP" (in alto a destra, ancorato al titolo) è
