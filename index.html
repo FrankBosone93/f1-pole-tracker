@@ -48,6 +48,7 @@
            vengono DOPO quelle del telefono ruotato apposta, così vincono. */
         body.pace-mode #mainGrid,
         body.pace-mode #qualiSelector,
+        body.pace-mode #seasonButtons,
         body.pace-mode #featuredRaceWidget,
         body.pace-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.pace-mode) #paceView { display: none; }
@@ -55,6 +56,7 @@
            passo gara, sostituisce la vista Qualifiche. */
         body.stats-mode #mainGrid,
         body.stats-mode #qualiSelector,
+        body.stats-mode #seasonButtons,
         body.stats-mode #featuredRaceWidget,
         body.stats-mode #featuredRaceWidgetDesktop { display: none !important; }
         body:not(.stats-mode) #statsView { display: none; }
@@ -116,6 +118,17 @@
                             <button id="modeBtnPace" type="button" onclick="setSiteMode('pace')" class="flex-1 whitespace-nowrap px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Passo gara</button>
                             <button id="modeBtnStats" type="button" onclick="setSiteMode('stats')" class="flex-1 whitespace-nowrap px-4 py-2.5 md:py-0 cursor-pointer transition-colors border-l border-gray-700">Statistiche</button>
                         </div>
+                    </div>
+                    <!-- Classifica / Calendario / Stagioni precedenti / News:
+                         sotto i tasti delle sezioni, solo in Qualifiche
+                         (nascosti in Passo gara e Statistiche, vedi CSS).
+                         Ognuno apre il suo pannello in una finestra sopra la
+                         pagina (#panelDialog). -->
+                    <div id="seasonButtons" class="grid grid-cols-4 gap-2" role="group" aria-label="Stagione">
+                        <button type="button" onclick="toggleClassificaPanel()" class="flex items-center justify-center gap-1 whitespace-nowrap bg-[#1E1E1E] hover:bg-gray-800 text-gray-300 hover:text-white text-[11px] py-1.5 rounded-lg border border-gray-700 transition-colors cursor-pointer"><span class="leading-none">🏆</span>Classifica</button>
+                        <button type="button" onclick="toggleCalendarPanel()" class="flex items-center justify-center gap-1 whitespace-nowrap bg-[#1E1E1E] hover:bg-gray-800 text-gray-300 hover:text-white text-[11px] py-1.5 rounded-lg border border-gray-700 transition-colors cursor-pointer"><span class="leading-none">📅</span>Calendario</button>
+                        <button type="button" onclick="togglePreviousYearsPanel()" class="flex items-center justify-center gap-1 whitespace-nowrap bg-[#1E1E1E] hover:bg-gray-800 text-gray-300 hover:text-white text-[11px] py-1.5 rounded-lg border border-gray-700 transition-colors cursor-pointer"><span class="leading-none">🕰️</span>Stagioni</button>
+                        <button type="button" onclick="toggleNewsPanel()" class="flex items-center justify-center gap-1 whitespace-nowrap bg-[#1E1E1E] hover:bg-gray-800 text-gray-300 hover:text-white text-[11px] py-1.5 rounded-lg border border-gray-700 transition-colors cursor-pointer"><span class="leading-none">📰</span>News</button>
                     </div>
                     <div id="qualiSelector" class="w-full text-left">
                         <label for="circuitSelect" class="block text-sm font-medium text-gray-300 mb-2 md:mb-1.5">Scegli un circuito:</label>
@@ -207,66 +220,6 @@
                  sulla larghezza della card), quindi qui niente justify-center. -->
             <div id="vResizeHandle" class="hidden md:flex w-full items-center cursor-row-resize group py-3">
                 <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
-            </div>
-
-            <!-- Pulsanti Vista Classifica / Calendario / Stagioni precedenti / News.
-                 Su mobile: griglia 2x2. Su desktop: riga unica. -->
-            <div class="grid grid-cols-2 gap-2 mb-6 md:flex md:max-w-lg">
-                <button onclick="toggleClassificaPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    🏆 Classifica
-                </button>
-                <button onclick="toggleCalendarPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    📅 <span id="calendarButtonLabel">Calendario & Risultati</span>
-                </button>
-                <button onclick="togglePreviousYearsPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    🕰️ Stagioni precedenti
-                </button>
-                <button onclick="toggleNewsPanel()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs py-2 px-3 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    📰 News
-                </button>
-            </div>
-
-            <!-- Pannello Classifica (Nascosto di default). Larghezza impostata via
-                 JS pari al 2/3 di default del grafico (vedi applyClassificaPanelWidth),
-                 indipendente da un eventuale ridimensionamento live del grafico stesso. -->
-            <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 transition-opacity duration-200">
-                <div class="text-xs text-gray-500 pb-2 mb-4 border-b border-gray-700" id="classificaMeta"></div>
-                <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
-                    <div>
-                        <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
-                        <div id="driverRanking" class="space-y-1 text-sm"></div>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-[#E10600] mb-2" id="teamRankingTitle">🏆 Classifica Costruttori</h3>
-                        <div id="teamRanking" class="space-y-1 text-sm"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pannello Calendario (Nascosto di default) -->
-            <div id="calendarPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3 transition-opacity duration-200">
-                <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
-                <div class="text-xs text-gray-500 pb-2 border-b border-gray-700" id="calendarMeta"></div>
-                <div id="calendarList" class="space-y-1 text-sm"></div>
-            </div>
-
-            <!-- Pannello Stagioni precedenti (Nascosto di default): prima l'elenco
-                 degli anni, poi (cliccandone uno) l'elenco gare/risultati di
-                 quella stagione, con lo stesso stile del pannello Calendario. -->
-            <div id="previousYearsPanel" class="hidden md:max-w-sm bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3">
-                <div class="flex items-center gap-3">
-                    <button id="prevYearsBackBtn" onclick="showPreviousYearsList()" class="hidden text-gray-400 hover:text-white text-xs cursor-pointer">← Anni</button>
-                    <h3 class="text-sm font-bold text-[#E10600]" id="previousYearsTitle">🕰️ Stagioni precedenti</h3>
-                </div>
-                <div id="previousYearsBody" class="space-y-1 text-sm transition-opacity duration-200"></div>
-            </div>
-
-            <!-- Pannello News (Nascosto di default): ultime 5 notizie F1 da
-                 FormulaPassion.it (news.json, scaricato da update-news.js). -->
-            <div id="newsPanel" class="hidden md:max-w-lg bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-6 space-y-3 transition-opacity duration-200">
-                <h3 class="text-sm font-bold text-[#E10600]">📰 News</h3>
-                <div id="newsList" class="space-y-3 text-sm"></div>
-                <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="newsMeta"></div>
             </div>
         </div>
 
@@ -381,6 +334,55 @@
         <!-- Su mobile le news vanno su una riga a sé (senza il puntino). -->
         <span class="block md:inline"><span class="hidden md:inline">· </span>News: <a href="https://www.formulapassion.it" target="_blank" rel="noopener" class="hover:text-gray-300 underline">FormulaPassion.it</a></span>
     </footer>
+
+    <!-- Finestra dei pannelli della stagione (tasti #seasonButtons): uno
+         alla volta, sopra la pagina. Si apre e si chiude
+         da sola quando un pannello compare o sparisce (syncPanelDialog). -->
+    <div id="panelDialog" class="fixed inset-0 z-50 bg-black/70 items-center justify-center p-4" style="display:none">
+        <div id="panelDialogBox" class="relative w-full max-w-lg max-h-[85vh] overflow-y-auto overscroll-contain rounded-xl">
+            <button type="button" onclick="closePanelDialog()" class="absolute top-3 right-3 z-10 text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
+                <!-- Pannello Classifica (nascosto di default). -->
+                <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 transition-opacity duration-200">
+                    <div class="text-xs text-gray-500 pb-2 mb-4 border-b border-gray-700" id="classificaMeta"></div>
+                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
+                        <div>
+                            <h3 class="text-sm font-bold text-[#E10600] mb-2" id="driverRankingTitle">🏆 Classifica Piloti</h3>
+                            <div id="driverRanking" class="space-y-1 text-sm"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-[#E10600] mb-2" id="teamRankingTitle">🏆 Classifica Costruttori</h3>
+                            <div id="teamRanking" class="space-y-1 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pannello Calendario (Nascosto di default) -->
+                <div id="calendarPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3 transition-opacity duration-200">
+                    <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
+                    <div class="text-xs text-gray-500 pb-2 border-b border-gray-700" id="calendarMeta"></div>
+                    <div id="calendarList" class="space-y-1 text-sm"></div>
+                </div>
+
+                <!-- Pannello Stagioni precedenti (Nascosto di default): prima l'elenco
+                     degli anni, poi (cliccandone uno) l'elenco gare/risultati di
+                     quella stagione, con lo stesso stile del pannello Calendario. -->
+                <div id="previousYearsPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <button id="prevYearsBackBtn" onclick="showPreviousYearsList()" class="hidden text-gray-400 hover:text-white text-xs cursor-pointer">← Anni</button>
+                        <h3 class="text-sm font-bold text-[#E10600]" id="previousYearsTitle">🕰️ Stagioni precedenti</h3>
+                    </div>
+                    <div id="previousYearsBody" class="space-y-1 text-sm transition-opacity duration-200"></div>
+                </div>
+
+                <!-- Pannello News (Nascosto di default): ultime 5 notizie F1 da
+                     FormulaPassion.it (news.json, scaricato da update-news.js). -->
+                <div id="newsPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3 transition-opacity duration-200">
+                    <h3 class="text-sm font-bold text-[#E10600]">📰 News</h3>
+                    <div id="newsList" class="space-y-3 text-sm"></div>
+                    <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="newsMeta"></div>
+                </div>
+        </div>
+    </div>
 
     <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-[60] bg-gray-800 text-gray-100 text-sm px-4 py-2 rounded-lg border border-gray-700 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200"></div>
 
@@ -1367,8 +1369,6 @@
 
             if (calendar) {
                 calendarData = calendar;
-                const calendarButtonLabel = document.getElementById('calendarButtonLabel');
-                if (calendarButtonLabel) calendarButtonLabel.innerText = `Calendario & Risultati ${calendarData.season}`;
                 renderFeaturedRace();
                 // Aggiorna lo stato "live"/"passata"/"da disputare" delle
                 // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
@@ -1465,19 +1465,10 @@
             scheduleReposition();
         }
 
-        // Il pannello Classifica ha una larghezza FISSA pari al 2/3 di default
-        // del grafico, indipendente da un eventuale ridimensionamento live del
-        // grafico stesso (leftRatio può cambiare col drag, DEFAULT_LEFT_RATIO no).
-        const classificaPanel = document.getElementById('classificaPanel');
-        function applyClassificaPanelWidth() {
-            if (!isDesktopLayout()) {
-                classificaPanel.style.width = '';
-                return;
-            }
-            const totalWidth = mainGrid.getBoundingClientRect().width;
-            const width = (totalWidth - 12) * DEFAULT_LEFT_RATIO;
-            classificaPanel.style.width = width + 'px';
-        }
+        // Il pannello Classifica sta nella finestra dei pannelli
+        // (#panelDialog), che ne decide la larghezza: niente più larghezza
+        // legata al grafico.
+        function applyClassificaPanelWidth() {}
 
         // La colonna "Dettagli Qualifiche" ha una larghezza massima FISSA pari
         // al 2/3 di default del grafico (stessa base della classifica): il
@@ -2149,6 +2140,36 @@
             }
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
+
+        // Finestra dei pannelli: aperta finché uno dei quattro è visibile (i
+        // toggle* restano quelli di prima e si escludono a vicenda). Pagina
+        // sotto bloccata come per le Novità; la Classifica, su due colonne,
+        // ha la finestra più larga.
+        const SEASON_PANELS = ['classificaPanel', 'calendarPanel', 'previousYearsPanel', 'newsPanel'];
+        let panelDialogScrollY = null;
+        function syncPanelDialog() {
+            const dlg = document.getElementById('panelDialog');
+            const open = SEASON_PANELS.find(id => !document.getElementById(id).classList.contains('hidden'));
+            document.getElementById('panelDialogBox').classList.toggle('max-w-2xl', open === 'classificaPanel');
+            document.getElementById('panelDialogBox').classList.toggle('max-w-lg', open !== 'classificaPanel');
+            if (open && panelDialogScrollY === null) {
+                panelDialogScrollY = window.scrollY;
+                Object.assign(document.body.style, { position: 'fixed', top: `-${panelDialogScrollY}px`, left: '0', right: '0', overflow: 'hidden' });
+                dlg.style.display = 'flex';
+            } else if (!open && panelDialogScrollY !== null) {
+                dlg.style.display = 'none';
+                Object.assign(document.body.style, { position: '', top: '', left: '', right: '', overflow: '' });
+                window.scrollTo(0, panelDialogScrollY);
+                panelDialogScrollY = null;
+            }
+        }
+        function closePanelDialog() {
+            SEASON_PANELS.forEach(id => document.getElementById(id).classList.add('hidden'));
+        }
+        const panelObserver = new MutationObserver(syncPanelDialog);
+        SEASON_PANELS.forEach(id => panelObserver.observe(document.getElementById(id), { attributes: true, attributeFilter: ['class'] }));
+        document.getElementById('panelDialog').addEventListener('click', ev => { if (ev.target.id === 'panelDialog') closePanelDialog(); });
+        document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && panelDialogScrollY !== null) closePanelDialog(); });
 
         // Titolo/autore/link/immagine vengono dal feed RSS esterno di
         // FormulaPassion.it, non dal nostro data.json: li trattiamo come
