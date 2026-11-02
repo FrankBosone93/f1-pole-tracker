@@ -2367,10 +2367,11 @@
                 </div>`;
             }
             if (desktopContainer) {
-                desktopContainer.innerHTML = `
+                // Stesso riquadro della versione mobile (sfondo, bordo, angoli).
+                desktopContainer.innerHTML = `<div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
                     <div class="text-[11px] text-gray-500 mb-2">${headerHtml}</div>
                     ${renderSessionsBlock(race, 'widget-desktop')}
-                `;
+                </div>`;
             }
 
             openPanelIds.forEach(id => {
