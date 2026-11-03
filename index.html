@@ -70,28 +70,30 @@
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
         @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
-        /* Desktop, vista Telemetria (body.telemetry-wide, vedi
-           applyTelemetryWide): il box del grafico prende tutta la riga, fino
-           al bordo destro della colonna dei dettagli (= quello del widget
-           "Prossimo GP"), senza maniglie; i box "Dettagli Qualifiche" vanno
-           sotto, affiancati. !important dove JS imposta stili inline. */
-        body.telemetry-wide #leftColumn { grid-column: 1 / -1; position: static; }
-        body.telemetry-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
+        /* Desktop, Qualifiche (body.quali-wide, vedi applyTelemetryWide): il
+           box del grafico prende tutta la riga, fino al bordo destro della
+           colonna dei dettagli (= quello del widget "Prossimo GP"); i box
+           "Dettagli Qualifiche" vanno sotto, affiancati dal 2021 al 2026 come
+           l'asse del grafico (la lista è dalla stagione più recente: row-reverse,
+           su mobile resta com'è). !important dove JS imposta stili inline. */
+        body.quali-wide #leftColumn { grid-column: 1 / -1; position: static; }
+        body.quali-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
+        body.quali-wide #resizeHandle { display: none !important; }
+        body.quali-wide #detailsList { display: flex; flex-direction: row-reverse; gap: .75rem; }
+        body.quali-wide #detailsList > * { flex: 1 1 0; min-width: 0; margin: 0 !important; }
+        /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
+        body.quali-wide #detailsList > * { padding: .75rem; }
+        body.quali-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
+        body.quali-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
+        /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-        body.telemetry-wide #resizeHandle, body.telemetry-wide #vResizeHandle { display: none !important; }
         /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
            #resizeHandle resta come spazio di 12px tra le due colonne della
-           griglia (nasconderlo sposterebbe i dettagli nella sua colonna),
-           senza pillola né trascinamento; #vResizeHandle sparisce. */
+           griglia fuori dalle Qualifiche, senza pillola né trascinamento;
+           #vResizeHandle sparisce. */
         #vResizeHandle { display: none !important; }
         #resizeHandle { pointer-events: none; }
         #resizeHandle > div { display: none; }
-        body.telemetry-wide #detailsList { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .75rem; }
-        body.telemetry-wide #detailsList > * { margin: 0 !important; }
-        /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
-        body.telemetry-wide #detailsList > * { padding: .75rem; }
-        body.telemetry-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
-        body.telemetry-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
@@ -968,11 +970,14 @@
             return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
         }
 
-        // Desktop, Telemetria: layout largo (CSS body.telemetry-wide) con il
-        // tracciato a destra dei grafici. Su mobile tutto come prima.
+        // Desktop, Qualifiche: layout largo (CSS body.quali-wide) con i
+        // dettagli in riga sotto il grafico; in Telemetria (body.telemetry-wide)
+        // anche il tracciato a destra dei grafici. Su mobile tutto come prima.
         function applyTelemetryWide() {
-            const wide = isDesktopLayout() && chartViewMode === 'telemetry' && siteMode === 'quali';
-            const changed = wide !== document.body.classList.contains('telemetry-wide');
+            const qualiWide = isDesktopLayout() && siteMode === 'quali';
+            const wide = qualiWide && chartViewMode === 'telemetry';
+            const changed = wide !== document.body.classList.contains('telemetry-wide') || qualiWide !== document.body.classList.contains('quali-wide');
+            document.body.classList.toggle('quali-wide', qualiWide);
             document.body.classList.toggle('telemetry-wide', wide);
             // Riquadri del giro sotto i grafici (layout largo) o sotto tutta la riga.
             const stats = document.getElementById('telemetryStats');
@@ -1595,11 +1600,11 @@
             // detailsColumn il risultato resta corretto anche se gap/misure
             // cambiassero in futuro.
             let detailsRect = detailsColumn.getBoundingClientRect();
-            // Layout largo della Telemetria: detailsColumn è sotto il grafico,
+            // Layout largo delle Qualifiche: detailsColumn è sotto il grafico,
             // larga quanto la pagina. Si usa la misura che avrebbe nella sua
             // colonna (applyDetailsColumnWidth), con il bordo destro del
             // grafico allargato, che finisce dove finiva la colonna.
-            if (document.body.classList.contains('telemetry-wide')) {
+            if (document.body.classList.contains('quali-wide')) {
                 const totalWidth = mainGrid.getBoundingClientRect().width;
                 detailsRect = {
                     width: (totalWidth - 12) * (1 - Math.max(leftRatio, DEFAULT_LEFT_RATIO)),
@@ -1731,8 +1736,11 @@
         //   quella del CSS (200px).
         // Prima ogni evento resize (anche la barra di Safari che si nasconde
         // scorrendo) riportava la telemetria su mobile a 200px.
+        // Desktop: il grafico dei tempi è un po' più basso della telemetria
+        // (tre pannelli), così sotto si vedono già i box dei dettagli in riga.
+        const DESKTOP_TIMES_CHART_HEIGHT = 360;
         function chartContainerHeight() {
-            if (isDesktopLayout()) return chartHeight + 'px';
+            if (isDesktopLayout()) return (chartViewMode === 'telemetry' ? chartHeight : DESKTOP_TIMES_CHART_HEIGHT) + 'px';
             if (isPhoneLandscape()) return Math.max(220, window.innerHeight - 64) + 'px';
             return chartViewMode === 'telemetry' ? '380px' : '';
         }
@@ -1751,8 +1759,8 @@
         // (una entry con penaltyNote ha una riga in più).
         let detailsPushDown = 0;
         function alignChartTop() {
-            // Layout largo della Telemetria: dettagli sotto il grafico, niente da allineare.
-            if (!isDesktopLayout() || document.body.classList.contains('telemetry-wide')) {
+            // Layout largo delle Qualifiche: dettagli sotto il grafico, niente da allineare.
+            if (!isDesktopLayout() || document.body.classList.contains('quali-wide')) {
                 chartCard.style.marginTop = '';
                 return;
             }
