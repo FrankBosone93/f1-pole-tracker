@@ -70,6 +70,12 @@
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
         @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
+        /* "Dettagli Qualifiche": la lista è sempre dalla stagione più
+           recente; l'ordine crescente (details-asc) la gira solo a schermo,
+           in colonna su mobile e in riga su desktop (vedi applyDetailsPrefs). */
+        #detailsList { display: flex; flex-direction: column; gap: .75rem; }
+        #detailsList.details-asc { flex-direction: column-reverse; }
+        #detailsList[hidden] { display: none !important; }
         /* Desktop, Qualifiche (body.quali-wide, vedi applyTelemetryWide): il
            box del grafico prende tutta la riga, fino al bordo destro della
            colonna dei dettagli (= quello del widget "Prossimo GP"); i box
@@ -79,7 +85,8 @@
         body.quali-wide #leftColumn { grid-column: 1 / -1; position: static; }
         body.quali-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
         body.quali-wide #resizeHandle { display: none !important; }
-        body.quali-wide #detailsList { display: flex; flex-direction: row-reverse; gap: .75rem; }
+        body.quali-wide #detailsList { flex-direction: row; }
+        body.quali-wide #detailsList.details-asc { flex-direction: row-reverse; }
         body.quali-wide #detailsList > * { flex: 1 1 0; min-width: 0; margin: 0 !important; }
         /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
         body.quali-wide #detailsList > * { padding: .75rem; }
@@ -273,8 +280,21 @@
              (margin-left: auto), così resta sempre nella stessa posizione e non
              si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
         <div id="detailsColumn">
-            <h2 class="text-lg font-bold mb-3 text-gray-200">Dettagli Qualifiche</h2>
-            <div id="detailsList" class="space-y-3">
+            <!-- Titolo cliccabile per chiudere/aprire la sezione, tastino per
+                 l'ordine degli anni: scelte ricordate sul dispositivo
+                 (vedi applyDetailsPrefs). -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <h2 class="text-lg font-bold text-gray-200">
+                    <button type="button" id="detailsCollapseBtn" onclick="toggleDetailsCollapsed()" aria-expanded="true" aria-controls="detailsList" class="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                        Dettagli Qualifiche
+                        <svg id="detailsChevron" class="text-gray-400 transition-transform" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </h2>
+                <button type="button" id="detailsSortBtn" onclick="toggleDetailsOrder()" class="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer border border-gray-700 rounded-lg px-2 py-1">
+                    ⇅ <span id="detailsSortLabel">Decrescente</span>
+                </button>
+            </div>
+            <div id="detailsList">
                 <!-- I dettagli compariranno qui -->
             </div>
 
@@ -474,6 +494,39 @@
 
         const select = document.getElementById('circuitSelect');
         const detailsList = document.getElementById('detailsList');
+
+        // "Dettagli Qualifiche": ordine degli anni e sezione aperta/chiusa,
+        // ricordati sul dispositivo. Senza una scelta, su desktop dal più
+        // vecchio (come l'asse del grafico sopra), su mobile dal più recente.
+        const DETAILS_PREFS_KEY = 'detailsPrefs';
+        let detailsPrefs = {};
+        try { detailsPrefs = JSON.parse(localStorage.getItem(DETAILS_PREFS_KEY)) || {}; } catch (e) {}
+        function saveDetailsPrefs() {
+            try { localStorage.setItem(DETAILS_PREFS_KEY, JSON.stringify(detailsPrefs)); } catch (e) {}
+        }
+        const detailsAscending = () => detailsPrefs.order ? detailsPrefs.order === 'asc' : isDesktopLayout();
+        function applyDetailsPrefs() {
+            const asc = detailsAscending();
+            const open = !detailsPrefs.collapsed;
+            detailsList.classList.toggle('details-asc', asc);
+            detailsList.hidden = !open;
+            document.getElementById('detailsSortLabel').textContent = asc ? 'Crescente' : 'Decrescente';
+            document.getElementById('detailsSortBtn').classList.toggle('hidden', !open);
+            document.getElementById('detailsCollapseBtn').setAttribute('aria-expanded', String(open));
+            document.getElementById('detailsChevron').classList.toggle('-rotate-90', !open);
+        }
+        function toggleDetailsOrder() {
+            detailsPrefs.order = detailsAscending() ? 'desc' : 'asc';
+            saveDetailsPrefs();
+            applyDetailsPrefs();
+        }
+        function toggleDetailsCollapsed() {
+            detailsPrefs.collapsed = !detailsPrefs.collapsed;
+            saveDetailsPrefs();
+            applyDetailsPrefs();
+            scheduleReposition(); // l'altezza della pagina è cambiata
+        }
+        applyDetailsPrefs();
         const dataSourceBadge = document.getElementById('dataSourceBadge');
         let currentChart = null;
         let telemetrySpeedChart = null;
@@ -1838,6 +1891,7 @@
                 applyLayoutMode();
                 applyClassificaPanelWidth();
                 applyTelemetryWide();
+                applyDetailsPrefs(); // ordine di default diverso tra desktop e mobile
                 applyDetailsColumnWidth();
                 applyFeaturedWidgetWidth();
                 alignDetailsColumnTop();
