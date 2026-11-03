@@ -79,6 +79,13 @@
         body.telemetry-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
         body.telemetry-wide #resizeHandle, body.telemetry-wide #vResizeHandle { display: none !important; }
+        /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
+           #resizeHandle resta come spazio di 12px tra le due colonne della
+           griglia (nasconderlo sposterebbe i dettagli nella sua colonna),
+           senza pillola né trascinamento; #vResizeHandle sparisce. */
+        #vResizeHandle { display: none !important; }
+        #resizeHandle { pointer-events: none; }
+        #resizeHandle > div { display: none; }
         body.telemetry-wide #detailsList { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .75rem; }
         body.telemetry-wide #detailsList > * { margin: 0 !important; }
         /* Box stretti: anno sopra e tempo sotto, invece che affiancati. */
