@@ -291,7 +291,7 @@
                     </button>
                 </h2>
                 <button type="button" id="detailsSortBtn" onclick="toggleDetailsOrder()" class="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer border border-gray-700 rounded-lg px-2 py-1">
-                    ⇅ <span id="detailsSortLabel">Decrescente</span>
+                    ⇅ <span id="detailsSortLabel">Più recente</span>
                 </button>
             </div>
             <div id="detailsList">
@@ -510,7 +510,7 @@
             const open = !detailsPrefs.collapsed;
             detailsList.classList.toggle('details-asc', asc);
             detailsList.hidden = !open;
-            document.getElementById('detailsSortLabel').textContent = asc ? 'Crescente' : 'Decrescente';
+            document.getElementById('detailsSortLabel').textContent = asc ? 'Meno recente' : 'Più recente';
             document.getElementById('detailsSortBtn').classList.toggle('hidden', !open);
             document.getElementById('detailsCollapseBtn').setAttribute('aria-expanded', String(open));
             document.getElementById('detailsChevron').classList.toggle('-rotate-90', !open);
