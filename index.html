@@ -92,6 +92,11 @@
         body.quali-wide #detailsList > * { padding: .75rem; }
         body.quali-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
         body.quali-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
+        /* Righe allineate tra i box: pilota sopra e gomma sotto, sempre alti
+           due righe (anche senza gomma, 2021-2022), così Scuderia e Meteo
+           cadono alla stessa altezza; "Clicca per la telemetria" sul fondo. */
+        body.quali-wide #detailsList .detail-driver { flex-direction: column; align-items: flex-start; gap: .125rem; min-height: 2.625rem; }
+        body.quali-wide #detailsList .detail-cta { margin-top: auto; padding-top: .25rem; }
         /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
         /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
@@ -3411,11 +3416,11 @@
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
                         <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
                     </div>
-                    <div class="text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span>${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}</div>
+                    <div class="detail-driver text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span>${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}</div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
-                    <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Metereologia: ${escapeHtml(d.weather)}</div>
+                    <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Meteo: ${escapeHtml(d.weather)}</div>
                     ${d.penaltyNote ? `<div class="text-xs text-orange-400 mt-1 flex items-start gap-1 border-t border-gray-800 pt-1">⚠️ <span>${escapeHtml(d.penaltyNote)}</span></div>` : ''}
-                    ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
+                    ${hasTelemetryForYear ? '<div class="detail-cta text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
                 `;
                 detailsList.appendChild(card);
             });
