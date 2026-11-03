@@ -1256,14 +1256,19 @@
                 speedDatasets.push({ label: `${compareEntry.driver} '${yy(telemetryCompareYear)}`, data: compareSpeedPoints, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.15, borderDash: [5, 3] });
             }
 
-            // Tetto dell'asse al multiplo di 25 che contiene la velocità
-            // massima, con l'etichetta (351 -> 375, 317 -> 325, 342 -> 350):
-            // lasciato a Chart.js saliva al multiplo di 50 seguente (351 ->
-            // 400, la curva restava schiacciata in basso), e un tetto senza
-            // etichetta faceva sembrare la curva oltre l'asse. Etichette sui
-            // multipli di 50 più il tetto (afterBuildTicks).
+            // Asse con passo uniforme, da un multiplo all'altro del passo, e
+            // tetto etichettato appena sopra la velocità massima: tra passo 50
+            // e 40 quello che lascia meno spazio vuoto sopra la curva (351 ->
+            // 40, fino a 360; 317 -> 40, fino a 320; 342 -> 50, fino a 350).
+            // Lasciato a Chart.js saliva al multiplo di 50 seguente (351 ->
+            // 400, curva schiacciata in basso).
             const speedValues = speedDatasets.flatMap(d => d.data.map(p => p?.y)).filter(v => v != null);
-            const speedAxisMax = speedValues.length ? Math.ceil(Math.max(...speedValues) / 25) * 25 : undefined;
+            let speedAxis = {};
+            if (speedValues.length) {
+                const vMax = Math.max(...speedValues), vMin = Math.min(...speedValues);
+                const step = [50, 40].reduce((best, st) => Math.ceil(vMax / st) * st < Math.ceil(vMax / best) * best ? st : best);
+                speedAxis = { min: Math.floor(vMin / step) * step, max: Math.ceil(vMax / step) * step, step };
+            }
 
             telemetrySpeedChart = new Chart(poleCanvas.getContext('2d'), {
                 type: 'line',
@@ -1272,7 +1277,7 @@
                     ...commonOptions,
                     scales: {
                         x: { type: 'linear', ...xScaleRange, grid: { display: false }, ticks: { display: false } },
-                        y: { ...fixedYAxisWidth, max: speedAxisMax, afterBuildTicks: scale => { scale.ticks = scale.ticks.filter(t => t.value % 50 === 0 || t.value === scale.max); }, grid: { color: '#2a2a2a' }, ticks: { stepSize: 25, color: '#a0aec0', font: tickFont, callback: v => compactAxis ? v : v + ' km/h' } }
+                        y: { ...fixedYAxisWidth, min: speedAxis.min, max: speedAxis.max, grid: { color: '#2a2a2a' }, ticks: { stepSize: speedAxis.step, color: '#a0aec0', font: tickFont, callback: v => compactAxis ? v : v + ' km/h' } }
                     },
                     plugins: {
                         legend: { display: false },
