@@ -278,28 +278,18 @@
                 <!-- I dettagli compariranno qui -->
             </div>
 
-            <!-- Tasto "Full Update": sempre subito dopo #detailsList (non
-                 all'interno), quindi resta sempre sotto l'ultimo riquadro
-                 qualsiasi sia il numero di anni presenti (aumenta di uno
-                 ogni stagione) - nessuna posizione da ricalcolare via JS.
-                 Apre la pagina del workflow combinato "Aggiorna tutto" su
-                 GitHub Actions (un solo "Run workflow" esegue in sequenza
-                 pole position, penalità, classifica, calendario e
-                 telemetria): il sito è statico, non può contenere un token
-                 per lanciarlo direttamente senza esporlo a chiunque lo
-                 visiti. -->
+            <!-- Tasto "Notifiche": sempre subito dopo #detailsList (non
+                 all'interno), quindi resta sotto l'ultimo riquadro qualsiasi
+                 sia il numero di anni presenti. Il "Full Update" è un link
+                 nel footer, tra le fonti dei dati. -->
             <div class="mt-6 mb-2 text-center md:text-left">
-                <a href="https://github.com/FrankBosone93/f1-pole-tracker/actions/workflows/update-all.yml" target="_blank" rel="noopener noreferrer"
-                   class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer">
-                    🔄 Full Update
-                </a>
                 <!-- Notifiche push della web app (iPhone: solo dalla schermata
                      Home, iOS 16.4+) - vedi enableWebPush e sw.js. -->
                 <button type="button" onclick="enableWebPush()"
-                   class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer ml-2">
+                   class="inline-block bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg border border-gray-700 transition-colors cursor-pointer">
                     🔔 Notifiche
                 </button>
-                <p class="text-xs text-gray-600 mt-1">Aggiornamento Dati completo · Notifiche dopo ogni GP</p>
+                <p class="text-xs text-gray-600 mt-1">Notifiche dopo ogni GP</p>
             </div>
         </div>
 
@@ -368,6 +358,13 @@
         <a href="https://multiviewer.app" target="_blank" rel="noopener" class="hover:text-gray-300 underline">MultiViewer</a>
         <!-- Su mobile le news vanno su una riga a sé (senza il puntino). -->
         <span class="block md:inline"><span class="hidden md:inline">· </span>News: <a href="https://www.formulapassion.it" target="_blank" rel="noopener" class="hover:text-gray-300 underline">FormulaPassion.it</a></span>
+        <!-- Full Update: apre la pagina del workflow combinato "Aggiorna
+             tutto" su GitHub Actions (un solo "Run workflow" esegue in
+             sequenza pole position, penalità, classifica, calendario e
+             telemetria; lo può avviare solo chi ha accesso al repository).
+             Il sito è statico, non può contenere un token per lanciarlo
+             direttamente. Su mobile su una riga a sé, sotto le news. -->
+        <span class="block md:inline"><span class="hidden md:inline">· </span><a href="https://github.com/FrankBosone93/f1-pole-tracker/actions/workflows/update-all.yml" target="_blank" rel="noopener noreferrer" class="hover:text-gray-300 underline">Full Update</a></span>
     </footer>
 
     <!-- Finestra dei pannelli della stagione (tasti #seasonButtons): uno
