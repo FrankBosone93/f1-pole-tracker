@@ -1,6 +1,35 @@
 {
   "entries": [
     {
+      "date": "2026-11-03",
+      "title": "Changelog — 3 Novembre 2026",
+      "sections": [
+        {
+          "title": "Qualifiche",
+          "items": [
+            "Su computer il **grafico dei tempi** prende tutta la larghezza ed è un po' più basso, così sotto si vedono già i dettagli.",
+            "I box di **Dettagli Qualifiche** stanno in fila sotto il grafico, dal 2021 al 2026 come l'asse degli anni, sia nel grafico dei tempi sia nella telemetria: passando da una vista all'altra non si spostano più.",
+            "Nuovo tastino **⇅ Più recente / Meno recente** per scegliere da quale anno parte la lista, su computer e su telefono.",
+            "Toccando il titolo **Dettagli Qualifiche** la sezione si chiude o si riapre; ordine e sezione aperta o chiusa vengono ricordati.",
+            "Tolte le maniglie per ridimensionare grafico e colonne: la disposizione resta sempre ordinata."
+          ]
+        },
+        {
+          "title": "Telemetria",
+          "items": [
+            "L'asse della **velocità** ha sempre lo stesso passo tra un'etichetta e l'altra (ogni 40 o 50 km/h) e arriva appena sopra la velocità massima del giro."
+          ]
+        },
+        {
+          "title": "Fondo pagina",
+          "items": [
+            "Il tasto per l'aggiornamento completo dei dati diventa un link **Full Update** in fondo alla pagina, accanto alle fonti.",
+            "Sotto il tasto **🔔 Notifiche** c'è ora la scritta «Clicca per attivare le notifiche.»"
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-02",
       "title": "Changelog — 2 Novembre 2026",
       "sections": [
