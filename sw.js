@@ -23,7 +23,7 @@ const CDN_ASSETS = [
 ];
 // Dati che servono all'apertura: salvati già all'installazione, così il sito
 // si apre offline anche se dopo non è stato riaperto con la rete.
-const DATA_ASSETS = ['./data.json', './calendar.json', './standings.json', './telemetry.json', './news.json', './history/index.json', './changelog.json'];
+const DATA_ASSETS = ['./data.json', './calendar.json', './standings.json', './telemetry.json', './news.json', './forecast.json', './history/index.json', './changelog.json'];
 
 const isCdn = url => url.startsWith('https://cdn.jsdelivr.net/');
 

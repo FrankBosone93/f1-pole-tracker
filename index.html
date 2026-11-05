@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=fddbbcafcb">
+    <link rel="stylesheet" href="styles.css?v=4c4b99ea6c">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -482,6 +482,7 @@
         let telemetryPrimarySeason = String(new Date().getFullYear()); // reimpostata in updateApp
         let telemetryCompareYear = null; // stagione scelta per il confronto (es. '2025'), o null se nessuna
         let newsData = null; // ultime notizie F1 da FormulaPassion.it, da news.json
+        let forecastData = null; // meteo previsto del Prossimo GP (Open-Meteo), da forecast.json
 
         // Legge il giro di pole di una stagione+circuito da telemetryData,
         // null se non disponibile (stagione non scaricata o circuito senza
@@ -1512,12 +1513,13 @@
                     return null;
                 }
             };
-            const [standings, calendar, telemetry, news, historyIndex] = await Promise.all([
+            const [standings, calendar, telemetry, news, historyIndex, forecast] = await Promise.all([
                 loadJson('standings.json'),
                 loadJson('calendar.json'),
                 loadJson('telemetry.json'),
                 loadJson('news.json'),
                 loadJson('history/index.json'),
+                loadJson('forecast.json'),
                 // Un errore del badge non deve fermare il caricamento del sito.
                 updateApiHealthBadge().catch(err => console.warn('Badge di stato non aggiornato:', err)),
             ]);
@@ -1525,6 +1527,7 @@
             standingsData = standings;
             telemetryData = telemetry;
             newsData = news;
+            forecastData = forecast;
 
             if (calendar) {
                 calendarData = calendar;
@@ -2103,6 +2106,47 @@
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
 
+        // Meteo previsto di una gara della stagione in corso, da forecast.json
+        // (scripts/update-forecast.js, ogni 3 ore con Open-Meteo, solo nella
+        // settimana del GP): { qualy: { rain, temp, icon, sky }, race: ... }.
+        // null se il file è di un'altra gara o ha più di 24 ore (automazione
+        // ferma: meglio niente che una previsione scaduta).
+        const FORECAST_MAX_AGE_MS = 24 * 3600000;
+        function forecastFor(race) {
+            const f = forecastData;
+            if (!f || !f.sessions || !calendarData || !calendarData.races.includes(race)) return null;
+            if (f.season !== calendarData.season || f.round !== race.round) return null;
+            const age = Date.now() - new Date(f.updatedAt).getTime();
+            return Number.isFinite(age) && age <= FORECAST_MAX_AGE_MS ? f.sessions : null;
+        }
+
+        // Meteo prima del giorno, sulla riga della sessione: icona del cielo,
+        // probabilità di pioggia (in azzurro) e temperatura all'inizio,
+        // separate da un puntino, come chiesto ("a destra prima del giorno,
+        // in maniera minimale"), es. "🌧️ 80% · 26°". Descrizione, fonte e
+        // ora dell'aggiornamento nel suggerimento (title). Nel riquadro
+        // stretto (desktop sotto i 950px circa) l'etichetta va a capo sopra
+        // il giorno invece di togliere spazio ai nomi delle sessioni.
+        function forecastBadgeHtml(w) {
+            const rain = Number.isFinite(w.rain) ? w.rain : null;
+            const temp = Number.isFinite(w.temp) ? w.temp : null;
+            if (!w.icon && rain === null && temp === null) return '';
+            const rome = { timeZone: 'Europe/Rome' };
+            const updated = new Date(forecastData.updatedAt);
+            const time = updated.toLocaleTimeString('it-IT', { ...rome, hour: '2-digit', minute: '2-digit' });
+            const sameDay = updated.toLocaleDateString('it-IT', rome) === new Date().toLocaleDateString('it-IT', rome);
+            const when = sameDay ? `alle ${time}` : `${updated.toLocaleDateString('it-IT', { ...rome, weekday: 'long' })} alle ${time}`;
+            const title = [w.sky, rain !== null ? `probabilità di pioggia ${rain}%` : null, temp !== null ? `${temp} °C` : null]
+                .filter(Boolean).join(', ') + ` (previsioni Open-Meteo, aggiornate ${when})`;
+            // Il puntino solo se ci sono sia la pioggia sia la temperatura.
+            const values = [
+                rain !== null ? `<span class="text-sky-400">${rain}%</span>` : null,
+                temp !== null ? `<span class="text-gray-400">${temp}°</span>` : null,
+            ].filter(Boolean).join(' <span class="text-gray-500">·</span> ');
+            const content = [w.icon ? escapeHtml(w.icon) : '', values].filter(Boolean).join(' ');
+            return `<span class="whitespace-nowrap" title="${escapeHtml(title)}">${content}</span>`;
+        }
+
         // Tabella compatta dei risultati di una sessione (prove libere,
         // qualifiche o gara): posizione, pilota, scuderia, tempo. In gara un
         // ritiro mostra il motivo al posto del distacco.
@@ -2164,6 +2208,9 @@
             const labels = hidePractice
                 ? SESSION_LABELS.filter(([key]) => key !== 'fp1' && key !== 'fp2' && key !== 'fp3')
                 : SESSION_LABELS;
+            // Meteo previsto: solo il GP della settimana, per le sessioni non
+            // ancora finite.
+            const forecast = forecastFor(race);
             const rows = labels.map(([key, label]) => {
                 const session = race.schedule && race.schedule[key];
                 const formatted = formatSessionTime(session);
@@ -2191,6 +2238,19 @@
                     ? `<div id="${panelId}" class="hidden col-span-3">${renderResultsTable(results, key)}</div>`
                     : '';
 
+                const weather = forecast && forecast[key] && (status === 'upcoming' || status === 'live') ? forecast[key] : null;
+                const badge = weather ? forecastBadgeHtml(weather) : '';
+
+                // Col meteo la cella può andare a capo, ma solo tra meteo e
+                // giorno (ognuno dei due resta intero). Flex con gap e non un
+                // margine sul giorno: il gap c'è solo quando stanno sulla
+                // stessa riga, mentre il margine restava anche andando a capo
+                // e toglieva 4px al nome della sessione (a 768px, nei weekend
+                // sprint, "Qualifiche Sprint" finiva troncato).
+                const timeHtml = badge
+                    ? `<span class="${textClass} flex flex-wrap justify-end items-baseline gap-x-1.5">${badge} <span class="whitespace-nowrap">${timeCell}</span></span>`
+                    : `<span class="${textClass} text-right whitespace-nowrap">${timeCell}</span>`;
+
                 // "contents" toglie il wrapper dal flusso: i suoi figli (le 3
                 // celle + l'eventuale pannello risultati) diventano celle
                 // dirette della griglia del genitore, così il pannello si
@@ -2198,7 +2258,7 @@
                 return `<div class="contents">
                     <span class="w-1.5 h-1.5 rounded-full ${dotClass}"></span>
                     <span class="${textClass} truncate">${label}</span>
-                    <span class="${textClass} text-right whitespace-nowrap">${timeCell}</span>
+                    ${timeHtml}
                     ${resultsPanel}
                 </div>`;
             }).join('') || '<span class="col-span-3 text-gray-500 italic">Orari non disponibili.</span>';
