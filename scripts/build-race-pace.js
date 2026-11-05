@@ -116,6 +116,35 @@ function lapTimesFrom(laps, totalLaps, lapsDone = new Map()) {
     return out;
 }
 
+// Soste: il giro prima di ogni giro di uscita dai box (is_pit_out_lap di
+// /laps; il giro 1 è la partenza, anche dalla pit lane). Le soste di OpenF1
+// /pit si aggiungono solo se non si possono verificare, cioè se il giro dopo
+// non ha il tempo (Miami 2025: giri senza dati, soste giuste solo in /pit):
+// con il giro dopo cronometrato e non di uscita dai box sono sbagliate.
+// Melbourne 2026: Leclerc fermo al giro 18 invece del 25, a Stroll mancavano
+// le soste dei giri 26, 34 e 39; Città del Messico 2026: 9 piloti fermi al
+// giro 1. Tutto entro i giri completati: un giro di uscita mai finito non
+// conta (Zandvoort 2025, Leclerc ritirato nel giro dopo la sosta del 52).
+// Verificato sulle soste ufficiali (Jolpica) di otto gare, comprese le tre
+// sopra e tre con bandiera rossa.
+function pitLapsFrom(laps, pits, totalLaps, lapsDone = new Map()) {
+    const lastLapOf = n => { const done = lapsDone.get(n); return typeof done === 'number' ? Math.min(done, totalLaps) : totalLaps; };
+    const timed = new Set(laps.filter(l => typeof l.lap_duration === 'number').map(l => `${l.driver_number}:${l.lap_number}`));
+    const pitIn = {}, pitOut = {};
+    const add = (obj, n, lap) => (obj[n] = obj[n] || []).push(lap);
+    for (const l of laps) {
+        if (!l.is_pit_out_lap || l.lap_number < 2 || l.lap_number > lastLapOf(l.driver_number)) continue;
+        add(pitOut, l.driver_number, l.lap_number);
+        add(pitIn, l.driver_number, l.lap_number - 1);
+    }
+    for (const p of pits) {
+        const n = p.driver_number, lap = p.lap_number;
+        if (lap >= 1 && lap <= lastLapOf(n) && !timed.has(`${n}:${lap + 1}`)) add(pitIn, n, lap);
+    }
+    for (const obj of [pitIn, pitOut]) for (const n in obj) obj[n] = [...new Set(obj[n])].sort((a, b) => a - b);
+    return { pitIn, pitOut };
+}
+
 // Distacco di ogni pilota alla fine del giro 1, in secondi (0 = il primo a
 // passare sul traguardo), dagli orari di inizio del giro 2. Il tempo del
 // giro 1 manca spesso su OpenF1 (partenza; bandiera rossa al primo giro,
@@ -238,26 +267,15 @@ async function buildRace(session, season, circuit) {
             };
         }),
         laps: lapTimesFrom(laps, totalLaps, lapsDone), // numero pilota -> [tempo giro 1, giro 2, ...] (null = mancante)
-        pitIn: {},    // numero pilota -> giri in cui è entrato ai box
-        pitOut: {},   // numero pilota -> giri di uscita dai box
+        ...pitLapsFrom(laps, pits, totalLaps, lapsDone), // pitIn / pitOut: numero pilota -> giri di ingresso / uscita dai box
         stints: {},   // numero pilota -> [[primo giro, ultimo giro, mescola], ...]
         lap1End: lap1EndFrom(laps), // numero pilota -> distacco a fine giro 1 (s)
         ...neutralizedPeriods(raceControl, totalLaps),
     };
 
-    for (const l of laps) {
-        if (l.is_pit_out_lap && l.lap_number > 1) (out.pitOut[l.driver_number] = out.pitOut[l.driver_number] || []).push(l.lap_number);
-    }
-    for (const p of pits) {
-        if (p.lap_number) (out.pitIn[p.driver_number] = out.pitIn[p.driver_number] || []).push(p.lap_number);
-    }
     for (const s of stints.slice().sort((a, b) => a.stint_number - b.stint_number)) {
         (out.stints[s.driver_number] = out.stints[s.driver_number] || []).push([s.lap_start, s.lap_end, s.compound || null]);
     }
-    // Senza dati delle soste per un pilota: il giro di ingresso ai box è
-    // quello prima del giro di uscita.
-    for (const n in out.pitOut) if (!out.pitIn[n]) out.pitIn[n] = out.pitOut[n].map(l => l - 1);
-    for (const k of ['pitIn', 'pitOut']) for (const n in out[k]) out[k][n] = [...new Set(out[k][n])].filter(l => l <= totalLaps).sort((a, b) => a - b);
     out.periods = out.periods.filter(p => p.from <= totalLaps).map(p => ({ ...p, to: Math.min(p.to, totalLaps) }));
     out.redFlags = out.redFlags.filter(l => l <= totalLaps);
     return out;
@@ -321,7 +339,7 @@ async function main() {
     if (errors.length) throw new Error(errors.join(' | '));
 }
 
-module.exports = { buildRace, lap1EndFrom, lapTimesFrom };
+module.exports = { buildRace, lap1EndFrom, lapTimesFrom, pitLapsFrom };
 
 // Solo se lanciato direttamente, non quando è importato per riusare buildRace.
 if (require.main === module) {
