@@ -92,11 +92,10 @@
         body.quali-wide #detailsList > * { padding: .75rem; }
         body.quali-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
         body.quali-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
-        /* Righe allineate tra i box: gomma a destra del nome (va a capo se
-           non c'è spazio), riga del pilota sempre alta due righe, così
-           Scuderia, Meteo e "Clicca per la telemetria" cadono alla stessa
-           altezza; gli avvisi vengono dopo, sotto la linea. */
-        body.quali-wide #detailsList .detail-driver { min-height: 2.625rem; align-content: flex-start; row-gap: .125rem; }
+        /* Gomma a destra del nome (va a capo se non c'è spazio, senza
+           lasciare righe vuote negli altri box); gli avvisi vengono dopo
+           "Clicca per la telemetria", sotto la linea. */
+        body.quali-wide #detailsList .detail-driver { row-gap: .125rem; }
         /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
         /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
