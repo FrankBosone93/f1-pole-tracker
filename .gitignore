@@ -5,3 +5,6 @@ F1_Pole_Positions.xlsx
 # Dati privati delle notifiche (iscrizioni con nomi): solo in locale, mai su GitHub
 private/
 node_modules/
+
+# File temporanei dello storico (scripts/build-history.js)
+history/*.partial

@@ -25,14 +25,26 @@ async function fetchText(url) {
 // per le virgolette tipografiche, &#8217; per l'apostrofo, &#8230; per "…").
 // Non serve una libreria: il set di entity usato da WordPress è piccolo e
 // stabile.
+const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' };
+// Una sola passata: decodificando prima &amp; e poi &lt;, "&amp;lt;" (cioè
+// il testo "&lt;") diventava "<". Gestite anche le entity esadecimali
+// (&#x2019;); quelle sconosciute restano com'erano.
 function decodeEntities(str) {
-    return str
-        .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#039;|&apos;/g, "'");
+    return str.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (entity, name) => {
+        if (name[0] === '#') {
+            const code = /^#x/i.test(name) ? parseInt(name.slice(2), 16) : parseInt(name.slice(1), 10);
+            return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : entity;
+        }
+        const named = NAMED_ENTITIES[name.toLowerCase()];
+        return named === undefined ? entity : named;
+    });
+}
+
+// Data del feed in formato ISO, o null se manca o non è valida (una data
+// malformata faceva fallire tutto l'aggiornamento con un RangeError).
+function isoDate(str) {
+    const d = str ? new Date(str) : null;
+    return d && !isNaN(d.getTime()) ? d.toISOString() : null;
 }
 
 function extractTag(block, tag) {
@@ -69,7 +81,7 @@ async function main() {
         items: items.map(i => ({
             title: i.title,
             link: i.link,
-            date: i.date ? new Date(i.date).toISOString() : null,
+            date: isoDate(i.date),
             author: i.author,
             image: i.image,
         })),

@@ -102,6 +102,10 @@ async function checkRound(season, race, currentData, openf1Sessions) {
 function applyGrid(entry, year, mappedCircuit, grid) {
     if (!grid) return false;
     const { poleGrid, frontRowName } = grid;
+    if (!Number.isInteger(poleGrid)) {
+        console.log(`Posizione in griglia di ${entry.driver} non leggibile (${poleGrid}): nessuna azione.`);
+        return false;
+    }
     if (!frontRowName || poleGrid === 1) {
         // Nessuna penalità: il polista è partito davanti. Rimuovi un eventuale
         // avviso stale (non dovrebbe succedere, ma per sicurezza).
@@ -120,7 +124,9 @@ function applyGrid(entry, year, mappedCircuit, grid) {
         console.log(`Polista partito ${poleGrid}°: nota già presente, lasciata com'è.`);
         return false;
     }
-    const note = `Pole in qualifica, ma partito ${poleGrid}° in griglia per una penalità: il via al palo è stato di ${frontRowName}.`;
+    // Griglia 0 = partenza dalla pit lane (Jolpica): prima diventava "partito 0°".
+    const where = poleGrid === 0 ? 'dalla pit lane' : `${poleGrid}° in griglia per una penalità`;
+    const note = `Pole in qualifica, ma partito ${where}: il via al palo è stato di ${frontRowName}.`;
     if (entry.penaltyNote !== note) {
         entry.penaltyNote = note;
         console.log(`🚩 Penalità rilevata per ${entry.driver} (${year} - ${mappedCircuit}): ${note}`);

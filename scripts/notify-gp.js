@@ -29,6 +29,7 @@ const fs = require('fs');
 const path = require('path');
 const { autoCircuitsAddedIn } = require('./lib/auto-circuits');
 const { sendAll, sendWebPushAll } = require('./lib/notify-channels');
+const { standingsIncludeRace } = require('./lib/standings-fresh');
 
 const ROOT = path.join(__dirname, '..');
 const STATE_PATH = path.join(ROOT, 'status', 'notified.json');
@@ -97,7 +98,7 @@ function buildReport() {
 
     const pole = poles.find(d => d.year === year && d.circuit === circuit);
     const results = Array.isArray(race.results?.race) && race.results.race.length ? race.results.race : null;
-    const standingsFresh = standings && String(standings.season) === String(year) && standings.updatedAt.slice(0, 10) >= race.date;
+    const standingsFresh = standingsIncludeRace(standings, year, race);
     const hasTelemetry = !!telemetry?.seasons?.[year]?.circuits?.[circuit];
     const hasPace = !!(paceIndex?.races?.[year] || []).some(r => r.circuit === circuit);
 

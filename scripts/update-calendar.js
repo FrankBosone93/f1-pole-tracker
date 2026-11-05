@@ -75,8 +75,15 @@ async function main() {
     // round 16, Singapore passata da 16 a 17) e i risultati in cache
     // finirebbero attribuiti alla gara sbagliata. Un circuito compare una
     // sola volta per stagione, quindi è una chiave stabile.
+    // Solo per la STESSA stagione: al cambio d'anno (a gennaio, quando OpenF1
+    // ha già il calendario nuovo) i risultati della stagione precedente
+    // finirebbero sulle gare del nuovo anno ancora da correre, con i
+    // vincitori dell'anno prima (e l'archiviazione considererebbe conclusa
+    // la stagione appena iniziata).
     const existingByCircuit = new Map();
-    if (existingCalendar && Array.isArray(existingCalendar.races)) {
+    const sameSeason = existingCalendar && Number(existingCalendar.season) === Number(season);
+    if (existingCalendar && !sameSeason) console.log(`Nuova stagione: i risultati in cache del ${existingCalendar.season} non si riusano per il ${season}.`);
+    if (sameSeason && Array.isArray(existingCalendar.races)) {
         existingCalendar.races.forEach(r => existingByCircuit.set(r.circuit, r));
     }
 

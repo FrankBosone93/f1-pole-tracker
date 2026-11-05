@@ -62,6 +62,75 @@ const hasPole = (season, circuit) => poleData.some(d => d.year === season && d.c
 
 const round3 = v => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : null);
 
+// Giri senza tempo su OpenF1 (record assente o lap_duration null, es.
+// Città del Messico 2026: giro 5 mancante per 9 piloti, e il distacco tra
+// due piloti si fermava lì): tempo = inizio del giro dopo - inizio di
+// questo, dagli orari date_start. L'inizio di un giro senza record è la
+// fine del giro prima. Solo i buchi prima dell'ultimo giro con il tempo del
+// pilota: il primo giro resta vuoto (nessun giro prima), e dopo l'ultimo
+// giro con il tempo gli orari di OpenF1 non sono affidabili (Monza 2023: il
+// record dopo la bandiera a scacchi ha lo stesso orario per tutti, 8 minuti
+// dopo, e a 7 piloti senza il record del giro 51 veniva un giro di ~400 s).
+// Solo se gli orari tornano: il giro dopo deve finire quando inizia quello
+// successivo (entro 1 s) e il tempo ricavato non può essere più veloce del
+// giro migliore del pilota. Zandvoort 2026, Lindblad giro 4: orari OpenF1
+// incoerenti dopo la bandiera rossa, sarebbe venuto 55 s (giro normale
+// ~77 s), quindi resta vuoto.
+function fillLapsFromStarts(lapsByDriver, laps) {
+    const starts = {};
+    for (const l of laps) {
+        if (l.date_start && l.lap_number >= 1) (starts[l.driver_number] = starts[l.driver_number] || [])[l.lap_number - 1] = Date.parse(l.date_start);
+    }
+    for (const n in lapsByDriver) {
+        const st = starts[n] || [], lt = lapsByDriver[n];
+        const best = Math.min(...lt.filter(v => v !== null));
+        const last = lt.findLastIndex(v => v !== null);
+        const fits = (k, ms) => st[k] == null || Math.abs(st[k] - ms) <= 1000;
+        for (let k = 1; k < last; k++) {
+            if (lt[k] !== null) continue;
+            const from = st[k] ?? (st[k - 1] != null && lt[k - 1] != null ? st[k - 1] + lt[k - 1] * 1000 : null);
+            const to = st[k + 1];
+            if (from == null || to == null) continue;
+            const sec = (to - from) / 1000;
+            const nextOk = lt[k + 1] == null || fits(k + 2, to + lt[k + 1] * 1000);
+            if (sec >= best && nextOk) lt[k] = round3(sec);
+        }
+    }
+}
+
+// Tempi sul giro di ogni pilota: numero -> [giro 1, giro 2, ...] (null =
+// mancante), più i giri ricostruiti dagli orari. lapsDone: giri completati
+// nella classifica ufficiale; quelli dopo non fanno parte della gara del
+// pilota (Silverstone 2026, Sainz doppiato: il giro 52 di 125 s era il giro
+// di rientro dopo la bandiera a scacchi).
+function lapTimesFrom(laps, totalLaps, lapsDone = new Map()) {
+    const out = {};
+    for (const l of laps) {
+        const n = l.driver_number;
+        if (!out[n]) out[n] = new Array(totalLaps).fill(null);
+        const done = lapsDone.get(n);
+        const lastLap = typeof done === 'number' ? Math.min(done, totalLaps) : totalLaps;
+        if (l.lap_number >= 1 && l.lap_number <= lastLap) out[n][l.lap_number - 1] = round3(l.lap_duration);
+    }
+    fillLapsFromStarts(out, laps);
+    return out;
+}
+
+// Distacco di ogni pilota alla fine del giro 1, in secondi (0 = il primo a
+// passare sul traguardo), dagli orari di inizio del giro 2. Il tempo del
+// giro 1 manca spesso su OpenF1 (partenza; bandiera rossa al primo giro,
+// Monaco 2024), e senza un punto di partenza il grafico dei distacchi del
+// sito restava vuoto. Verificato su Monaco 2024: distacco finale
+// Piastri-Leclerc 7,20 s (ufficiale 7,152), Sainz-Leclerc 7,60 s (7,585).
+function lap1EndFrom(laps) {
+    const lap2 = laps.filter(l => l.lap_number === 2 && l.date_start)
+        .map(l => [l.driver_number, Date.parse(l.date_start)])
+        .filter(([, t]) => !isNaN(t));
+    if (!lap2.length) return {};
+    const t0 = Math.min(...lap2.map(([, t]) => t));
+    return Object.fromEntries(lap2.map(([n, t]) => [n, round3((t - t0) / 1000)]));
+}
+
 // "Max VERSTAPPEN" -> "Max Verstappen" (OpenF1 scrive il cognome maiuscolo).
 function displayName(d) {
     if (d.first_name && d.last_name) return `${d.first_name} ${d.last_name}`;
@@ -127,6 +196,9 @@ async function buildRace(session, season, circuit) {
         ? Math.max(...classifiedLaps)
         : Math.max(...laps.filter(l => typeof l.lap_duration === 'number').map(l => l.lap_number || 0));
     const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
+    // Solo dalla classifica ufficiale: quella ricostruita qui sotto conta i
+    // giri con il tempo, e taglierebbe quelli dopo un giro senza tempo.
+    const lapsDone = new Map(results.filter(r => typeof r.number_of_laps === 'number').map(r => [r.driver_number, r.number_of_laps]));
 
     // Classifica: classificati per posizione, poi i non classificati per giri
     // percorsi (ritirati), poi chi non è partito.
@@ -165,47 +237,16 @@ async function buildRace(session, season, circuit) {
                 laps: r.number_of_laps ?? null,
             };
         }),
-        laps: {},     // numero pilota -> [tempo giro 1, giro 2, ...] (null = mancante)
+        laps: lapTimesFrom(laps, totalLaps, lapsDone), // numero pilota -> [tempo giro 1, giro 2, ...] (null = mancante)
         pitIn: {},    // numero pilota -> giri in cui è entrato ai box
         pitOut: {},   // numero pilota -> giri di uscita dai box
         stints: {},   // numero pilota -> [[primo giro, ultimo giro, mescola], ...]
+        lap1End: lap1EndFrom(laps), // numero pilota -> distacco a fine giro 1 (s)
         ...neutralizedPeriods(raceControl, totalLaps),
     };
 
     for (const l of laps) {
-        const n = l.driver_number;
-        if (!out.laps[n]) out.laps[n] = new Array(totalLaps).fill(null);
-        if (l.lap_number >= 1 && l.lap_number <= totalLaps) out.laps[n][l.lap_number - 1] = round3(l.lap_duration);
-        if (l.is_pit_out_lap && l.lap_number > 1) (out.pitOut[n] = out.pitOut[n] || []).push(l.lap_number);
-    }
-    // Giri senza tempo su OpenF1 (record assente o lap_duration null, es.
-    // Città del Messico 2026: giro 5 mancante per 9 piloti, e il distacco tra
-    // due piloti si fermava lì): tempo = inizio del giro dopo - inizio di
-    // questo, dagli orari date_start. L'inizio di un giro senza record è la
-    // fine del giro prima. Il primo giro resta vuoto (nessun giro prima) e
-    // l'ultimo pure se OpenF1 non ha il giro dopo la bandiera a scacchi.
-    // Solo se gli orari tornano: il giro dopo deve finire quando inizia quello
-    // successivo (entro 1 s) e il tempo ricavato non può essere più veloce del
-    // giro migliore del pilota. Zandvoort 2026, Lindblad giro 4: orari OpenF1
-    // incoerenti dopo la bandiera rossa, sarebbe venuto 55 s (giro normale
-    // ~77 s), quindi resta vuoto.
-    const starts = {};
-    for (const l of laps) {
-        if (l.date_start && l.lap_number >= 1) (starts[l.driver_number] = starts[l.driver_number] || [])[l.lap_number - 1] = Date.parse(l.date_start);
-    }
-    for (const n in out.laps) {
-        const st = starts[n] || [], lt = out.laps[n];
-        const best = Math.min(...lt.filter(v => v !== null));
-        const fits = (k, ms) => st[k] == null || Math.abs(st[k] - ms) <= 1000;
-        for (let k = 1; k < totalLaps; k++) {
-            if (lt[k] !== null) continue;
-            const from = st[k] ?? (st[k - 1] != null && lt[k - 1] != null ? st[k - 1] + lt[k - 1] * 1000 : null);
-            const to = st[k + 1];
-            if (from == null || to == null) continue;
-            const sec = (to - from) / 1000;
-            const nextOk = lt[k + 1] == null || fits(k + 2, to + lt[k + 1] * 1000);
-            if (sec >= best && nextOk) lt[k] = round3(sec);
-        }
+        if (l.is_pit_out_lap && l.lap_number > 1) (out.pitOut[l.driver_number] = out.pitOut[l.driver_number] || []).push(l.lap_number);
     }
     for (const p of pits) {
         if (p.lap_number) (out.pitIn[p.driver_number] = out.pitIn[p.driver_number] || []).push(p.lap_number);
@@ -280,10 +321,15 @@ async function main() {
     if (errors.length) throw new Error(errors.join(' | '));
 }
 
-main()
-    .then(() => writeStatus('pace', true))
-    .catch(err => {
-        console.error('❌ Errore durante la costruzione del passo gara:', err.message);
-        writeStatus('pace', false, err.message);
-        process.exit(1);
-    });
+module.exports = { buildRace, lap1EndFrom, lapTimesFrom };
+
+// Solo se lanciato direttamente, non quando è importato per riusare buildRace.
+if (require.main === module) {
+    main()
+        .then(() => writeStatus('pace', true))
+        .catch(err => {
+            console.error('❌ Errore durante la costruzione del passo gara:', err.message);
+            writeStatus('pace', false, err.message);
+            process.exit(1);
+        });
+}

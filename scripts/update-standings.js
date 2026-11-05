@@ -109,9 +109,10 @@ async function standingsFromJolpica() {
 const STANDINGS_JSON_PATH = path.join(__dirname, '..', 'standings.json');
 
 async function main() {
+    const year = new Date().getUTCFullYear();
     try {
         console.log('Richiesta classifica a OpenF1 ...');
-        const fromOpenF1 = await standingsFromOpenF1(new Date().getFullYear());
+        const fromOpenF1 = await standingsFromOpenF1(year);
         if (fromOpenF1) return save(fromOpenF1);
         console.warn('⚠️  OpenF1 senza classifica per l\'ultima gara: provo Jolpica.');
     } catch (err) {
@@ -120,8 +121,18 @@ async function main() {
 
     console.log('Richiesta classifica a Jolpica (api.jolpi.ca) ...');
     const jolpica = await standingsFromJolpica();
-    if (!jolpica) throw new Error('Classifica non disponibile né su OpenF1 né su Jolpica.');
-    return save(jolpica);
+    if (jolpica) return save(jolpica);
+
+    // Pausa invernale: da gennaio alla prima gara nessuna fonte ha ancora la
+    // classifica della stagione nuova. Non è un errore (prima il badge del
+    // sito restava rosso per settimane): resta la classifica finale della
+    // stagione precedente già salvata.
+    const existing = fs.existsSync(STANDINGS_JSON_PATH) ? JSON.parse(fs.readFileSync(STANDINGS_JSON_PATH, 'utf-8')) : null;
+    if (existing && Number(existing.season) < year) {
+        console.log(`Nessuna classifica ${year} ancora disponibile (stagione non iniziata): resta quella ${existing.season}.`);
+        return;
+    }
+    throw new Error('Classifica non disponibile né su OpenF1 né su Jolpica.');
 }
 
 function save({ season, drivers, constructors }) {

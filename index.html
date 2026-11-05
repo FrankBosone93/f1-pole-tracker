@@ -1434,11 +1434,15 @@
                 // anche con prove libere e qualifiche già aggiornate.
                 // L'eventuale errore di una qualsiasi automazione resta
                 // segnalato dal pallino rosso qui sotto.
-                const latestRun = Math.max(...results.map(r => new Date(r.lastRun).getTime()).filter(t => !isNaN(t)));
-                const d = new Date(latestRun);
-                const dateStr = `${d.getDate()} ${ITALIAN_MONTHS[d.getMonth()].toLowerCase()}`;
-                const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
-                dataSourceBadge.innerText = `🟢 Dati aggiornati al ${dateStr} alle ${timeStr}`;
+                const runs = results.map(r => new Date(r.lastRun).getTime()).filter(t => !isNaN(t));
+                if (runs.length) {
+                    const d = new Date(Math.max(...runs));
+                    const dateStr = `${d.getDate()} ${ITALIAN_MONTHS[d.getMonth()].toLowerCase()}`;
+                    const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
+                    dataSourceBadge.innerText = `🟢 Dati aggiornati al ${dateStr} alle ${timeStr}`;
+                } else {
+                    dataSourceBadge.innerText = '🟢 Dati aggiornati';
+                }
                 dataSourceBadge.title = '';
             } else {
                 const names = failing.map(f => f.label).join(', ');
@@ -1504,7 +1508,8 @@
                 loadJson('telemetry.json'),
                 loadJson('news.json'),
                 loadJson('history/index.json'),
-                updateApiHealthBadge(),
+                // Un errore del badge non deve fermare il caricamento del sito.
+                updateApiHealthBadge().catch(err => console.warn('Badge di stato non aggiornato:', err)),
             ]);
 
             standingsData = standings;
@@ -1937,9 +1942,13 @@
         });
 
         function formatSecondsToTime(totalSeconds) {
-            const mins = Math.floor(totalSeconds / 60);
-            const secs = Math.floor(totalSeconds % 60);
-            const ms = Math.round((totalSeconds % 1) * 1000);
+            // Arrotondamento sul totale, prima di dividere in minuti e
+            // secondi: arrotondando solo i millesimi, 83,9996 s diventava
+            // "1:23.1000" invece di "1:24.000".
+            const totalMs = Math.round(totalSeconds * 1000);
+            const mins = Math.floor(totalMs / 60000);
+            const secs = Math.floor((totalMs % 60000) / 1000);
+            const ms = totalMs % 1000;
             return mins + ':' + secs.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
         }
 
@@ -2917,8 +2926,12 @@
         // "84.512" -> "1:24.5" (asse) o "1:24.512" (tooltip)
         function formatLapTime(sec, decimals = 3) {
             if (typeof sec !== 'number') return '—';
-            const m = Math.floor(sec / 60);
-            const rest = (sec - m * 60).toFixed(decimals).padStart(decimals ? decimals + 3 : 2, '0');
+            // Arrotondato prima di separare i minuti: 119,97 s con un
+            // decimale dava "1:60.0" invece di "2:00.0".
+            const f = 10 ** decimals;
+            const r = Math.round(sec * f) / f;
+            const m = Math.floor(r / 60);
+            const rest = (r - m * 60).toFixed(decimals).padStart(decimals ? decimals + 3 : 2, '0');
             return `${m}:${rest}`;
         }
 
@@ -3133,15 +3146,42 @@
             wrap.classList.toggle('hidden', !drvB);
             if (!drvB) return;
             const la = race.laps[drvA.n] || [], lb = race.laps[drvB.n] || [];
+            const both = k => typeof la[k] === 'number' && typeof lb[k] === 'number';
+            // Il giro 1 spesso non ha tempo nei dati OpenF1 (in 40 gare, per
+            // tutti a Monaco 2024 e Melbourne 2026) e prima il grafico restava
+            // vuoto. Il distacco a fine giro 1 viene allora dagli orari di
+            // passaggio sul traguardo (lap1End, scripts/build-race-pace.js);
+            // nei file che non li hanno, si parte dal primo giro con il tempo
+            // di entrambi. Un giro mancante a metà gara invece interrompe il
+            // grafico: saltarlo falserebbe tutto il distacco dopo (es. il giro
+            // di una sosta).
+            const end1 = race.lap1End || {};
+            const fromLap1End = !both(0) && typeof end1[drvA.n] === 'number' && typeof end1[drvB.n] === 'number';
             const points = [];
-            let ca = 0, cb = 0;
-            for (let k = 0; k < race.totalLaps; k++) {
-                if (typeof la[k] !== 'number' || typeof lb[k] !== 'number') break;
+            let ca = 0, cb = 0, start = 0;
+            if (fromLap1End) {
+                ca = end1[drvA.n]; cb = end1[drvB.n];
+                points.push({ x: 1, y: Math.round((cb - ca) * 1000) / 1000 });
+                start = 1;
+            } else {
+                while (start < race.totalLaps && !both(start)) start++;
+            }
+            let k = start;
+            for (; k < race.totalLaps && both(k); k++) {
                 ca += la[k]; cb += lb[k];
                 points.push({ x: k + 1, y: Math.round((cb - ca) * 1000) / 1000 });
             }
+            const notes = [];
+            if (!points.length) notes.push('nessun giro con il tempo di entrambi');
+            else {
+                if (start > 0 && !fromLap1End) notes.push(`dal giro ${start + 1} (${start === 1 ? 'giro 1' : `giri 1-${start}`} senza tempo)`);
+                // Dati finiti per il ritiro di uno dei due: normale. Giri dopo il buco: segnalato.
+                const later = arr => arr.slice(k).some(v => typeof v === 'number');
+                if (k < race.totalLaps && later(la) && later(lb)) notes.push(`fino al giro ${k} (poi tempi mancanti)`);
+            }
             document.getElementById('paceGapTitle').innerHTML =
-                `Distacco di <span style="color:${PACE_COLOR_B}">${escapeHtml(drvB.code)}</span> da <span style="color:${PACE_COLOR_A}">${escapeHtml(drvA.code)}</span> (sopra lo zero = ${escapeHtml(drvB.code)} dietro)`;
+                `Distacco di <span style="color:${PACE_COLOR_B}">${escapeHtml(drvB.code)}</span> da <span style="color:${PACE_COLOR_A}">${escapeHtml(drvA.code)}</span> (sopra lo zero = ${escapeHtml(drvB.code)} dietro)`
+                + notes.map(n => ` · ${n}`).join('');
             const fmtGap = v => (v > 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + ' s';
             paceGapChart = new Chart(document.getElementById('paceGapChart').getContext('2d'), {
                 type: 'line',
@@ -3529,7 +3569,7 @@
                 const shareBtn = dlg.querySelector('[data-share]');
                 if (shareBtn) shareBtn.onclick = () => navigator.share({ text: code }).catch(() => {});
             } catch (err) {
-                showPushDialog('🔔 Notifiche', `<p>Attivazione non riuscita: ${String(err && err.message || err)}</p>`);
+                showPushDialog('🔔 Notifiche', `<p>Attivazione non riuscita: ${escapeHtml(String(err && err.message || err))}</p>`);
             }
         }
 

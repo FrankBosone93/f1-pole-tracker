@@ -16,10 +16,12 @@
 //
 // Le gare di una stagione vengono processate in parallelo (con un limite di
 // concorrenza; le richieste restano comunque distanziate per i limiti di
-// OpenF1 e Jolpica). Scrittura incrementale (file .partial aggiornato dopo
-// ogni gara completata, poi rinominato alla fine): se il processo viene
-// interrotto, i dati delle gare già scaricate non vanno persi - basta
-// rilanciare lo script, che riparte dal file .partial rimasto a metà.
+// OpenF1 e Jolpica). Scrittura incrementale: un file .partial aggiornato dopo
+// ogni gara e rinominato in {anno}.json solo alla fine, così un'interruzione
+// non lascia mai uno storico a metà (rilanciando, l'anno si riscarica da
+// capo). Con requireComplete (archiviazione automatica) lo storico si scrive
+// solo se ogni gara ha vincitore e qualifica: altrimenti nessun file, e
+// archive-finished-season.js riprova al giro successivo.
 //
 // Uso:
 //   node scripts/build-history.js            (tutti gli anni in PREVIOUS_YEARS)
@@ -116,7 +118,7 @@ async function buildRaceEntry(year, race, raceSessions = []) {
     return { round, circuit: mappedCircuit, raceName: race.raceName || '', date, weekendStart, winner, schedule, results, ...(raceSource ? { raceSource } : {}), ...(qualySource ? { qualySource } : {}) };
 }
 
-async function buildYear(year) {
+async function buildYear(year, { requireComplete = false } = {}) {
     const outPath = path.join(HISTORY_DIR, `${year}.json`);
     const partialPath = `${outPath}.partial`;
     if (fs.existsSync(outPath)) {
@@ -156,6 +158,21 @@ async function buildYear(year) {
     }
 
     await Promise.all(Array.from({ length: Math.min(ROUND_CONCURRENCY, races.length) }, worker));
+
+    // Subito dopo l'ultima gara le fonti possono non avere ancora tutti i
+    // risultati: uno storico scritto così resterebbe incompleto per sempre
+    // (l'anno risulterebbe già archiviato).
+    const incomplete = races.map(r => resultsByRound.get(r.round))
+        .filter(e => !e || !e.winner || !e.results?.qualy)
+        .map(e => e ? `round ${e.round} ${e.circuit}` : 'gara non scaricata');
+    if (incomplete.length) {
+        console.warn(`⚠️  ${year}: dati incompleti per ${incomplete.length} gare (${incomplete.join(', ')}).`);
+        if (requireComplete) {
+            fs.rmSync(partialPath, { force: true });
+            console.warn(`⚠️  ${year}: storico non scritto, si riprova al prossimo giro.`);
+            return;
+        }
+    }
 
     fs.renameSync(partialPath, outPath);
     console.log(`✅ history/${year}.json scritto (${races.length} gare).`);

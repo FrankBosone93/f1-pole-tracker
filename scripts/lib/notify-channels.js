@@ -36,7 +36,12 @@ async function sendNtfy(report, topic) {
 function webPushSubscriptions() {
     const raw = (process.env.WEBPUSH_SUBSCRIPTIONS || '').trim();
     if (!raw) return [];
-    const parsed = JSON.parse(raw);
+    let parsed;
+    try { parsed = JSON.parse(raw); }
+    catch (err) {
+        console.warn(`⚠️  Web app: il segreto WEBPUSH_SUBSCRIPTIONS non è un JSON valido (${err.message}), canale saltato.`);
+        return [];
+    }
     return (Array.isArray(parsed) ? parsed : [parsed]).filter(s => s && s.endpoint && s.keys);
 }
 
@@ -51,7 +56,12 @@ async function sendWebPushAll(report) {
     for (const [i, sub] of subs.entries()) {
         // Nome breve dell'iscrizione (i log sono pubblici: niente cognomi).
         const who = sub.name || `#${i + 1}`;
-        const { status, text } = await sendWebPush(sub, { title: report.title, body: report.message, url: report.click }, key);
+        // Un errore di rete verso un iscritto non deve fermare gli altri, né
+        // far fallire l'invio dopo che ntfy ha già consegnato (lo stato non
+        // verrebbe salvato e la stessa notifica ripartirebbe al run dopo).
+        let status, text;
+        try { ({ status, text } = await sendWebPush(sub, { title: report.title, body: report.message, url: report.click }, key)); }
+        catch (err) { console.warn(`⚠️  Web app ${who}: invio non riuscito (${err.message}).`); continue; }
         if (status >= 200 && status < 300) delivered++;
         else if (status === 404 || status === 410) console.warn(`⚠️  Web app ${who}: iscrizione scaduta (HTTP ${status}), va riattivata dal tasto 🔔 Notifiche del sito.`);
         else console.warn(`⚠️  Web app ${who}: HTTP ${status} ${text}`);

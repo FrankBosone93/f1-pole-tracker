@@ -47,14 +47,21 @@ const jolpicaDriver = (d, names) => siteDriverName({ first_name: d.givenName, la
 
 // Classifica di gara nel formato del sito: {position, driver, team, time, retired}.
 function jolpicaRaceRows(race, names) {
-    return race.Results.slice().sort((a, b) => Number(a.position) - Number(b.position)).map(r => {
+    const sorted = race.Results.slice().sort((a, b) => Number(a.position) - Number(b.position));
+    // Doppiati: fino al 2025 stato "+1 Lap", dal 2026 "Lapped" (con un tempo
+    // che non è il distacco dal vincitore): i giri di ritardo si contano dai
+    // giri del vincitore. Prima "Lapped" finiva tra i ritirati.
+    const winnerLaps = Number(sorted.find(r => Number(r.position) === 1)?.laps) || 0;
+    return sorted.map(r => {
         const status = r.status || '';
         let time = null, retired = null;
-        if (r.Time?.time) time = r.Time.time;
-        else if (/^\+\d+ Laps?$/i.test(status)) {
-            const laps = parseInt(status.replace(/\D/g, ''), 10);
-            time = `+${laps} ${laps === 1 ? 'giro' : 'giri'}`;
-        } else if (/disqualif/i.test(status) || r.positionText === 'D') retired = 'Squalificato';
+        const plusLaps = status.match(/^\+(\d+) Laps?$/i);
+        const lapped = plusLaps || (/^lapped$/i.test(status) && /^\d+$/.test(r.positionText || ''));
+        if (lapped) {
+            const laps = plusLaps ? Number(plusLaps[1]) : winnerLaps - Number(r.laps || 0);
+            time = laps > 0 ? `+${laps} ${laps === 1 ? 'giro' : 'giri'}` : (r.Time?.time || '-');
+        } else if (r.Time?.time) time = r.Time.time;
+        else if (/disqualif/i.test(status) || r.positionText === 'D') retired = 'Squalificato';
         else if (/did not start|withdrew/i.test(status) || r.positionText === 'W') retired = 'Non partito';
         else if (r.positionText === 'N') retired = 'Non classificato';
         else if (status && status !== 'Finished') retired = 'Ritirato';

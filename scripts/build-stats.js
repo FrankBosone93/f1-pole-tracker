@@ -30,6 +30,7 @@ const { matchTeam } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
+const { standingsIncludeRace } = require('./lib/standings-fresh');
 
 const ROOT = path.join(__dirname, '..');
 const readJson = (rel, fallback = null) => {
@@ -165,7 +166,7 @@ function topSpeedFact(year, circuit) {
 // weekend, perché la classifica non dice i punti della sprint), titolo deciso
 // o decidibile al prossimo GP.
 function championshipFacts(season, race, races, standings) {
-    if (!standings || String(standings.season) !== String(season) || standings.updatedAt.slice(0, 10) < race.date) return [];
+    if (!standingsIncludeRace(standings, season, race)) return [];
     const [d1, d2] = standings.drivers;
     if (!d1 || !d2) return [];
     const facts = [];
@@ -207,7 +208,7 @@ function storyInput(season, race, pole, facts, standings, raceControl) {
     const results = race.results.race;
     const grid = race.results.qualy || [];
     const gridOf = driver => grid.find(g => same(g.driver, driver))?.position ?? null;
-    const fresh = standings && String(standings.season) === String(season) && standings.updatedAt.slice(0, 10) >= race.date;
+    const fresh = standingsIncludeRace(standings, season, race);
     return {
         gp: `${race.circuit} ${season}, gara ${race.round} della stagione`,
         pole: pole ? { pilota: pole.driver, squadra: pole.team, tempo: pole.timeStr, meteoQualifica: pole.weather || null } : null,

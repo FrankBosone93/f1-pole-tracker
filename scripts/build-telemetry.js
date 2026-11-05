@@ -142,7 +142,7 @@ async function findPoleLap(session, season, circuitName) {
 
     // Stesso elenco già scaricato sopra: niente seconda richiesta.
     const driverInfo = allDrivers.find(d => d.driver_number === poleLap.driver_number) || null;
-    return { poleLap, driverInfo };
+    return { poleLap, driverInfo, poleEntry };
 }
 
 // Tracciato del giro di pole: posizioni x/y dell'auto (OpenF1 /location, ~4
@@ -258,8 +258,10 @@ async function buildCircuitTelemetry(session, season) {
 
     return {
         circuit: circuitName,
-        driver: driverInfo ? `${driverInfo.first_name} ${driverInfo.last_name}` : null,
-        team: driverInfo ? driverInfo.team_name : null,
+        // Nomi del sito (data.json, come nei box del Dettaglio Qualifiche),
+        // non quelli di OpenF1 ("Kimi Antonelli", "Red Bull Racing").
+        driver: found.poleEntry.driver,
+        team: found.poleEntry.team || (driverInfo ? driverInfo.team_name : null),
         lapTime: Math.round(poleLap.lap_duration * 1000) / 1000,
         samples,
         track: await buildTrack(session, season, poleLap),
@@ -291,6 +293,17 @@ async function buildSeason(season, existingCircuits, saveProgress) {
     console.log(`${toProcess.length} circuiti da scaricare (gli altri sono già in cache o non ancora disputati).`);
 
     const circuits = { ...existingCircuits };
+    // Giri già in archivio: pilota e scuderia allineati a data.json (prima
+    // erano i nomi grezzi di OpenF1).
+    let renamed = 0;
+    for (const [name, entry] of Object.entries(circuits)) {
+        const pole = getPoleEntry(season, name);
+        if (pole && (entry.driver !== pole.driver || (pole.team && entry.team !== pole.team))) {
+            circuits[name] = { ...entry, driver: pole.driver, team: pole.team || entry.team };
+            renamed++;
+        }
+    }
+    if (renamed) { console.log(`${renamed} nomi di pilota/scuderia allineati a data.json.`); saveProgress(circuits); }
     let nextIndex = 0;
     async function worker() {
         while (true) {
