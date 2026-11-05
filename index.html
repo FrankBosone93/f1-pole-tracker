@@ -92,10 +92,12 @@
         body.quali-wide #detailsList > * { padding: .75rem; }
         body.quali-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
         body.quali-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
-        /* Gomma a destra del nome (va a capo se non c'è spazio, senza
-           lasciare righe vuote negli altri box); gli avvisi vengono dopo
-           "Clicca per la telemetria", sotto la linea. */
-        body.quali-wide #detailsList .detail-driver { row-gap: .125rem; }
+        /* Gomma: su mobile a destra del nome, su desktop (box stretti) a
+           destra del tempo della pole, dove c'è sempre spazio: il nome resta
+           su una riga e le righe dei box restano allineate. */
+        .tyre-by-time { display: none; }
+        body.quali-wide #detailsList .tyre-by-time { display: inline-flex; }
+        body.quali-wide #detailsList .tyre-by-name { display: none; }
         /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
         /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
@@ -3410,12 +3412,13 @@
                     card.tabIndex = 0;
                     card.title = `Vedi la telemetria del giro di pole ${d.year}`;
                 }
+                const tyreHtml = poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre);
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
-                        <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
+                        <span class="flex items-center gap-2"><span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span><span class="tyre-by-time">${tyreHtml}</span></span>
                     </div>
-                    <div class="detail-driver text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span>${poleTyreHtml(getTelemetryEntry(String(d.year), circuitName)?.tyre)}</div>
+                    <div class="detail-driver text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span><span class="tyre-by-name">${tyreHtml}</span></div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Meteo: ${escapeHtml(d.weather)}</div>
                     ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
