@@ -1,0 +1,9 @@
+/* Sorgente di styles.css, la grafica del sito: la pagina non lo usa.
+   Si rigenera con: npm run build:css (vedi scripts/build-css.js).
+
+   source(none) + @source: le classi si cercano SOLO in index.html. In
+   automatico Tailwind leggerebbe tutto il progetto (dati, script, README):
+   styles.css conterrebbe classi inutili e cambierebbe a ogni aggiornamento
+   dei dati. */
+@import "tailwindcss" source(none);
+@source "../index.html";

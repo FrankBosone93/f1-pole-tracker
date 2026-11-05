@@ -1,0 +1,50 @@
+name: Controllo grafica (styles.css)
+
+# styles.css è la grafica del sito, Tailwind precompilato da index.html con
+# npm run build:css (scripts/build-css.js). Va rigenerato e committato dopo
+# OGNI modifica alle classi in index.html: altrimenti le classi nuove restano
+# senza stile sul sito. Questo controllo lo rigenera con la stessa versione di
+# Tailwind (package-lock.json) e fallisce se il risultato non coincide con
+# quello committato. Non modifica nulla: segnala soltanto.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'styles.css'
+      - 'scripts/build-css.js'
+      - 'scripts/tailwind-input.css'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+
+permissions:
+  contents: read
+
+jobs:
+  check-css:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installa Tailwind (versione di package-lock.json)
+        run: npm ci --no-audit --no-fund
+
+      - name: Rigenera styles.css
+        run: npm run build:css
+
+      - name: Confronta con la versione committata
+        run: |
+          if git diff --exit-code -- styles.css index.html; then
+            echo "styles.css è aggiornato."
+          else
+            echo "::error::styles.css non corrisponde a index.html: lanciare npm run build:css e committare styles.css e index.html."
+            exit 1
+          fi

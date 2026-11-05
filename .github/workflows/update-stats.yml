@@ -41,8 +41,9 @@ jobs:
           cache: npm
 
       # SDK di Anthropic per il racconto del GP (package-lock.json).
+      # --omit=dev: Tailwind (devDependency) serve solo a check-css.yml.
       - name: Installa le dipendenze
-        run: npm ci --no-audit --no-fund
+        run: npm ci --omit=dev --no-audit --no-fund
 
       # continue-on-error: lo script scrive comunque status/stats.json (con
       # ok:false in caso di errore), che va committato per l'indicatore del sito.

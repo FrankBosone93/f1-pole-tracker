@@ -6,19 +6,19 @@
 // chiede con cache:'no-cache'), quindi la copia salvata si usa solo quando la
 // rete non risponde (offline), mai come prima scelta mentre si è online.
 //
-// Librerie dal CDN (Tailwind, Chart.js): "cache-first", hanno la versione
+// Librerie dal CDN (Chart.js): "cache-first", hanno la versione
 // nell'indirizzo e non cambiano mai. Fino al 2026-11-05 non venivano salvate
 // qui (si contava sulla cache del browser): sull'iPhone, offline, la web app
 // si apriva senza Chart.js e senza nessun dato, perché il grafico andava in
-// errore prima dei box dei tempi.
+// errore prima dei box dei tempi. Tailwind non arriva più dal CDN: la grafica
+// è styles.css, un file del sito (scripts/build-css.js).
 
 const CACHE_NAME = 'f1-pole-tracker-v1';
-const CORE_ASSETS = ['./', './index.html', './manifest.json'];
+const CORE_ASSETS = ['./', './index.html', './styles.css', './manifest.json'];
 // Stessi indirizzi dei tag <script> di index.html (versione e hash si
 // cambiano lì). Una versione diversa viene comunque salvata alla prima
 // apertura con la rete.
 const CDN_ASSETS = [
-    'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3',
     'https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js',
 ];
 // Dati che servono all'apertura: salvati già all'installazione, così il sito
@@ -27,12 +27,20 @@ const DATA_ASSETS = ['./data.json', './calendar.json', './standings.json', './te
 
 const isCdn = url => url.startsWith('https://cdn.jsdelivr.net/');
 
+// File del sito sempre dalla rete, mai dalla cache del browser (GitHub Pages
+// la tiene valida 10 minuti): appena pubblicato, un service worker nuovo
+// potrebbe altrimenti salvare la pagina vecchia insieme ai file nuovi.
+const fresh = url => new Request(url, { cache: 'reload' });
+
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(cache => Promise.all([
-        cache.addAll(CORE_ASSETS),
+        // Pagina e grafica insieme o niente: se uno manca l'installazione
+        // fallisce e resta il service worker precedente con i suoi file.
+        cache.addAll(CORE_ASSETS.map(fresh)),
         // Uno per uno, senza bloccare l'installazione se un file non arriva:
         // si salva alla prima apertura con la rete.
-        ...[...CDN_ASSETS, ...DATA_ASSETS].map(url => cache.add(url).catch(() => {})),
+        ...CDN_ASSETS.map(url => cache.add(url).catch(() => {})),
+        ...DATA_ASSETS.map(url => cache.add(fresh(url)).catch(() => {})),
     ])));
     self.skipWaiting();
 });

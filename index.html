@@ -15,16 +15,21 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="F1 Pole Tracker">
 
-    <!-- Versioni FISSE con controllo di integrità (SRI): prima puntavano
-         alla "ultima versione" (@4 / senza versione), quindi una release
-         nuova o un file alterato sul CDN poteva rompere o compromettere il
-         sito senza che nessun commit lo avesse toccato. Per aggiornare:
-         cambiare versione E hash (openssl dgst -sha384 -binary file | openssl base64 -A),
-         e lo stesso indirizzo in sw.js (CDN_ASSETS), che le salva per l'uso offline. -->
+    <!-- Grafica: Tailwind precompilato in styles.css (dal 2026-11-05; prima
+         lo costruiva il browser a ogni apertura con @tailwindcss/browser dal
+         CDN). Dopo OGNI modifica alle classi in questo file: npm run build:css
+         (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
+         sotto (impronta del contenuto). Il workflow check-css.yml segnala se
+         styles.css non è aggiornato. -->
+    <link rel="stylesheet" href="styles.css?v=fddbbcafcb">
+
+    <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
+         integrità (SRI): prima puntava alla "ultima versione", quindi una
+         release nuova o un file alterato sul CDN poteva rompere o
+         compromettere il sito senza che nessun commit lo avesse toccato. Per
+         aggiornare: cambiare versione E hash (openssl dgst -sha384 -binary file | openssl base64 -A),
+         e lo stesso indirizzo in sw.js (CDN_ASSETS), che lo salva per l'uso offline. -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <!-- Tailwind CSS per la grafica -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3" integrity="sha384-aJ9rL4k6lF+91guGvUFVSkpIcge7Zd9EiI4TQDLoK9kFaFJgKHgjEXVvG/qA5COj" crossorigin="anonymous"></script>
-    <!-- Chart.js per il grafico -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
     <style>
         body { background-color: #121212; color: #ffffff; font-family: system-ui, sans-serif; }
