@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=4c4b99ea6c">
+    <link rel="stylesheet" href="styles.css?v=0d8677b388">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -88,6 +88,21 @@
            "Dettagli Qualifiche" vanno sotto, affiancati dal 2021 al 2026 come
            l'asse del grafico (la lista è dalla stagione più recente: row-reverse,
            su mobile resta com'è). !important dove JS imposta stili inline. */
+        /* Una sola colonna, larga quanto la pagina: le colonne della griglia a
+           due colonne (66.67% 12px 33.33%, più i due gap da 16px, vedi
+           applyGridColumns) sommavano 44px più della pagina, e grafico,
+           dettagli e widget "Prossimo GP" debordavano a destra: margini
+           asimmetrici e, sotto i 1176px circa, pagina più larga dello schermo
+           di 12px (scorrimento laterale). Corretto il 2026-11-05, con la
+           pagina più larga di 44px (classe del body) per non stringere grafico
+           e box dei dettagli sugli schermi grandi. */
+        body.quali-wide #mainGrid { grid-template-columns: minmax(0, 1fr) !important; }
+        /* Widget "Prossimo GP" nel flusso dell'header, non in posizione
+           assoluta: quando si allunga (risultati di una sessione aperti, meteo
+           a capo) l'header si allunga con lui e il grafico scende, invece di
+           finirci sotto coperto. Il margine sotto vale solo quando è il widget
+           il più alto: 16px dal grafico, contando il margine dell'header. */
+        body.quali-wide #featuredRaceWidgetDesktop { position: static; flex: 0 0 auto; margin-bottom: .5rem; }
         body.quali-wide #leftColumn { grid-column: 1 / -1; position: static; }
         body.quali-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
         body.quali-wide #resizeHandle { display: none !important; }
@@ -113,7 +128,13 @@
         #resizeHandle > div { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-8 max-w-md md:max-w-6xl mx-auto pb-12 pt-3 md:pt-4">
+<!-- Larghezza massima su desktop 1196px = 72rem (1152px) + 44px: fino al
+     2026-11-05 la griglia delle Qualifiche debordava a destra di 44px (vedi
+     body.quali-wide #mainGrid), corretta allargando la pagina di quanto
+     serviva, così grafico e box dei dettagli restano larghi come prima, ma
+     centrati e senza scorrimento laterale; Passo gara e Statistiche hanno lo
+     stesso bordo destro delle Qualifiche. -->
+<body class="p-4 md:p-8 max-w-md md:max-w-[1196px] mx-auto pb-12 pt-3 md:pt-4">
 
     <!-- Su desktop l'header diventa una riga: titolo + selettore circuito a
          sinistra, widget "Prossimo GP" in alto a destra. Il selettore vive
@@ -1659,13 +1680,19 @@
         // (l'header, non mainGrid) quindi va calcolata a parte con la
         // stessa formula usata per detailsColumn.
         const featuredRaceWidgetDesktop = document.getElementById('featuredRaceWidgetDesktop');
+        // Larghezza minima del riquadro su desktop: pallino, "Qualifiche
+        // Sprint" (87px) e l'orario più lungo ("Dom 30 mag, 08:58", 105px),
+        // con spazi, padding e bordo, fanno 241px; 250 per avere margine.
+        const FEATURED_WIDGET_MIN_WIDTH = 250;
         function applyFeaturedWidgetWidth() {
             if (!isDesktopLayout()) {
                 featuredRaceWidgetDesktop.style.width = '';
                 featuredRaceWidgetDesktop.style.marginRight = '';
                 return;
             }
-            // Copia larghezza e bordo destro REALI di detailsColumn (misurati,
+            // Layout a due colonne (dal 2026-11-03 non più usato su desktop,
+            // dove le Qualifiche sono sempre in quali-wide, vedi sotto):
+            // copia larghezza e bordo destro REALI di detailsColumn (misurati,
             // non ricalcolati con la stessa formula): detailsColumn vive
             // dentro mainGrid, la cui griglia (colonne percentuali + gap-4)
             // trabocca oltre il bordo destro di mainGrid stesso di una
@@ -1677,14 +1704,18 @@
             // detailsColumn il risultato resta corretto anche se gap/misure
             // cambiassero in futuro.
             let detailsRect = detailsColumn.getBoundingClientRect();
-            // Layout largo delle Qualifiche: detailsColumn è sotto il grafico,
-            // larga quanto la pagina. Si usa la misura che avrebbe nella sua
-            // colonna (applyDetailsColumnWidth), con il bordo destro del
-            // grafico allargato, che finisce dove finiva la colonna.
+            // Layout largo delle Qualifiche (l'unico usato su desktop, la
+            // griglia lì ha una sola colonna e non deborda più): detailsColumn
+            // è sotto il grafico, larga quanto la pagina. Si usa la misura che
+            // avrebbe nella sua colonna (applyDetailsColumnWidth), con il bordo
+            // destro del grafico. Almeno FEATURED_WIDGET_MIN_WIDTH: a 768px
+            // un terzo della pagina (231px) non bastava per "Qualifiche
+            // Sprint" accanto a un orario lungo ("Dom 30 mag, 08:58"), che
+            // finiva troncato.
             if (document.body.classList.contains('quali-wide')) {
                 const totalWidth = mainGrid.getBoundingClientRect().width;
                 detailsRect = {
-                    width: (totalWidth - 12) * (1 - Math.max(leftRatio, DEFAULT_LEFT_RATIO)),
+                    width: Math.max((totalWidth - 12) * (1 - Math.max(leftRatio, DEFAULT_LEFT_RATIO)), FEATURED_WIDGET_MIN_WIDTH),
                     right: document.getElementById('leftColumn').getBoundingClientRect().right,
                 };
             }
@@ -2221,7 +2252,7 @@
                 // stato: sessione non ancora disputata o in corso devono
                 // "accendersi" insieme (nome + orario), non solo l'orario.
                 const textClass = status === 'past' ? 'text-gray-500' : 'text-white';
-                const liveTag = status === 'live' ? ' <span class="text-green-400 font-bold">● LIVE</span>' : '';
+                const liveTag = status === 'live' ? '<span class="text-green-400 font-bold whitespace-nowrap">● LIVE</span>' : '';
 
                 const results = race.results && race.results[key];
                 const hasResults = Array.isArray(results) && results.length > 0;
@@ -2232,7 +2263,7 @@
                 // al posto della data, cliccabile per espandere la tabella.
                 const timeCell = (status === 'past' && hasResults)
                     ? `<span role="button" tabindex="0" class="text-white underline decoration-dotted cursor-pointer" onclick="toggleSessionResults('${panelId}')">Risultati</span>`
-                    : `${formatted}${liveTag}`;
+                    : formatted;
 
                 const resultsPanel = hasResults
                     ? `<div id="${panelId}" class="hidden col-span-3">${renderResultsTable(results, key)}</div>`
@@ -2241,14 +2272,22 @@
                 const weather = forecast && forecast[key] && (status === 'upcoming' || status === 'live') ? forecast[key] : null;
                 const badge = weather ? forecastBadgeHtml(weather) : '';
 
-                // Col meteo la cella può andare a capo, ma solo tra meteo e
-                // giorno (ognuno dei due resta intero). Flex con gap e non un
-                // margine sul giorno: il gap c'è solo quando stanno sulla
-                // stessa riga, mentre il margine restava anche andando a capo
-                // e toglieva 4px al nome della sessione (a 768px, nei weekend
-                // sprint, "Qualifiche Sprint" finiva troncato).
-                const timeHtml = badge
-                    ? `<span class="${textClass} flex flex-wrap justify-end items-baseline gap-x-1.5">${badge} <span class="whitespace-nowrap">${timeCell}</span></span>`
+                // Col meteo o con "● LIVE" la cella può andare a capo, ma solo
+                // tra un pezzo e l'altro (meteo, giorno e ora, LIVE: ognuno
+                // resta intero): nel riquadro stretto (desktop sotto i 950px
+                // circa) vanno uno sotto l'altro invece di togliere spazio al
+                // nome della sessione, che finiva troncato (a 768px, durante
+                // una sessione in corso, anche "Prove Libere 1"). Flex con gap
+                // e non un margine: il gap c'è solo quando stanno sulla stessa
+                // riga, mentre il margine restava anche andando a capo.
+                // Giorno e ora con "● LIVE" accanto stanno insieme in un
+                // gruppo: si separano solo se non c'è spazio nemmeno per loro
+                // due, così sul telefono LIVE resta accanto all'orario.
+                const when = liveTag
+                    ? `<span class="flex flex-wrap justify-end items-baseline gap-x-1"><span class="whitespace-nowrap">${timeCell}</span> ${liveTag}</span>`
+                    : `<span class="whitespace-nowrap">${timeCell}</span>`;
+                const timeHtml = (badge || liveTag)
+                    ? `<span class="${textClass} flex flex-wrap justify-end items-baseline gap-x-1.5">${badge} ${when}</span>`
                     : `<span class="${textClass} text-right whitespace-nowrap">${timeCell}</span>`;
 
                 // "contents" toglie il wrapper dal flusso: i suoi figli (le 3
