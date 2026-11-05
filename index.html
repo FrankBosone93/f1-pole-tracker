@@ -19,7 +19,8 @@
          alla "ultima versione" (@4 / senza versione), quindi una release
          nuova o un file alterato sul CDN poteva rompere o compromettere il
          sito senza che nessun commit lo avesse toccato. Per aggiornare:
-         cambiare versione E hash (openssl dgst -sha384 -binary file | openssl base64 -A). -->
+         cambiare versione E hash (openssl dgst -sha384 -binary file | openssl base64 -A),
+         e lo stesso indirizzo in sw.js (CDN_ASSETS), che le salva per l'uso offline. -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <!-- Tailwind CSS per la grafica -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3" integrity="sha384-aJ9rL4k6lF+91guGvUFVSkpIcge7Zd9EiI4TQDLoK9kFaFJgKHgjEXVvG/qA5COj" crossorigin="anonymous"></script>
@@ -865,11 +866,15 @@
         // serie in nero semitrasparente (rgba(0,0,0,0.1)), che sullo sfondo
         // scuro del sito appariva come una linea nera sull'asse Y. Le righe
         // orizzontali della griglia restano.
-        Chart.defaults.scale.border.display = false;
+        // Solo se Chart.js è stato caricato: senza (CDN non raggiungibile,
+        // es. web app aperta offline) queste righe fermavano tutto lo script
+        // e il sito restava senza dati anche se erano già salvati.
+        const chartJsLoaded = typeof Chart !== 'undefined';
+        if (chartJsLoaded) Chart.defaults.scale.border.display = false;
 
         let telemetryCursorT = null;
         const telemetryCharts = () => [telemetrySpeedChart, telemetryThrottleBrakeChart, telemetryGearChart].filter(Boolean);
-        Chart.register({
+        if (chartJsLoaded) Chart.register({
             id: 'telemetryCursor',
             afterDatasetsDraw(chart) {
                 if (telemetryCursorT === null || !telemetryCharts().includes(chart) || !chart.chartArea) return;
@@ -3083,6 +3088,15 @@
                 .map((d, i) => `<span style="color:${colors[i]}">${escapeHtml(d.name)}</span>`).join(' &nbsp;vs&nbsp; ')
                 + ` · ${escapeHtml(race.circuit)} ${race.year}`;
 
+            // Senza Chart.js (offline e libreria mai salvata): al posto dei
+            // grafici il messaggio, le statistiche (solo testo) restano.
+            if (!chartJsLoaded) {
+                showChartUnavailable('paceChartContainer');
+                document.getElementById('paceGapWrap').classList.add('hidden');
+                renderPaceStats(race, drivers, neutral);
+                return;
+            }
+
             paceChart = new Chart(document.getElementById('paceChart').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -3240,6 +3254,9 @@
         }
 
         function renderChart() {
+            // Senza Chart.js (offline e libreria mai salvata): solo il
+            // messaggio. Vale per tutti i punti che ridisegnano il grafico.
+            if (!chartJsLoaded) { showChartUnavailable('chartContainer'); return; }
             const poleCanvas = document.getElementById('poleChart');
             const telemetryPanels = document.getElementById('telemetryPanels');
             const toggleIconBtn = document.getElementById('chartViewToggle');
@@ -3384,6 +3401,14 @@
             scheduleReposition();
         }
 
+        // Messaggio al posto di un grafico quando Chart.js non è disponibile.
+        function showChartUnavailable(containerId) {
+            const box = document.getElementById(containerId);
+            if (!box || box.querySelector('[data-chart-unavailable]')) return;
+            box.style.opacity = '1';
+            box.insertAdjacentHTML('beforeend', '<p data-chart-unavailable class="absolute inset-0 flex items-center justify-center text-center text-sm text-gray-400 px-4">Grafico non disponibile: la libreria dei grafici non si è caricata (connessione assente?).</p>');
+        }
+
         function updateApp(circuitName, viewState = null) {
             currentFiltered = poleData.filter(d => d.circuit === circuitName).sort((a,b) => a.year - b.year);
 
@@ -3428,7 +3453,14 @@
             // torna automaticamente alla vista normale.
             updateTelemetryButtonsVisibility();
 
-            renderChart();
+            // Un errore nel grafico non deve fermare il resto: i box dei tempi
+            // qui sotto compaiono comunque (il 2026-11-05, offline sull'iPhone
+            // senza Chart.js, l'errore lasciava la pagina senza dati).
+            try {
+                renderChart();
+            } catch (err) {
+                console.error('Grafico non disegnato:', err);
+            }
 
             // Record storico del circuito = tempo più basso tra tutti gli anni disponibili
             const recordSeconds = currentFiltered.length > 0 ? Math.min(...currentFiltered.map(d => d.seconds)) : null;
