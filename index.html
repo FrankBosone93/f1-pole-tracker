@@ -92,12 +92,15 @@
         body.quali-wide #detailsList > * { padding: .75rem; }
         body.quali-wide #detailsList > * > div:first-child { flex-direction: column; align-items: flex-start; gap: .125rem; }
         body.quali-wide #detailsList > * > div:first-child > span:first-child { font-size: .875rem; }
-        /* Gomma: su mobile a destra del nome, su desktop (box stretti) a
-           destra del tempo della pole, dove c'è sempre spazio: il nome resta
+        /* Gomma: su desktop (box stretti) solo il pallino colorato accanto
+           al nome (la mescola resta nel tooltip), così nome e pallino stanno
            su una riga e le righe dei box restano allineate. */
-        .tyre-by-time { display: none; }
-        body.quali-wide #detailsList .tyre-by-time { display: inline-flex; }
-        body.quali-wide #detailsList .tyre-by-name { display: none; }
+        body.quali-wide #detailsList .tyre-label { display: none; }
+        body.quali-wide #detailsList > * { padding-left: .625rem; padding-right: .625rem; }
+        body.quali-wide #detailsList .detail-driver { flex-wrap: nowrap; gap: .25rem; }
+        body.quali-wide #detailsList .detail-driver > span:first-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        body.quali-wide #detailsList .detail-driver > span + span { flex-shrink: 0; }
+        body.quali-wide #detailsList .detail-driver > span + span > span:first-child { width: .5rem; height: .5rem; }
         /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
         /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
@@ -511,6 +514,26 @@
             try { localStorage.setItem(DETAILS_PREFS_KEY, JSON.stringify(detailsPrefs)); } catch (e) {}
         }
         const detailsAscending = () => detailsPrefs.order ? detailsPrefs.order === 'asc' : isDesktopLayout();
+        // Desktop (box affiancati): se un nome lungo non sta su una riga
+        // accanto al pallino della gomma, rimpicciolisce un po' il carattere
+        // invece di andare a capo o troncarlo.
+        function fitDetailDriverNames() {
+            const wide = document.body.classList.contains('quali-wide');
+            detailsList.querySelectorAll('.detail-driver > span:first-child').forEach(n => {
+                n.style.fontSize = '';
+                if (!wide) return;
+                // Misura col Range: scrollWidth arrotonda e non vede gli
+                // sforamenti di frazioni di pixel (che mostrano già "…").
+                const range = document.createRange();
+                range.selectNodeContents(n);
+                const overflows = () => range.getBoundingClientRect().width > n.getBoundingClientRect().width + 0.01;
+                let px = parseFloat(getComputedStyle(n).fontSize);
+                while (overflows() && px > 11) {
+                    px -= 0.25;
+                    n.style.fontSize = px + 'px';
+                }
+            });
+        }
         function applyDetailsPrefs() {
             const asc = detailsAscending();
             const open = !detailsPrefs.collapsed;
@@ -520,6 +543,7 @@
             document.getElementById('detailsSortBtn').classList.toggle('hidden', !open);
             document.getElementById('detailsCollapseBtn').setAttribute('aria-expanded', String(open));
             document.getElementById('detailsChevron').classList.toggle('-rotate-90', !open);
+            if (open) fitDetailDriverNames();
         }
         function toggleDetailsOrder() {
             detailsPrefs.order = detailsAscending() ? 'desc' : 'asc';
@@ -533,6 +557,18 @@
             scheduleReposition(); // l'altezza della pagina è cambiata
         }
         applyDetailsPrefs();
+        // Il font web cambia la larghezza dei nomi: rimisura quando è pronto.
+        if (document.fonts) document.fonts.ready.then(fitDetailDriverNames);
+        // ...e ogni volta che i box cambiano larghezza (layout, finestra).
+        if (window.ResizeObserver) {
+            let lastDetailsWidth = 0;
+            new ResizeObserver(() => {
+                const w = detailsList.getBoundingClientRect().width;
+                if (Math.abs(w - lastDetailsWidth) < 0.5) return;
+                lastDetailsWidth = w;
+                fitDetailDriverNames();
+            }).observe(detailsList);
+        }
         const dataSourceBadge = document.getElementById('dataSourceBadge');
         let currentChart = null;
         let telemetrySpeedChart = null;
@@ -1044,6 +1080,7 @@
             placeTrackMap(wide);
             if (!wide && chartViewMode === 'telemetry' && trackMapCtx) document.getElementById('telemetryMapWrap').classList.add('map-open');
             if (changed) {
+                fitDetailDriverNames(); // i box cambiano larghezza
                 applyFeaturedWidgetWidth();
                 alignDetailsColumnTop();
                 alignChartTop();
@@ -2932,7 +2969,7 @@
         function poleTyreHtml(compound) {
             if (!compound) return '';
             const c = compoundOf(compound);
-            return `<span class="inline-flex items-center gap-1 text-xs text-gray-400 font-normal" title="Gomma del giro di pole"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span>${escapeHtml(c.label)}</span>`;
+            return `<span class="inline-flex items-center gap-1 text-xs text-gray-400 font-normal" title="Gomma del giro di pole: ${escapeHtml(c.label)}"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span><span class="tyre-label">${escapeHtml(c.label)}</span></span>`;
         }
 
         const COMPOUNDS = {
@@ -3416,9 +3453,9 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-gray-400">Anno ${d.year} ${isRecord ? '<span class="text-yellow-400" title="Record storico del circuito">🏆 Record</span>' : ''}</span>
-                        <span class="flex items-center gap-2"><span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span><span class="tyre-by-time">${tyreHtml}</span></span>
+                        <span class="text-xl font-black text-[#E10600] tracking-tight">${d.timeStr}</span>
                     </div>
-                    <div class="detail-driver text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white">${escapeHtml(d.driver)}</span><span class="tyre-by-name">${tyreHtml}</span></div>
+                    <div class="detail-driver text-sm text-gray-200 mt-1 flex items-center gap-2 flex-wrap"><span class="font-semibold text-white" title="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>${tyreHtml}</div>
                     <div class="text-xs text-gray-400">Scuderia: <span class="text-gray-300 font-medium">${escapeHtml(d.team)}</span></div>
                     <div class="text-xs text-cyan-400 mt-1 flex items-center gap-1">Meteo: ${escapeHtml(d.weather)}</div>
                     ${hasTelemetryForYear ? '<div class="text-xs text-gray-500 mt-1">Clicca per la telemetria</div>' : ''}
@@ -3426,6 +3463,7 @@
                 `;
                 detailsList.appendChild(card);
             });
+            fitDetailDriverNames();
             updateActiveYearCardHighlight();
 
             alignChartTop();
