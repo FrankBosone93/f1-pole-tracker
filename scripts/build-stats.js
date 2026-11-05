@@ -39,7 +39,8 @@ const readJson = (rel, fallback = null) => {
 };
 
 // Anni di inizio dei regolamenti tecnici: i tempi sul giro si confrontano solo
-// dentro la stessa era (le auto 2026 sono 2-3 s più lente delle 2025). Con un
+// dentro la stessa era (in pole le auto 2026 sono più lente delle 2025 da
+// circa 1 a 4 s secondo il circuito, valore centrale +2,1 s su 17 circuiti). Con un
 // nuovo regolamento basta aggiungere l'anno.
 const REGULATION_ERAS = [2014, 2022, 2026];
 const eraOf = year => Math.max(...REGULATION_ERAS.filter(y => y <= year));
