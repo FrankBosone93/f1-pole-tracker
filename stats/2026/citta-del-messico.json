@@ -33,7 +33,7 @@
     },
     {
       "icon": "🔧",
-      "text": "**Strategia più usata**: 3 soste (8 piloti su 17 classificati)."
+      "text": "**Strategia più usata**: 3 soste (7 piloti su 17 classificati)."
     },
     {
       "icon": "💨",
@@ -87,8 +87,8 @@
     }
   ],
   "story": {
-    "text": "Max Verstappen vince a Città del Messico partendo quinto con la Red Bull, in una gara interrotta dalla bandiera rossa al giro 45. Lewis Hamilton, in pole con la Ferrari, chiude secondo a 0,799 s e firma il giro più veloce in 1:19.268. Andrea Kimi Antonelli è terzo a 4,006 s e diventa matematicamente Campione del Mondo 2026 con 4 gare d'anticipo e 380 punti. Alle sue spalle Verstappen sale a 261, davanti a Hamilton con 259, mentre Liam Lawson rimonta dal 22° al 7° posto.",
+    "text": "A Città del Messico Max Verstappen vince partendo 5°, con 2 soste, e precede di 0,799 s Lewis Hamilton, che dalla pole chiude 2° e firma il giro più veloce in 1:19.268. In una gara sospesa con bandiera rossa al giro 45, spicca la rimonta di Liam Lawson, 7° dopo essere partito 22°. Con il 3° posto Andrea Kimi Antonelli è matematicamente Campione del Mondo 2026 con 4 gare d'anticipo: ha 380 punti, davanti a Verstappen con 261 e Hamilton con 259.",
     "model": "claude-opus-5-5",
-    "hash": "d05e88a19f67507d"
+    "hash": "b7a1fbc83a76b11e"
   }
 }
