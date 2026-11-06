@@ -1,6 +1,53 @@
 {
   "entries": [
     {
+      "date": "2026-11-05",
+      "title": "Changelog — 5 Novembre 2026",
+      "sections": [
+        {
+          "title": "Prossimo GP",
+          "items": [
+            "Nella settimana del GP, accanto a qualifiche e gara (e alle sessioni sprint) compare il **meteo previsto**: cielo, probabilità di pioggia e temperatura, ad esempio «🌧️ 80% · 26°». Si vede dal martedì, si aggiorna ogni 3 ore e c'è anche nel **Calendario**.",
+            "Su computer, aprendo i **Risultati** di una sessione, il grafico scende sotto il riquadro invece di restare coperto.",
+            "I nomi delle sessioni, come «**Qualifiche Sprint**», si leggono sempre per intero, anche sugli schermi più stretti."
+          ]
+        },
+        {
+          "title": "Qualifiche",
+          "items": [
+            "Nei box di **Dettagli Qualifiche**, su computer la gomma della pole torna a destra del nome del pilota; va a capo solo con i nomi lunghi, senza lasciare righe vuote negli altri box."
+          ]
+        },
+        {
+          "title": "Passo gara",
+          "items": [
+            "**Soste ai box** più precise, ricavate dal giro in cui il pilota esce dai box: corrette Melbourne 2026 (12 piloti) e Città del Messico 2026 (tolte le soste false al primo giro).",
+            "Il grafico dei **distacchi** parte dal primo giro anche quando la fonte non ha il suo tempo (prima, ad esempio a Monaco 2024, restava vuoto), con una nota se si ferma prima della fine.",
+            "Ogni pilota ha solo i giri che ha davvero completato secondo la classifica ufficiale, e Melbourne 2026 ha i giri al posto giusto (erano spostati di uno)."
+          ]
+        },
+        {
+          "title": "Sito e web app",
+          "items": [
+            "Il sito si apre **più in fretta**: la grafica arriva già pronta, invece di essere costruita dal browser a ogni apertura.",
+            "Aperta **senza connessione**, la web app mostra di nuovo tempi, classifiche e grafici (prima sull'iPhone la pagina restava vuota).",
+            "Su tablet e computer piccoli la pagina non scorre più di lato e resta centrata; sugli schermi grandi **Passo gara** e **Statistiche** sono un po' più larghi."
+          ]
+        },
+        {
+          "title": "Correzioni",
+          "items": [
+            "Tempi sempre arrotondati bene: in rari casi compariva «1:60.0» invece di «2:00.0».",
+            "Nei risultati delle gare 2026 i piloti doppiati hanno «+1 giro» invece di «Ritirato».",
+            "Quando il pilota in pole viene penalizzato, la partenza dalla pit lane è scritta correttamente.",
+            "Nella **telemetria** piloti e scuderie hanno gli stessi nomi del resto del sito, ad esempio «Andrea Kimi Antonelli» e «Red Bull».",
+            "Notifiche più affidabili: arrivano a tutti anche se l'invio a un dispositivo non riesce; nei weekend sprint in America notifica del GP e statistiche aspettano la classifica aggiornata dopo la gara.",
+            "Pronti per il **cambio di stagione**: a gennaio le gare del 2027 non prenderanno per errore i vincitori del 2026 e, fino alla prima gara, l'indicatore di stato non diventerà rosso per la classifica che non c'è ancora."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-03",
       "title": "Changelog — 3 Novembre 2026",
       "sections": [
