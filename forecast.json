@@ -1,19 +1,19 @@
 {
   "source": "Open-Meteo",
-  "updatedAt": "2026-11-06T16:54:34.498Z",
+  "updatedAt": "2026-11-06T23:27:46.686Z",
   "season": 2026,
   "round": 20,
   "circuit": "Interlagos (San Paolo)",
   "sessions": {
     "qualy": {
       "rain": 70,
-      "temp": 26,
-      "icon": "☁️",
-      "sky": "Coperto"
+      "temp": 25,
+      "icon": "🌧️",
+      "sky": "Pioviggine"
     },
     "race": {
-      "rain": 90,
-      "temp": 17,
+      "rain": 100,
+      "temp": 16,
       "icon": "🌧️",
       "sky": "Pioviggine"
     }
