@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-06T07:13:02.323Z",
+  "updatedAt": "2026-11-07T21:44:42.388Z",
   "lastGp": {
     "round": 19,
     "circuit": "Città del Messico",
@@ -202,7 +202,7 @@
       "of": 19
     },
     "frontRowLockouts": 4,
-    "wetQualifyings": 0,
+    "wetQualifyings": 1,
     "drivers": [
       {
         "name": "Andrea Kimi Antonelli",
@@ -230,7 +230,7 @@
         "team": "McLaren",
         "wins": 2,
         "podiums": 5,
-        "poles": 3
+        "poles": 4
       },
       {
         "name": "Lewis Hamilton",
@@ -291,7 +291,7 @@
         "name": "McLaren",
         "wins": 2,
         "podiums": 7,
-        "poles": 3
+        "poles": 4
       },
       {
         "name": "Alpine",
