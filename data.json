@@ -1195,5 +1195,14 @@
     "timeStr": "1:16.514",
     "seconds": 76.514,
     "weather": "☁️ Nuvoloso"
+  },
+  {
+    "year": 2026,
+    "circuit": "Interlagos (San Paolo)",
+    "driver": "Lando Norris",
+    "team": "McLaren",
+    "timeStr": "1:27.470",
+    "seconds": 87.47,
+    "weather": "🌧️ Pioggia Battente"
   }
 ]
