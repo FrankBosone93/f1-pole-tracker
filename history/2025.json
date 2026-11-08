@@ -6103,6 +6103,13 @@
             "driver": "Yuki Tsunoda",
             "team": "Red Bull",
             "time": "1:10.711"
+          },
+          {
+            "position": 20,
+            "driver": "Gabriel Bortoleto",
+            "team": "Kick Sauber",
+            "time": "Non classificato",
+            "penalty": true
           }
         ],
         "race": [

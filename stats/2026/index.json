@@ -1,98 +1,54 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-08T01:16:01.551Z",
+  "updatedAt": "2026-11-08T20:23:58.456Z",
   "lastGp": {
-    "round": 19,
-    "circuit": "Città del Messico",
-    "date": "2026-11-01",
+    "round": 20,
+    "circuit": "Interlagos (San Paolo)",
+    "date": "2026-11-08",
     "facts": [
       {
-        "icon": "⏱️",
-        "text": "**Pole 1:16.514**: 0,928 s più lenta della pole 2025 (Lando Norris), prima stagione qui con le regole 2026."
+        "icon": "🌧️",
+        "text": "**Pole sul bagnato** per Lando Norris (1:27.470): tempo non confrontabile con le qualifiche asciutte."
       },
       {
         "icon": "🏁",
-        "text": "**Lewis Hamilton**, autore della pole, chiude 2°."
-      },
-      {
-        "icon": "🚀",
-        "text": "**Max Verstappen** vince partendo 5°."
+        "text": "**Pole e vittoria**: Lando Norris."
       },
       {
         "icon": "📈",
-        "text": "**Più posizioni guadagnate**: Liam Lawson, da 22° a 7° (+15)."
+        "text": "**Più posizioni guadagnate**: Max Verstappen, da 21° a 2° (+19)."
       },
       {
         "icon": "📉",
-        "text": "**Più posizioni perse**: Pierre Gasly, da 9° a 17° (-8)."
-      },
-      {
-        "icon": "⚡",
-        "text": "**Giro più veloce**: Lewis Hamilton in 1:19.268 (giro 50)."
-      },
-      {
-        "icon": "🛞",
-        "text": "**Max Verstappen** ha vinto con 2 soste (Medium → Soft → Soft)."
-      },
-      {
-        "icon": "🔧",
-        "text": "**Strategia più usata**: 3 soste (7 piloti su 17 classificati)."
+        "text": "**Più posizioni perse**: Oliver Bearman, da 6° a 17° (-11)."
       },
       {
         "icon": "💨",
-        "text": "**Velocità massima** nel giro di pole: 350 km/h (2025: 351 km/h)."
+        "text": "**Velocità massima** nel giro di pole: 299 km/h (2025: 336 km/h)."
       },
       {
         "icon": "🏆",
-        "text": "**Andrea Kimi Antonelli** è matematicamente Campione del Mondo 2026, con 4 gare d'anticipo."
+        "text": "**Andrea Kimi Antonelli** è matematicamente Campione del Mondo 2026, con 3 gare d'anticipo."
+      },
+      {
+        "icon": "🏆",
+        "text": "**Mercedes** è Campione del Mondo Costruttori 2026."
       }
     ],
     "raceControl": [
       {
-        "giro": 7,
-        "messaggio": "VSC DEPLOYED"
+        "giro": 42,
+        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Alex Albon - REJOINING UNSAFELY"
       },
       {
-        "giro": 8,
-        "messaggio": "VSC ENDING"
-      },
-      {
-        "giro": 12,
-        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Charles Leclerc - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
-      },
-      {
-        "giro": 13,
-        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR George Russell - CAUSING A COLLISION"
-      },
-      {
-        "giro": 44,
-        "messaggio": "SAFETY CAR DEPLOYED"
-      },
-      {
-        "giro": 45,
-        "messaggio": "RED FLAG - RACE SUSPENDED"
-      },
-      {
-        "giro": 46,
-        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Sergio Pérez - SPEEDING IN THE PIT LANE"
-      },
-      {
-        "giro": 51,
-        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - CAUSING A COLLISION"
-      },
-      {
-        "giro": 59,
-        "messaggio": "SAFETY CAR DEPLOYED"
-      },
-      {
-        "giro": 62,
-        "messaggio": "SAFETY CAR IN THIS LAP"
+        "giro": 53,
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
       }
     ],
     "story": {
-      "text": "A Città del Messico Max Verstappen vince partendo 5°, con 2 soste, e precede di 0,799 s Lewis Hamilton, che dalla pole chiude 2° e firma il giro più veloce in 1:19.268. In una gara sospesa con bandiera rossa al giro 45, spicca la rimonta di Liam Lawson, 7° dopo essere partito 22°. Con il 3° posto Andrea Kimi Antonelli è matematicamente Campione del Mondo 2026 con 4 gare d'anticipo: ha 380 punti, davanti a Verstappen con 261 e Hamilton con 259.",
+      "text": "Sul circuito di Interlagos Lando Norris trasforma in vittoria la pole conquistata sotto la pioggia battente in 1:27.470, chiudendo con 14,602 s di margine. La rimonta del giorno è di Max Verstappen, secondo dopo essere partito ventunesimo, davanti al compagno Isack Hadjar. Andrea Kimi Antonelli chiude quinto ma è matematicamente Campione del Mondo 2026 con 3 gare d'anticipo, a quota 390 punti contro i 279 di Verstappen. La Mercedes si assicura anche il titolo Costruttori.",
       "model": "claude-opus-5-5",
-      "hash": "b7a1fbc83a76b11e"
+      "hash": "46b26b08b3630030"
     }
   },
   "gps": [
@@ -190,16 +146,21 @@
       "round": 19,
       "circuit": "Città del Messico",
       "file": "stats/2026/citta-del-messico.json"
+    },
+    {
+      "round": 20,
+      "circuit": "Interlagos (San Paolo)",
+      "file": "stats/2026/interlagos-san-paolo.json"
     }
   ],
   "season": {
-    "racesDone": 19,
+    "racesDone": 20,
     "racesTotal": 23,
     "winners": 6,
     "poleSitters": 6,
     "poleToWin": {
-      "converted": 13,
-      "of": 19
+      "converted": 14,
+      "of": 20
     },
     "frontRowLockouts": 4,
     "wetQualifyings": 1,
@@ -215,7 +176,7 @@
         "name": "Max Verstappen",
         "team": "Red Bull",
         "wins": 3,
-        "podiums": 11,
+        "podiums": 12,
         "poles": 2
       },
       {
@@ -228,8 +189,8 @@
       {
         "name": "Lando Norris",
         "team": "McLaren",
-        "wins": 2,
-        "podiums": 5,
+        "wins": 3,
+        "podiums": 6,
         "poles": 4
       },
       {
@@ -250,7 +211,7 @@
         "name": "Isack Hadjar",
         "team": "Red Bull",
         "wins": 0,
-        "podiums": 2,
+        "podiums": 3,
         "poles": 0
       },
       {
@@ -278,20 +239,20 @@
       {
         "name": "Red Bull",
         "wins": 3,
-        "podiums": 13,
+        "podiums": 15,
         "poles": 2
+      },
+      {
+        "name": "McLaren",
+        "wins": 3,
+        "podiums": 8,
+        "poles": 4
       },
       {
         "name": "Ferrari",
         "wins": 2,
         "podiums": 13,
         "poles": 1
-      },
-      {
-        "name": "McLaren",
-        "wins": 2,
-        "podiums": 7,
-        "poles": 4
       },
       {
         "name": "Alpine",
@@ -406,6 +367,815 @@
         "aAhead": 1,
         "bAhead": 0
       }
-    ]
+    ],
+    "progress": [
+      {
+        "round": 1,
+        "circuit": "Melbourne (Australia)",
+        "drivers": [
+          {
+            "driver": "George Russell",
+            "points": 25
+          },
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 18
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 15
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 12
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 10
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 43
+          },
+          {
+            "team": "Ferrari",
+            "points": 27
+          },
+          {
+            "team": "McLaren",
+            "points": 10
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "circuit": "Shanghai (Cina)",
+        "drivers": [
+          {
+            "driver": "George Russell",
+            "points": 51
+          },
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 47
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 34
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 33
+          },
+          {
+            "driver": "Oliver Bearman",
+            "points": 17
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 98
+          },
+          {
+            "team": "Ferrari",
+            "points": 67
+          },
+          {
+            "team": "McLaren",
+            "points": 18
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "circuit": "Suzuka",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 72
+          },
+          {
+            "driver": "George Russell",
+            "points": 63
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 49
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 41
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 25
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 135
+          },
+          {
+            "team": "Ferrari",
+            "points": 90
+          },
+          {
+            "team": "McLaren",
+            "points": 46
+          }
+        ]
+      },
+      {
+        "round": 4,
+        "circuit": "Miami",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 100
+          },
+          {
+            "driver": "George Russell",
+            "points": 80
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 59
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 51
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 51
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 180
+          },
+          {
+            "team": "Ferrari",
+            "points": 110
+          },
+          {
+            "team": "McLaren",
+            "points": 94
+          }
+        ]
+      },
+      {
+        "round": 5,
+        "circuit": "Montreal (Canada)",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 131
+          },
+          {
+            "driver": "George Russell",
+            "points": 88
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 75
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 72
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 58
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 219
+          },
+          {
+            "team": "Ferrari",
+            "points": 147
+          },
+          {
+            "team": "McLaren",
+            "points": 106
+          }
+        ]
+      },
+      {
+        "round": 6,
+        "circuit": "Monaco",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 156
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 90
+          },
+          {
+            "driver": "George Russell",
+            "points": 88
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 75
+          },
+          {
+            "driver": "Oscar Piastri",
+            "points": 60
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 244
+          },
+          {
+            "team": "Ferrari",
+            "points": 165
+          },
+          {
+            "team": "McLaren",
+            "points": 118
+          }
+        ]
+      },
+      {
+        "round": 7,
+        "circuit": "Barcellona",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 156
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 115
+          },
+          {
+            "driver": "George Russell",
+            "points": 106
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 75
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 73
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 262
+          },
+          {
+            "team": "Ferrari",
+            "points": 190
+          },
+          {
+            "team": "McLaren",
+            "points": 143
+          }
+        ]
+      },
+      {
+        "round": 8,
+        "circuit": "Red Bull Ring",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 171
+          },
+          {
+            "driver": "George Russell",
+            "points": 131
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 125
+          },
+          {
+            "driver": "Oscar Piastri",
+            "points": 82
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 79
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 302
+          },
+          {
+            "team": "Ferrari",
+            "points": 204
+          },
+          {
+            "team": "McLaren",
+            "points": 161
+          }
+        ]
+      },
+      {
+        "round": 9,
+        "circuit": "Silverstone",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 179
+          },
+          {
+            "driver": "George Russell",
+            "points": 154
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 147
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 108
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 97
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 333
+          },
+          {
+            "team": "Ferrari",
+            "points": 255
+          },
+          {
+            "team": "McLaren",
+            "points": 181
+          }
+        ]
+      },
+      {
+        "round": 10,
+        "circuit": "Spa-Francorchamps",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 204
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 159
+          },
+          {
+            "driver": "George Russell",
+            "points": 154
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 126
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 103
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 358
+          },
+          {
+            "team": "Ferrari",
+            "points": 285
+          },
+          {
+            "team": "McLaren",
+            "points": 197
+          }
+        ]
+      },
+      {
+        "round": 11,
+        "circuit": "Hungaroring",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 219
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 169
+          },
+          {
+            "driver": "George Russell",
+            "points": 160
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 138
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 128
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 379
+          },
+          {
+            "team": "Ferrari",
+            "points": 307
+          },
+          {
+            "team": "McLaren",
+            "points": 222
+          }
+        ]
+      },
+      {
+        "round": 12,
+        "circuit": "Zandvoort",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 242
+          },
+          {
+            "driver": "George Russell",
+            "points": 183
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 183
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 159
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 155
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 425
+          },
+          {
+            "team": "Ferrari",
+            "points": 338
+          },
+          {
+            "team": "McLaren",
+            "points": 265
+          }
+        ]
+      },
+      {
+        "round": 13,
+        "circuit": "Monza",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 267
+          },
+          {
+            "driver": "George Russell",
+            "points": 201
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 191
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 171
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 155
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 468
+          },
+          {
+            "team": "Ferrari",
+            "points": 346
+          },
+          {
+            "team": "McLaren",
+            "points": 287
+          }
+        ]
+      },
+      {
+        "round": 14,
+        "circuit": "Madrid",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 292
+          },
+          {
+            "driver": "George Russell",
+            "points": 211
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 191
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 186
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 167
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 503
+          },
+          {
+            "team": "Ferrari",
+            "points": 358
+          },
+          {
+            "team": "McLaren",
+            "points": 306
+          }
+        ]
+      },
+      {
+        "round": 15,
+        "circuit": "Baku (Azerbaijan)",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 302
+          },
+          {
+            "driver": "George Russell",
+            "points": 236
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 199
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 186
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 179
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 538
+          },
+          {
+            "team": "Ferrari",
+            "points": 378
+          },
+          {
+            "team": "McLaren",
+            "points": 306
+          }
+        ]
+      },
+      {
+        "round": 16,
+        "circuit": "Sepang (Malesia)",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 320
+          },
+          {
+            "driver": "George Russell",
+            "points": 236
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 214
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 191
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 188
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 556
+          },
+          {
+            "team": "Ferrari",
+            "points": 405
+          },
+          {
+            "team": "McLaren",
+            "points": 316
+          }
+        ]
+      },
+      {
+        "round": 17,
+        "circuit": "Singapore",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 340
+          },
+          {
+            "driver": "George Russell",
+            "points": 238
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 229
+          },
+          {
+            "driver": "Max Verstappen",
+            "points": 221
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 215
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 578
+          },
+          {
+            "team": "Ferrari",
+            "points": 444
+          },
+          {
+            "team": "McLaren",
+            "points": 339
+          }
+        ]
+      },
+      {
+        "round": 18,
+        "circuit": "Austin (COTA)",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 365
+          },
+          {
+            "driver": "George Russell",
+            "points": 242
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 241
+          },
+          {
+            "driver": "Max Verstappen",
+            "points": 236
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 233
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 607
+          },
+          {
+            "team": "Ferrari",
+            "points": 474
+          },
+          {
+            "team": "Red Bull",
+            "points": 355
+          }
+        ]
+      },
+      {
+        "round": 19,
+        "circuit": "Città del Messico",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 380
+          },
+          {
+            "driver": "Max Verstappen",
+            "points": 261
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 259
+          },
+          {
+            "driver": "George Russell",
+            "points": 250
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 245
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 630
+          },
+          {
+            "team": "Ferrari",
+            "points": 504
+          },
+          {
+            "team": "Red Bull",
+            "points": 382
+          }
+        ]
+      },
+      {
+        "round": 20,
+        "circuit": "Interlagos (San Paolo)",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 390
+          },
+          {
+            "driver": "Max Verstappen",
+            "points": 279
+          },
+          {
+            "driver": "George Russell",
+            "points": 262
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 261
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 251
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 652
+          },
+          {
+            "team": "Ferrari",
+            "points": 512
+          },
+          {
+            "team": "Red Bull",
+            "points": 415
+          }
+        ]
+      }
+    ],
+    "story": {
+      "text": "Il 2026 porta la firma di Andrea Kimi Antonelli. George Russell ha aperto da leader vincendo a Melbourne, ma dopo Suzuka il compagno è passato in testa e non l'ha più lasciata: 9 vittorie, 16 podi e 7 pole. Il successo più clamoroso è arrivato a Monza, partendo 19° con una rimonta di 18 posizioni, nel giorno della pole a sorpresa di Pierre Gasly con l'Alpine. Il titolo si è deciso a Città del Messico con 4 gare d'anticipo, e a Interlagos la Mercedes ha chiuso il Costruttori, forte di 12 vittorie e 12 pole.\n\nMax Verstappen, Lando Norris e Russell hanno vinto 3 gare ciascuno, la Ferrari due con Lewis Hamilton a Barcellona e Charles Leclerc a Silverstone. Verstappen è cresciuto nel finale: vittorie a Sepang, Singapore e Città del Messico e 2° posto a Interlagos partendo 21°. In qualifica i duelli più netti sono stati Fernando Alonso su Lance Stroll (16-2) e Carlos Sainz su Alex Albon (15-4).\n\nMancano 3 gare, a partire da Las Vegas. Resta in palio il secondo posto: Verstappen ha 279 punti, davanti a Russell con 262, Hamilton con 261 e Leclerc con 251. Tra le squadre la Ferrari (512) precede la Red Bull (415).",
+      "model": "claude-opus-5-5",
+      "hash": "f1e322f95d95b46c",
+      "round": 20,
+      "circuit": "Interlagos (San Paolo)"
+    }
   }
 }

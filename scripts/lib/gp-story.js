@@ -1,15 +1,20 @@
 // scripts/lib/gp-story.js
 //
-// Racconto dell'ultimo GP per la sezione "Statistiche": un breve paragrafo
-// scritto da Claude (API di Anthropic) partendo SOLO dai dati del sito
-// (pole, griglia, risultati, ritiri, fatti già calcolati, classifica) e dai
-// messaggi della direzione gara di OpenF1 (safety car, bandiere rosse,
-// penalità: lib/race-control.js). Sopra
-// l'elenco dei fatti, che resta comunque: se l'API non risponde o la chiave
-// non c'è, il sito mostra solo l'elenco come prima.
+// Racconti scritti da Claude (API di Anthropic) per la sezione "Statistiche",
+// partendo SOLO dai dati del sito:
+//   - gpStory: l'ultimo GP, un breve paragrafo (pole, griglia, risultati,
+//     ritiri, fatti già calcolati, classifica) con i messaggi della direzione
+//     gara di OpenF1 (safety car, bandiere rosse, penalità:
+//     lib/race-control.js). Sopra l'elenco dei fatti, che resta comunque: se
+//     l'API non risponde o la chiave non c'è, il sito mostra solo l'elenco
+//     come prima;
+//   - seasonStory (dal 2026-11-08): l'andamento della stagione finora, 2-3
+//     paragrafi (GP per GP, classifica dopo ogni gara, titoli decisi, stagione
+//     in numeri, duelli tra compagni: seasonStoryInput in build-stats.js).
+//     Se non c'è, il sito non mostra la scheda.
 //
 // Chiave nella variabile d'ambiente ANTHROPIC_API_KEY (segreto del
-// repository, account API separato dall'abbonamento a Claude). Il testo si
+// repository, account API separato dall'abbonamento a Claude). Un testo si
 // rigenera solo quando cambiano i dati passati a Claude (hash dell'input):
 // update-stats.yml gira dopo ogni aggiornamento, ma la chiamata si paga solo
 // a GP nuovo o con risultati corretti (pochi centesimi a GP).
@@ -26,15 +31,24 @@ Safety car, virtual safety car, bandiere rosse e penalità solo se compaiono in 
 Riporta nomi, posizioni, tempi e punti esattamente come nei dati. Scrivi i distacchi con la virgola come in italiano (1,525 s). Usa "ad" davanti a parole che iniziano per a (ad Austin, ad Abu Dhabi).
 Dai al racconto un filo: chi ha vinto e come, il risultato dell'autore della pole, la cosa più notevole tra i fatti, cosa cambia nel mondiale.`;
 
-const inputHash = input => crypto.createHash('sha256').update(JSON.stringify({ MODEL, SYSTEM, input })).digest('hex').slice(0, 16);
+const SEASON_SYSTEM = `Sei un giornalista di Formula 1 che scrive per un sito italiano di statistiche.
+Scrivi il racconto della stagione in italiano: 2 o 3 paragrafi brevi separati da una riga vuota, al massimo 200 parole in tutto, testo semplice senza titoli, elenchi, grassetti o emoji.
+Usa SOLO i dati forniti. Non aggiungere nulla che non sia nei dati: niente sorpassi, incidenti, dichiarazioni, cause dei ritiri, mercato piloti, età, nazionalità o carriere passate dei piloti, e nessun confronto con altre stagioni.
+Racconta l'andamento della stagione, non una gara dopo l'altra: chi l'ha dominata e come è cambiata la classifica ("andamentoMondiale": cambi di leader, distacchi, quando e dove si è deciso un titolo), le squadre più forti, le sorprese (vincitori o pole inattesi, rimonte, vittorie nelle Sprint) e i duelli in qualifica tra compagni più netti. Cita solo le gare che contano.
+Se "stagioneConclusa" è false, chiudi con cosa resta da decidere e quante gare mancano; se è true, chiudi con il bilancio finale.
+Riporta nomi, posizioni, punti e numeri esattamente come nei dati. Usa "ad" davanti a parole che iniziano per a (ad Austin, ad Abu Dhabi). Non usare la parola "polista": scrivi "poleman" o "pilota in pole".`;
 
-// previous = la storia salvata al giro precedente ({ text, model, hash }).
-// Ritorna la storia da salvare, oppure null se non c'è.
-async function gpStory(input, previous) {
-    const hash = inputHash(input);
+// Stessa forma di prima per il racconto del GP ({ MODEL, SYSTEM, input }):
+// gli hash già salvati restano validi e i racconti non si riscrivono.
+const inputHash = (system, input) => crypto.createHash('sha256').update(JSON.stringify({ MODEL, SYSTEM: system, input })).digest('hex').slice(0, 16);
+
+// previous = il testo salvato al giro precedente ({ text, model, hash }).
+// Ritorna il testo da salvare, oppure null se non c'è.
+async function writeStory(system, intro, input, previous, label) {
+    const hash = inputHash(system, input);
     if (previous?.hash === hash && previous.text) return previous;
     if (!process.env.ANTHROPIC_API_KEY) {
-        console.log('Racconto del GP: ANTHROPIC_API_KEY non impostata, salto.');
+        console.log(`${label}: ANTHROPIC_API_KEY non impostata, salto.`);
         return null;
     }
 
@@ -47,15 +61,18 @@ async function gpStory(input, previous) {
         // testo sportivo), l'API la ripete su un altro modello.
         betas: ['server-side-fallback-2026-07-01'],
         fallbacks: 'default',
-        system: SYSTEM,
-        messages: [{ role: 'user', content: `Dati del GP in JSON:\n${JSON.stringify(input, null, 2)}` }],
+        system,
+        messages: [{ role: 'user', content: `${intro}\n${JSON.stringify(input, null, 2)}` }],
     });
     if (response.stop_reason === 'refusal') throw new Error(`richiesta rifiutata (${response.stop_details?.category || 'senza categoria'})`);
     if (response.stop_reason === 'max_tokens') throw new Error('risposta troncata');
     const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
     if (!text) throw new Error('risposta vuota');
-    console.log(`Racconto del GP: scritto da ${response.model} (${response.usage.input_tokens} token in entrata, ${response.usage.output_tokens} in uscita).`);
+    console.log(`${label}: scritto da ${response.model} (${response.usage.input_tokens} token in entrata, ${response.usage.output_tokens} in uscita).`);
     return { text, model: response.model, hash };
 }
 
-module.exports = { gpStory };
+const gpStory = (input, previous) => writeStory(SYSTEM, 'Dati del GP in JSON:', input, previous, 'Racconto del GP');
+const seasonStory = (input, previous) => writeStory(SEASON_SYSTEM, 'Dati della stagione in JSON:', input, previous, 'Racconto della stagione');
+
+module.exports = { gpStory, seasonStory };

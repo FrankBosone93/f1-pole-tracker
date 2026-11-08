@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=2ecbb73654">
+    <link rel="stylesheet" href="styles.css?v=ef3b6056e6">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -401,9 +401,10 @@
         </div>
     </div>
 
-    <!-- Modalità "Statistiche": fatti dell'ultimo GP e stagione in numeri, da
-         stats.json (scripts/build-stats.js, ricalcolato dopo ogni
-         aggiornamento dei dati), scaricato solo alla prima apertura. -->
+    <!-- Modalità "Statistiche": fatti dell'ultimo GP, racconto della stagione
+         e stagione in numeri, da stats.json (scripts/build-stats.js,
+         ricalcolato dopo ogni aggiornamento dei dati), scaricato solo alla
+         prima apertura. -->
     <div id="statsView" class="mt-4 md:mt-6">
         <div id="statsContent" class="flex flex-col md:grid md:grid-cols-2 md:gap-4 md:items-start text-left">
             <p class="text-sm text-gray-500">Caricamento statistiche...</p>
@@ -2341,8 +2342,10 @@
         }
 
         // Tabella compatta dei risultati di una sessione (prove libere,
-        // qualifiche o gara): posizione, pilota, scuderia, tempo. In gara un
-        // ritiro mostra il motivo al posto del distacco.
+        // Qualifiche Sprint, Sprint, qualifiche o gara): posizione, pilota,
+        // scuderia, tempo. In gara e nella Sprint un ritiro mostra il motivo
+        // al posto del distacco. Le Sprint ci sono dal 2026-11-08 (solo
+        // stagione in corso: lo storico ha soltanto qualifiche e gara).
         function renderResultsTable(results, key) {
             // Nomi, scuderie e motivi di ritiro arrivano dall'API esterna
             // (OpenF1, Jolpica): escape prima dell'innerHTML, come per le news.
@@ -2905,9 +2908,10 @@
         }
 
         // --- MODALITÀ "STATS" ----------------------------------------------
-        // Terza vista: i fatti dell'ultimo GP e la stagione in numeri, già
-        // calcolati da scripts/build-stats.js in stats.json (il sito li mostra
-        // soltanto). Il file si scarica alla prima apertura della vista.
+        // Terza vista: i fatti dell'ultimo GP, il racconto della stagione e la
+        // stagione in numeri, già calcolati da scripts/build-stats.js in
+        // stats.json (il sito li mostra soltanto). Il file si scarica alla
+        // prima apertura della vista.
         let statsData = null;   // stats.json: stagione in corso, con i GP delle stagioni passate
         let statsView = null;   // dati della stagione mostrata (statsData o una passata)
         // Stagioni passate già scaricate (stats/{anno}/index.json), per anno.
@@ -3050,6 +3054,14 @@
             const seasonCard = card(`Stagione ${data.year} in numeri`,
                 tiles + table(s.drivers, 'Pilota', true) + table(s.teams, 'Squadra', false));
 
+            // Racconto della stagione scritto da Claude (dal 2026-11-08),
+            // riscritto dopo ogni GP: paragrafi separati da una riga vuota.
+            // Senza racconto (chiave o API non disponibili) la scheda non c'è.
+            const story = s.story?.text ? s.story : null;
+            const storyCard = story ? card(`La stagione ${data.year}${s.racesDone < s.racesTotal ? ' finora' : ''}`,
+                story.text.split(/\n\s*\n/).map(p => `<p class="text-sm text-gray-200 leading-relaxed mb-3">${escapeHtml(p.trim())}</p>`).join('') +
+                `<p class="text-[11px] text-gray-500">Racconto scritto con l'IA dai dati del sito, aggiornato dopo ogni GP.${story.circuit ? ` Ultimo GP: ${escapeHtml(story.circuit)}.` : ''}</p>`) : '';
+
             // Duelli in qualifica: barra divisa in proporzione, chi è avanti a sinistra.
             const duels = (s.qualyDuels || []).map(d => {
                 const tot = d.aAhead + d.bAhead || 1;
@@ -3069,11 +3081,12 @@
                 '<p class="text-[11px] text-gray-500 mt-1">Chi si è qualificato davanti al compagno, gara per gara (posizione in qualifica, prima delle penalità in griglia).</p>');
 
             const updated = new Date(data.updatedAt);
-            // Su computer due colonne (GP e duelli | stagione); su telefono le
-            // colonne si sciolgono (contents) e l'ordine è GP, stagione, duelli.
-            box.innerHTML = `<div class="contents md:block"><div class="order-1">${lastGpCard}</div><div class="order-3">${duelsCard}</div></div>
-                <div class="contents md:block"><div class="order-2">${seasonCard}</div>
-                <p class="order-4 text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
+            // Su computer due colonne (GP e duelli | racconto e numeri della
+            // stagione); su telefono le colonne si sciolgono (contents) e
+            // l'ordine è GP, racconto, stagione in numeri, duelli.
+            box.innerHTML = `<div class="contents md:block"><div class="order-1">${lastGpCard}</div><div class="order-4">${duelsCard}</div></div>
+                <div class="contents md:block">${storyCard ? `<div class="order-2">${storyCard}</div>` : ''}<div class="order-3">${seasonCard}</div>
+                <p class="order-5 text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
             // Al posto di "Caricamento statistiche..." (o della stagione di
             // prima): sfuma in entrata invece di comparire di colpo.
             fadeIn(box);

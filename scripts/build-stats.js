@@ -9,24 +9,27 @@
 //     direzione gara e racconto di ogni GP della stagione, vedi main);
 //   - season: la stagione in numeri (vittorie, podi e pole per pilota e
 //     squadra, pole trasformate in vittoria, prime file monopolizzate, duelli
-//     in qualifica tra compagni di squadra).
+//     in qualifica tra compagni di squadra), la classifica dopo ogni gara
+//     (progress) e il racconto della stagione scritto da Claude (story, dal
+//     2026-11-08, vedi seasonStoryInput).
 //
 // Legge i file già scaricati dalle altre automazioni (calendar.json,
 // data.json, standings.json, telemetry.json, pace/). Richieste esterne: i
 // messaggi della direzione gara dell'ultimo GP da OpenF1, per il racconto
-// (lib/race-control.js), e la classifica delle qualifiche della stagione da
-// Jolpica, per i duelli tra compagni (calendar.json ha la griglia di partenza, che con le
-// penalità non dice chi è andato più forte in qualifica). Se Jolpica non
-// risponde si tengono i duelli calcolati al giro precedente.
+// (lib/race-control.js), e da Jolpica la classifica delle qualifiche della
+// stagione, per i duelli tra compagni (calendar.json ha la griglia di
+// partenza, che con le penalità non dice chi è andato più forte in
+// qualifica), e la classifica del mondiale dopo ogni gara. Se Jolpica non
+// risponde si tengono i dati calcolati al giro precedente.
 //
 // Gira in .github/workflows/update-stats.yml dopo ogni aggiornamento dei
 // dati. Uso manuale: node scripts/build-stats.js
 
 const fs = require('fs');
 const path = require('path');
-const { jolpicaRaces, jolpicaDriver } = require('./lib/jolpica');
+const { jolpicaJson, jolpicaRaces, jolpicaDriver } = require('./lib/jolpica');
 const { knownDriverNames, surnameKey } = require('./lib/driver-names');
-const { matchTeam } = require('./lib/f1-mapping');
+const { matchTeam, matchCircuitById } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
@@ -271,18 +274,25 @@ function seasonStats(season, races, poles) {
     };
 }
 
-// Duelli in qualifica tra compagni di squadra (posizione di qualifica, non di
-// griglia), da Jolpica. Una coppia per squadra e pilota: chi sostituisce un
-// titolare per qualche gara forma una coppia a parte.
-async function qualyDuels(season, names) {
+// Classifiche di qualifica della stagione da Jolpica (posizione di qualifica,
+// non di griglia), una per circuito: [{circuit, rows: [{team, driver, pos}]}].
+async function seasonQualifyings(season, names) {
     const qualy = await jolpicaRaces(`${season}/qualifying`);
+    return qualy.map(race => ({
+        circuit: matchCircuitById(race.Circuit?.circuitId),
+        rows: race.QualifyingResults.map(r => ({ team: matchTeam(r.Constructor?.name || ''), driver: jolpicaDriver(r.Driver, names), pos: Number(r.position) })),
+    }));
+}
+
+// Duelli in qualifica tra compagni di squadra. Una coppia per squadra e
+// pilota: chi sostituisce un titolare per qualche gara forma una coppia a parte.
+function qualyDuels(qualifyings) {
     const pairs = new Map();
-    for (const race of qualy) {
+    for (const { rows } of qualifyings) {
         const byTeam = new Map();
-        for (const r of race.QualifyingResults) {
-            const team = matchTeam(r.Constructor?.name || '');
-            if (!byTeam.has(team)) byTeam.set(team, []);
-            byTeam.get(team).push({ driver: jolpicaDriver(r.Driver, names), pos: Number(r.position) });
+        for (const r of rows) {
+            if (!byTeam.has(r.team)) byTeam.set(r.team, []);
+            byTeam.get(r.team).push(r);
         }
         for (const [team, ds] of byTeam) {
             if (ds.length !== 2) continue;
@@ -295,6 +305,113 @@ async function qualyDuels(season, names) {
     // Il più avanti nel duello per primo; squadre in ordine di duelli disputati.
     return [...pairs.values()].map(p => (p.bAhead > p.aAhead ? { team: p.team, a: p.b, b: p.a, aAhead: p.bAhead, bAhead: p.aAhead } : p))
         .sort((x, y) => (y.aAhead + y.bAhead) - (x.aAhead + x.bAhead) || x.team.localeCompare(y.team));
+}
+
+// --- Racconto della stagione --------------------------------------------------
+
+// Classifica del mondiale dopo ogni gara disputata, da Jolpica (classifica
+// ufficiale del round, punti delle Sprint compresi): primi 5 piloti e prime 3
+// squadre. Le gare di più di PROGRESS_RECHECK_DAYS giorni fa si riusano dal
+// giro precedente (le penalità dopo la gara arrivano entro pochi giorni); un
+// round che Jolpica non ha ancora si aggiunge al giro successivo.
+const PROGRESS_RECHECK_DAYS = 7;
+async function seasonProgress(season, done, previous, names) {
+    const prevByCircuit = new Map((previous || []).map(p => [p.circuit, p]));
+    const isOld = race => Date.now() - new Date(`${race.date}T00:00:00Z`).getTime() > PROGRESS_RECHECK_DAYS * 86400000;
+    let schedule = null;
+    const progress = [];
+    for (const race of done) {
+        const prev = prevByCircuit.get(race.circuit);
+        if (prev && isOld(race)) { progress.push(prev); continue; }
+        // Round di Jolpica per circuito, non per numero: la numerazione può
+        // cambiare a stagione in corso (vedi update-calendar.js).
+        schedule ??= await jolpicaRaces(String(season));
+        const jr = schedule.find(r => matchCircuitById(r.Circuit?.circuitId) === race.circuit)?.round;
+        const list = async kind => jr ? (await jolpicaJson(`${season}/${jr}/${kind}.json`)).MRData.StandingsTable.StandingsLists[0] : null;
+        const drivers = await list('driverStandings');
+        if (!drivers || String(drivers.round) !== String(jr)) { if (prev) progress.push(prev); continue; }
+        const teams = await list('constructorStandings');
+        progress.push({
+            round: race.round,
+            circuit: race.circuit,
+            drivers: drivers.DriverStandings.slice(0, 5).map(x => ({ driver: jolpicaDriver(x.Driver, names), points: Number(x.points) })),
+            teams: (teams?.ConstructorStandings || []).slice(0, 3).map(x => ({ team: matchTeam(x.Constructor?.name || ''), points: Number(x.points) })),
+        });
+    }
+    return progress;
+}
+
+// Gara in cui un titolo è diventato matematico: la prima dopo la quale il
+// distacco tra primo e secondo supera i punti ancora in palio (gare e Sprint
+// rimaste nel calendario).
+function titleClinches(progress, races) {
+    const find = team => {
+        for (const p of progress) {
+            const rows = team ? p.teams : p.drivers;
+            const race = races.find(r => r.circuit === p.circuit);
+            if (rows.length < 2 || !race) continue;
+            const after = races.filter(r => r.date > race.date);
+            const left = after.length * (team ? MAX_TEAM_RACE : MAX_RACE) + after.filter(hasSprint).length * (team ? MAX_TEAM_SPRINT : MAX_SPRINT);
+            if (rows[0].points - rows[1].points > left) {
+                return { [team ? 'squadra' : 'pilota']: team ? rows[0].team : rows[0].driver, decisoA: p.circuit, garaNumero: p.round, gareDAnticipo: after.length };
+            }
+        }
+        return null;
+    };
+    return { piloti: find(false), costruttori: find(true) };
+}
+
+// Dati passati a Claude per il racconto della stagione: GP per GP (pole,
+// podio con la posizione in griglia, vincitore della Sprint, fatti principali
+// dall'archivio dei GP), classifica dopo ogni gara (l'ultima è quella
+// attuale), titoli già decisi, stagione in numeri e duelli in qualifica tra
+// compagni. stats = numeri e duelli dei soli GP disputati (vedi main), così
+// pole e qualifica del GP successivo non cambiano i dati prima della sua gara.
+const SEASON_FACT_ICONS = new Set(['🚀', '🤝', '🔒', '🌧️']); // rimonte, doppiette, prime file, pole sul bagnato
+function seasonStoryInput(season, races, done, poles, stats, gpFacts) {
+    const seasonPoles = poles.filter(p => p.year === season);
+    const gare = done.map(r => {
+        const pole = seasonPoles.find(p => p.circuit === r.circuit);
+        const grid = r.results.qualy || [];
+        const gridOf = driver => grid.find(g => same(g.driver, driver))?.position ?? null;
+        const sprint = (r.results.sprintRace || []).find(x => x.position === 1 && !x.retired);
+        const fatti = (gpFacts.get(r.circuit) || []).filter(f => SEASON_FACT_ICONS.has(f.icon)).map(f => f.text.replace(/\*\*/g, ''));
+        return {
+            gara: r.round,
+            circuito: r.circuit,
+            pole: pole ? `${pole.driver} (${pole.team})` : null,
+            podio: r.results.race.filter(x => x.position <= 3 && !x.retired)
+                .map(x => ({ pos: x.position, pilota: x.driver, squadra: x.team, griglia: gridOf(x.driver) })),
+            ...(sprint ? { vincitoreSprint: `${sprint.driver} (${sprint.team})` } : {}),
+            ...(fatti.length ? { fatti } : {}),
+        };
+    });
+    const next = races.find(r => !done.includes(r) && r.date >= (done[done.length - 1]?.date || ''));
+    return {
+        stagione: season,
+        gareDisputate: done.length,
+        gareTotali: races.length,
+        stagioneConclusa: done.length === races.length,
+        prossimoGp: next ? next.circuit : null,
+        gare,
+        andamentoMondiale: stats.progress.map(p => ({
+            dopoGara: p.round,
+            circuito: p.circuit,
+            piloti: p.drivers.map(d => `${d.driver} ${d.points}`).join(', '),
+            squadre: p.teams.map(t => `${t.team} ${t.points}`).join(', '),
+        })),
+        titoliDecisi: titleClinches(stats.progress, races),
+        numeri: {
+            vincitoriDiversi: stats.winners,
+            pilotiDiversiInPole: stats.poleSitters,
+            poleTrasformateInVittoria: `${stats.poleToWin.converted} su ${stats.poleToWin.of}`,
+            primeFileDiUnaSolaSquadra: stats.frontRowLockouts,
+            qualificheSulBagnato: stats.wetQualifyings,
+        },
+        piloti: stats.drivers.slice(0, 10).map(d => ({ pilota: d.name, squadra: d.team, vittorie: d.wins, podi: d.podiums, pole: d.poles })),
+        squadre: stats.teams.map(t => ({ squadra: t.name, vittorie: t.wins, podi: t.podiums, pole: t.poles })),
+        duelliInQualifica: (stats.qualyDuels || []).map(d => ({ squadra: d.team, davanti: `${d.a} ${d.aAhead}`, dietro: `${d.b} ${d.bAhead}` })),
+    };
 }
 
 // Un GP: fatti, messaggi della direzione gara e racconto di Claude. prev = la
@@ -367,6 +484,7 @@ async function main() {
     // ricostruisce senza le frasi sul mondiale.
     const done = races.filter(r => r.results?.race?.length);
     const gps = [];
+    const gpFacts = new Map(); // circuito -> fatti del GP, per il racconto della stagione
     let lastGp = null;
     for (const race of done) {
         const isLast = race === done[done.length - 1];
@@ -380,15 +498,59 @@ async function main() {
             writeJsonIfChanged(file, gp);
         }
         gps.push({ round: race.round, circuit: race.circuit, file });
+        gpFacts.set(race.circuit, gp?.facts || []);
         if (isLast) lastGp = gp;
     }
 
+    const prevSeason = previous.year === season ? previous.season : null;
     const stats = seasonStats(season, races, poles);
+    const names = knownDriverNames();
+    let qualifyings = null;
     try {
-        stats.qualyDuels = await qualyDuels(season, knownDriverNames());
+        qualifyings = await seasonQualifyings(season, names);
+        stats.qualyDuels = qualyDuels(qualifyings);
     } catch (err) {
         console.warn(`⚠️  Duelli in qualifica da Jolpica non disponibili (${err.message}): tengo quelli precedenti.`);
-        stats.qualyDuels = previous.year === season ? previous.season?.qualyDuels || [] : [];
+        stats.qualyDuels = prevSeason?.qualyDuels || [];
+    }
+    try {
+        stats.progress = await seasonProgress(season, done, prevSeason?.progress, names);
+    } catch (err) {
+        console.warn(`⚠️  Classifiche dopo ogni gara da Jolpica non disponibili (${err.message}): tengo quelle precedenti.`);
+        stats.progress = prevSeason?.progress || [];
+    }
+
+    // Racconto della stagione (dal 2026-11-08), riscritto dopo ogni GP: solo
+    // quando Jolpica ha la classifica del mondiale dopo l'ultimo GP (di solito
+    // poche ore dopo la gara), fino ad allora resta quello precedente. I dati
+    // si fermano all'ultimo GP disputato: la classifica è quella di Jolpica
+    // per round (non standings.json, che il sabato può già avere i punti della
+    // Sprint del GP successivo), numeri e duelli contano solo le qualifiche
+    // dei GP disputati. Così il racconto non si riscrive a metà del weekend
+    // dopo. round/circuit = ultimo GP raccontato.
+    const lastRace = done[done.length - 1];
+    if (lastRace) {
+        const prevStory = prevSeason?.story;
+        if (stats.progress[stats.progress.length - 1]?.circuit !== lastRace.circuit) {
+            stats.story = prevStory;
+        } else {
+            try {
+                const { seasonStory } = require('./lib/gp-story');
+                const doneCircuits = new Set(done.map(r => r.circuit));
+                const storyStats = {
+                    ...seasonStats(season, races, poles.filter(p => p.year !== season || doneCircuits.has(p.circuit))),
+                    progress: stats.progress,
+                    qualyDuels: qualifyings ? qualyDuels(qualifyings.filter(q => doneCircuits.has(q.circuit))) : stats.qualyDuels,
+                };
+                const input = seasonStoryInput(season, races, done, poles, storyStats, gpFacts);
+                const story = await seasonStory(input, prevStory);
+                stats.story = story ? (story === prevStory ? prevStory : { ...story, round: lastRace.round, circuit: lastRace.circuit }) : prevStory;
+            } catch (err) {
+                console.warn(`⚠️  Racconto della stagione non disponibile (${err.message}).`);
+                stats.story = prevStory;
+            }
+        }
+        if (!stats.story) delete stats.story;
     }
 
     // La stagione si salva anche in stats/{anno}/index.json: quando arriva la
@@ -407,7 +569,8 @@ async function main() {
     console.log(`Ultimo GP: ${lastGp ? `${lastGp.circuit} (${lastGp.facts.length} fatti)` : 'nessuno'}`);
     if (lastGp?.story) console.log(`  📝 ${lastGp.story.text}`);
     (lastGp?.facts || []).forEach(f => console.log(`  ${f.icon} ${f.text}`));
-    console.log(`Stagione ${season}: ${stats.racesDone}/${stats.racesTotal} GP, ${stats.drivers.length} piloti, ${stats.qualyDuels.length} duelli in qualifica.`);
+    console.log(`Stagione ${season}: ${stats.racesDone}/${stats.racesTotal} GP, ${stats.drivers.length} piloti, ${stats.qualyDuels.length} duelli in qualifica, classifica dopo ${stats.progress.length} gare.`);
+    if (stats.story) console.log(`  📖 (dopo ${stats.story.circuit}) ${stats.story.text}`);
 }
 
 main()

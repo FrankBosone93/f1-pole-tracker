@@ -110,6 +110,14 @@ async function openf1QualyResults(session, driverNames) {
     catch (err) { if (err.status !== 404) throw err; } // 404 = griglia non ancora pubblicata
     const gridPos = new Map(grid.map(g => [g.driver_number, g.position]));
     const byNumber = new Map(drivers.map(d => [d.driver_number, d]));
+    // Chi non fa segnare nessun tempo manca del tutto da session_result, ma è
+    // tra i piloti della sessione e di solito anche in griglia (Qualifiche
+    // Sprint di Shanghai 2026: Pérez, partito 21°; qualifica di Melbourne
+    // 2026: tre piloti). Si aggiunge come gli altri senza posizione. Prima del
+    // 2026-11-08 queste righe mancavano dalle tabelle.
+    const listed = new Set(rows.map(r => r.driver_number));
+    drivers.filter(d => !listed.has(d.driver_number))
+        .forEach(d => rows.push({ driver_number: d.driver_number, position: null, duration: null }));
     const classified = rows.filter(r => r.position).sort((a, b) => a.position - b.position);
     const others = rows.filter(r => !r.position);
     const qualyOrder = [...classified, ...others];

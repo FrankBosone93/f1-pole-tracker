@@ -4295,13 +4295,20 @@
           },
           {
             "position": 18,
-            "driver": "Alex Albon",
+            "driver": "Logan Sargeant",
             "team": "Williams",
             "time": "Non classificato",
             "penalty": true
           },
           {
             "position": 19,
+            "driver": "Alex Albon",
+            "team": "Williams",
+            "time": "Non classificato",
+            "penalty": true
+          },
+          {
+            "position": 20,
             "driver": "Kevin Magnussen",
             "team": "Haas",
             "time": "1:11.295",

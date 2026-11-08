@@ -3,13 +3,15 @@
 // Aggiorna calendar.json: calendario della stagione IN CORSO (rilevata da
 // sola, quindi passa all'anno nuovo appena il suo calendario è pubblicato)
 // con orari ufficiali di ogni sessione, vincitore e risultati completi di
-// prove libere (solo GP in evidenza), qualifiche e gara.
+// prove libere (solo GP in evidenza), Qualifiche Sprint e Sprint, qualifiche
+// e gara.
 //
 // Fonti: calendario da lib/season-calendar.js (OpenF1, ripiego Jolpica);
 // risultati da OpenF1 (lib/openf1-results.js), ripiego Jolpica per qualifica
 // e gara (Jolpica non ha le prove libere). f1api.dev, la fonte di prima, è
 // stata eliminata il 2026-10-26 (orari sbagliati, risultati in ritardo di
-// giorni, penalità mancanti). I risultati sprint non sono ancora inclusi.
+// giorni, penalità mancanti). Le Sprint (dal 2026-11-08) vengono solo da
+// OpenF1, vedi SPRINT_SESSIONS.
 //
 // Uso manuale: node scripts/update-calendar.js
 
@@ -50,6 +52,18 @@ async function jolpicaRound(season, round, circuit, kind) {
 const CALENDAR_JSON_PATH = path.join(__dirname, '..', 'calendar.json');
 // Prove libere e gara da OpenF1: vedi lib/openf1-results.js.
 const PRACTICE_SESSION_NAMES = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3' };
+// Weekend sprint (dal 2026-11-08): risultati per tutte le gare della stagione,
+// come qualifica e gara (non solo per il GP in evidenza come le prove libere).
+// Qualifiche Sprint come la qualifica: griglia di partenza della Sprint, con *
+// per chi è arretrato per penalità (OpenF1 starting_grid della sessione).
+// Sprint come la gara. Solo OpenF1 (Jolpica non ha le Qualifiche Sprint): se
+// non risponde si riprova al run successivo. Chiave = quella di schedule;
+// nome della sessione = session_name di OpenF1. La pole del sito (data.json,
+// sezione Qualifiche) resta sempre e solo quella della qualifica del GP.
+const SPRINT_SESSIONS = [
+    ['sprintQualy', 'Sprint Qualifying', 'Qualifiche Sprint', openf1QualyResults],
+    ['sprintRace', 'Sprint', 'Sprint', openf1RaceResults],
+];
 
 // Le penalità post-gara possono arrivare anche giorni dopo: i risultati
 // OpenF1 di una gara si ricontrollano per una settimana, poi restano in cache.
@@ -123,7 +137,7 @@ async function main() {
         const existingRace = existingByCircuit.get(mappedCircuit);
 
         let winner = null;
-        const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
+        const results = { fp1: null, fp2: null, fp3: null, sprintQualy: null, sprintRace: null, qualy: null, race: null };
 
         // Gara: OpenF1 come fonte principale, Jolpica come ripiego (vedi
         // openf1RaceResults). raceSource dice da dove vengono i risultati
@@ -208,6 +222,30 @@ async function main() {
             }
         }
         if (!results.qualy) qualySource = null;
+
+        // Sprint: come qualifica e gara si ricontrollano per RACE_RECHECK_DAYS
+        // giorni (penalità dopo la sessione), poi restano in cache.
+        for (const [key, sessionName, label, fetchResults] of SPRINT_SESSIONS) {
+            const cached = existingRace?.results?.[key];
+            if (cached) results[key] = cached;
+            const info = schedule[key];
+            if (!info?.date) continue; // weekend senza sprint
+            const start = new Date(`${info.date}T${info.time || '23:59:59Z'}`);
+            if (isNaN(start) || start > now) continue; // ancora da disputare
+            if (cached && !FORCE_RACE_REFRESH && (now - start) > RACE_RECHECK_DAYS * 86400000) continue;
+            const session = openf1Sessions.find(s => s.session_name === sessionName
+                && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
+            if (!session) continue;
+            try {
+                const rows = await fetchResults(session, driverNames);
+                if (rows && JSON.stringify(rows) !== JSON.stringify(cached)) {
+                    console.log(`📥 ${mappedCircuit}: ${label} da OpenF1${cached ? ' (classifica cambiata)' : ''}.`);
+                    results[key] = rows;
+                }
+            } catch (err) {
+                console.warn(`⚠️  ${mappedCircuit}: ${label} OpenF1 non disponibile - ${err.message}`);
+            }
+        }
 
         for (const key of ['fp1', 'fp2', 'fp3']) {
             // I risultati delle prove libere si scartano (anche se già in
