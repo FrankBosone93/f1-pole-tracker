@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=0d8677b388">
+    <link rel="stylesheet" href="styles.css?v=2ecbb73654">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -75,7 +75,14 @@
            interno): da chiuso scende davvero a 0 px. */
         #telemetryMapWrap > div { min-height: 0; overflow: hidden; }
         #telemetryMapWrap.map-open { grid-template-rows: 1fr; opacity: 1; margin-top: .75rem; }
-        @media (prefers-reduced-motion: reduce) { #telemetryMapWrap { transition: none; } }
+        /* "Riduci movimento" attivo nelle impostazioni del sistema: niente
+           transizioni né animazioni CSS in tutto il sito (mappa, frecce,
+           pallino LIVE, dissolvenze) e niente scorrimento morbido; quelle
+           fatte in JavaScript controllano la stessa impostazione (vedi
+           reducedMotion). */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+        }
         /* "Dettagli Qualifiche": la lista è sempre dalla stagione più
            recente; l'ordine crescente (details-asc) la gira solo a schermo,
            in colonna su mobile e in riga su desktop (vedi applyDetailsPrefs). */
@@ -202,13 +209,14 @@
             </div>
             </div>
         </div>
-        <!-- Posizionato in assoluto (non più nel flusso flex) apposta: se
-             fosse un normale figlio flex, l'header prenderebbe l'altezza del
-             lato più alto (di solito titolo+selettore) e lascerebbe uno
-             spazio vuoto visibile sotto il widget quando è lui il più corto
-             (segnalato dall'utente). Così l'header si alza solo quanto serve
-             al titolo+selettore, e il widget resta ancorato in alto a
-             destra senza influenzare quell'altezza. -->
+        <!-- Si vede solo nelle Qualifiche su computer, dove il body ha
+             sempre la classe quali-wide (Passo gara, Statistiche e telefono
+             ruotato lo nascondono): lì sta nel flusso dell'header, non in
+             posizione assoluta (vedi body.quali-wide #featuredRaceWidgetDesktop
+             nello stile). Quando si allunga (risultati aperti, meteo a capo)
+             l'header si allunga con lui e il grafico scende, invece di
+             finirci sotto coperto. Le classi md:absolute qui sotto valgono
+             solo fuori da quel layout. -->
         <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-0 md:right-0 text-left pt-1"></div>
     </header>
 
@@ -219,8 +227,10 @@
             <!-- Contenitore Grafico -->
             <div id="chartCard" class="bg-[#1E1E1E] px-2 py-3 md:p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
                 <div class="relative flex items-center justify-between gap-2 mb-2">
-                    <div class="flex items-center gap-2">
-                        <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
+                    <!-- "Torna al grafico" su una riga sola: andando a capo (tre
+                         righe sul telefono) alzava l'intestazione di 16 px. -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button id="telemetryToggle" onclick="toggleTelemetryView()" class="hidden text-xs text-gray-300 hover:text-white transition-colors cursor-pointer whitespace-nowrap">
                             Telemetria
                         </button>
                         <!-- Visibile solo in modalità telemetria, e solo se il
@@ -248,7 +258,7 @@
                      Altrimenti la riga contiene solo il grafico. -->
                 <div id="telemetryRow" class="flex gap-3">
                 <div id="telemetryMainCol" class="flex-1 min-w-0">
-                <div id="chartContainer" class="relative w-full min-w-0 flex-1 h-[200px] md:h-[440px] overflow-hidden transition-opacity duration-200">
+                <div id="chartContainer" class="relative w-full min-w-0 flex-1 h-[200px] md:h-[440px] overflow-hidden">
                     <canvas id="poleChart"></canvas>
                     <!-- Pannelli telemetria (nascosti finché non si attiva la
                          vista "Telemetria"): velocità, acceleratore/freno,
@@ -318,7 +328,7 @@
                 <h2 class="text-lg font-bold text-gray-200">
                     <button type="button" id="detailsCollapseBtn" onclick="toggleDetailsCollapsed()" aria-expanded="true" aria-controls="detailsList" class="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
                         Dettagli Qualifiche
-                        <svg id="detailsChevron" class="text-gray-400 transition-transform" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <svg id="detailsChevron" class="text-gray-400 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </button>
                 </h2>
                 <button type="button" id="detailsSortBtn" onclick="toggleDetailsOrder()" class="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer border border-gray-700 rounded-lg px-2 py-1">
@@ -420,12 +430,16 @@
 
     <!-- Finestra dei pannelli della stagione (tasti #seasonButtons): uno
          alla volta, sopra la pagina. Si apre e si chiude
-         da sola quando un pannello compare o sparisce (syncPanelDialog). -->
-    <div id="panelDialog" class="fixed inset-0 z-50 bg-black/70 items-center justify-center p-4" style="display:none">
+         da sola quando un pannello compare o sparisce (syncPanelDialog).
+         Ancorata in alto e non al centro, come le Novità e le Notifiche:
+         se il contenuto cambia altezza (Stagioni: dall'elenco degli anni
+         alle gare) il titolo resta fermo e la finestra si allunga solo
+         verso il basso. -->
+    <div id="panelDialog" class="fixed inset-0 z-50 bg-black/70 items-start justify-center px-4 pb-4 pt-[8vh]" style="display:none">
         <div id="panelDialogBox" class="relative w-full max-w-lg max-h-[85vh] overflow-y-auto overscroll-contain rounded-xl">
             <button type="button" onclick="closePanelDialog()" class="absolute top-3 right-3 z-10 text-gray-400 hover:text-white text-lg leading-none px-1" aria-label="Chiudi">✕</button>
                 <!-- Pannello Classifica (nascosto di default). -->
-                <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 transition-opacity duration-200">
+                <div id="classificaPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800">
                     <div class="text-xs text-gray-500 pb-2 mb-4 border-b border-gray-700" id="classificaMeta"></div>
                     <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
                         <div>
@@ -440,7 +454,7 @@
                 </div>
 
                 <!-- Pannello Calendario (Nascosto di default) -->
-                <div id="calendarPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3 transition-opacity duration-200">
+                <div id="calendarPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3">
                     <h3 class="text-sm font-bold text-[#E10600]" id="calendarPanelTitle">📅 Calendario</h3>
                     <div class="text-xs text-gray-500 pb-2 border-b border-gray-700" id="calendarMeta"></div>
                     <div id="calendarList" class="space-y-1 text-sm"></div>
@@ -459,7 +473,7 @@
 
                 <!-- Pannello News (Nascosto di default): ultime 5 notizie F1 da
                      FormulaPassion.it (news.json, scaricato da update-news.js). -->
-                <div id="newsPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3 transition-opacity duration-200">
+                <div id="newsPanel" class="hidden bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 space-y-3">
                     <h3 class="text-sm font-bold text-[#E10600]">📰 News</h3>
                     <div id="newsList" class="space-y-3 text-sm"></div>
                     <div class="text-xs text-gray-500 pt-2 border-t border-gray-700" id="newsMeta"></div>
@@ -488,6 +502,130 @@
             document.body.classList.toggle('phone-landscape', isPhoneLandscape());
         }
         applyLayoutMode();
+
+        // --- ANIMAZIONI ------------------------------------------------------
+        // Le stesse in tutto il sito: finestre che sfumano in 0,2 s (chiusura
+        // 0,15 s), tendine di 0,3 s (come la mappa del tracciato), contenuti
+        // nuovi che sfumano in 0,2 s, grafici disegnati in 0,4 s. Con "Riduci
+        // movimento" attivo nelle impostazioni del sistema tutto cambia di
+        // colpo (per le animazioni CSS vedi la regola nello stile).
+        function reducedMotion() {
+            return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+        // Curve standard CSS di uscita (accelera) e di entrata (rallenta),
+        // scritte in numeri: coi loro nomi in parole Tailwind, che legge
+        // tutto il file, aggiungerebbe a styles.css due classi inutili.
+        const EASE_IN = 'cubic-bezier(.42, 0, 1, 1)';
+        const EASE_OUT = 'cubic-bezier(0, 0, .58, 1)';
+
+        // Animazione d'ingresso dei grafici Chart.js.
+        function chartAnimation() {
+            return reducedMotion() ? false : { duration: 400 };
+        }
+
+        // Contenuto appena cambiato (vista, circuito, gara, GP): sfuma in
+        // entrata invece di comparire di colpo.
+        function fadeIn(...els) {
+            if (reducedMotion()) return;
+            els.filter(Boolean).forEach(el => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: EASE_OUT }));
+        }
+
+        // Altezza che cambia col contenuto (finestra Stagioni, riquadro del
+        // grafico): scorre dalla misura di prima (fromH, letta prima del
+        // cambio) a quella nuova invece di scattare. Restituisce
+        // l'animazione, o null se non serve.
+        function animateHeightFrom(el, fromH, ms = 300) {
+            if (el.__heightAnim) { el.__heightAnim.cancel(); el.__heightAnim = null; el.style.overflow = ''; }
+            const toH = el.getBoundingClientRect().height;
+            if (reducedMotion() || Math.abs(toH - fromH) < 2) return null;
+            el.style.overflow = 'hidden';
+            const anim = el.animate([{ height: `${fromH}px` }, { height: `${toH}px` }], { duration: ms, easing: 'ease' });
+            el.__heightAnim = anim;
+            anim.onfinish = () => {
+                if (el.__heightAnim !== anim) return;
+                el.__heightAnim = null;
+                el.style.overflow = '';
+            };
+            return anim;
+        }
+
+        // Finestre (Classifica, Calendario, Stagioni, News, Novità,
+        // Notifiche): sfondo e finestra compaiono insieme sfumando, con la
+        // finestra che sale di 8 px; alla chiusura sfumano, poi done() la
+        // toglie davvero.
+        function dialogEnter(overlay, box) {
+            if (reducedMotion()) return;
+            overlay.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: EASE_OUT });
+            if (box) box.animate([{ transform: 'translateY(8px)' }, { transform: 'none' }], { duration: 200, easing: EASE_OUT });
+        }
+        function dialogLeave(overlay, done) {
+            if (reducedMotion()) { done(); return; }
+            const anim = overlay.animate([{ opacity: getComputedStyle(overlay).opacity }, { opacity: 0 }], { duration: 150, easing: EASE_IN, fill: 'forwards' });
+            anim.onfinish = () => { done(); anim.cancel(); };
+        }
+
+        // Tendina (0,3 s, come la mappa del tracciato): aprendosi il riquadro
+        // scende sfumando dall'altezza 0 alla sua altezza reale, chiudendosi
+        // risale; prima compariva e spariva di colpo, spingendo il resto della
+        // pagina. Toccato di nuovo a metà, riparte da dove si trova.
+        // el.__slideTarget = stato finale (true = aperto) finché la tendina è
+        // in corso; setHidden = come si nasconde davvero l'elemento (classe
+        // "hidden" o attributo hidden).
+        const SLIDE_PROPS = ['height', 'paddingTop', 'paddingBottom', 'marginTop', 'marginBottom', 'borderTopWidth', 'borderBottomWidth'];
+        function slideIsOpen(el) {
+            return el.__slideTarget ?? !(el.hidden || el.classList.contains('hidden'));
+        }
+        // Durante una tendina lo "scroll anchoring" del browser è spento:
+        // altrimenti Chrome, se il punto della pagina che tiene fermo sta
+        // sotto la tendina, fa scorrere la pagina insieme a lei (es.
+        // riaprendo "Dettagli Qualifiche" in fondo alla pagina sul telefono
+        // il titolo appena toccato spariva verso l'alto). Così quello che sta
+        // sopra resta fermo e la tendina si apre verso il basso. Riacceso
+        // dopo l'impaginazione dell'ultimo fotogramma.
+        let slidesRunning = 0;
+        function holdScrollAnchor(on) {
+            slidesRunning = Math.max(0, slidesRunning + (on ? 1 : -1));
+            if (on) document.documentElement.style.overflowAnchor = 'none';
+            else if (slidesRunning === 0) {
+                document.documentElement.getBoundingClientRect();
+                document.documentElement.style.overflowAnchor = '';
+            }
+        }
+        function slide(el, open, setHidden = v => el.classList.toggle('hidden', v)) {
+            const styleNow = () => {
+                const cs = getComputedStyle(el);
+                const s = { opacity: cs.opacity };
+                SLIDE_PROPS.forEach(p => { s[p] = cs[p]; });
+                return s;
+            };
+            const prev = el.__slideAnim;
+            const from = prev ? styleNow() : null;
+            if (prev) { el.__slideAnim = null; prev.cancel(); }
+            else holdScrollAnchor(true);
+            el.style.overflow = '';
+            el.__slideTarget = open;
+            if (open) setHidden(false);
+            const finish = () => {
+                el.__slideAnim = null;
+                delete el.__slideTarget;
+                el.style.overflow = '';
+                if (!open) setHidden(true);
+                holdScrollAnchor(false);
+                scheduleReposition(); // l'altezza della pagina è cambiata
+            };
+            if (reducedMotion()) { finish(); return; }
+            const full = { ...styleNow(), opacity: '1' };
+            const zero = { opacity: '0' };
+            SLIDE_PROPS.forEach(p => { zero[p] = '0px'; });
+            el.style.overflow = 'hidden';
+            const anim = el.animate([from || (open ? zero : full), open ? full : zero], { duration: 300, easing: 'ease', fill: 'forwards' });
+            el.__slideAnim = anim;
+            anim.onfinish = () => {
+                if (el.__slideAnim !== anim) return;
+                anim.cancel(); // toglie l'altezza fissa dell'ultimo fotogramma
+                finish();
+            };
+        }
 
         // baseData = fonte di verità "ufficiale", caricata da data.json con fetch() più sotto.
         let baseData = [];
@@ -537,11 +675,15 @@
             try { localStorage.setItem(DETAILS_PREFS_KEY, JSON.stringify(detailsPrefs)); } catch (e) {}
         }
         const detailsAscending = () => detailsPrefs.order ? detailsPrefs.order === 'asc' : isDesktopLayout();
-        function applyDetailsPrefs() {
+        // animate: la lista si apre e si chiude a tendina (tocco sul titolo).
+        // Al caricamento e ridimensionando la finestra cambia di colpo, senza
+        // interrompere una tendina in corso.
+        function applyDetailsPrefs(animate = false) {
             const asc = detailsAscending();
             const open = !detailsPrefs.collapsed;
             detailsList.classList.toggle('details-asc', asc);
-            detailsList.hidden = !open;
+            if (animate) slide(detailsList, open, v => { detailsList.hidden = v; });
+            else if (detailsList.__slideTarget === undefined) detailsList.hidden = !open;
             document.getElementById('detailsSortLabel').textContent = asc ? 'Meno recente' : 'Più recente';
             document.getElementById('detailsSortBtn').classList.toggle('hidden', !open);
             document.getElementById('detailsCollapseBtn').setAttribute('aria-expanded', String(open));
@@ -555,7 +697,7 @@
         function toggleDetailsCollapsed() {
             detailsPrefs.collapsed = !detailsPrefs.collapsed;
             saveDetailsPrefs();
-            applyDetailsPrefs();
+            applyDetailsPrefs(true);
             scheduleReposition(); // l'altezza della pagina è cambiata
         }
         applyDetailsPrefs();
@@ -684,20 +826,62 @@
             }
         }
 
-        function toggleChartView() {
-            chartViewMode = chartViewMode === 'line' ? 'delta' : 'line';
-            updateChartViewToggleIcon();
-            syncUrlState();
-            // Dissolvenza gestita a mano invece di affidarsi all'animazione
-            // d'ingresso di Chart.js: quest'ultima può completarsi quasi
-            // istantaneamente (osservato su desktop) a seconda di quando il
-            // browser consegna il primo frame, rendendo il cambio di vista
-            // uguale su tutti i dispositivi.
-            chartContainer.style.opacity = '0';
+        // Cambio di vista del grafico (andamento dei tempi, variazione anno su
+        // anno, telemetria): i grafici sfumano in uscita (0,2 s) insieme al
+        // tracciato e ai riquadri del giro; a grafico invisibile cambiano
+        // insieme scritte, tasti e grafico (update, poi renderChart), poi
+        // tutto sfuma in entrata mentre l'altezza del riquadro scorre dalla
+        // misura di prima a quella nuova (0,3 s) invece di scattare. Prima le
+        // scritte cambiavano subito, prima della dissolvenza, e il riquadro
+        // cambiava altezza di colpo. Dissolvenza fatta qui e non con
+        // l'animazione d'ingresso di Chart.js, che a seconda di quando il
+        // browser consegna il primo frame può completarsi quasi subito
+        // (osservato su desktop). Un tocco durante la dissolvenza in uscita
+        // viene ignorato.
+        let chartSwapPending = false;
+        // Promessa in corso mentre il riquadro del grafico cambia altezza: la
+        // mappa sotto i grafici (telefono) si apre dopo, vedi openTrackMapWrap.
+        let chartCardSettling = null;
+        function chartFadeTargets() {
+            const row = document.getElementById('telemetryRow');
+            const stats = document.getElementById('telemetryStats');
+            return row.contains(stats) ? [row] : [row, stats];
+        }
+        function swapChartView(update) {
+            if (chartSwapPending) return;
+            const swap = () => {
+                update();
+                try { renderChart(); } catch (err) { console.error('Grafico non disegnato:', err); }
+            };
+            if (reducedMotion()) { swap(); return; }
+            chartSwapPending = true;
+            const fadeOuts = chartFadeTargets().map(el => el.animate(
+                [{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }],
+                { duration: 200, easing: EASE_IN, fill: 'forwards' }));
             setTimeout(() => {
-                renderChart();
-                chartContainer.style.opacity = '1';
+                chartSwapPending = false;
+                const h0 = chartCard.getBoundingClientRect().height;
+                let settled;
+                const settling = chartCardSettling = new Promise(resolve => { settled = resolve; });
+                try {
+                    swap();
+                } finally {
+                    // Anche con un errore: i grafici non restano invisibili.
+                    fadeOuts.forEach(a => a.cancel());
+                    fadeIn(...chartFadeTargets());
+                    const anim = animateHeightFrom(chartCard, h0);
+                    const done = () => { if (chartCardSettling === settling) chartCardSettling = null; settled(); };
+                    if (anim) anim.finished.then(done, done); else done();
+                }
             }, 200);
+        }
+
+        function toggleChartView() {
+            swapChartView(() => {
+                chartViewMode = chartViewMode === 'line' ? 'delta' : 'line';
+                updateChartViewToggleIcon();
+                syncUrlState();
+            });
         }
 
         // Il tasto "Telemetria" appare solo se il circuito scelto ha dati
@@ -771,17 +955,14 @@
         }
 
         function toggleTelemetryView() {
-            chartViewMode = chartViewMode === 'telemetry' ? 'line' : 'telemetry';
-            updateTelemetryToggleLabel();
-            updateTelemetryButtonsVisibility();
-            updateActiveYearCardHighlight();
-            syncUrlState();
-            // Stessa dissolvenza usata dal toggle linea/delta, per coerenza.
-            chartContainer.style.opacity = '0';
-            setTimeout(() => {
-                renderChart();
-                chartContainer.style.opacity = '1';
-            }, 200);
+            // Stessa dissolvenza del cambio tempi/variazione, per coerenza.
+            swapChartView(() => {
+                chartViewMode = chartViewMode === 'telemetry' ? 'line' : 'telemetry';
+                updateTelemetryToggleLabel();
+                updateTelemetryButtonsVisibility();
+                updateActiveYearCardHighlight();
+                syncUrlState();
+            });
         }
 
         // Evidenzia i box "Anno YYYY" coinvolti nel grafico Telemetria, con
@@ -821,19 +1002,16 @@
         function showTelemetryForYear(year) {
             const circuitName = select.value;
             if (!getTelemetryEntry(String(year), circuitName)) return;
-            telemetryPrimarySeason = String(year);
-            telemetryCompareYear = null;
-            chartViewMode = 'telemetry';
-            updateTelemetryToggleLabel();
-            updateTelemetryButtonsVisibility();
-            updateActiveYearCardHighlight();
-            syncUrlState();
-            chartContainer.style.opacity = '0';
-            setTimeout(() => {
-                renderChart();
-                chartContainer.style.opacity = '1';
-            }, 200);
-            chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            swapChartView(() => {
+                telemetryPrimarySeason = String(year);
+                telemetryCompareYear = null;
+                chartViewMode = 'telemetry';
+                updateTelemetryToggleLabel();
+                updateTelemetryButtonsVisibility();
+                updateActiveYearCardHighlight();
+                syncUrlState();
+            });
+            chartCard.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
         }
 
         // Tabella compatta con posizione/pilota/scuderia non serve qui: la
@@ -1072,7 +1250,7 @@
             // Spazio del tracciato riservato subito (i grafici si disegnano
             // già stretti); renderTrackMap lo toglie se il circuito non ha tracciato.
             placeTrackMap(wide);
-            if (!wide && chartViewMode === 'telemetry' && trackMapCtx) document.getElementById('telemetryMapWrap').classList.add('map-open');
+            if (!wide && chartViewMode === 'telemetry' && trackMapCtx) openTrackMapWrap();
             if (changed) {
                 applyFeaturedWidgetWidth();
                 alignDetailsColumnTop();
@@ -1094,6 +1272,19 @@
             Object.assign(svg.style, side ? { height: 'auto', flex: '1 1 0', minHeight: '0' } : { height: '', flex: '', minHeight: '' });
             if (side) wrap.classList.remove('map-open');
         }
+        // Mappa sotto i grafici (telefono): si apre a tendina (classe
+        // map-open, vedi lo stile) quando il riquadro del grafico ha finito di
+        // cambiare altezza (vedi swapChartView); aprendosi durante quella
+        // animazione, alla fine il riquadro scattava all'altezza della mappa
+        // già mezza aperta. Condizioni ricontrollate al momento: nel frattempo
+        // si può essere usciti dalla telemetria.
+        function openTrackMapWrap() {
+            const open = () => {
+                if (chartViewMode !== 'telemetry' || !trackMapCtx || document.body.classList.contains('telemetry-wide')) return;
+                document.getElementById('telemetryMapWrap').classList.add('map-open');
+            };
+            if (chartCardSettling) chartCardSettling.then(open); else open();
+        }
 
         function renderTrackMap() {
             const wrap = document.getElementById('telemetryMapWrap');
@@ -1107,9 +1298,10 @@
                 .map(it => ({ ...it, pts: it.track ? it.track.points : null }));
             const baseTrack = items[0].track;
             if (!baseTrack) { wrap.classList.remove('map-open'); placeTrackMap(false); return; }
-            // Visibile prima di disegnare: getBBox (viewBox) misura l'SVG.
+            // Visibile prima di disegnare: getBBox (viewBox) misura l'SVG
+            // (sotto i grafici è sempre disegnato, anche a tendina chiusa: si
+            // apre alla fine, vedi openTrackMapWrap).
             if (document.body.classList.contains('telemetry-wide')) placeTrackMap(true);
-            else wrap.classList.add('map-open');
             const base = baseTrack.points;
 
             // Coordinate ruotate, poi in un riquadro di 1000 unità sul lato
@@ -1162,6 +1354,7 @@
             const years = items.filter(it => it.pts).map(it => it.season).join(' vs ');
             document.getElementById('telemetryMapTitle').innerText = `Tracciato · giro di pole ${years}`;
             trackMapCtx = { items };
+            if (!document.body.classList.contains('telemetry-wide')) openTrackMapWrap();
         }
 
         // t = secondo del giro sotto il puntatore, o null (nessun puntino).
@@ -1317,7 +1510,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 resizeDelay: 200,
-                animation: { duration: 400 },
+                animation: chartAnimation(),
                 interaction: { mode: 'index', intersect: false },
                 // Padding destro uguale e sufficiente per l'etichetta "90s"
                 // dell'asse X (visibile solo nel grafico marce): senza, Chart.js
@@ -1997,26 +2190,11 @@
         }
 
         // --- VISTA CLASSIFICA ---
-        async function toggleClassificaPanel() {
-            const panel = document.getElementById('classificaPanel');
-            const wasHidden = panel.classList.contains('hidden');
-            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
-            document.getElementById('calendarPanel').classList.add('hidden');
-            document.getElementById('previousYearsPanel').classList.add('hidden');
-            document.getElementById('newsPanel').classList.add('hidden');
-            if (wasHidden) {
-                // Stessa dissolvenza in apertura usata per gli altri
-                // pannelli (Calendario, Stagioni precedenti, News): coerenza
-                // tra tutti i tasti, come richiesto esplicitamente.
-                panel.classList.remove('hidden');
-                await fadeSwap(panel, () => {
-                    renderClassifica();
-                    applyClassificaPanelWidth();
-                });
-            } else {
-                panel.classList.add('hidden');
-            }
-            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        function toggleClassificaPanel() {
+            toggleSeasonPanel('classificaPanel', () => {
+                renderClassifica();
+                applyClassificaPanelWidth();
+            });
         }
 
         function renderClassifica() {
@@ -2054,24 +2232,8 @@
             classificaMeta.innerText = `Aggiornato al ${updatedDate}`;
         }
 
-        async function toggleCalendarPanel() {
-            const panel = document.getElementById('calendarPanel');
-            const wasHidden = panel.classList.contains('hidden');
-            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
-            document.getElementById('classificaPanel').classList.add('hidden');
-            document.getElementById('previousYearsPanel').classList.add('hidden');
-            document.getElementById('newsPanel').classList.add('hidden');
-            if (wasHidden) {
-                // Stessa dissolvenza in apertura usata per gli altri
-                // pannelli (Classifica, Stagioni precedenti, News).
-                panel.classList.remove('hidden');
-                await fadeSwap(panel, () => {
-                    renderCalendar();
-                });
-            } else {
-                panel.classList.add('hidden');
-            }
-            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        function toggleCalendarPanel() {
+            toggleSeasonPanel('calendarPanel', renderCalendar);
         }
 
         const ITALIAN_MONTHS = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
@@ -2205,20 +2367,17 @@
             </div>`;
         }
 
-        // Espande/richiude i risultati completi di una singola sessione
-        // (prove libere, qualifiche o gara), già disputata. Il contenuto è
-        // già renderizzato (non serve richiesta di rete: i dati sono già in
-        // calendarData), qui si toglie/aggiunge solo la classe "hidden".
+        // Espande/richiude a tendina i risultati completi di una singola
+        // sessione già disputata (prove libere, qualifiche o gara). Il
+        // contenuto è già renderizzato (non serve richiesta di rete: i dati
+        // sono già in calendarData). Su computer il widget "Prossimo GP" sta
+        // nel flusso dell'header (body.quali-wide): aprendo i risultati
+        // l'header si allunga e il grafico scende insieme alla tendina, senza
+        // altri riallineamenti.
         function toggleSessionResults(panelId) {
             const panel = document.getElementById(panelId);
             if (!panel) return;
-            panel.classList.toggle('hidden');
-            // Su desktop il widget "Prossimo GP" è in posizione assoluta:
-            // aprendo i risultati si allunga e la colonna dei dettagli sotto
-            // va spostata a mano (vedi alignDetailsColumnTop). Il grafico no:
-            // non deve muoversi, e ricalcolarne l'allineamento a pagina
-            // scrollata (colonna sinistra "sticky") lo spostava di qualche px.
-            if (panelId.startsWith('widget-desktop')) alignDetailsColumnTop();
+            slide(panel, !slideIsOpen(panel));
             scheduleReposition(); // l'altezza del contenitore è cambiata
         }
 
@@ -2247,7 +2406,7 @@
                 const formatted = formatSessionTime(session);
                 if (!formatted) return '';
                 const status = getSessionStatus(session, SESSION_DURATION_MIN[key]);
-                const dotClass = status === 'live' ? 'bg-green-500 animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
+                const dotClass = status === 'live' ? 'bg-green-500 motion-safe:animate-pulse' : status === 'past' ? 'bg-gray-600' : 'bg-white';
                 // Etichetta e orario usano lo stesso colore in base allo
                 // stato: sessione non ancora disputata o in corso devono
                 // "accendersi" insieme (nome + orario), non solo l'orario.
@@ -2305,9 +2464,9 @@
             return `<div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-[11px] items-center">${rows}</div>`;
         }
 
-        // Espande/richiude gli orari (ora italiana) di un singolo weekend di
-        // gara. Il contenuto è già renderizzato in renderRaceList() insieme
-        // alla riga stessa: qui si toglie/aggiunge solo la classe "hidden".
+        // Espande/richiude a tendina gli orari (ora italiana) di un singolo
+        // weekend di gara. Il contenuto è già renderizzato in renderRaceList()
+        // insieme alla riga stessa.
         // idPrefix distingue le gare della stagione in corso ("cal") da
         // quelle di un anno precedente ("hist2025", ecc.): senza, due gare
         // con lo stesso round in liste diverse avrebbero id duplicati.
@@ -2315,11 +2474,11 @@
             const detail = document.getElementById(`raceSchedule-${idPrefix}-${round}`);
             const chevron = document.getElementById(`raceChevron-${idPrefix}-${round}`);
             if (!detail) return;
-            const wasHidden = detail.classList.contains('hidden');
-            detail.classList.toggle('hidden', !wasHidden);
-            if (chevron) chevron.classList.toggle('rotate-180', wasHidden);
+            const open = !slideIsOpen(detail);
+            slide(detail, open);
+            if (chevron) chevron.classList.toggle('rotate-180', open);
             const header = document.getElementById(`raceHeader-${idPrefix}-${round}`);
-            if (header) header.setAttribute('aria-expanded', String(wasHidden));
+            if (header) header.setAttribute('aria-expanded', String(open));
             scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
@@ -2346,7 +2505,7 @@
                             <span class="text-right truncate ${r.winner ? 'font-bold text-[#E10600]' : 'text-gray-600 italic'}">
                                 ${r.winner ? `${escapeHtml(r.winner.driver)} (${escapeHtml(r.winner.team)})` : 'Da disputare'}
                             </span>
-                            <span id="raceChevron-${idPrefix}-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform">▾</span>
+                            <span id="raceChevron-${idPrefix}-${r.round}" class="shrink-0 text-gray-600 text-[10px] transition-transform duration-300">▾</span>
                         </span>
                     </div>
                     <div id="raceSchedule-${idPrefix}-${r.round}" class="hidden px-3 pb-2 pt-1 border-t border-gray-800 text-xs">
@@ -2389,52 +2548,44 @@
         let currentHistoryYear = null;
 
         function togglePreviousYearsPanel() {
-            const panel = document.getElementById('previousYearsPanel');
-            const wasHidden = panel.classList.contains('hidden');
-            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
-            document.getElementById('classificaPanel').classList.add('hidden');
-            document.getElementById('calendarPanel').classList.add('hidden');
-            document.getElementById('newsPanel').classList.add('hidden');
-            panel.classList.toggle('hidden', !wasHidden);
-            if (!panel.classList.contains('hidden')) {
-                showPreviousYearsList();
-            }
-            scheduleReposition(); // l'altezza di leftColumn è cambiata
+            toggleSeasonPanel('previousYearsPanel', () => showPreviousYearsList(false));
         }
 
-        async function toggleNewsPanel() {
-            const panel = document.getElementById('newsPanel');
-            const wasHidden = panel.classList.contains('hidden');
-            // I quattro pannelli sono mutuamente esclusivi: aprirne uno chiude gli altri.
-            document.getElementById('classificaPanel').classList.add('hidden');
-            document.getElementById('calendarPanel').classList.add('hidden');
-            document.getElementById('previousYearsPanel').classList.add('hidden');
-            if (wasHidden) {
-                panel.classList.remove('hidden');
-                await fadeSwap(panel, () => {
-                    renderNews();
-                });
-            } else {
-                panel.classList.add('hidden');
-            }
-            scheduleReposition(); // l'altezza di leftColumn è cambiata
+        function toggleNewsPanel() {
+            toggleSeasonPanel('newsPanel', renderNews);
         }
 
-        // Finestra dei pannelli: aperta finché uno dei quattro è visibile (i
-        // toggle* restano quelli di prima e si escludono a vicenda). Pagina
-        // sotto bloccata come per le Novità; la Classifica, su due colonne,
-        // ha la finestra più larga.
+        // Tasti della stagione (Classifica, Calendario, Stagioni, News): un
+        // pannello alla volta (aprirne uno chiude gli altri), nella finestra.
+        // Il contenuto è pronto (render) prima che la finestra compaia: prima
+        // si apriva vuota e il contenuto arrivava dopo 0,15 s di attesa.
+        // Toccato col pannello già aperto, chiude la finestra.
+        function toggleSeasonPanel(id, render) {
+            const panel = document.getElementById(id);
+            if (!panel.classList.contains('hidden')) { closePanelDialog(); return; }
+            SEASON_PANELS.filter(other => other !== id).forEach(other => document.getElementById(other).classList.add('hidden'));
+            render();
+            panel.classList.remove('hidden');
+            scheduleReposition();
+        }
+
+        // Finestra dei pannelli: aperta finché uno dei quattro è visibile.
+        // Pagina sotto bloccata come per le Novità; la Classifica, su due
+        // colonne, ha la finestra più larga. Compare sfumando (dialogEnter).
         const SEASON_PANELS = ['classificaPanel', 'calendarPanel', 'previousYearsPanel', 'newsPanel'];
         let panelDialogScrollY = null;
+        let panelDialogClosing = false;
         function syncPanelDialog() {
             const dlg = document.getElementById('panelDialog');
+            const box = document.getElementById('panelDialogBox');
             const open = SEASON_PANELS.find(id => !document.getElementById(id).classList.contains('hidden'));
-            document.getElementById('panelDialogBox').classList.toggle('max-w-2xl', open === 'classificaPanel');
-            document.getElementById('panelDialogBox').classList.toggle('max-w-lg', open !== 'classificaPanel');
+            box.classList.toggle('max-w-2xl', open === 'classificaPanel');
+            box.classList.toggle('max-w-lg', open !== 'classificaPanel');
             if (open && panelDialogScrollY === null) {
                 panelDialogScrollY = window.scrollY;
                 Object.assign(document.body.style, { position: 'fixed', top: `-${panelDialogScrollY}px`, left: '0', right: '0', overflow: 'hidden' });
                 dlg.style.display = 'flex';
+                dialogEnter(dlg, box);
             } else if (!open && panelDialogScrollY !== null) {
                 dlg.style.display = 'none';
                 Object.assign(document.body.style, { position: '', top: '', left: '', right: '', overflow: '' });
@@ -2442,8 +2593,16 @@
                 panelDialogScrollY = null;
             }
         }
+        // Chiusura (✕, tocco fuori, Esc): la finestra sfuma, poi i pannelli
+        // tornano nascosti e la pagina sotto si sblocca.
         function closePanelDialog() {
-            SEASON_PANELS.forEach(id => document.getElementById(id).classList.add('hidden'));
+            if (panelDialogScrollY === null || panelDialogClosing) return;
+            panelDialogClosing = true;
+            dialogLeave(document.getElementById('panelDialog'), () => {
+                panelDialogClosing = false;
+                SEASON_PANELS.forEach(id => document.getElementById(id).classList.add('hidden'));
+                syncPanelDialog();
+            });
         }
         const panelObserver = new MutationObserver(syncPanelDialog);
         SEASON_PANELS.forEach(id => panelObserver.observe(document.getElementById(id), { attributes: true, attributeFilter: ['class'] }));
@@ -2503,30 +2662,41 @@
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
 
-        async function showPreviousYearsList() {
+        // animate = false all'apertura della finestra (elenco pronto quando
+        // compare); con "← Anni" sfuma al posto delle gare (fadeSwap).
+        async function showPreviousYearsList(animate = true) {
             currentHistoryYear = null;
             document.getElementById('prevYearsBackBtn').classList.add('hidden');
             document.getElementById('previousYearsTitle').innerText = '🕰️ Stagioni precedenti';
             const body = document.getElementById('previousYearsBody');
-            await fadeSwap(body, () => {
+            const render = () => {
+                body.style.minHeight = '';
                 body.innerHTML = PREVIOUS_YEARS.map(y => `
                     <button onclick="selectPreviousYear(${y})" class="w-full text-left bg-gray-900 hover:bg-gray-800 transition-colors rounded px-3 py-2 cursor-pointer">
                         ${y}
                     </button>
                 `).join('');
                 scheduleReposition();
-            });
+            };
+            if (animate) await fadeSwap(body, render);
+            else { body.style.opacity = '1'; render(); }
         }
 
-        // Dissolvenza in uscita/entrata attorno a un cambio di contenuto,
-        // stesso pattern già usato per il cambio vista del grafico principale
-        // (toggleChartView): senza, il pannello passava istantaneamente da
-        // "Caricamento..." (poche decine di px) all'elenco completo delle
-        // gare (oltre 1000px), uno scatto secco segnalato dall'utente.
+        // Dissolvenza in uscita/entrata attorno a un cambio di contenuto
+        // dentro una finestra (Stagioni: elenco degli anni, "Caricamento...",
+        // gare di un anno): il contenuto sfuma via, cambia e ricompare
+        // sfumando (transizione CSS del contenitore) mentre l'altezza scorre
+        // dalla misura di prima a quella nuova (0,3 s). Senza, il pannello
+        // passava di colpo da "Caricamento..." (poche decine di px)
+        // all'elenco completo delle gare (oltre 1000px), uno scatto secco
+        // segnalato dall'utente.
         async function fadeSwap(el, updateFn, fadeMs = 150) {
+            if (reducedMotion()) { updateFn(); return; }
             el.style.opacity = '0';
             await new Promise(r => setTimeout(r, fadeMs));
+            const h0 = el.getBoundingClientRect().height;
             updateFn();
+            animateHeightFrom(el, h0);
             el.style.opacity = '1';
         }
 
@@ -2537,7 +2707,11 @@
             const body = document.getElementById('previousYearsBody');
 
             if (!historyCache[year]) {
+                // "Caricamento..." alto quanto l'elenco di prima: la finestra
+                // non si accorcia per poi riallungarsi all'arrivo delle gare.
+                const keep = body.getBoundingClientRect().height;
                 await fadeSwap(body, () => {
+                    body.style.minHeight = `${keep}px`;
                     body.innerHTML = '<div class="text-gray-500 italic">Caricamento...</div>';
                     scheduleReposition();
                 });
@@ -2551,6 +2725,7 @@
                     // frattempo: non sovrascrivere una vista già cambiata.
                     if (currentHistoryYear === year) {
                         await fadeSwap(body, () => {
+                            body.style.minHeight = '';
                             body.innerHTML = `<div class="text-gray-500 italic">⚠️ Dati non disponibili per il ${year}.</div>`;
                             scheduleReposition();
                         });
@@ -2561,6 +2736,7 @@
             }
 
             await fadeSwap(body, () => {
+                body.style.minHeight = '';
                 body.innerHTML = renderRaceList(historyCache[year].races, `hist${year}`);
                 scheduleReposition();
             });
@@ -2637,7 +2813,9 @@
             // Questa funzione gira ogni 60s e ricostruisce l'HTML: i pannelli
             // "Risultati" che l'utente ha aperto vanno ricordati e riaperti,
             // altrimenti si richiudevano da soli ogni minuto mentre li leggeva.
-            const openPanelIds = [...document.querySelectorAll('[id^="widget-"][id*="-results-"]:not(.hidden)')].map(el => el.id);
+            // Uno che si sta richiudendo a tendina conta già come chiuso.
+            const openPanelIds = [...document.querySelectorAll('[id^="widget-"][id*="-results-"]:not(.hidden)')]
+                .filter(el => el.__slideTarget !== false).map(el => el.id);
 
             if (mobileContainer) {
                 mobileContainer.innerHTML = `<div class="bg-[#1E1E1E] p-3 rounded-xl border border-gray-800">
@@ -2689,10 +2867,20 @@
             });
         }
 
+        // Parti della pagina di ogni vista: quella appena aperta sfuma in
+        // entrata invece di sostituire l'altra di colpo.
+        const MODE_VIEW_IDS = {
+            quali: ['mainGrid', 'qualiSelector', 'seasonButtons', 'featuredRaceWidget', 'featuredRaceWidgetDesktop'],
+            pace: ['paceView'],
+            stats: ['statsView'],
+        };
+
         async function setSiteMode(mode, { state = null } = {}) {
+            const previousMode = siteMode;
             siteMode = ['pace', 'stats'].includes(mode) ? mode : 'quali';
             document.body.classList.toggle('pace-mode', siteMode === 'pace');
             document.body.classList.toggle('stats-mode', siteMode === 'stats');
+            if (siteMode !== previousMode) fadeIn(...MODE_VIEW_IDS[siteMode].map(id => document.getElementById(id)));
             applyTelemetryWide();
             updateModeToggle();
             if (siteMode === 'stats') {
@@ -2814,8 +3002,13 @@
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     gp = statsGpCache[file] = await res.json();
                 }
-                if (data !== statsView) renderStats(data);
-                document.getElementById('statsGpCard').innerHTML = statsGpCardHtml(data, gp);
+                // Altra stagione: renderStats fa sfumare tutta la vista;
+                // stessa stagione: solo la scheda del GP.
+                const sameSeason = data === statsView;
+                if (!sameSeason) renderStats(data);
+                const gpCard = document.getElementById('statsGpCard');
+                gpCard.innerHTML = statsGpCardHtml(data, gp);
+                if (sameSeason) fadeIn(gpCard);
             } catch (err) {
                 document.querySelector('#statsGpCard ul')?.insertAdjacentHTML('beforebegin', '<p class="text-sm text-gray-500 mb-3">GP non disponibile al momento.</p>');
             }
@@ -2881,6 +3074,9 @@
             box.innerHTML = `<div class="contents md:block"><div class="order-1">${lastGpCard}</div><div class="order-3">${duelsCard}</div></div>
                 <div class="contents md:block"><div class="order-2">${seasonCard}</div>
                 <p class="order-4 text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
+            // Al posto di "Caricamento statistiche..." (o della stagione di
+            // prima): sfuma in entrata invece di comparire di colpo.
+            fadeIn(box);
         }
 
         async function paceStateFromQualiCircuit() {
@@ -2995,6 +3191,10 @@
             if (!codes.includes(paceState.a)) paceState.a = codes[0];
             if (paceState.b !== '' && (!codes.includes(paceState.b) || paceState.b === paceState.a)) paceState.b = codes.find(c => c !== paceState.a);
             renderPaceView();
+            // Gara nuova (non un altro pilota, vedi onPaceDriverChange):
+            // classifica e riquadri sfumano in entrata, i grafici si
+            // disegnano da soli (0,4 s).
+            fadeIn(...['paceResultsList', 'paceLegend', 'paceStatsGrid', 'paceNote'].map(id => document.getElementById(id)));
         }
 
         function currentPaceRace() {
@@ -3213,7 +3413,7 @@
                     })),
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: { duration: 400 },
+                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: chartAnimation(),
                     interaction: { mode: 'index', intersect: false },
                     // Spazio in alto per le strisce delle gomme.
                     layout: { padding: { right: compact ? 6 : 12, top: PACE_STRIP_GAP + 6 + drivers.length * 9 } },
@@ -3306,7 +3506,7 @@
                 data: { datasets: [{ data: points, borderColor: PACE_COLOR_B, borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: 0.15,
                     fill: { target: 'origin', above: 'rgba(59,130,246,0.15)', below: 'rgba(225,6,0,0.15)' } }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: { duration: 400 },
+                    responsive: true, maintainAspectRatio: false, resizeDelay: 200, animation: chartAnimation(),
                     interaction: { mode: 'index', intersect: false },
                     layout: { padding: { right: compact ? 6 : 12 } },
                     scales: {
@@ -3423,8 +3623,12 @@
                         // delle maniglie (scheduleReposition, subito dopo) forza un
                         // reflow che lo fa scattare troppo presto: senza questo
                         // ritardo Chart.js annulla l'animazione d'ingresso quasi
-                        // subito (osservato: si completava in ~10ms invece di 1s).
+                        // subito (osservato: si completava in ~10ms invece di 1s,
+                        // la durata di allora).
                         resizeDelay: 200,
+                        // Disegno in 0,4 s come telemetria e passo gara (prima
+                        // il valore predefinito di Chart.js, 1 s).
+                        animation: chartAnimation(),
                         scales: {
                             y: {
                                 grid: { color: '#2a2a2a' },
@@ -3474,8 +3678,12 @@
                         // delle maniglie (scheduleReposition, subito dopo) forza un
                         // reflow che lo fa scattare troppo presto: senza questo
                         // ritardo Chart.js annulla l'animazione d'ingresso quasi
-                        // subito (osservato: si completava in ~10ms invece di 1s).
+                        // subito (osservato: si completava in ~10ms invece di 1s,
+                        // la durata di allora).
                         resizeDelay: 200,
+                        // Disegno in 0,4 s come telemetria e passo gara (prima
+                        // il valore predefinito di Chart.js, 1 s).
+                        animation: chartAnimation(),
                         scales: {
                             y: {
                                 grid: { color: '#2a2a2a' },
@@ -3600,6 +3808,9 @@
                 detailsList.appendChild(card);
             });
             updateActiveYearCardHighlight();
+            // Circuito nuovo: i riquadri sfumano in entrata, il grafico si
+            // ridisegna da solo (0,4 s).
+            fadeIn(detailsList);
 
             alignChartTop();
             syncUrlState();
@@ -3626,19 +3837,29 @@
         // che su ntfy. Stessa chiave pubblica di scripts/lib/webpush.js.
         const VAPID_PUBLIC_KEY = 'BG3V2TNhsjePVjINPgQXt_xqW18B-FQYYmX1wOqAMi-NJRvayErTAd36gB_PgL2IDjhPrvV5zVLM_jFVAAV09tA';
 
+        // Stessa finestra dei pannelli: in alto, compare e sparisce sfumando.
+        // Se ne sostituisce una già aperta compare senza dissolvenza (lo
+        // sfondo c'era già).
         function showPushDialog(title, html) {
-            document.getElementById('pushDialog')?.remove();
+            const previous = document.getElementById('pushDialog');
+            previous?.remove();
             const el = document.createElement('div');
             el.id = 'pushDialog';
-            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
+            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-start justify-center px-4 pb-4 pt-[8vh]';
             el.innerHTML = `
                 <div class="bg-[#1E1E1E] border border-gray-700 rounded-xl p-4 w-full max-w-md text-sm text-gray-300 space-y-3">
                     <div class="font-semibold text-white">${title}</div>
                     ${html}
                     <div class="text-right"><button type="button" data-close class="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg py-1.5 px-4">Chiudi</button></div>
                 </div>`;
-            el.addEventListener('click', e => { if (e.target === el || e.target.hasAttribute('data-close')) el.remove(); });
+            let closing = false;
+            el.addEventListener('click', e => {
+                if (closing || !(e.target === el || e.target.hasAttribute('data-close'))) return;
+                closing = true;
+                dialogLeave(el, () => el.remove());
+            });
             document.body.appendChild(el);
+            if (!previous) dialogEnter(el, el.firstElementChild);
             return el;
         }
 
@@ -3758,7 +3979,7 @@
             const openIndex = Math.max(0, entries.findIndex(e => e.date === date));
             const el = document.createElement('div');
             el.id = 'changelogDialog';
-            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4';
+            el.className = 'fixed inset-0 z-50 bg-black/70 flex items-start justify-center px-4 pb-4 pt-[8vh]';
             el.innerHTML = `
                 <div class="bg-[#1E1E1E] border border-gray-700 rounded-xl w-full max-w-lg max-h-[85vh] flex flex-col text-sm text-gray-300">
                     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
@@ -3789,10 +4010,17 @@
             // si torna allo stesso punto della pagina.
             const scrollY = window.scrollY;
             Object.assign(document.body.style, { position: 'fixed', top: `-${scrollY}px`, left: '0', right: '0', overflow: 'hidden' });
+            // Chiusura sfumata (dialogLeave); un secondo tocco nel frattempo
+            // non conta.
+            let closing = false;
             const close = () => {
-                el.remove();
-                Object.assign(document.body.style, { position: '', top: '', left: '', right: '', overflow: '' });
-                window.scrollTo(0, scrollY);
+                if (closing) return;
+                closing = true;
+                dialogLeave(el, () => {
+                    el.remove();
+                    Object.assign(document.body.style, { position: '', top: '', left: '', right: '', overflow: '' });
+                    window.scrollTo(0, scrollY);
+                });
             };
             el.addEventListener('click', ev => { if (ev.target === el || ev.target.closest('[data-close]')) close(); });
             // Un changelog alla volta: aprendone uno si chiudono gli altri.
@@ -3805,6 +4033,7 @@
                 shareLink(`F1 Pole Tracker - ${entry.title}`, `${location.origin}${location.pathname}#novita=${entry.date}`);
             };
             document.body.appendChild(el);
+            dialogEnter(el, el.firstElementChild);
             try { localStorage.setItem(CHANGELOG_SEEN_KEY, entries[0].date); } catch (e) {}
             document.getElementById('changelogDot').style.display = 'none';
         }
