@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T20:18:37.616Z",
+  "updatedAt": "2026-11-08T22:17:01.398Z",
   "races": {
     "2023": [
       {
@@ -452,6 +452,11 @@
         "circuit": "Città del Messico",
         "date": "2026-11-01",
         "file": "pace/2026/citta-del-messico.json"
+      },
+      {
+        "circuit": "Interlagos (San Paolo)",
+        "date": "2026-11-08",
+        "file": "pace/2026/interlagos-san-paolo.json"
       }
     ]
   }
