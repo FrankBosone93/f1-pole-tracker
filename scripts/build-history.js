@@ -1,10 +1,10 @@
 // scripts/build-history.js
 //
-// Scarica il calendario con vincitori e risultati di qualifiche e gara (SOLO
-// queste due sessioni per le stagioni passate: niente prove libere né
-// sprint, su richiesta esplicita - a differenza di calendar.json, che per la
-// stagione in corso include anche le prove libere) di una o più stagioni
-// PASSATE (OpenF1 dal 2023, Jolpica prima e come ripiego), e scrive un file
+// Scarica il calendario con vincitori e risultati di qualifiche e gara e, nei
+// weekend Sprint, di Qualifiche Sprint e Sprint (dal 2026-11-08, su
+// richiesta esplicita; niente prove libere, a differenza di calendar.json,
+// che per la stagione in corso le include) di una o più stagioni PASSATE
+// (OpenF1 dal 2023, Jolpica prima e come ripiego), e scrive un file
 // history/{anno}.json per ognuna.
 // Usato dal pannello "Stagioni precedenti" del sito, che li scarica uno alla
 // volta al primo click su quell'anno.
@@ -27,6 +27,8 @@
 //   node scripts/build-history.js            (tutti gli anni in PREVIOUS_YEARS)
 //   node scripts/build-history.js 2025       (solo il 2025)
 //   node scripts/build-history.js 2025 2024  (più anni specifici)
+//   node scripts/build-history.js --add-sprints 2021 2022  (aggiunge solo le
+//       Sprint agli storici già scritti, vedi addSprints)
 //
 // Se history/{anno}.json esiste già (completo), viene saltato. Per
 // rigenerare un anno da zero, cancellare prima il file corrispondente.
@@ -37,7 +39,9 @@ const { matchCircuitById } = require('./lib/f1-mapping');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
 const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
+const DAY_MS = 86400000;
 const { openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
+const { checkSprintWithJolpica } = require('./lib/sprint-check');
 const { knownDriverNames } = require('./lib/driver-names');
 
 // Calendario da lib/season-calendar.js; risultati di qualifica e gara dal
@@ -46,11 +50,13 @@ const { knownDriverNames } = require('./lib/driver-names');
 // anni). Prima la fonte era f1api.dev, eliminato il 2026-10-26: aveva perso
 // diverse penalità e squalifiche (Brasile 2024, Singapore 2025...).
 const OPENF1_FIRST_YEAR = 2023;
+// OpenF1 chiama "Sprint Qualifying" anche lo Sprint Shootout del 2023.
+const HISTORY_SESSIONS = ['Race', 'Qualifying', 'Sprint', 'Sprint Qualifying'];
 async function openf1RaceSessions(year) {
     if (year < OPENF1_FIRST_YEAR) return [];
     try {
         const all = await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}`);
-        return all.filter(s => s.session_name === 'Race' || s.session_name === 'Qualifying');
+        return all.filter(s => HISTORY_SESSIONS.includes(s.session_name));
     } catch (err) {
         console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso Jolpica.`);
         return [];
@@ -60,7 +66,49 @@ async function openf1RaceSessions(year) {
 // stesso anno un circuito può ospitare due GP, es. Red Bull Ring 2021).
 function findRaceSession(sessions, circuit, date, sessionName = 'Race') {
     return sessions.find(s => s.session_name === sessionName && CIRCUIT_MAP[s.circuit_short_name] === circuit && date
-        && Math.abs(new Date(s.date_start.slice(0, 10)) - new Date(date)) <= 2 * 86400000);
+        && Math.abs(new Date(s.date_start.slice(0, 10)) - new Date(date)) <= 2 * DAY_MS);
+}
+
+// Qualifiche Sprint e Sprint di un weekend Sprint (schedule.sprintRace), dal
+// 2026-11-08: da OpenF1 dal 2023 (stesso formato della stagione in corso:
+// Qualifiche Sprint come griglia della Sprint, Sprint come una gara), con la
+// Sprint controllata con Jolpica (lib/sprint-check.js); Jolpica è anche il
+// ripiego e l'unica fonte nel 2021-2022. Nel 2021-2022 non c'erano
+// Qualifiche Sprint: la griglia della Sprint era quella della qualifica del
+// venerdì, e la Sprint decideva quella del GP.
+const jolpicaSprintsByYear = new Map(); // anno -> Sprint della stagione da Jolpica (una richiesta)
+const jolpicaSprints = year => {
+    if (!jolpicaSprintsByYear.has(year)) {
+        jolpicaSprintsByYear.set(year, jolpicaRaces(`${year}/sprint`).catch(err => {
+            console.warn(`⚠️  ${year}: Sprint Jolpica non disponibili - ${err.message}`);
+            return [];
+        }));
+    }
+    return jolpicaSprintsByYear.get(year);
+};
+async function sprintResults(year, circuit, date, schedule, sessions, names) {
+    const out = { sprintQualy: null, sprintRace: null };
+    if (!schedule.sprintRace) return out;
+    const jolpica = (await jolpicaSprints(year)).find(js => matchCircuitById(js.Circuit?.circuitId) === circuit
+        && Math.abs(new Date(js.date) - new Date(date)) <= 2 * DAY_MS) || null;
+    const qs = findRaceSession(sessions, circuit, date, 'Sprint Qualifying');
+    if (qs) {
+        try { out.sprintQualy = await openf1QualyResults(qs, names); }
+        catch (err) { console.warn(`⚠️  ${year} ${circuit}: Qualifiche Sprint OpenF1 non disponibili - ${err.message}`); }
+    }
+    const ss = findRaceSession(sessions, circuit, date, 'Sprint');
+    if (ss) {
+        try { out.sprintRace = await openf1RaceResults(ss, names); }
+        catch (err) { console.warn(`⚠️  ${year} ${circuit}: Sprint OpenF1 non disponibile - ${err.message}`); }
+    }
+    if (out.sprintRace) {
+        const checked = checkSprintWithJolpica(out.sprintRace, jolpica, names);
+        if (checked.changes.length) console.log(`🔧 ${year} ${circuit}: Sprint corretta con Jolpica - ${checked.changes.join('; ')}`);
+        out.sprintRace = checked.rows;
+    } else if (jolpica?.SprintResults.length) {
+        out.sprintRace = jolpicaRaceRows({ ...jolpica, Results: jolpica.SprintResults }, names);
+    }
+    return out;
 }
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
@@ -73,16 +121,18 @@ async function buildRaceEntry(year, race, raceSessions = []) {
     const date = race.schedule?.race?.date || race.date || null;
     const weekendStart = race.schedule?.qualy?.date || date;
 
-    // Solo qualifiche e gara per le stagioni passate: niente prove libere né
-    // sprint (su richiesta esplicita), quindi quei campi restano null e le
-    // relative righe non compaiono nella lista sessioni (renderSessionsBlock
-    // le salta già quando schedule[key] è null, nessuna modifica lì serve).
+    // Niente prove libere per le stagioni passate (su richiesta esplicita):
+    // quei campi restano null e le righe non compaiono nella lista sessioni
+    // (renderSessionsBlock le salta quando schedule[key] è null). Sprint sì,
+    // dal 2026-11-08 (sprintResults).
     const schedule = {
-        fp1: null, fp2: null, fp3: null, sprintQualy: null, sprintRace: null,
+        fp1: null, fp2: null, fp3: null,
+        sprintQualy: race.schedule?.sprintQualy || null,
+        sprintRace: race.schedule?.sprintRace || null,
         qualy: race.schedule?.qualy || null,
         race: race.schedule?.race || null,
     };
-    const results = { fp1: null, fp2: null, fp3: null, qualy: null, race: null };
+    const results = { fp1: null, fp2: null, fp3: null, sprintQualy: null, sprintRace: null, qualy: null, race: null };
     const names = knownDriverNames();
     let raceSource = null, qualySource = null;
 
@@ -112,6 +162,8 @@ async function buildRaceEntry(year, race, raceSessions = []) {
             if (!results.qualy && ok(jq) && jq.QualifyingResults.length) { results.qualy = jolpicaQualyRows(jq, names, ok(jr) ? jr : null); qualySource = 'jolpica'; }
         } catch (err) { console.warn(`⚠️  Round ${round} (${mappedCircuit}): Jolpica non disponibile - ${err.message}`); }
     }
+
+    Object.assign(results, await sprintResults(year, mappedCircuit, date, schedule, raceSessions, names));
 
     const w = (results.race || []).find(r => r.position === 1);
     const winner = w ? { driver: w.driver, team: w.team } : null;
@@ -222,9 +274,41 @@ async function refreshRaceResults(year) {
     console.log(`✅ history/${year}.json: ${changed} gare con risultati OpenF1.`);
 }
 
+// Aggiunge Qualifiche Sprint e Sprint agli storici già scritti (fino al
+// 2026-11-08 avevano solo qualifiche e gara), senza riscaricare il resto:
+// orari dal calendario della stagione (lib/season-calendar.js), risultati da
+// sprintResults. Si può rilanciare: riscrive solo le Sprint.
+// Uso: node scripts/build-history.js --add-sprints 2021 2022 2023 2024 2025
+async function addSprints(year) {
+    const file = path.join(HISTORY_DIR, `${year}.json`);
+    if (!fs.existsSync(file)) { console.warn(`⚠️  history/${year}.json non esiste, salto.`); return; }
+    const history = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    const { races } = await loadSeasonCalendar(year);
+    const sessions = await openf1RaceSessions(year);
+    const names = knownDriverNames(history.races.flatMap(r => [...(r.results?.race || []), ...(r.results?.qualy || [])]).map(r => r.driver));
+    let added = 0;
+    for (const race of history.races) {
+        const cal = races.find(r => r.circuit === race.circuit && Math.abs(new Date(r.date) - new Date(race.date)) <= 2 * DAY_MS);
+        if (!cal?.schedule?.sprintRace) continue;
+        race.schedule = { ...race.schedule, sprintQualy: cal.schedule.sprintQualy || null, sprintRace: cal.schedule.sprintRace };
+        const s = await sprintResults(year, race.circuit, race.date, race.schedule, sessions, names);
+        const { fp1 = null, fp2 = null, fp3 = null, qualy = null, race: raceRows = null } = race.results || {};
+        race.results = { fp1, fp2, fp3, sprintQualy: s.sprintQualy, sprintRace: s.sprintRace, qualy, race: raceRows };
+        added++;
+        console.log(`${year} ${race.circuit}: Qualifiche Sprint ${s.sprintQualy ? `${s.sprintQualy.length} piloti` : 'non disponibili'}, Sprint ${s.sprintRace ? `vinta da ${s.sprintRace[0].driver}` : 'non disponibile'}`);
+    }
+    history.updatedAt = new Date().toISOString();
+    fs.writeFileSync(file, JSON.stringify(history, null, 2) + '\n', 'utf-8');
+    console.log(`✅ history/${year}.json: ${added} weekend Sprint.`);
+}
+
 async function main() {
     if (process.argv.includes('--refresh-race')) {
         for (const year of process.argv.slice(2).map(Number).filter(n => !isNaN(n))) await refreshRaceResults(year);
+        return;
+    }
+    if (process.argv.includes('--add-sprints')) {
+        for (const year of process.argv.slice(2).map(Number).filter(n => !isNaN(n))) await addSprints(year);
         return;
     }
     const argYears = process.argv.slice(2).map(Number).filter(n => !isNaN(n));

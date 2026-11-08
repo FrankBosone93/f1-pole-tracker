@@ -24,6 +24,7 @@ const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
 const { knownDriverNames } = require('./lib/driver-names');
 const { openf1PracticeResults, openf1RaceResults, openf1QualyResults } = require('./lib/openf1-results');
+const { checkSprintWithJolpica } = require('./lib/sprint-check');
 
 // Sessioni della stagione da OpenF1 (per i risultati). Se OpenF1 non
 // risponde (es. sessione in corso): lista vuota, e i risultati arrivano da
@@ -40,7 +41,7 @@ async function loadOpenF1Sessions(season) {
 // Risultati di un round da Jolpica (ripiego), solo se il circuito coincide.
 async function jolpicaRound(season, round, circuit, kind) {
     try {
-        const [race] = await jolpicaRaces(`${season}/${round}/${kind === 'race' ? 'results' : 'qualifying'}`);
+        const [race] = await jolpicaRaces(`${season}/${round}/${{ race: 'results', qualy: 'qualifying', sprint: 'sprint' }[kind]}`);
         if (!race || matchCircuitById(race.Circuit?.circuitId) !== circuit) return null;
         return race;
     } catch (err) {
@@ -56,8 +57,10 @@ const PRACTICE_SESSION_NAMES = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Pra
 // come qualifica e gara (non solo per il GP in evidenza come le prove libere).
 // Qualifiche Sprint come la qualifica: griglia di partenza della Sprint, con *
 // per chi è arretrato per penalità (OpenF1 starting_grid della sessione).
-// Sprint come la gara. Solo OpenF1 (Jolpica non ha le Qualifiche Sprint): se
-// non risponde si riprova al run successivo. Chiave = quella di schedule;
+// Sprint come la gara, da OpenF1 controllata con Jolpica (penalità date dopo
+// la Sprint e piloti che OpenF1 non ha: lib/sprint-check.js). Qualifiche
+// Sprint solo da OpenF1 (Jolpica non le ha). Se OpenF1 non risponde si
+// riprova al run successivo. Chiave = quella di schedule;
 // nome della sessione = session_name di OpenF1. La pole del sito (data.json,
 // sezione Qualifiche) resta sempre e solo quella della qualifica del GP.
 const SPRINT_SESSIONS = [
@@ -237,7 +240,12 @@ async function main() {
                 && CIRCUIT_MAP[s.circuit_short_name] === mappedCircuit && new Date(s.date_end) < now);
             if (!session) continue;
             try {
-                const rows = await fetchResults(session, driverNames);
+                let rows = await fetchResults(session, driverNames);
+                if (rows && key === 'sprintRace') {
+                    const checked = checkSprintWithJolpica(rows, await jolpicaRound(season, round, mappedCircuit, 'sprint'), driverNames);
+                    if (checked.changes.length) console.log(`🔧 ${mappedCircuit}: Sprint corretta con Jolpica - ${checked.changes.join('; ')}`);
+                    rows = checked.rows;
+                }
                 if (rows && JSON.stringify(rows) !== JSON.stringify(cached)) {
                     console.log(`📥 ${mappedCircuit}: ${label} da OpenF1${cached ? ' (classifica cambiata)' : ''}.`);
                     results[key] = rows;

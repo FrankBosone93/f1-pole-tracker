@@ -8,7 +8,10 @@ on:
   # Lo script esce subito se il GP è già notificato, quindi le partenze in più
   # (es. calendario ogni 2 ore il venerdì e sabato) non producono doppioni.
   # Dal 2026-11-01 lo stesso run manda anche la notifica della pole
-  # (notify-pole.js), appena la pole del weekend è salvata.
+  # (notify-pole.js), appena la pole del weekend è salvata, e dal 2026-11-08
+  # quella di fine stagione (notify-season.js), che aspetta il racconto della
+  # stagione scritto da update-stats.yml: per questo parte anche dopo le
+  # statistiche.
   workflow_run:
     workflows:
       - "Aggiorna pole position F1"
@@ -17,11 +20,15 @@ on:
       - "Aggiorna calendario F1"
       - "Aggiorna telemetria pole position F1"
       - "Aggiorna passo gara F1"
+      - "Aggiorna statistiche F1"
       - "Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, passo gara, news)"
     types: [completed]
   schedule:
     # Rete di sicurezza: lunedì e martedì mattina. Se i dati sono ancora
     # incompleti dopo il lunedì alle 7:00 UTC parte il ⚠️ (vedi notify-gp.js).
+    # Il lunedì dopo l'ultima gara è anche il primo controllo della notifica
+    # di fine stagione. GitHub li fa partire anche con ore di ritardo (a
+    # ottobre e novembre 2026 tra le 13:30 e le 18:15 UTC).
     - cron: '13 8 * * 1'
     - cron: '13 8 * * 2'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
@@ -74,24 +81,40 @@ jobs:
           WEBPUSH_SUBSCRIPTIONS: ${{ secrets.WEBPUSH_SUBSCRIPTIONS }}
         run: node scripts/notify-gp.js
 
+      # Notifica di fine stagione (scripts/notify-season.js): una volta sola,
+      # dalla mattina dopo l'ultima gara del calendario, con classifica finale
+      # e racconto della stagione pronti. Dopo la notifica del GP, così le due
+      # arrivano in quest'ordine. continue-on-error come per la pole.
+      - name: Notifica di fine stagione
+        id: season
+        continue-on-error: true
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WEBPUSH_SUBSCRIPTIONS: ${{ secrets.WEBPUSH_SUBSCRIPTIONS }}
+        run: node scripts/notify-season.js
+
       # Lo stato (ultimo GP notificato) va in git, così la notifica non si
       # ripete ai run successivi.
       # always(): se la pole è stata notificata ma la notifica dopo il GP
       # fallisce, lo stato della pole va salvato comunque (niente doppioni).
+      # status/notified*.json = notified.json (GP), notified-pole.json e
+      # notified-season.json: tra virgolette, così git aggiunge solo i file
+      # che esistono (un nome esplicito mancante farebbe fallire git add).
       - name: Commit dello stato delle notifiche (se cambiato)
         if: always()
         run: |
-          if [ -z "$(git status --porcelain -- status/notified.json status/notified-pole.json)" ]; then
+          if [ -z "$(git status --porcelain -- 'status/notified*.json')" ]; then
             echo "Nessuna notifica inviata, niente da committare."
           else
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
-            git add status/notified.json status/notified-pole.json
+            git add -- 'status/notified*.json'
             git commit -m "🔔 Notifica inviata"
             source scripts/lib/push-with-retry.sh
             push_with_retry
           fi
 
-      - name: Fallisci il run se la notifica della pole è fallita
-        if: steps.pole.outcome == 'failure'
+      - name: Fallisci il run se la notifica della pole o di fine stagione è fallita
+        if: steps.pole.outcome == 'failure' || steps.season.outcome == 'failure'
         run: exit 1

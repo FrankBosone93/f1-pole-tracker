@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-08T20:23:58.456Z",
+  "updatedAt": "2026-11-08T20:58:40.891Z",
   "lastGp": {
     "round": 20,
     "circuit": "Interlagos (San Paolo)",
@@ -35,6 +35,47 @@
         "text": "**Mercedes** è Campione del Mondo Costruttori 2026."
       }
     ],
+    "standings": {
+      "drivers": [
+        {
+          "position": 1,
+          "driver": "Andrea Kimi Antonelli",
+          "points": 390
+        },
+        {
+          "position": 2,
+          "driver": "Max Verstappen",
+          "points": 279
+        },
+        {
+          "position": 3,
+          "driver": "George Russell",
+          "points": 262
+        },
+        {
+          "position": 4,
+          "driver": "Lewis Hamilton",
+          "points": 261
+        },
+        {
+          "position": 5,
+          "driver": "Charles Leclerc",
+          "points": 251
+        }
+      ],
+      "constructors": [
+        {
+          "position": 1,
+          "team": "Mercedes",
+          "points": 652
+        },
+        {
+          "position": 2,
+          "team": "Ferrari",
+          "points": 512
+        }
+      ]
+    },
     "raceControl": [
       {
         "giro": 42,

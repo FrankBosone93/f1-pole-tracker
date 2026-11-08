@@ -736,11 +736,13 @@
         //   view = "telemetry" | "delta" (assente = grafico dei tempi)
         //   y    = anno principale della telemetria (assente = 2026)
         //   vs   = anno di confronto della telemetria
+        //   s    = "stagione" con #mode=stats: su telefono porta al racconto
+        //          della stagione (tocco della notifica di fine stagione)
         // L'hash non arriva mai al server (il sito è statico) e si aggiorna con
         // replaceState: niente voci extra nella cronologia del browser.
         function parseUrlState() {
             const p = new URLSearchParams(location.hash.replace(/^#/, ''));
-            return { site: p.get('mode'), circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs'), a: p.get('a'), b: p.get('b') };
+            return { site: p.get('mode'), circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs'), a: p.get('a'), b: p.get('b'), focus: p.get('s') };
         }
 
         function buildUrlHash() {
@@ -1772,7 +1774,10 @@
             updateApp(initialCircuit, uniqueCircuits.includes(urlState.circuit) && !urlState.site ? urlState : null);
             updateModeToggle();
             if (urlState.site === 'pace') await setSiteMode('pace', { state: { year: urlState.year, circuit: urlState.circuit, a: urlState.a, b: urlState.b } });
-            else if (urlState.site === 'stats') await setSiteMode('stats');
+            else if (urlState.site === 'stats') {
+                await setSiteMode('stats');
+                if (urlState.focus === 'stagione') focusSeasonStory();
+            }
 
             // Hash incollato/modificato a mano nella stessa scheda (replaceState
             // non lo fa scattare, quindi nessun ciclo con syncUrlState).
@@ -1784,7 +1789,14 @@
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
                 if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
-                if (state.site === 'stats') { setSiteMode('stats'); return; }
+                if (state.site === 'stats') {
+                    // Tocco della notifica di fine stagione con la web app già
+                    // aperta: statistiche riscaricate, quelle in memoria
+                    // possono essere di ore prima.
+                    if (state.focus === 'stagione') { statsData = null; statsView = null; }
+                    setSiteMode('stats').then(() => { if (state.focus === 'stagione') focusSeasonStory(); });
+                    return;
+                }
                 if (siteMode !== 'quali') setSiteMode('quali');
                 if (!uniqueCircuits.includes(state.circuit)) { syncUrlState(); return; } // riscrive l'indirizzo con lo stato reale
                 select.value = state.circuit;
@@ -2287,14 +2299,16 @@
         // Converte data+ora UTC di una sessione (come nel calendario,
         // es. {date:"2026-03-06", time:"01:30:00Z"}) nell'orario italiano
         // locale. Intl gestisce da solo il cambio ora legale (CET/CEST) per
-        // il fuso "Europe/Rome" - non serve calcolarlo a mano.
+        // il fuso "Europe/Rome" - non serve calcolarlo a mano. Senza orario
+        // solo il giorno (storico 2021: Jolpica ha solo la data di qualifiche
+        // e Sprint; fino al 2026-11-08 quelle righe non si vedevano proprio).
         function formatSessionTime(session) {
-            if (!session || !session.date || !session.time) return null;
-            const d = new Date(`${session.date}T${session.time}`);
+            if (!session || !session.date) return null;
+            const d = new Date(`${session.date}T${session.time || '12:00:00Z'}`);
             if (isNaN(d)) return null;
             const formatted = d.toLocaleString('it-IT', {
                 weekday: 'short', day: 'numeric', month: 'short',
-                hour: '2-digit', minute: '2-digit',
+                ...(session.time ? { hour: '2-digit', minute: '2-digit' } : {}),
                 timeZone: 'Europe/Rome',
             });
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
@@ -2344,8 +2358,8 @@
         // Tabella compatta dei risultati di una sessione (prove libere,
         // Qualifiche Sprint, Sprint, qualifiche o gara): posizione, pilota,
         // scuderia, tempo. In gara e nella Sprint un ritiro mostra il motivo
-        // al posto del distacco. Le Sprint ci sono dal 2026-11-08 (solo
-        // stagione in corso: lo storico ha soltanto qualifiche e gara).
+        // al posto del distacco. Le Sprint ci sono dal 2026-11-08, anche
+        // nello storico (dal 2021; Qualifiche Sprint dal 2023).
         function renderResultsTable(results, key) {
             // Nomi, scuderie e motivi di ritiro arrivano dall'API esterna
             // (OpenF1, Jolpica): escape prima dell'innerHTML, come per le news.
@@ -2404,7 +2418,16 @@
             // Meteo previsto: solo il GP della settimana, per le sessioni non
             // ancora finite.
             const forecast = forecastFor(race);
-            const rows = labels.map(([key, label]) => {
+            // Sessioni in ordine di orario: nei weekend Sprint dal 2021 al
+            // 2023 (storico) la qualifica del GP veniva prima della Sprint,
+            // dal 2024 dopo. A parità (2021: date senza orario) vale l'ordine
+            // dell'elenco.
+            const start = key => {
+                const s = race.schedule && race.schedule[key];
+                return s && s.date ? Date.parse(`${s.date}T${s.time || '12:00:00Z'}`) : Infinity;
+            };
+            const ordered = labels.map((l, i) => [l, i]).sort((a, b) => (start(a[0][0]) - start(b[0][0])) || (a[1] - b[1])).map(([l]) => l);
+            const rows = ordered.map(([key, label]) => {
                 const session = race.schedule && race.schedule[key];
                 const formatted = formatSessionTime(session);
                 if (!formatted) return '';
@@ -2761,7 +2784,9 @@
 
         // 'past' | 'live' | 'upcoming', in base all'orario UTC reale adesso.
         function getSessionStatus(session, durationMin) {
-            if (!session || !session.date || !session.time) return null;
+            if (!session || !session.date) return null;
+            // Senza orario (storico 2021) conta come disputata dal giorno dopo.
+            if (!session.time) return Date.now() >= Date.parse(`${session.date}T00:00:00Z`) + 86400000 ? 'past' : 'upcoming';
             const start = new Date(`${session.date}T${session.time}`);
             if (isNaN(start)) return null;
             const now = new Date();
@@ -2943,6 +2968,20 @@
             renderStats(statsView || statsData);
         }
 
+        // Link della notifica di fine stagione (#mode=stats&s=stagione): su
+        // telefono il racconto della stagione viene dopo l'ultimo GP, quindi
+        // la pagina si apre lì, di colpo come un'ancora (uno scorrimento
+        // animato appena aperta la pagina può non partire); su computer è
+        // già in alto nella colonna di destra. Nella web app sulla schermata
+        // Home la pagina passa sotto la barra di stato (black-translucent):
+        // margine più alto, così il titolo della scheda resta visibile.
+        function focusSeasonStory() {
+            const el = document.getElementById('statsSeasonStory');
+            if (!el || window.matchMedia('(min-width: 768px)').matches) return;
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+            window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + window.scrollY - (standalone ? 64 : 12)));
+        }
+
         async function statsYearData(year) {
             if (year === statsData.year) return statsData;
             if (!statsYearCache[year]) {
@@ -3085,7 +3124,7 @@
             // stagione); su telefono le colonne si sciolgono (contents) e
             // l'ordine è GP, racconto, stagione in numeri, duelli.
             box.innerHTML = `<div class="contents md:block"><div class="order-1">${lastGpCard}</div><div class="order-4">${duelsCard}</div></div>
-                <div class="contents md:block">${storyCard ? `<div class="order-2">${storyCard}</div>` : ''}<div class="order-3">${seasonCard}</div>
+                <div class="contents md:block">${storyCard ? `<div class="order-2" id="statsSeasonStory">${storyCard}</div>` : ''}<div class="order-3">${seasonCard}</div>
                 <p class="order-5 text-[11px] text-gray-600 -mt-2">Aggiornate al ${updated.getDate()} ${ITALIAN_MONTHS[updated.getMonth()].toLowerCase()}</p></div>`;
             // Al posto di "Caricamento statistiche..." (o della stagione di
             // prima): sfuma in entrata invece di comparire di colpo.

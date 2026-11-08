@@ -33,10 +33,11 @@ async function jolpicaRaces(path) {
     for (let offset = 0; ; offset += 100) {
         const j = await jolpicaJson(`${path}.json?limit=100&offset=${offset}`);
         for (const r of j.MRData.RaceTable?.Races || []) {
-            if (!byRound.has(r.round)) byRound.set(r.round, { ...r, QualifyingResults: [], Results: [] });
+            if (!byRound.has(r.round)) byRound.set(r.round, { ...r, QualifyingResults: [], Results: [], SprintResults: [] });
             const t = byRound.get(r.round);
             t.QualifyingResults.push(...(r.QualifyingResults || []));
             t.Results.push(...(r.Results || []));
+            t.SprintResults.push(...(r.SprintResults || []));
         }
         if (offset + 100 >= Number(j.MRData.total)) break;
     }

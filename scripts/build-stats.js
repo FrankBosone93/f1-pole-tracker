@@ -34,6 +34,7 @@ const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
+const { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches } = require('./lib/title-clinches');
 
 const ROOT = path.join(__dirname, '..');
 const readJson = (rel, fallback = null) => {
@@ -49,15 +50,12 @@ const REGULATION_ERAS = [2014, 2022, 2026];
 const eraOf = year => Math.max(...REGULATION_ERAS.filter(y => y <= year));
 
 const RACE_POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-const MAX_RACE = 25, MAX_SPRINT = 8;
-const MAX_TEAM_RACE = 25 + 18, MAX_TEAM_SPRINT = 8 + 7;
 const TYRES = { SOFT: 'Soft', MEDIUM: 'Medium', HARD: 'Hard', INTERMEDIATE: 'Intermedia', WET: 'Da bagnato' };
 
 const isWet = weather => /Pioggia|Piovoso/.test(weather || '');
 const same = (a, b) => surnameKey(a) === surnameKey(b);
 const secs = d => Math.abs(d).toFixed(3).replace('.', ',');
 const lapStr = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(3).padStart(6, '0')}`;
-const hasSprint = r => !!r.schedule?.sprintRace?.date;
 const surname = name => String(name).trim().split(/\s+/).pop();
 
 // --- Ultimo GP ---------------------------------------------------------------
@@ -166,12 +164,34 @@ function topSpeedFact(year, circuit) {
     return { icon: '💨', text: `**Velocità massima** nel giro di pole: ${now} km/h${prevYear ? ` (${prevYear}: ${top(prevYear)} km/h)` : ''}.` };
 }
 
+// Classifica del mondiale subito dopo il GP (primi 5 piloti, prime 2
+// squadre), per i fatti e il racconto dell'ultimo GP, che parlano solo del GP
+// della domenica (dal 2026-11-08). standings.json vale se comprende il GP e
+// non è cambiato dopo l'inizio della sessione con punti successiva (Sprint o
+// gara del GP dopo): il sabato di un weekend Sprint ha già i punti della
+// Sprint. Altrimenti resta quella salvata con il GP al giro precedente
+// (prev.standings), così fatti e racconto non cambiano a metà del weekend dopo.
+function standingsAfterGp(season, race, races, standings, prev) {
+    if (standingsIncludeRace(standings, season, race)) {
+        const next = races.find(r => r.date > race.date);
+        const nextPoints = Math.min(...[next?.schedule?.sprintRace, next?.schedule?.race]
+            .filter(s => s?.date).map(s => Date.parse(`${s.date}T${s.time || '00:00:00Z'}`)));
+        if (Date.parse(standings.updatedAt) < nextPoints) {
+            return {
+                drivers: standings.drivers.slice(0, 5).map(d => ({ position: d.position, driver: d.driver, points: d.points })),
+                constructors: (standings.constructors || []).slice(0, 2).map(c => ({ position: c.position, team: c.team, points: c.points })),
+            };
+        }
+    }
+    return prev?.standings || null;
+}
+
 // Mondiale dopo la gara: distacco, variazione nel GP (solo senza sprint nel
 // weekend, perché la classifica non dice i punti della sprint), titolo deciso
-// o decidibile al prossimo GP.
-function championshipFacts(season, race, races, standings) {
-    if (!standingsIncludeRace(standings, season, race)) return [];
-    const [d1, d2] = standings.drivers;
+// o decidibile al prossimo GP. after = standingsAfterGp.
+function championshipFacts(season, race, races, after) {
+    if (!after) return [];
+    const [d1, d2] = after.drivers;
     if (!d1 || !d2) return [];
     const facts = [];
     const remaining = races.filter(r => r.date > race.date);
@@ -198,7 +218,7 @@ function championshipFacts(season, race, races, standings) {
             }
         }
     }
-    const [c1, c2] = standings.constructors || [];
+    const [c1, c2] = after.constructors || [];
     if (c1 && c2) {
         const teamMax = remaining.length * MAX_TEAM_RACE + remaining.filter(hasSprint).length * MAX_TEAM_SPRINT;
         if (c1.points - c2.points > teamMax) facts.push({ icon: '🏆', text: `**${c1.team}** è Campione del Mondo Costruttori ${season}.` });
@@ -206,13 +226,14 @@ function championshipFacts(season, race, races, standings) {
     return facts;
 }
 
-// Dati passati a Claude per il racconto del GP: solo quello che il sito sa.
-// La classifica solo se aggiornata dopo la gara (come championshipFacts).
-function storyInput(season, race, pole, facts, standings, raceControl) {
+// Dati passati a Claude per il racconto del GP: solo quello che il sito sa,
+// e solo del GP della domenica (qualifica, gara, direzione gara della gara).
+// La classifica è quella subito dopo il GP (standingsAfterGp, come
+// championshipFacts), null finché non c'è.
+function storyInput(season, race, pole, facts, after, raceControl) {
     const results = race.results.race;
     const grid = race.results.qualy || [];
     const gridOf = driver => grid.find(g => same(g.driver, driver))?.position ?? null;
-    const fresh = standingsIncludeRace(standings, season, race);
     return {
         gp: `${race.circuit} ${season}, gara ${race.round} della stagione`,
         pole: pole ? { pilota: pole.driver, squadra: pole.team, tempo: pole.timeStr, meteoQualifica: pole.weather || null } : null,
@@ -220,7 +241,7 @@ function storyInput(season, race, pole, facts, standings, raceControl) {
         nonClassificati: results.filter(r => r.retired).map(r => ({ pilota: r.driver, squadra: r.team, esito: r.retired, griglia: gridOf(r.driver) })),
         fatti: facts.map(f => f.text.replace(/\*\*/g, '')), // senza il grassetto del sito
         direzioneGara: raceControl || null,
-        mondialePilotiDopoLaGara: fresh ? standings.drivers.slice(0, 5).map(d => ({ pos: d.position, pilota: d.driver, punti: d.points })) : null,
+        mondialePilotiDopoLaGara: after ? after.drivers.map(d => ({ pos: d.position, pilota: d.driver, punti: d.points })) : null,
     };
 }
 
@@ -341,26 +362,6 @@ async function seasonProgress(season, done, previous, names) {
     return progress;
 }
 
-// Gara in cui un titolo è diventato matematico: la prima dopo la quale il
-// distacco tra primo e secondo supera i punti ancora in palio (gare e Sprint
-// rimaste nel calendario).
-function titleClinches(progress, races) {
-    const find = team => {
-        for (const p of progress) {
-            const rows = team ? p.teams : p.drivers;
-            const race = races.find(r => r.circuit === p.circuit);
-            if (rows.length < 2 || !race) continue;
-            const after = races.filter(r => r.date > race.date);
-            const left = after.length * (team ? MAX_TEAM_RACE : MAX_RACE) + after.filter(hasSprint).length * (team ? MAX_TEAM_SPRINT : MAX_SPRINT);
-            if (rows[0].points - rows[1].points > left) {
-                return { [team ? 'squadra' : 'pilota']: team ? rows[0].team : rows[0].driver, decisoA: p.circuit, garaNumero: p.round, gareDAnticipo: after.length };
-            }
-        }
-        return null;
-    };
-    return { piloti: find(false), costruttori: find(true) };
-}
-
 // Dati passati a Claude per il racconto della stagione: GP per GP (pole,
 // podio con la posizione in griglia, vincitore della Sprint, fatti principali
 // dall'archivio dei GP), classifica dopo ogni gara (l'ultima è quella
@@ -422,6 +423,7 @@ function seasonStoryInput(season, races, done, poles, stats, gpFacts) {
 // fatti già archiviati, da non ricalcolare.
 async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null) {
     const pole = poles.find(p => p.year === season && p.circuit === race.circuit);
+    const after = isLast ? standingsAfterGp(season, race, races, standings, prev) : (prev?.standings || null);
     const gp = {
         round: race.round,
         circuit: race.circuit,
@@ -431,9 +433,10 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
             ...raceFacts(race, pole),
             ...paceFacts(season, race.circuit, race.results.race),
             topSpeedFact(season, race.circuit),
-            ...(isLast ? championshipFacts(season, race, races, standings) : []),
+            ...championshipFacts(season, race, races, after),
         ].filter(Boolean),
     };
+    if (after) gp.standings = after; // classifica subito dopo il GP, vedi standingsAfterGp
     gp.raceControl = prev?.raceControl;
     try {
         gp.raceControl = await raceControlEvents(season, race.circuit, race.results.race);
@@ -442,7 +445,7 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
     }
     try {
         const { gpStory } = require('./lib/gp-story');
-        const input = storyInput(season, race, pole, gp.facts, isLast ? standings : null, gp.raceControl);
+        const input = storyInput(season, race, pole, gp.facts, after, gp.raceControl);
         gp.story = await gpStory(input, prev?.story) || prev?.story || undefined;
     } catch (err) {
         console.warn(`⚠️  ${race.circuit}: racconto del GP non disponibile (${err.message}).`);
