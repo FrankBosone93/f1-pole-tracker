@@ -25,7 +25,8 @@ on:
     types: [completed]
   schedule:
     # Rete di sicurezza: lunedì e martedì mattina. Se i dati sono ancora
-    # incompleti dopo il lunedì alle 7:00 UTC parte il ⚠️ (vedi notify-gp.js).
+    # incompleti dopo il lunedì alle 7:00 UTC la notifica del GP parte con
+    # quelli che ci sono (vedi notify-gp.js).
     # Il lunedì dopo l'ultima gara è anche il primo controllo della notifica
     # di fine stagione. GitHub li fa partire anche con ore di ritardo (a
     # ottobre e novembre 2026 tra le 13:30 e le 18:15 UTC).
