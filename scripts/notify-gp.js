@@ -68,19 +68,11 @@ function lastRaceByDate(calendar, now) {
 // recupero del mattino; da lì parte con i dati che ci sono.
 const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 86400000;
 
-// Dove porta il tocco: il passo gara del GP con il confronto tra i primi due
-// classificati (stessa forma dei link di condivisione del sito,
-// #mode=pace&y=…&c=…&a=SIGLA&b=SIGLA); senza passo gara ancora pronto,
-// l'andamento dei tempi del circuito.
-function clickUrl(year, circuit, paceIndex) {
-    const fallback = `${SITE_URL}#c=${encodeURIComponent(circuit)}`;
-    const entry = (paceIndex?.races?.[year] || []).find(r => r.circuit === circuit);
-    const drivers = entry && readJson(entry.file)?.drivers;
-    const code = pos => (drivers || []).find(d => d.pos === pos)?.code;
-    if (!code(1) || !code(2)) return fallback;
-    const p = new URLSearchParams({ mode: 'pace', y: String(year), c: circuit, a: code(1), b: code(2) });
-    return `${SITE_URL}#${p.toString().replace(/\+/g, '%20')}`;
-}
+// Dove porta il tocco (dal 2026-11-08): la sezione Statistiche, che si apre
+// sull'ultimo GP con il racconto e i fatti (sul telefono è la prima scheda),
+// con o senza passo gara. Prima portava al passo gara con il confronto tra i
+// primi due, o all'andamento dei tempi del circuito senza passo gara.
+const CLICK_URL = `${SITE_URL}#mode=stats`;
 
 function buildReport() {
     const calendar = readJson('calendar.json');
@@ -135,8 +127,7 @@ function buildReport() {
     if (autoCircuitsAddedIn(year).includes(circuit)) lines.push(`ℹ️ Circuito nuovo aggiunto in automatico: ${circuit}`);
     // Cosa manca non va nel messaggio (arriva a tutti gli iscritti): resta
     // nel log e nello stato. L'ultima riga dice dove porta il tocco.
-    const click = clickUrl(year, circuit, paceIndex);
-    lines.push(click.includes('mode=pace') ? 'Tocca per il passo gara.' : 'Tocca per i dettagli.');
+    lines.push('Tocca per il racconto del GP.');
 
     return {
         key: `${year}|${circuit}`,
@@ -147,7 +138,7 @@ function buildReport() {
         // Titolo = solo il nome del GP, uguale con dati completi o no.
         title: `✅ GP di ${circuit} ${year}`,
         message: lines.join('\n'),
-        click,
+        click: CLICK_URL,
     };
 }
 
