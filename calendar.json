@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-08T20:00:50.284Z",
+  "updatedAt": "2026-11-08T22:23:20.461Z",
   "races": [
     {
       "round": 1,
@@ -8729,7 +8729,7 @@
             "position": 5,
             "driver": "Andrea Kimi Antonelli",
             "team": "Mercedes",
-            "time": "+36.017",
+            "time": "+41.017",
             "retired": null
           },
           {
@@ -8741,16 +8741,16 @@
           },
           {
             "position": 7,
-            "driver": "Charles Leclerc",
-            "team": "Ferrari",
-            "time": "+1:13.586",
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "+1:15.402",
             "retired": null
           },
           {
             "position": 8,
-            "driver": "Liam Lawson",
-            "team": "RB",
-            "time": "+1:15.402",
+            "driver": "Charles Leclerc",
+            "team": "Ferrari",
+            "time": "+1:18.586",
             "retired": null
           },
           {
