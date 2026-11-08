@@ -1,6 +1,51 @@
 {
   "entries": [
     {
+      "date": "2026-11-08",
+      "title": "Changelog — 8 Novembre 2026",
+      "sections": [
+        {
+          "title": "Sprint",
+          "items": [
+            "Nei weekend Sprint il **Calendario** e il riquadro **Prossimo GP** mostrano anche i risultati di **Qualifiche Sprint** e **Sprint**.",
+            "Lo **storico** delle stagioni 2021-2025 ha ora anche Qualifiche Sprint e Sprint di tutti i 24 weekend Sprint, con le sessioni in ordine di orario.",
+            "La sezione **Qualifiche** (pole, tempi, telemetria) e i duelli tra compagni continuano a considerare solo la qualifica del GP della domenica."
+          ]
+        },
+        {
+          "title": "Statistiche",
+          "items": [
+            "Nuova scheda **«La stagione 2026 finora»**: il racconto della stagione scritto con l'IA, solo dai dati del sito, aggiornato dopo ogni GP. A campionato finito diventa il bilancio finale.",
+            "Il **racconto del GP** parla solo del GP della domenica, con la classifica subito dopo la gara: i punti del weekend successivo non lo cambiano più.",
+            "Quando un titolo è già deciso, i GP successivi dicono **«già Campione del Mondo… titolo deciso a Città del Messico»** invece di ripetere «matematicamente Campione» a ogni gara; il racconto cita sempre un titolo deciso proprio in quel GP, come quello Costruttori della Mercedes a Interlagos."
+          ]
+        },
+        {
+          "title": "Notifiche",
+          "items": [
+            "Toccando la notifica dopo il GP si apre il **racconto del GP** nelle Statistiche («Tocca per il racconto del GP.»).",
+            "Se il lunedì mattina manca ancora qualche dato arriva la notifica con ⚠️ e l'elenco di cosa manca, ma è l'unica: quando i dati si completano **non arriva una seconda notifica**.",
+            "Nuova **notifica di fine stagione**, una sola volta il giorno dopo l'ultima gara: campione del mondo, campione Costruttori, dove si sono decisi i titoli e i numeri del campione. Toccandola si apre il racconto della stagione."
+          ]
+        },
+        {
+          "title": "Animazioni",
+          "items": [
+            "Finestre (Classifica, Calendario, Stagioni, News, Novità, Notifiche), tendine dei risultati e cambi di grafico si aprono e chiudono con **animazioni più fluide** e tutte uguali.",
+            "Se sul dispositivo è attivo **«Riduci movimento»**, il sito non usa animazioni."
+          ]
+        },
+        {
+          "title": "Correzioni",
+          "items": [
+            "Nello storico del 2021 le **qualifiche** sono di nuovo visibili.",
+            "Nelle qualifiche i piloti che non fanno segnare un tempo compaiono in fondo come «Non classificato» invece di sparire.",
+            "Corretti i risultati di alcune Sprint, come Interlagos 2025 (penalità di Bearman e Lawson) e Baku 2023 (pilota mancante)."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-05",
       "title": "Changelog — 5 Novembre 2026",
       "sections": [
