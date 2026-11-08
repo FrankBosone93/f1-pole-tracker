@@ -2,7 +2,8 @@
 //
 // Dopo ogni GP controlla che i dati del sito siano aggiornati e invia una
 // notifica push con il riepilogo: "✅ GP di Austin 2026" con pole, podio e
-// leader del mondiale.
+// leader del mondiale, oppure "⚠️ GP di Austin 2026" con in fondo l'elenco di
+// cosa manca.
 //
 // Controlli sull'ultimo GP con risultato di gara in calendar.json:
 //   - pole in data.json            (update-poles.js)
@@ -11,13 +12,12 @@
 //   - telemetria del giro di pole  (build-telemetry.js)
 //   - passo gara                   (build-race-pace.js)
 //
-// Una sola notifica per GP: lo stato è in status/notified.json. Parte appena i
-// dati sono completi; se il giorno dopo la gara alle 7:00 UTC manca ancora
-// qualcosa (es. il passo gara) parte lo stesso con i dati che ci sono, uguale
-// per tutti e senza dire cosa manca (dal 2026-11-08: prima partiva un "⚠️"
-// con "❌ Non aggiornati: …" a tutti gli iscritti, e poi il ✅). Cosa manca
-// resta solo nel log e in status/notified.json ("missing"). Senza i risultati
-// di gara non parte: si aspetta.
+// Una sola notifica per GP: lo stato è in status/notified.json. Il ✅ parte
+// appena i dati sono completi; se il giorno dopo la gara alle 7:00 UTC manca
+// ancora qualcosa (es. il passo gara) parte il ⚠️ con i dati che ci sono e
+// "❌ Non aggiornati: …". Dal 2026-11-08 dopo il ⚠️ non parte più il ✅
+// quando i dati si completano (prima arrivavano due notifiche), e senza i
+// risultati di gara non parte nulla: si aspetta.
 //
 // Due canali in parallelo, stesso messaggio: ntfy e web app sulla schermata
 // Home (vedi lib/notify-channels.js, condiviso con notify-pole.js).
@@ -125,8 +125,10 @@ function buildReport() {
     // Circuito nuovo riconosciuto in automatico quest'anno (nome = città):
     // si segnala, così il nome si può cambiare se non piace.
     if (autoCircuitsAddedIn(year).includes(circuit)) lines.push(`ℹ️ Circuito nuovo aggiunto in automatico: ${circuit}`);
-    // Cosa manca non va nel messaggio (arriva a tutti gli iscritti): resta
-    // nel log e nello stato. L'ultima riga dice dove porta il tocco.
+    // Elenco dei dati solo se manca qualcosa, in fondo e solo con ciò che
+    // manca: con tutto aggiornato basta il ✅ del titolo.
+    const missingLabels = checks.filter(([, ok]) => !ok).map(([label]) => label);
+    if (missingLabels.length) lines.push(`❌ Non aggiornati: ${missingLabels.join(', ')}`);
     lines.push('Tocca per il racconto del GP.');
 
     return {
@@ -135,8 +137,9 @@ function buildReport() {
         hasResults: !!results,
         missing,
         warnAfter: warnDeadline(race),
-        // Titolo = solo il nome del GP, uguale con dati completi o no.
-        title: `✅ GP di ${circuit} ${year}`,
+        // Titolo = solo il nome del GP: l'esito lo dice l'emoji (✅ tutto
+        // aggiornato, ⚠️ manca qualcosa, elencato in fondo al messaggio).
+        title: `${complete ? '✅' : '⚠️'} GP di ${circuit} ${year}`,
         message: lines.join('\n'),
         click: CLICK_URL,
     };
@@ -155,29 +158,30 @@ async function main() {
     console.log(`Ultimo GP: ${report.key} - ${report.complete ? 'dati completi' : `dati incompleti (mancano: ${report.missing.join(', ')})`}`);
     console.log(`--- ${report.title}\n${report.message}\n(apre ${report.click})`);
 
-    // Una sola notifica per GP, anche se i dati mancanti arrivano dopo.
+    // Una sola notifica per GP: dopo un ⚠️ niente ✅ quando i dati si
+    // completano.
     if (state.gp === report.key) {
         console.log('Già notificato per questo GP: niente da inviare.');
         return;
     }
     if (!report.complete && Date.now() < report.warnAfter) {
-        console.log(`Dati ancora incompleti: si aspetta fino alle ${new Date(report.warnAfter).toISOString()}, poi parte con i dati che ci sono (si riprova dopo il prossimo aggiornamento).`);
+        console.log(`Dati ancora incompleti: niente ⚠️ prima di ${new Date(report.warnAfter).toISOString()} (si riprova dopo il prossimo aggiornamento).`);
         return;
     }
     if (!report.hasResults) {
-        console.log('Risultati di gara ancora assenti: niente notifica senza podio (si riprova dopo il prossimo aggiornamento).');
+        console.log('Risultati di gara ancora assenti: niente ⚠️ senza podio (si riprova dopo il prossimo aggiornamento).');
         return;
     }
     if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }
 
     // Nessun canale configurato non è un errore: lo stato non cambia, così si
     // invierà appena ce n'è uno.
-    const { configured, delivered } = await sendAll({ ...report, priority: 3 });
+    const { configured, delivered } = await sendAll({ ...report, priority: report.complete ? 3 : 4 });
     if (!configured) { console.warn('⚠️  Nessun canale di notifica configurato: notifica non inviata.'); return; }
     if (!delivered) throw new Error('notifica non consegnata su nessun canale');
     fs.writeFileSync(STATE_PATH, JSON.stringify({
         gp: report.key,
-        result: report.complete ? 'ok' : 'partial',
+        result: report.complete ? 'ok' : 'warned',
         ...(report.complete ? {} : { missing: report.missing }),
         at: new Date().toISOString(),
     }, null, 2) + '\n', 'utf-8');
