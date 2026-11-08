@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-07T21:44:42.388Z",
+  "updatedAt": "2026-11-08T01:16:01.551Z",
   "lastGp": {
     "round": 19,
     "circuit": "Città del Messico",
@@ -306,13 +306,13 @@
         "a": "Pierre Gasly",
         "b": "Franco Colapinto",
         "aAhead": 15,
-        "bAhead": 4
+        "bAhead": 5
       },
       {
         "team": "Audi",
         "a": "Nico Hulkenberg",
         "b": "Gabriel Bortoleto",
-        "aAhead": 10,
+        "aAhead": 11,
         "bAhead": 9
       },
       {
@@ -320,20 +320,20 @@
         "a": "Sergio Pérez",
         "b": "Valtteri Bottas",
         "aAhead": 11,
-        "bAhead": 8
+        "bAhead": 9
       },
       {
         "team": "Ferrari",
         "a": "Charles Leclerc",
         "b": "Lewis Hamilton",
-        "aAhead": 10,
+        "aAhead": 11,
         "bAhead": 9
       },
       {
         "team": "McLaren",
         "a": "Lando Norris",
         "b": "Oscar Piastri",
-        "aAhead": 12,
+        "aAhead": 13,
         "bAhead": 7
       },
       {
@@ -341,20 +341,20 @@
         "a": "Andrea Kimi Antonelli",
         "b": "George Russell",
         "aAhead": 11,
-        "bAhead": 8
+        "bAhead": 9
       },
       {
         "team": "Williams",
         "a": "Carlos Sainz",
         "b": "Alex Albon",
         "aAhead": 15,
-        "bAhead": 3
+        "bAhead": 4
       },
       {
         "team": "Aston Martin",
         "a": "Fernando Alonso",
         "b": "Lance Stroll",
-        "aAhead": 15,
+        "aAhead": 16,
         "bAhead": 2
       },
       {
@@ -368,7 +368,7 @@
         "team": "RB",
         "a": "Liam Lawson",
         "b": "Arvid Lindblad",
-        "aAhead": 10,
+        "aAhead": 11,
         "bAhead": 6
       },
       {
@@ -376,7 +376,7 @@
         "a": "Max Verstappen",
         "b": "Isack Hadjar",
         "aAhead": 12,
-        "bAhead": 3
+        "bAhead": 4
       },
       {
         "team": "RB",
@@ -396,6 +396,13 @@
         "team": "Haas",
         "a": "Oliver Bearman",
         "b": "Ryo Hirakawa",
+        "aAhead": 1,
+        "bAhead": 0
+      },
+      {
+        "team": "Haas",
+        "a": "Oliver Bearman",
+        "b": "Rafael Câmara",
         "aAhead": 1,
         "bAhead": 0
       }
