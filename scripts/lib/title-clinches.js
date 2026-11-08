@@ -1,9 +1,10 @@
 // scripts/lib/title-clinches.js
 //
 // Punti ancora in palio e gara in cui un titolo è diventato matematico.
-// Usato da build-stats.js (frasi sul mondiale nei fatti del GP, titoli decisi
-// nel racconto della stagione) e da notify-season.js (notifica di fine
-// stagione: "deciso a ..."), così i due dicono sempre la stessa cosa.
+// Usato da build-stats.js (frasi sul mondiale nei fatti del GP, compreso il
+// "titolo deciso a ..." dei GP dopo quello decisivo, e titoli decisi nel
+// racconto della stagione) e da notify-season.js (notifica di fine stagione:
+// "deciso a ..."), così dicono sempre la stessa cosa.
 
 // Punti massimi in una gara e in una Sprint: per un pilota (primo posto) e
 // per una squadra (primo e secondo posto).
@@ -32,4 +33,13 @@ function titleClinches(progress, races) {
     return { piloti: find(false), costruttori: find(true) };
 }
 
-module.exports = { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches };
+// "a Città del Messico", "ad Abu Dhabi", "in Qatar", "al Red Bull Ring":
+// dove si è deciso un titolo ("deciso a ..."), con il nome del circuito senza
+// la parte tra parentesi (Interlagos (San Paolo) -> Interlagos).
+const PREPOSITIONS = { 'Qatar': 'in ', 'Bahrain': 'in ', 'Red Bull Ring': 'al ', 'Paul Ricard': 'al ', 'Hungaroring': "all'" };
+function atCircuit(circuit) {
+    const name = String(circuit).replace(/\s*\(.*\)\s*$/, '');
+    return (PREPOSITIONS[name] || (/^a/i.test(name) ? 'ad ' : 'a ')) + name;
+}
+
+module.exports = { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches, atCircuit };

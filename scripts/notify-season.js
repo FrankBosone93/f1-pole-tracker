@@ -39,7 +39,7 @@ const fs = require('fs');
 const path = require('path');
 const { sendAll } = require('./lib/notify-channels');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
-const { titleClinches } = require('./lib/title-clinches');
+const { titleClinches, atCircuit } = require('./lib/title-clinches');
 const { surnameKey } = require('./lib/driver-names');
 
 const ROOT = path.join(__dirname, '..');
@@ -62,15 +62,6 @@ const surname = name => String(name).trim().split(/\s+/).pop();
 const pts = n => String(n).replace('.', ',');
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const iso = ms => new Date(ms).toISOString();
-
-// "a Città del Messico", "ad Abu Dhabi", "in Qatar", "al Red Bull Ring":
-// nome del circuito senza la parte tra parentesi (Interlagos (San Paolo) ->
-// Interlagos).
-const PREPOSITIONS = { 'Qatar': 'in ', 'Bahrain': 'in ', 'Red Bull Ring': 'al ', 'Paul Ricard': 'al ', 'Hungaroring': "all'" };
-function atCircuit(circuit) {
-    const name = String(circuit).replace(/\s*\(.*\)\s*$/, '');
-    return (PREPOSITIONS[name] || (/^a/i.test(name) ? 'ad ' : 'a ')) + name;
-}
 
 function buildReport() {
     const calendar = readJson('calendar.json');

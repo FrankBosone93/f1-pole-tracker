@@ -29,7 +29,9 @@ Scrivi un breve racconto del Gran Premio in italiano: un solo paragrafo, 3-4 fra
 Usa SOLO i dati forniti. Non aggiungere nulla che non sia nei dati: niente sorpassi specifici, meteo in gara, dichiarazioni o cause dei ritiri.
 Safety car, virtual safety car, bandiere rosse e penalità solo se compaiono in "direzioneGara" (messaggi ufficiali in inglese, con il giro): citali solo se contano per il racconto, senza inventarne cause, dinamiche o conseguenze sulla classifica che i dati non dicono. Se "direzioneGara" è null o vuoto, non parlarne. Non inventare record o confronti con altri anni oltre a quelli già presenti nei fatti.
 Riporta nomi, posizioni, tempi e punti esattamente come nei dati. Scrivi i distacchi con la virgola come in italiano (1,525 s). Usa "ad" davanti a parole che iniziano per a (ad Austin, ad Abu Dhabi).
-Dai al racconto un filo: chi ha vinto e come, il risultato dell'autore della pole, la cosa più notevole tra i fatti, cosa cambia nel mondiale.`;
+Dai al racconto un filo: chi ha vinto e come, il risultato dell'autore della pole, la cosa più notevole tra i fatti, cosa cambia nel mondiale.
+Se nei fatti un titolo, piloti o costruttori, si decide in questo GP ("è matematicamente Campione" oppure, all'ultima gara, "è Campione" senza "già"), citalo sempre. Un titolo deciso in un GP precedente ("è già Campione") non è la notizia di questo GP.
+Non usare la parola "polista": scrivi "poleman" o "pilota in pole".`;
 
 const SEASON_SYSTEM = `Sei un giornalista di Formula 1 che scrive per un sito italiano di statistiche.
 Scrivi il racconto della stagione in italiano: 2 o 3 paragrafi brevi separati da una riga vuota, al massimo 200 parole in tutto, testo semplice senza titoli, elenchi, grassetti o emoji.
@@ -39,7 +41,9 @@ Se "stagioneConclusa" è false, chiudi con cosa resta da decidere e quante gare 
 Riporta nomi, posizioni, punti e numeri esattamente come nei dati. Usa "ad" davanti a parole che iniziano per a (ad Austin, ad Abu Dhabi). Non usare la parola "polista": scrivi "poleman" o "pilota in pole".`;
 
 // Stessa forma di prima per il racconto del GP ({ MODEL, SYSTEM, input }):
-// gli hash già salvati restano validi e i racconti non si riscrivono.
+// gli hash già salvati restano validi e i racconti non si riscrivono. Se
+// cambia SYSTEM (2026-11-08: titolo deciso nel GP sempre citato, niente
+// "polista") si riscrive solo l'ultimo GP: gli altri sono archiviati.
 const inputHash = (system, input) => crypto.createHash('sha256').update(JSON.stringify({ MODEL, SYSTEM: system, input })).digest('hex').slice(0, 16);
 
 // previous = il testo salvato al giro precedente ({ text, model, hash }).

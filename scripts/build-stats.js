@@ -34,7 +34,7 @@ const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
-const { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches } = require('./lib/title-clinches');
+const { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches, atCircuit } = require('./lib/title-clinches');
 
 const ROOT = path.join(__dirname, '..');
 const readJson = (rel, fallback = null) => {
@@ -188,8 +188,12 @@ function standingsAfterGp(season, race, races, standings, prev) {
 
 // Mondiale dopo la gara: distacco, variazione nel GP (solo senza sprint nel
 // weekend, perché la classifica non dice i punti della sprint), titolo deciso
-// o decidibile al prossimo GP. after = standingsAfterGp.
-function championshipFacts(season, race, races, after) {
+// o decidibile al prossimo GP. after = standingsAfterGp. clinches =
+// titleClinches sulla classifica dopo ogni gara: un titolo deciso in un GP
+// precedente si dice "già" con il GP decisivo (dal 2026-11-08: prima ogni GP
+// dopo Città del Messico ripeteva "matematicamente Campione del Mondo" come
+// se si fosse deciso lì).
+function championshipFacts(season, race, races, after, clinches = null) {
     if (!after) return [];
     const [d1, d2] = after.drivers;
     if (!d1 || !d2) return [];
@@ -197,10 +201,18 @@ function championshipFacts(season, race, races, after) {
     const remaining = races.filter(r => r.date > race.date);
     const maxLeft = remaining.length * MAX_RACE + remaining.filter(hasSprint).length * MAX_SPRINT;
     const gap = d1.points - d2.points;
+    const decidedBefore = c => {
+        const date = c && races.find(r => r.circuit === c.decisoA)?.date;
+        return !!date && date < race.date;
+    };
+    const gare = n => `${n} ${n === 1 ? 'gara' : 'gare'}`;
     if (gap > maxLeft) {
-        facts.push({ icon: '🏆', text: remaining.length
-            ? `**${d1.driver}** è matematicamente Campione del Mondo ${season}, con ${remaining.length} ${remaining.length === 1 ? 'gara' : 'gare'} d'anticipo.`
-            : `**${d1.driver}** è Campione del Mondo ${season}.` });
+        const c = clinches?.piloti;
+        facts.push({ icon: '🏆', text: decidedBefore(c) && same(c.pilota, d1.driver)
+            ? `**${d1.driver}** è già Campione del Mondo ${season}: titolo deciso ${atCircuit(c.decisoA)}, con ${gare(c.gareDAnticipo)} d'anticipo.`
+            : remaining.length
+                ? `**${d1.driver}** è matematicamente Campione del Mondo ${season}, con ${gare(remaining.length)} d'anticipo.`
+                : `**${d1.driver}** è Campione del Mondo ${season}.` });
     } else {
         let text = `**${d1.driver}** guida il mondiale con ${gap} punti su ${d2.driver}`;
         if (!hasSprint(race)) {
@@ -221,7 +233,14 @@ function championshipFacts(season, race, races, after) {
     const [c1, c2] = after.constructors || [];
     if (c1 && c2) {
         const teamMax = remaining.length * MAX_TEAM_RACE + remaining.filter(hasSprint).length * MAX_TEAM_SPRINT;
-        if (c1.points - c2.points > teamMax) facts.push({ icon: '🏆', text: `**${c1.team}** è Campione del Mondo Costruttori ${season}.` });
+        if (c1.points - c2.points > teamMax) {
+            const c = clinches?.costruttori;
+            facts.push({ icon: '🏆', text: decidedBefore(c) && c.squadra === c1.team
+                ? `**${c1.team}** è già Campione del Mondo Costruttori ${season}: titolo deciso ${atCircuit(c.decisoA)}, con ${gare(c.gareDAnticipo)} d'anticipo.`
+                : remaining.length
+                    ? `**${c1.team}** è matematicamente Campione del Mondo Costruttori ${season}, con ${gare(remaining.length)} d'anticipo.`
+                    : `**${c1.team}** è Campione del Mondo Costruttori ${season}.` });
+        }
     }
     return facts;
 }
@@ -421,7 +440,7 @@ function seasonStoryInput(season, races, done, poles, stats, gpFacts) {
 // racconto. Frasi sul mondiale e classifica nel racconto solo per l'ultimo GP
 // (standings.json è la classifica attuale, non quella di allora); facts = i
 // fatti già archiviati, da non ricalcolare.
-async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null) {
+async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null, clinches = null) {
     const pole = poles.find(p => p.year === season && p.circuit === race.circuit);
     const after = isLast ? standingsAfterGp(season, race, races, standings, prev) : (prev?.standings || null);
     const gp = {
@@ -433,7 +452,7 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
             ...raceFacts(race, pole),
             ...paceFacts(season, race.circuit, race.results.race),
             topSpeedFact(season, race.circuit),
-            ...championshipFacts(season, race, races, after),
+            ...championshipFacts(season, race, races, after, clinches),
         ].filter(Boolean),
     };
     if (after) gp.standings = after; // classifica subito dopo il GP, vedi standingsAfterGp
@@ -486,6 +505,18 @@ async function main() {
     // ce l'ha. Un GP passato mai archiviato (recupero del 2026-11-01) si
     // ricostruisce senza le frasi sul mondiale.
     const done = races.filter(r => r.results?.race?.length);
+    const prevSeason = previous.year === season ? previous.season : null;
+    const names = knownDriverNames();
+    // Classifica dopo ogni gara (Jolpica), calcolata prima dei GP: dice anche
+    // in quale GP si è deciso un titolo (championshipFacts).
+    let progress;
+    try {
+        progress = await seasonProgress(season, done, prevSeason?.progress, names);
+    } catch (err) {
+        console.warn(`⚠️  Classifiche dopo ogni gara da Jolpica non disponibili (${err.message}): tengo quelle precedenti.`);
+        progress = prevSeason?.progress || [];
+    }
+    const clinches = titleClinches(progress, races);
     const gps = [];
     const gpFacts = new Map(); // circuito -> fatti del GP, per il racconto della stagione
     let lastGp = null;
@@ -497,7 +528,7 @@ async function main() {
         let gp = archived;
         if (!frozen || !archived.story) {
             const prev = archived || (previous.year === season && previous.lastGp?.circuit === race.circuit ? previous.lastGp : null);
-            gp = await buildGp(season, race, races, poles, standings, isLast, prev, frozen ? archived.facts : null);
+            gp = await buildGp(season, race, races, poles, standings, isLast, prev, frozen ? archived.facts : null, clinches);
             writeJsonIfChanged(file, gp);
         }
         gps.push({ round: race.round, circuit: race.circuit, file });
@@ -505,9 +536,7 @@ async function main() {
         if (isLast) lastGp = gp;
     }
 
-    const prevSeason = previous.year === season ? previous.season : null;
     const stats = seasonStats(season, races, poles);
-    const names = knownDriverNames();
     let qualifyings = null;
     try {
         qualifyings = await seasonQualifyings(season, names);
@@ -516,12 +545,7 @@ async function main() {
         console.warn(`⚠️  Duelli in qualifica da Jolpica non disponibili (${err.message}): tengo quelli precedenti.`);
         stats.qualyDuels = prevSeason?.qualyDuels || [];
     }
-    try {
-        stats.progress = await seasonProgress(season, done, prevSeason?.progress, names);
-    } catch (err) {
-        console.warn(`⚠️  Classifiche dopo ogni gara da Jolpica non disponibili (${err.message}): tengo quelle precedenti.`);
-        stats.progress = prevSeason?.progress || [];
-    }
+    stats.progress = progress;
 
     // Racconto della stagione (dal 2026-11-08), riscritto dopo ogni GP: solo
     // quando Jolpica ha la classifica del mondiale dopo l'ultimo GP (di solito

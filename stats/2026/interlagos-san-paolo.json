@@ -25,11 +25,11 @@
     },
     {
       "icon": "🏆",
-      "text": "**Andrea Kimi Antonelli** è matematicamente Campione del Mondo 2026, con 3 gare d'anticipo."
+      "text": "**Andrea Kimi Antonelli** è già Campione del Mondo 2026: titolo deciso a Città del Messico, con 4 gare d'anticipo."
     },
     {
       "icon": "🏆",
-      "text": "**Mercedes** è Campione del Mondo Costruttori 2026."
+      "text": "**Mercedes** è matematicamente Campione del Mondo Costruttori 2026, con 3 gare d'anticipo."
     }
   ],
   "standings": {
@@ -84,8 +84,8 @@
     }
   ],
   "story": {
-    "text": "Sul circuito di Interlagos Lando Norris trasforma in vittoria la pole conquistata sotto la pioggia battente in 1:27.470, chiudendo con 14,602 s di margine. La rimonta del giorno è di Max Verstappen, secondo dopo essere partito ventunesimo, davanti al compagno Isack Hadjar. Andrea Kimi Antonelli chiude quinto ma è matematicamente Campione del Mondo 2026 con 3 gare d'anticipo, a quota 390 punti contro i 279 di Verstappen. La Mercedes si assicura anche il titolo Costruttori.",
+    "text": "Lando Norris ha trasformato in vittoria la pole conquistata sotto la pioggia battente in 1:27.470, vincendo a Interlagos con 14,602 s su Max Verstappen. Il pilota Red Bull ha firmato la rimonta di giornata, dal 21° al 2° posto, mentre Isack Hadjar ha completato il podio. Con Russell quarto e Antonelli quinto, la Mercedes è matematicamente Campione del Mondo Costruttori 2026 con 3 gare d'anticipo. Nel mondiale piloti Antonelli, già campione, è a 390 punti, Verstappen secondo a 279.",
     "model": "claude-opus-5-5",
-    "hash": "46b26b08b3630030"
+    "hash": "94f569f0873f5e37"
   }
 }
