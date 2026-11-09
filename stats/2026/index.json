@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-09T01:48:51.950Z",
+  "updatedAt": "2026-11-09T16:53:31.302Z",
   "lastGp": {
     "round": 20,
     "circuit": "Interlagos (San Paolo)",
@@ -72,7 +72,7 @@
         {
           "position": 5,
           "driver": "Charles Leclerc",
-          "points": 251
+          "points": 249
         }
       ],
       "constructors": [
@@ -84,7 +84,7 @@
         {
           "position": 2,
           "team": "Ferrari",
-          "points": 512
+          "points": 510
         }
       ]
     },
@@ -99,9 +99,9 @@
       }
     ],
     "story": {
-      "text": "A Interlagos Lando Norris trasforma in vittoria la pole ottenuta sotto la pioggia battente, con una strategia a tre soste. Rimonta clamorosa di Max Verstappen, secondo a 14,602 s dopo essere partito ventunesimo, davanti al compagno Isack Hadjar. Con George Russell quarto e Andrea Kimi Antonelli quinto, autore anche del giro più veloce, la Mercedes è matematicamente Campione del Mondo Costruttori 2026 con 3 gare d'anticipo. Verstappen sale a 279 punti, secondo nella classifica guidata da Antonelli con 390.",
+      "text": "Lando Norris trasforma in vittoria la pole conquistata sotto la pioggia battente a Interlagos e chiude con 3 soste davanti a Max Verstappen, secondo a 14,602 s dopo una rimonta dal 21° posto in griglia. Completa il podio Isack Hadjar, mentre Andrea Kimi Antonelli, quinto, firma il giro più veloce in 1:12.689. A San Paolo Mercedes diventa matematicamente Campione del Mondo Costruttori 2026, con 3 gare d'anticipo. Nel mondiale piloti Antonelli comanda con 390 punti, davanti a Verstappen con 279.",
       "model": "claude-opus-5-5",
-      "hash": "924329448bedd234"
+      "hash": "4cefe7df43c47e10"
     }
   },
   "gps": [
