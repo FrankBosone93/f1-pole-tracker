@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-08T20:10:01.087Z",
+  "updatedAt": "2026-11-09T16:52:54.858Z",
   "drivers": [
     {
       "position": 1,
@@ -34,7 +34,7 @@
       "position": 5,
       "driver": "Charles Leclerc",
       "team": "Ferrari",
-      "points": 251,
+      "points": 249,
       "wins": 1
     },
     {
@@ -62,7 +62,7 @@
       "position": 9,
       "driver": "Liam Lawson",
       "team": "RB",
-      "points": 87,
+      "points": 89,
       "wins": 0
     },
     {
@@ -188,7 +188,7 @@
     {
       "position": 2,
       "team": "Ferrari",
-      "points": 512,
+      "points": 510,
       "wins": 2
     },
     {
@@ -206,7 +206,7 @@
     {
       "position": 5,
       "team": "RB",
-      "points": 112,
+      "points": 114,
       "wins": 0
     },
     {
