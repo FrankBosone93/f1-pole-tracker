@@ -95,6 +95,7 @@
       "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
     }
   ],
+  "storyStatus": "complete",
   "story": {
     "text": "Lando Norris trasforma in vittoria la pole conquistata sotto la pioggia battente a Interlagos e chiude con 3 soste davanti a Max Verstappen, secondo a 14,602 s dopo una rimonta dal 21° posto in griglia. Completa il podio Isack Hadjar, mentre Andrea Kimi Antonelli, quinto, firma il giro più veloce in 1:12.689. A San Paolo Mercedes diventa matematicamente Campione del Mondo Costruttori 2026, con 3 gare d'anticipo. Nel mondiale piloti Antonelli comanda con 390 punti, davanti a Verstappen con 279.",
     "model": "claude-opus-5-5",
