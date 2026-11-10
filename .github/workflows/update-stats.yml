@@ -15,6 +15,15 @@ on:
       - "Aggiorna passo gara F1"
       - "Aggiorna tutto (pole, penalità, classifica, calendario, storico, telemetria, passo gara, news)"
     types: [completed]
+  schedule:
+    # Subito dopo la scadenza del racconto del GP (lib/gp-data.js: il giorno
+    # dopo la gara alle 7:00 UTC; domenica per le gare del sabato, come Las
+    # Vegas 2023): se manca ancora qualche dato il racconto si scrive con
+    # quelli che ci sono (dal 2026-11-10). Senza questo orario potrebbe non
+    # esserci nessun aggiornamento dei dati a far ripartire il calcolo. Alla
+    # fine parte anche il controllo delle notifiche (notify-gp.yml), che manda
+    # il ⚠️ dopo il racconto.
+    - cron: '7 7 * * 0,1'
   workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
 
 concurrency:

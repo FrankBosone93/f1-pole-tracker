@@ -43,6 +43,7 @@ const path = require('path');
 const { autoCircuitsAddedIn } = require('./lib/auto-circuits');
 const { sendAll, sendWebPushAll } = require('./lib/notify-channels');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
+const { warnDeadline, gpDataChecks } = require('./lib/gp-data');
 const { liveJson, waitForLive } = require('./lib/live-site');
 
 const ROOT = path.join(__dirname, '..');
@@ -72,12 +73,10 @@ function lastRaceByDate(calendar, now) {
     return past.length ? past.reduce((a, b) => (b.date > a.date ? b : a)) : null;
 }
 
-// Fino a questo momento un GP con dati incompleti aspetta: il controllo parte
-// dopo ogni aggiornamento dei dati (anche la domenica sera, quando alcune
-// automazioni non hanno ancora girato). Con i dati completi invece la notifica
-// parte subito. Scadenza: il giorno dopo la gara alle 7:00 UTC, dopo i run di
-// recupero del mattino; da lì parte con i dati che ci sono.
-const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 86400000;
+// Fino alla scadenza (warnDeadline, lib/gp-data.js: il giorno dopo la gara
+// alle 7:00 UTC) un GP con dati incompleti aspetta: il controllo parte dopo
+// ogni aggiornamento dei dati. Con i dati completi invece la notifica parte
+// subito; dalla scadenza parte con i dati che ci sono.
 
 // Dove porta il tocco (dal 2026-11-08): la sezione Statistiche, che si apre
 // sull'ultimo GP con il racconto e i fatti (sul telefono è la prima scheda),
@@ -85,8 +84,17 @@ const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 8640
 // primi due, o all'andamento dei tempi del circuito senza passo gara.
 const CLICK_URL = `${SITE_URL}#mode=stats`;
 
-// Le statistiche (stats.json) sono già quelle di questo GP?
+// Le statistiche (stats.json) sono già quelle di questo GP, con il racconto
+// scritto? storyStatus (build-stats.js, dal 2026-11-10): "complete" = scritto
+// con tutti i dati, "deadline" = scritto alla scadenza con quelli che c'erano,
+// "waiting" = non ancora scritto perché manca qualche dato.
 const statsHaveGp = (stats, year, circuit) => !!stats && Number(stats.year) === year && stats.lastGp?.circuit === circuit;
+// Pronte = racconto scritto (se l'API di Anthropic non risponde, il ricalcolo
+// successivo riprova; dopo la scadenza + 3 ore si parte comunque, vedi sotto).
+const statsReadyFor = (stats, year, circuit) => statsHaveGp(stats, year, circuit) && !!stats.lastGp.storyStatus && stats.lastGp.storyStatus !== 'waiting' && !!stats.lastGp.story?.text;
+// Se dopo la scadenza il ricalcolo delle statistiche non arriva (fermo o in
+// errore), la notifica non resta bloccata: parte comunque dopo 3 ore.
+const STATS_GRACE_MS = 3 * 3600000;
 
 function buildReport() {
     const calendar = readJson('calendar.json');
@@ -108,16 +116,8 @@ function buildReport() {
     const pole = poles.find(d => d.year === year && d.circuit === circuit);
     const results = Array.isArray(race.results?.race) && race.results.race.length ? race.results.race : null;
     const standingsFresh = standingsIncludeRace(standings, year, race);
-    const hasTelemetry = !!telemetry?.seasons?.[year]?.circuits?.[circuit];
-    const hasPace = !!(paceIndex?.races?.[year] || []).some(r => r.circuit === circuit);
-
-    const checks = [
-        ['Pole', !!pole],
-        ['Gara', !!results],
-        ['Classifica', !!standingsFresh],
-        ['Telemetria', hasTelemetry],
-        ['Passo gara', hasPace],
-    ];
+    // Stessi controlli del racconto del GP (lib/gp-data.js).
+    const checks = gpDataChecks({ year, race, poles, standings, telemetry, paceIndex });
     const missing = checks.filter(([, ok]) => !ok).map(([label]) => label.toLowerCase());
     const complete = missing.length === 0;
 
@@ -149,8 +149,8 @@ function buildReport() {
         key: `${year}|${circuit}`,
         year,
         circuit,
-        // stats.json del repository ha già questo GP (fatti e racconto)?
-        statsReady: statsHaveGp(readJson('stats.json'), year, circuit),
+        // stats.json del repository ha già questo GP, con il racconto scritto?
+        statsReady: statsReadyFor(readJson('stats.json'), year, circuit),
         complete,
         hasResults: !!results,
         missing,
@@ -191,21 +191,24 @@ async function main() {
         await alertOwnerNoResults(report, state);
         return;
     }
-    // Statistiche del GP non ancora salvate: le sta ricalcolando
-    // update-stats.yml, che alla fine fa ripartire questo controllo. Dalla
-    // scadenza del ⚠️ in poi non si aspetta più un altro run (se il calcolo
-    // delle statistiche è fermo la notifica non deve restare bloccata).
-    if (!report.statsReady && Date.now() < report.warnAfter) {
-        console.log('Statistiche di questo GP non ancora salvate (stats.json): la notifica aspetta il loro aggiornamento, che fa ripartire questo controllo.');
+    // Statistiche del GP con il racconto non ancora salvate: le sta
+    // ricalcolando update-stats.yml, che alla fine fa ripartire questo
+    // controllo. Il racconto si scrive con tutti i dati, o dalla scadenza con
+    // quelli che ci sono (update-stats.yml gira anche subito dopo la
+    // scadenza): il ⚠️ aspetta quel racconto. 3 ore dopo la scadenza non si
+    // aspetta più (se il calcolo delle statistiche è fermo la notifica non
+    // deve restare bloccata).
+    if (!report.statsReady && Date.now() < report.warnAfter + STATS_GRACE_MS) {
+        console.log('Statistiche di questo GP con il racconto non ancora salvate (stats.json): la notifica aspetta il loro aggiornamento, che fa ripartire questo controllo.');
         return;
     }
     if (DRY_RUN) {
-        console.log(`(statistiche del GP sul sito online: ${statsHaveGp(await liveJson('stats.json'), report.year, report.circuit) ? 'sì' : 'non ancora'})`);
+        console.log(`(statistiche del GP con il racconto sul sito online: ${statsReadyFor(await liveJson('stats.json'), report.year, report.circuit) ? 'sì' : 'non ancora'})`);
         console.log('(--dry-run: notifica non inviata)');
         return;
     }
-    if (!await waitForLive('stats.json', stats => statsHaveGp(stats, report.year, report.circuit), 'le statistiche di questo GP')) {
-        console.warn('⚠️  Il sito online non ha ancora le statistiche di questo GP: la notifica parte comunque.');
+    if (!await waitForLive('stats.json', stats => statsReadyFor(stats, report.year, report.circuit), 'le statistiche di questo GP con il racconto')) {
+        console.warn('⚠️  Il sito online non ha ancora le statistiche di questo GP con il racconto: la notifica parte comunque.');
     }
 
     // Nessun canale configurato non è un errore: lo stato non cambia, così si

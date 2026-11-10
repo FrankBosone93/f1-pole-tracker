@@ -34,6 +34,7 @@ const { writeStatus } = require('./lib/status');
 const { raceControlEvents } = require('./lib/race-control');
 const { circuitSlug } = require('./lib/openf1');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
+const { warnDeadline, gpDataChecks } = require('./lib/gp-data');
 const { MAX_RACE, MAX_SPRINT, MAX_TEAM_RACE, MAX_TEAM_SPRINT, hasSprint, titleClinches, atCircuit } = require('./lib/title-clinches');
 
 const ROOT = path.join(__dirname, '..');
@@ -440,7 +441,11 @@ function seasonStoryInput(season, races, done, poles, stats, gpFacts) {
 // racconto. Frasi sul mondiale e classifica nel racconto solo per l'ultimo GP
 // (standings.json è la classifica attuale, non quella di allora); facts = i
 // fatti già archiviati, da non ricalcolare.
-async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null, clinches = null) {
+// storyGate (solo per l'ultimo GP): { write, status, missing }. Il racconto
+// si scrive solo con tutti i dati del GP (status "complete") o dalla scadenza
+// con quelli che ci sono ("deadline"); prima ("waiting") niente racconto, il
+// sito mostra solo l'elenco dei fatti. Vedi storyGateFor.
+async function buildGp(season, race, races, poles, standings, isLast, prev, facts = null, clinches = null, storyGate = null) {
     const pole = poles.find(p => p.year === season && p.circuit === race.circuit);
     const after = isLast ? standingsAfterGp(season, race, races, standings, prev) : (prev?.standings || null);
     const gp = {
@@ -462,6 +467,11 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
     } catch (err) {
         console.warn(`⚠️  ${race.circuit}: direzione gara da OpenF1 non disponibile (${err.message})${gp.raceControl ? ', tengo i messaggi precedenti' : ''}.`);
     }
+    if (storyGate) gp.storyStatus = storyGate.status;
+    if (storyGate && !storyGate.write) {
+        console.log(`${race.circuit}: racconto del GP in attesa di tutti i dati (mancano: ${storyGate.missing.join(', ')}).`);
+        return gp;
+    }
     try {
         const { gpStory } = require('./lib/gp-story');
         const input = storyInput(season, race, pole, gp.facts, after, gp.raceControl);
@@ -470,6 +480,7 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
         console.warn(`⚠️  ${race.circuit}: racconto del GP non disponibile (${err.message}).`);
         gp.story = prev?.story || undefined;
     }
+    if (!gp.story) delete gp.story;
     return gp;
 }
 
@@ -480,6 +491,24 @@ const writeStatsFile = (rel, payload) => {
     fs.mkdirSync(path.dirname(path.join(ROOT, rel)), { recursive: true });
     fs.writeFileSync(path.join(ROOT, rel), JSON.stringify(payload, null, 2) + '\n', 'utf-8');
 };
+
+// Il racconto dell'ultimo GP si può scrivere? Dal 2026-11-10 solo con tutti i
+// dati che controlla anche la notifica (lib/gp-data.js: pole, gara,
+// classifica, telemetria, passo gara), oppure dalla scadenza (il giorno dopo
+// la gara alle 7:00 UTC) con quelli che ci sono, così un dato che non arriva
+// mai non lascia il GP senza racconto. Prima si scriveva subito e si
+// riscriveva quando arrivava il passo gara: chi toccava la notifica poteva
+// leggere il racconto senza i fatti di strategia.
+function storyGateFor(season, race, poles, standings, now = Date.now()) {
+    const missing = gpDataChecks({
+        year: season, race, poles, standings,
+        telemetry: readJson('telemetry.json'),
+        paceIndex: readJson('pace/index.json'),
+    }).filter(([, ok]) => !ok).map(([label]) => label.toLowerCase());
+    if (!missing.length) return { write: true, status: 'complete', missing };
+    if (now >= warnDeadline(race)) return { write: true, status: 'deadline', missing };
+    return { write: false, status: 'waiting', missing };
+}
 
 const writeJsonIfChanged = (rel, data) => {
     const p = path.join(ROOT, rel);
@@ -528,7 +557,7 @@ async function main() {
         let gp = archived;
         if (!frozen || !archived.story) {
             const prev = archived || (previous.year === season && previous.lastGp?.circuit === race.circuit ? previous.lastGp : null);
-            gp = await buildGp(season, race, races, poles, standings, isLast, prev, frozen ? archived.facts : null, clinches);
+            gp = await buildGp(season, race, races, poles, standings, isLast, prev, frozen ? archived.facts : null, clinches, isLast ? storyGateFor(season, race, poles, standings) : null);
             writeJsonIfChanged(file, gp);
         }
         gps.push({ round: race.round, circuit: race.circuit, file });
@@ -558,7 +587,9 @@ async function main() {
     const lastRace = done[done.length - 1];
     if (lastRace) {
         const prevStory = prevSeason?.story;
-        if (stats.progress[stats.progress.length - 1]?.circuit !== lastRace.circuit) {
+        // Come il racconto del GP (storyGateFor): usa i fatti dell'ultimo GP,
+        // quindi aspetta che ci siano tutti i suoi dati (o la scadenza).
+        if (stats.progress[stats.progress.length - 1]?.circuit !== lastRace.circuit || lastGp?.storyStatus === 'waiting') {
             stats.story = prevStory;
         } else {
             try {
