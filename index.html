@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=ef3b6056e6">
+    <link rel="stylesheet" href="styles.css?v=4913542118">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -206,7 +206,6 @@
                         </select>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
         <!-- Si vede solo nelle Qualifiche su computer, dove il body ha
@@ -2389,20 +2388,36 @@
                 const timeCell = r.retired
                     ? `<span class="text-orange-400 italic">${escapeHtml(r.retired)}</span>`
                     : `<span class="text-gray-300">${escapeHtml(r.time || '-')}</span>`;
+                // Un testo più largo della colonna del tempo («Non
+                // classificato», 84 px; nello storico 2021-2022 i motivi di
+                // ritiro in inglese, es. «Collision damage») va su due righe
+                // invece di allargare la tabella. I tempi non vanno mai a
+                // capo: non hanno spazi.
                 return `<tr class="border-t border-gray-800">
                     <td class="py-1 pl-2 pr-1 text-gray-500 text-right">${escapeHtml(String(r.position))}</td>
-                    <td class="py-1 px-1 text-gray-100 truncate max-w-[110px]">${escapeHtml(r.driver)}${r.penalty ? '<span class="text-orange-400" title="Arretrato in griglia per penalità">*</span>' : ''}</td>
-                    <td class="py-1 px-1 text-gray-500 truncate max-w-[90px]">${escapeHtml(r.team)}</td>
-                    <td class="py-1 pl-1 pr-2 text-right whitespace-nowrap">${timeCell}</td>
+                    <td class="py-1 px-1 text-gray-100" title="${escapeHtml(r.driver)}"><div class="flex min-w-0"><span class="truncate">${escapeHtml(r.driver)}</span>${r.penalty ? '<span class="shrink-0 text-orange-400" title="Arretrato in griglia per penalità">*</span>' : ''}</div></td>
+                    <td class="py-1 px-1 text-gray-500 truncate" title="${escapeHtml(r.team)}">${escapeHtml(r.team)}</td>
+                    <td class="py-1 pl-1 pr-2 text-right leading-tight">${timeCell}</td>
                 </tr>`;
             }).join('');
+            // Larghezze fisse delle colonne (table-fixed): il nome del pilota
+            // prende lo spazio che resta e, se non ci sta, si accorcia con i
+            // puntini (nome intero al passaggio del mouse) invece di
+            // allargare la tabella. Fino al 2026-11-10 i max-w delle celle
+            // non valevano nelle tabelle e sui telefoni da 375-393 px 22
+            // tabelle del Calendario su 52 uscivano dal riquadro, con
+            // l'ultima colonna tagliata. Scuderia: 75 px («Aston Martin» 67);
+            // tempo: 78 px sul telefono (il più lungo, «2:04:44.859», 66) e
+            // 96 px da 768 px in su, dove c'è spazio anche per «Non
+            // classificato» su una riga.
+            const cols = '<colgroup><col class="w-[26px]"><col><col class="w-[75px]"><col class="w-[78px] md:w-[96px]"></colgroup>';
             // Qualifiche: ordine della griglia di partenza; * = arretrato per
             // penalità (vedi openf1QualyResults negli script).
             const note = results.some(r => r.penalty)
                 ? `<div class="px-2 py-1 text-[10px] text-gray-500 border-t border-gray-800"><span class="text-orange-400">*</span> penalità in griglia: posizione di partenza, il tempo è quello della qualifica</div>`
                 : '';
             return `<div class="mt-1 mb-2 max-h-56 overflow-y-auto rounded border border-gray-800 bg-black/20">
-                <table class="w-full text-[11px]"><tbody>${rows}</tbody></table>${note}
+                <table class="w-full table-fixed text-[11px]">${cols}<tbody>${rows}</tbody></table>${note}
             </div>`;
         }
 

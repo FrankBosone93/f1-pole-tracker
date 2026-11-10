@@ -292,10 +292,14 @@ async function addSprints(year) {
         if (!cal?.schedule?.sprintRace) continue;
         race.schedule = { ...race.schedule, sprintQualy: cal.schedule.sprintQualy || null, sprintRace: cal.schedule.sprintRace };
         const s = await sprintResults(year, race.circuit, race.date, race.schedule, sessions, names);
-        const { fp1 = null, fp2 = null, fp3 = null, qualy = null, race: raceRows = null } = race.results || {};
-        race.results = { fp1, fp2, fp3, sprintQualy: s.sprintQualy, sprintRace: s.sprintRace, qualy, race: raceRows };
+        const { fp1 = null, fp2 = null, fp3 = null, qualy = null, race: raceRows = null, sprintQualy: oldSq = null, sprintRace: oldSr = null } = race.results || {};
+        // Se una fonte non risponde si tengono le Sprint già salvate: fino al
+        // 2026-11-10 venivano sostituite con null.
+        if (!s.sprintQualy && oldSq) console.warn(`⚠️  ${year} ${race.circuit}: Qualifiche Sprint non scaricate, tengo quelle già salvate.`);
+        if (!s.sprintRace && oldSr) console.warn(`⚠️  ${year} ${race.circuit}: Sprint non scaricata, tengo quella già salvata.`);
+        race.results = { fp1, fp2, fp3, sprintQualy: s.sprintQualy || oldSq, sprintRace: s.sprintRace || oldSr, qualy, race: raceRows };
         added++;
-        console.log(`${year} ${race.circuit}: Qualifiche Sprint ${s.sprintQualy ? `${s.sprintQualy.length} piloti` : 'non disponibili'}, Sprint ${s.sprintRace ? `vinta da ${s.sprintRace[0].driver}` : 'non disponibile'}`);
+        console.log(`${year} ${race.circuit}: Qualifiche Sprint ${s.sprintQualy ? `${s.sprintQualy.length} piloti` : 'non scaricate'}, Sprint ${s.sprintRace ? `vinta da ${s.sprintRace[0].driver}` : 'non scaricata'}`);
     }
     history.updatedAt = new Date().toISOString();
     fs.writeFileSync(file, JSON.stringify(history, null, 2) + '\n', 'utf-8');

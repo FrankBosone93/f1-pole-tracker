@@ -12,9 +12,10 @@
 // 6 richieste per gara, distanziate per il rate limit (vedi lib/openf1.js).
 //
 // Le gare già presenti nell'indice non vengono riscaricate: ogni run scarica
-// solo quelle nuove (e ricontrolla quelle degli ultimi 2 giorni). Una gara senza pole in data.json è stata annullata
-// (OpenF1 elenca comunque la sessione, ma senza giri): si salta senza
-// richieste, come per la telemetria.
+// solo quelle nuove (e ricontrolla quelle degli ultimi 2 giorni, scrivendo
+// solo se qualcosa è cambiato). Una gara senza pole in data.json e senza
+// risultati di gara salvati è stata annullata (OpenF1 elenca comunque la
+// sessione, ma senza giri): si salta senza richieste.
 //
 // Uso:
 //   node scripts/build-race-pace.js             (2023 - stagione in corso)
@@ -30,6 +31,8 @@ const path = require('path');
 const { writeStatus } = require('./lib/status');
 const { openf1Json, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
 const { HttpError } = require('./lib/http');
+const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
+const { matchTeam } = require('./lib/f1-mapping');
 
 // Dati accessori che OpenF1 non ha per tutte le gare (es. le soste di alcune
 // gare 2023 danno 404): mancanti = elenco vuoto, non una gara scartata.
@@ -59,6 +62,53 @@ const RECHECK_DAYS = 2;
 
 const poleData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
 const hasPole = (season, circuit) => poleData.some(d => d.year === season && d.circuit === circuit);
+// Risultati di gara già salvati (calendar.json per la stagione in corso,
+// history/{anno}.json per le passate): una gara con i risultati si è corsa,
+// anche se la sua pole non è ancora in data.json. Fino al 2026-11-10 serviva
+// la pole, e se la pole arrivava dopo i risultati della gara il passo gara
+// restava indietro fino al giro successivo.
+const raceResultsFiles = [path.join(ROOT, 'calendar.json')];
+const raceCircuitsWithResults = new Map();
+for (const f of fs.existsSync(path.join(ROOT, 'history')) ? fs.readdirSync(path.join(ROOT, 'history')) : []) {
+    if (/^\d{4}\.json$/.test(f)) raceResultsFiles.push(path.join(ROOT, 'history', f));
+}
+for (const f of raceResultsFiles) {
+    try {
+        const cal = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        const set = raceCircuitsWithResults.get(Number(cal.season)) || new Set();
+        (cal.races || []).filter(r => Array.isArray(r.results?.race) && r.results.race.length).forEach(r => set.add(r.circuit));
+        raceCircuitsWithResults.set(Number(cal.season), set);
+    } catch (err) { /* file illeggibile: conta solo la pole */ }
+}
+// Una gara annullata (Imola 2023) non ha né pole né risultati: OpenF1 elenca
+// comunque la sessione, ma senza giri, e si salta senza richieste.
+const raceWasRun = (season, circuit) => hasPole(season, circuit) || !!raceCircuitsWithResults.get(season)?.has(circuit);
+
+// Nomi di piloti e squadre come nel resto del sito ("Andrea Kimi Antonelli",
+// "Red Bull"), non quelli di OpenF1 ("Kimi Antonelli", "Red Bull Racing"):
+// fino al 2026-11-10 la classifica del passo gara li mostrava diversi dalle
+// altre tabelle. Stagione in corso: i nomi già sul sito (classifica,
+// calendario, pole); stagioni passate: quelli del loro file storico e delle
+// loro pole.
+const SITE_SEASON = (() => { try { return Number(JSON.parse(fs.readFileSync(path.join(ROOT, 'calendar.json'), 'utf-8')).season); } catch (err) { return null; } })();
+const namesCache = new Map();
+function namesForSeason(season) {
+    if (namesCache.has(season)) return namesCache.get(season);
+    let names;
+    if (season === SITE_SEASON) {
+        names = knownDriverNames();
+    } else {
+        const list = poleData.filter(d => d.year === season).map(d => d.driver);
+        try {
+            const h = JSON.parse(fs.readFileSync(path.join(ROOT, 'history', `${season}.json`), 'utf-8'));
+            (h.races || []).forEach(r => Object.values(r.results || {}).forEach(rows => (rows || []).forEach(x => list.push(x.driver))));
+        } catch (err) { /* nessuno storico: solo le pole */ }
+        names = knownDriverNames(list.filter(Boolean));
+    }
+    namesCache.set(season, names);
+    return names;
+}
+const paceDriverName = (d, season) => siteDriverName(d, namesForSeason(season)) || displayName(d);
 
 const round3 = v => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : null);
 
@@ -258,8 +308,8 @@ async function buildRace(session, season, circuit) {
             return {
                 n: r.driver_number,
                 code: d.name_acronym || String(r.driver_number),
-                name: displayName(d) || String(r.driver_number),
-                team: d.team_name || '',
+                name: paceDriverName(d, season) || String(r.driver_number),
+                team: d.team_name ? matchTeam(d.team_name) : '',
                 color: d.team_colour ? `#${d.team_colour}` : null,
                 pos: r.position ?? null,
                 status: statusOf(r),
@@ -302,7 +352,7 @@ async function main() {
             .filter(({ session, circuit }) => {
                 if (!circuit) { console.warn(`⚠️  ${season}: circuito OpenF1 "${session.circuit_short_name}" non mappato, salto.`); return false; }
                 if (ONLY.length && !ONLY.includes(circuitSlug(circuit))) return false;
-                return !known.has(circuit) && hasPole(season, circuit);
+                return !known.has(circuit) && raceWasRun(season, circuit);
             });
         console.log(`=== ${season}: ${todo.length} gare da scaricare (${known.size} già presenti)`);
 
@@ -310,8 +360,20 @@ async function main() {
             try {
                 const race = await buildRace(session, season, circuit);
                 const file = `pace/${season}/${circuitSlug(circuit)}.json`;
+                const content = JSON.stringify(race) + '\n';
+                const filePath = path.join(ROOT, file);
+                // Ricontrollo dei 2 giorni dopo la gara: se OpenF1 non ha
+                // cambiato nulla non si tocca niente. Fino al 2026-11-10 ogni
+                // run riscriveva comunque updatedAt nell'indice, e ogni volta
+                // partivano un commit, una pubblicazione del sito e un giro di
+                // statistiche e notifiche senza dati nuovi.
+                const alreadyIndexed = (index.races[season] || []).some(r => r.circuit === circuit && r.file === file && r.date === race.date);
+                if (alreadyIndexed && fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf-8') === content) {
+                    console.log(`  = ${circuit}: invariato`);
+                    continue;
+                }
                 fs.mkdirSync(path.join(ROOT, 'pace', String(season)), { recursive: true });
-                fs.writeFileSync(path.join(ROOT, file), JSON.stringify(race) + '\n', 'utf-8');
+                fs.writeFileSync(filePath, content, 'utf-8');
                 index.races[season] = (index.races[season] || []).filter(r => r.circuit !== circuit);
                 index.races[season].push({ circuit, date: race.date, file });
                 index.races[season].sort((a, b) => a.date.localeCompare(b.date));
@@ -339,7 +401,7 @@ async function main() {
     if (errors.length) throw new Error(errors.join(' | '));
 }
 
-module.exports = { buildRace, lap1EndFrom, lapTimesFrom, pitLapsFrom };
+module.exports = { buildRace, lap1EndFrom, lapTimesFrom, pitLapsFrom, paceDriverName };
 
 // Solo se lanciato direttamente, non quando è importato per riusare buildRace.
 if (require.main === module) {

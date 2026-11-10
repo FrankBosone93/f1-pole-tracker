@@ -3,7 +3,7 @@ name: Archivia stagione conclusa
 on:
   schedule:
     # Orari: minuto :53, non l'ora tonda: parte dopo update-calendar (:31), che aggiorna il calendar.json letto da questo script.
-    # Stessi giorni/ore (UTC) di update-calendar.yml: domenica 18 e 22, più un run di sicurezza lunedì mattina. Legge calendar.json, quindi
+    # Domenica alle 18:53 e alle 22:53 UTC, più un run di sicurezza lunedì mattina (update-calendar.yml gira ogni 2 ore la domenica). Legge calendar.json, quindi
     # in teoria potrebbe girare su una copia non ancora aggiornata dall'altro
     # workflow nello stesso momento - non è un problema: lo script è
     # idempotente e rigira comunque poche ore dopo (o al più al run di
@@ -47,7 +47,14 @@ jobs:
             git config user.name "F1 Pole Tracker Bot"
             git config user.email "actions@users.noreply.github.com"
             git add history/ status/history.json
-            git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            # Stagione archiviata (history/ cambiato) o solo lo stato del controllo:
+            # fino al 2026-11-10 il messaggio diceva "stagione conclusa" anche quando
+            # cambiava solo status/history.json.
+            if git diff --cached --quiet -- history/; then
+              git commit -m "🕰️ Stato del controllo archiviazione stagione"
+            else
+              git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            fi
             source scripts/lib/push-with-retry.sh
             push_with_retry
           fi

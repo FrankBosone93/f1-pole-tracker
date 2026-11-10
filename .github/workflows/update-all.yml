@@ -125,7 +125,14 @@ jobs:
             echo "Nessuna modifica (storico)."
           else
             git add history/ status/history.json
-            git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            # Stagione archiviata (history/ cambiato) o solo lo stato del controllo:
+            # fino al 2026-11-10 il messaggio diceva "stagione conclusa" anche quando
+            # cambiava solo status/history.json.
+            if git diff --cached --quiet -- history/; then
+              git commit -m "🕰️ Stato del controllo archiviazione stagione"
+            else
+              git commit -m "🕰️ Archiviazione automatica stagione conclusa"
+            fi
             source scripts/lib/push-with-retry.sh
             push_with_retry
           fi

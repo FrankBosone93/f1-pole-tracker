@@ -17,7 +17,10 @@
 // ancora qualcosa (es. il passo gara) parte il ⚠️ con i dati che ci sono e
 // "❌ Non aggiornati: …". Dal 2026-11-08 dopo il ⚠️ non parte più il ✅
 // quando i dati si completano (prima arrivavano due notifiche), e senza i
-// risultati di gara non parte nulla: si aspetta.
+// risultati di gara non parte nulla per gli iscritti: si aspetta. Dal
+// 2026-11-10, passata la stessa scadenza senza risultati, parte un solo
+// avviso al proprietario del sito (prima iscrizione della web app), così un
+// GP senza risultati non resta senza notifica senza che nessuno lo sappia.
 //
 // Il tocco apre il racconto del GP nelle Statistiche: dal 2026-11-10 la
 // notifica aspetta che il sito online abbia le statistiche di questo GP
@@ -185,6 +188,7 @@ async function main() {
     }
     if (!report.hasResults) {
         console.log('Risultati di gara ancora assenti: niente ⚠️ senza podio (si riprova dopo il prossimo aggiornamento).');
+        await alertOwnerNoResults(report, state);
         return;
     }
     // Statistiche del GP non ancora salvate: le sta ricalcolando
@@ -216,6 +220,24 @@ async function main() {
         at: new Date().toISOString(),
     }, null, 2) + '\n', 'utf-8');
     console.log('✅ Notifica inviata.');
+}
+
+// Avviso al solo proprietario: scadenza passata e risultati di gara ancora
+// assenti. Una volta per GP (ownerAlert in status/notified.json); la notifica
+// per tutti parte comunque appena i risultati arrivano.
+async function alertOwnerNoResults(report, state) {
+    if (state.ownerAlert === report.key) { console.log('Avviso al proprietario già inviato per questo GP.'); return; }
+    const alert = {
+        title: `🔧 GP di ${report.circuit} ${report.year}: risultati non arrivati`,
+        message: 'Il giorno dopo la gara il sito non ha ancora i risultati: la notifica agli iscritti partirà quando arrivano. Da controllare OpenF1, Jolpica e le automazioni su GitHub.',
+        click: SITE_URL,
+    };
+    console.log(`--- avviso al proprietario: ${alert.title}\n${alert.message}`);
+    if (DRY_RUN) { console.log('(--dry-run: avviso non inviato)'); return; }
+    const { delivered } = await sendWebPushAll(alert, { ownerOnly: true });
+    if (!delivered) { console.warn('⚠️  Avviso al proprietario non consegnato: si riprova al prossimo controllo.'); return; }
+    fs.writeFileSync(STATE_PATH, JSON.stringify({ ...state, ownerAlert: report.key, ownerAlertAt: new Date().toISOString() }, null, 2) + '\n', 'utf-8');
+    console.log('✅ Avviso al proprietario inviato.');
 }
 
 main().catch(err => {

@@ -56,9 +56,22 @@ function checkSprintWithJolpica(rows, jolpicaRace, names) {
         out.push({ ...j });
     }
     if (!changes.length) return { rows, changes };
-    const sorted = out.map((r, i) => ({ r, i }))
-        .sort((a, b) => group(a.r) - group(b.r)
-            || (group(a.r) === 1 ? gapSeconds(a.r.time) - gapSeconds(b.r.time) : 0)
+    // Chiave d'ordine di ogni riga. Vincitore = solo la prima riga: un
+    // classificato con un tempo che non si legge (es. "-") prima finiva nel
+    // gruppo del vincitore e saliva al 2° posto; ora resta subito dopo la
+    // riga che aveva davanti.
+    let prev = { g: 0, gap: 0 };
+    const keyed = out.map((r, i) => {
+        let k;
+        if (i === 0 && !r.retired) k = { g: 0, gap: 0 };
+        else if (r.retired || gapSeconds(r.time) !== null || /^\+/.test(r.time || '')) k = { g: group(r), gap: gapSeconds(r.time) ?? 0 };
+        else k = { ...prev };
+        prev = k;
+        return { r, i, k };
+    });
+    const sorted = keyed
+        .sort((a, b) => a.k.g - b.k.g
+            || (a.k.g === 1 ? a.k.gap - b.k.gap : 0)
             || a.i - b.i)
         .map(({ r }, i) => ({ ...r, position: i + 1 }));
     return { rows: sorted, changes };

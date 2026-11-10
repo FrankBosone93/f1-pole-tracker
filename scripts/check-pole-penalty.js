@@ -20,9 +20,15 @@ const { jolpicaRaces } = require('./lib/jolpica');
 const { writeStatus } = require('./lib/status');
 const { HttpError } = require('./lib/http');
 const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
-const { surnameKey } = require('./lib/driver-names');
+const { surnameKey, knownDriverNames, siteDriverName } = require('./lib/driver-names');
 
-// Griglia da OpenF1: { poleGrid, frontRowName } del polista registrato, o
+// Nome di chi parte davanti come sul resto del sito ("Andrea Kimi Antonelli",
+// non "Kimi Antonelli" di OpenF1): fino al 2026-11-10 la nota usava il nome
+// della fonte.
+let siteNames = null;
+const frontName = (first, last) => siteDriverName({ first_name: first, last_name: last }, siteNames || (siteNames = knownDriverNames())) || null;
+
+// Griglia da OpenF1: { poleGrid, frontRowName } del pilota in pole registrato, o
 // null se OpenF1 non ha (ancora) la griglia.
 async function gridFromOpenF1(session, poleDriver) {
     let grid;
@@ -35,7 +41,7 @@ async function gridFromOpenF1(session, poleDriver) {
     const front = grid.find(g => g.position === 1);
     if (!pole || !front) return null;
     const f = byNumber.get(front.driver_number) || {};
-    return { poleGrid: pole.position, frontRowName: [f.first_name, f.last_name].filter(Boolean).join(' ') };
+    return { poleGrid: pole.position, frontRowName: frontName(f.first_name, f.last_name) };
 }
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -95,7 +101,7 @@ async function checkRound(season, race, currentData, openf1Sessions) {
     const front = results.find(r => r.grid === '1');
     return applyGrid(entry, year, mappedCircuit, {
         poleGrid: parseInt(poleRow.grid, 10),
-        frontRowName: front ? `${front.Driver.givenName} ${front.Driver.familyName}` : null,
+        frontRowName: front ? frontName(front.Driver.givenName, front.Driver.familyName) : null,
     });
 }
 
@@ -107,7 +113,7 @@ function applyGrid(entry, year, mappedCircuit, grid) {
         return false;
     }
     if (!frontRowName || poleGrid === 1) {
-        // Nessuna penalità: il polista è partito davanti. Rimuovi un eventuale
+        // Nessuna penalità: il pilota in pole è partito davanti. Rimuovi un eventuale
         // avviso stale (non dovrebbe succedere, ma per sicurezza).
         if (entry.penaltyNote) {
             delete entry.penaltyNote;
@@ -121,19 +127,15 @@ function applyGrid(entry, year, mappedCircuit, grid) {
     // Una nota già presente (spesso scritta a mano con il motivo preciso) non
     // si sovrascrive con quella generica.
     if (entry.penaltyNote) {
-        console.log(`Polista partito ${poleGrid}°: nota già presente, lasciata com'è.`);
+        console.log(`Pilota in pole partito ${poleGrid}°: nota già presente, lasciata com'è.`);
         return false;
     }
     // Griglia 0 = partenza dalla pit lane (Jolpica): prima diventava "partito 0°".
     const where = poleGrid === 0 ? 'dalla pit lane' : `${poleGrid}° in griglia per una penalità`;
     const note = `Pole in qualifica, ma partito ${where}: il via al palo è stato di ${frontRowName}.`;
-    if (entry.penaltyNote !== note) {
-        entry.penaltyNote = note;
-        console.log(`🚩 Penalità rilevata per ${entry.driver} (${year} - ${mappedCircuit}): ${note}`);
-        return true;
-    }
-    console.log('penaltyNote già presente e corretto. Nessuna azione.');
-    return false;
+    entry.penaltyNote = note;
+    console.log(`🚩 Penalità rilevata per ${entry.driver} (${year} - ${mappedCircuit}): ${note}`);
+    return true;
 }
 
 async function main() {

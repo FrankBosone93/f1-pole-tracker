@@ -48,9 +48,11 @@ function webPushSubscriptions() {
 // Notifica alla web app: una richiesta per iscrizione. 404/410 = iscrizione
 // scaduta (iOS può invalidarla): va riattivata dal tasto 🔔 del sito e il
 // segreto aggiornato.
-async function sendWebPushAll(report) {
+// ownerOnly: solo alla prima iscrizione del segreto, quella del
+// proprietario del sito (avvisi tecnici che agli altri non servono).
+async function sendWebPushAll(report, { ownerOnly = false } = {}) {
     const key = process.env.VAPID_PRIVATE_KEY;
-    const subs = webPushSubscriptions();
+    const subs = ownerOnly ? webPushSubscriptions().slice(0, 1) : webPushSubscriptions();
     if (!key || !subs.length) { console.log('Web app: nessuna iscrizione configurata, salto.'); return { configured: false, delivered: 0 }; }
     let delivered = 0;
     for (const [i, sub] of subs.entries()) {
