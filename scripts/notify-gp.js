@@ -19,6 +19,13 @@
 // quando i dati si completano (prima arrivavano due notifiche), e senza i
 // risultati di gara non parte nulla: si aspetta.
 //
+// Il tocco apre il racconto del GP nelle Statistiche: dal 2026-11-10 la
+// notifica aspetta che il sito online abbia le statistiche di questo GP
+// (lib/live-site.js). Prima partiva insieme al loro ricalcolo
+// (update-stats.yml, avviato dallo stesso aggiornamento dei dati): l'8
+// novembre 16 secondi prima che fossero salvate, e chi la toccava subito
+// vedeva il racconto vecchio o quello del GP precedente.
+//
 // Due canali in parallelo, stesso messaggio: ntfy e web app sulla schermata
 // Home (vedi lib/notify-channels.js, condiviso con notify-pole.js).
 //
@@ -33,6 +40,7 @@ const path = require('path');
 const { autoCircuitsAddedIn } = require('./lib/auto-circuits');
 const { sendAll, sendWebPushAll } = require('./lib/notify-channels');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
+const { liveJson, waitForLive } = require('./lib/live-site');
 
 const ROOT = path.join(__dirname, '..');
 const STATE_PATH = path.join(ROOT, 'status', 'notified.json');
@@ -73,6 +81,9 @@ const warnDeadline = race => new Date(`${race.date}T07:00:00Z`).getTime() + 8640
 // con o senza passo gara. Prima portava al passo gara con il confronto tra i
 // primi due, o all'andamento dei tempi del circuito senza passo gara.
 const CLICK_URL = `${SITE_URL}#mode=stats`;
+
+// Le statistiche (stats.json) sono già quelle di questo GP?
+const statsHaveGp = (stats, year, circuit) => !!stats && Number(stats.year) === year && stats.lastGp?.circuit === circuit;
 
 function buildReport() {
     const calendar = readJson('calendar.json');
@@ -133,6 +144,10 @@ function buildReport() {
 
     return {
         key: `${year}|${circuit}`,
+        year,
+        circuit,
+        // stats.json del repository ha già questo GP (fatti e racconto)?
+        statsReady: statsHaveGp(readJson('stats.json'), year, circuit),
         complete,
         hasResults: !!results,
         missing,
@@ -172,7 +187,22 @@ async function main() {
         console.log('Risultati di gara ancora assenti: niente ⚠️ senza podio (si riprova dopo il prossimo aggiornamento).');
         return;
     }
-    if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }
+    // Statistiche del GP non ancora salvate: le sta ricalcolando
+    // update-stats.yml, che alla fine fa ripartire questo controllo. Dalla
+    // scadenza del ⚠️ in poi non si aspetta più un altro run (se il calcolo
+    // delle statistiche è fermo la notifica non deve restare bloccata).
+    if (!report.statsReady && Date.now() < report.warnAfter) {
+        console.log('Statistiche di questo GP non ancora salvate (stats.json): la notifica aspetta il loro aggiornamento, che fa ripartire questo controllo.');
+        return;
+    }
+    if (DRY_RUN) {
+        console.log(`(statistiche del GP sul sito online: ${statsHaveGp(await liveJson('stats.json'), report.year, report.circuit) ? 'sì' : 'non ancora'})`);
+        console.log('(--dry-run: notifica non inviata)');
+        return;
+    }
+    if (!await waitForLive('stats.json', stats => statsHaveGp(stats, report.year, report.circuit), 'le statistiche di questo GP')) {
+        console.warn('⚠️  Il sito online non ha ancora le statistiche di questo GP: la notifica parte comunque.');
+    }
 
     // Nessun canale configurato non è un errore: lo stato non cambia, così si
     // invierà appena ce n'è uno.

@@ -447,8 +447,7 @@
             "position": 20,
             "driver": "Guanyu Zhou",
             "team": "Kick Sauber",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -2458,8 +2457,7 @@
             "position": 19,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 20,
@@ -2757,15 +2755,13 @@
             "position": 19,
             "driver": "Nico Hulkenberg",
             "team": "Haas",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 20,
             "driver": "Kevin Magnussen",
             "team": "Haas",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -5109,15 +5105,13 @@
             "position": 18,
             "driver": "Logan Sargeant",
             "team": "Williams",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 19,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 20,
@@ -5706,8 +5700,7 @@
             "position": 18,
             "driver": "Pierre Gasly",
             "team": "Alpine",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 19,

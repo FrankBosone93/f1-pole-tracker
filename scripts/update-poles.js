@@ -192,7 +192,12 @@ async function processRound(season, race, raceLabel, currentData, openf1Sessions
             console.log('Nessuna modifica: i dati erano già aggiornati.');
             return false;
         }
-        currentData[existingIndex] = newEntry;
+        // Gli altri campi della voce (la nota sulla penalità in griglia,
+        // spesso scritta a mano) restano: prima la voce veniva sostituita e
+        // la nota spariva a ogni correzione di meteo, squadra o tempo. Se
+        // cambia il pilota in pole la nota non vale più: la riscrive
+        // check-pole-penalty.js.
+        currentData[existingIndex] = existing.driver === newEntry.driver ? { ...existing, ...newEntry } : newEntry;
         console.log('Voce esistente aggiornata.');
         return true;
     }
@@ -221,8 +226,12 @@ async function main() {
         const start = qualyEnd(r.schedule?.qualy);
         return start && start <= now;
     });
+    // Da gennaio alla prima qualifica della stagione nuova non c'è nessuna
+    // pole da scaricare: non è un errore (prima lo era, e il badge del sito
+    // sarebbe rimasto rosso per settimane, come per la classifica).
     if (pastQualyRaces.length === 0) {
-        throw new Error('Nessuna qualifica già disputata trovata nel calendario della stagione corrente.');
+        console.log(`Nessuna qualifica ancora disputata nella stagione ${season}: niente da aggiornare.`);
+        return;
     }
     const lastRace = pastQualyRaces.reduce((latest, r) => r.schedule.qualy.date > latest.schedule.qualy.date ? r : latest);
 

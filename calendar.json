@@ -161,22 +161,19 @@
             "position": 20,
             "driver": "Max Verstappen",
             "team": "Red Bull",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 21,
             "driver": "Carlos Sainz",
             "team": "Williams",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 22,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -502,8 +499,7 @@
             "position": 21,
             "driver": "Sergio Pérez",
             "team": "Cadillac",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 22,
@@ -1455,15 +1451,13 @@
             "position": 20,
             "driver": "Fernando Alonso",
             "team": "Aston Martin",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 21,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 22,
@@ -1760,8 +1754,7 @@
             "position": 22,
             "driver": "Isack Hadjar",
             "team": "Red Bull",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -2069,8 +2062,7 @@
             "position": 18,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 19,
@@ -2097,8 +2089,7 @@
             "position": 22,
             "driver": "Alex Albon",
             "team": "Williams",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "sprintRace": [
@@ -5980,15 +5971,13 @@
             "position": 21,
             "driver": "Lance Stroll",
             "team": "Aston Martin",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           },
           {
             "position": 22,
             "driver": "Oliver Bearman",
             "team": "Haas",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [
@@ -7959,8 +7948,7 @@
             "position": 22,
             "driver": "Liam Lawson",
             "team": "RB",
-            "time": "Non classificato",
-            "penalty": true
+            "time": "Non classificato"
           }
         ],
         "race": [

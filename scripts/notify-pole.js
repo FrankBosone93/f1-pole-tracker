@@ -13,7 +13,9 @@
 //   - una sola volta per GP: stato in status/notified-pole.json;
 //   - la gomma (da telemetry.json) c'è solo se la telemetria è già pronta,
 //     senza aspettarla;
-//   - il tocco apre il circuito sull'andamento dei tempi.
+//   - il tocco apre il circuito sull'andamento dei tempi: dal 2026-11-10 la
+//     notifica aspetta che il sito online abbia la pole (lib/live-site.js),
+//     perché GitHub Pages la pubblica circa un minuto dopo il salvataggio.
 //
 // Uso:
 //   node scripts/notify-pole.js            (controlla e, se serve, invia)
@@ -24,6 +26,7 @@
 const fs = require('fs');
 const path = require('path');
 const { sendAll } = require('./lib/notify-channels');
+const { liveJson, waitForLive } = require('./lib/live-site');
 
 const ROOT = path.join(__dirname, '..');
 const STATE_PATH = path.join(ROOT, 'status', 'notified-pole.json');
@@ -77,6 +80,8 @@ function buildReport() {
 
     return {
         key: `${year}|${race.circuit}`,
+        // data.json del sito online ha già questa pole?
+        online: poles => Array.isArray(poles) && poles.some(p => p.year === year && p.circuit === race.circuit && p.timeStr === pole.timeStr),
         title: `🏁 Pole a ${race.circuit}`,
         message: lines.join('\n'),
         click: `${SITE_URL}#c=${encodeURIComponent(race.circuit)}`,
@@ -89,10 +94,18 @@ async function main() {
 
     console.log(`Pole: ${report.key}`);
     console.log(`--- ${report.title}\n${report.message}\n(apre ${report.click})`);
-    if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }
+    if (DRY_RUN) {
+        console.log(`(pole sul sito online: ${report.online(await liveJson('data.json')) ? 'sì' : 'non ancora'})`);
+        console.log('(--dry-run: notifica non inviata)');
+        return;
+    }
 
     const state = readJson('status/notified-pole.json', {});
     if (state.pole === report.key) { console.log('Pole già notificata: niente da inviare.'); return; }
+
+    if (!await waitForLive('data.json', report.online, 'questa pole')) {
+        console.warn('⚠️  Il sito online non ha ancora questa pole: la notifica parte comunque.');
+    }
 
     const { configured, delivered } = await sendAll(report);
     if (!configured) { console.warn('⚠️  Nessun canale di notifica configurato: notifica non inviata.'); return; }

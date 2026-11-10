@@ -121,13 +121,23 @@ async function main() {
 
     console.log('Richiesta classifica a Jolpica (api.jolpi.ca) ...');
     const jolpica = await standingsFromJolpica();
+    const existing = fs.existsSync(STANDINGS_JSON_PATH) ? JSON.parse(fs.readFileSync(STANDINGS_JSON_PATH, 'utf-8')) : null;
+    // Pausa invernale: finché non pubblica la stagione nuova, Jolpica
+    // risponde ancora con la classifica finale di quella passata. Se è già
+    // salvata resta com'è: riscritta da qui, con calendar.json già passato
+    // alla stagione nuova (senza risultati), i piloti che hanno cambiato
+    // squadra durante l'anno prendevano quella sbagliata (Lawson 2026:
+    // "Red Bull" invece di "RB").
+    if (jolpica && jolpica.season < year && existing && Number(existing.season) === jolpica.season) {
+        console.log(`Nessuna classifica ${year} ancora disponibile (stagione non iniziata): resta quella ${existing.season} già salvata.`);
+        return;
+    }
     if (jolpica) return save(jolpica);
 
     // Pausa invernale: da gennaio alla prima gara nessuna fonte ha ancora la
     // classifica della stagione nuova. Non è un errore (prima il badge del
     // sito restava rosso per settimane): resta la classifica finale della
     // stagione precedente già salvata.
-    const existing = fs.existsSync(STANDINGS_JSON_PATH) ? JSON.parse(fs.readFileSync(STANDINGS_JSON_PATH, 'utf-8')) : null;
     if (existing && Number(existing.season) < year) {
         console.log(`Nessuna classifica ${year} ancora disponibile (stagione non iniziata): resta quella ${existing.season}.`);
         return;

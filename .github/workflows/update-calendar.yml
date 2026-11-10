@@ -12,14 +12,30 @@ on:
     # weekend senza gara o fuori sessione è un no-op istantaneo.
     - cron: '31 */2 * * 5'
     - cron: '31 */2 * * 6'
-    # Domenica (gara) e lunedì: stessi giorni/ore (UTC) di check-pole-penalty.yml e
-    # update-standings.yml, cambia solo il minuto: domenica 18:00 e 22:00 UTC, più un run di
-    # sicurezza lunedì mattina per le gare che finiscono più tardi (es.
-    # Messico, Brasile, Las Vegas) o in caso di gare interrotte.
-    - cron: '31 18 * * 0'
-    - cron: '31 22 * * 0'
+    # Domenica (gara): ogni 2 ore tutto il giorno, come venerdì e sabato (dal
+    # 2026-11-10; prima solo alle 18:31 e alle 22:31 UTC). Le gare non si
+    # corrono tutte nel pomeriggio europeo: Las Vegas parte alle 04:00 UTC della
+    # domenica, Melbourne e Suzuka al mattino, e i risultati arrivavano sul sito
+    # solo la sera. Appena salvati i risultati della gara questo stesso run
+    # aggiorna anche classifica, penalità della pole e passo gara (vedi sotto).
+    # Lunedì mattina un run di sicurezza per le gare che finiscono più tardi
+    # (es. Messico, Brasile) o interrotte.
+    - cron: '31 */2 * * 0'
     - cron: '31 6 * * 1'
-  workflow_dispatch: {}   # permette di lanciarlo manualmente da GitHub > Actions > Run workflow
+  # Lancio manuale da GitHub > Actions > Run workflow. Con "dati_gara" aggiorna
+  # anche classifica, penalità della pole e passo gara, come dopo una gara.
+  workflow_dispatch:
+    inputs:
+      dati_gara:
+        description: 'Aggiorna anche classifica, penalità della pole e passo gara'
+        type: boolean
+        default: false
+
+# Un run alla volta: con i cron in ritardo due run partivano anche insieme, e
+# il secondo veniva respinto al push (stessi file).
+concurrency:
+  group: update-calendar
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -30,6 +46,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # L'ultima versione di main, non il commit di quando il run è stato
+          # messo in coda (dopo un altro run avrebbe file già superati).
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -103,6 +123,59 @@ jobs:
             push_with_retry
           fi
 
+      # Classifica, penalità della pole e passo gara subito dopo i risultati
+      # della gara (dal 2026-11-10), senza aspettare gli orari fissi di
+      # update-standings.yml, check-pole-penalty.yml e update-race-pace.yml
+      # (domenica dalle 18:27 UTC, più i ritardi di GitHub), che restano come
+      # recupero: con una gara corsa di notte o al mattino in Italia (Las
+      # Vegas alle 04:00 UTC) il sito restava senza classifica e passo gara, e
+      # senza notifica del GP, fino alla sera. pole-pending.js legge solo i
+      # file locali: se non manca nulla questi passaggi non chiamano nessuna
+      # API. Finché un dato non arriva (72 ore al massimo) si riprova a ogni run.
+      - name: Classifica o passo gara mancanti con i risultati della gara già salvati?
+        id: pending_race
+        run: |
+          echo "race=$(node scripts/pole-pending.js race)" >> "$GITHUB_OUTPUT"
+
+      - name: Aggiorna subito la classifica
+        id: race_standings
+        if: steps.pending_race.outputs.race == 'true' || github.event.inputs.dati_gara == 'true'
+        continue-on-error: true
+        run: node scripts/update-standings.js
+
+      - name: Controlla subito le penalità della pole
+        id: race_penalty
+        if: steps.pending_race.outputs.race == 'true' || github.event.inputs.dati_gara == 'true'
+        continue-on-error: true
+        run: node scripts/check-pole-penalty.js
+
+      - name: Aggiorna subito il passo gara
+        id: race_pace
+        if: steps.pending_race.outputs.race == 'true' || github.event.inputs.dati_gara == 'true'
+        continue-on-error: true
+        run: node scripts/build-race-pace.js
+
+      # Se nello stesso momento un'altra automazione (i loro orari fissi) ha
+      # già salvato gli stessi file, il push viene respinto: non è un errore,
+      # si scarta il commit locale e ciò che manca si riprende al run dopo.
+      - name: Commit e push dei dati della gara se cambiati
+        if: steps.race_standings.conclusion != 'skipped' || steps.race_penalty.conclusion != 'skipped' || steps.race_pace.conclusion != 'skipped'
+        run: |
+          if [ -z "$(git status --porcelain -- standings.json status/standings.json data.json status/penalty.json pace status/pace.json)" ]; then
+            echo "Nessuna modifica, niente da committare."
+          else
+            git config user.name "F1 Pole Tracker Bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add standings.json status/standings.json data.json status/penalty.json pace status/pace.json
+            git commit -m "🏁 Aggiornamento automatico classifica, penalità e passo gara (dopo i risultati della gara)"
+            source scripts/lib/push-with-retry.sh
+            if ! push_with_retry; then
+              echo "::warning::Dati della gara non salvati in questo run (probabile aggiornamento contemporaneo di un'altra automazione): ciò che manca si riprende al prossimo."
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+          fi
+
       - name: Fallisci il run se uno script è fallito
-        if: steps.run.outcome != 'success' || steps.poles.outcome == 'failure' || steps.telemetry.outcome == 'failure'
+        if: steps.run.outcome != 'success' || steps.poles.outcome == 'failure' || steps.telemetry.outcome == 'failure' || steps.race_standings.outcome == 'failure' || steps.race_penalty.outcome == 'failure' || steps.race_pace.outcome == 'failure'
         run: exit 1

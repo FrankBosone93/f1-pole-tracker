@@ -117,15 +117,30 @@ self.addEventListener('push', event => {
     }));
 });
 
-// Tocco sulla notifica: apre la web app sul GP indicato (o la porta in
-// primo piano se è già aperta).
+// Tocco sulla notifica: apre la web app sull'indirizzo indicato. Se è già
+// aperta la porta in primo piano su quell'indirizzo, con in più n=<istante
+// del tocco> (dal 2026-11-10). Così la pagina capisce che arriva da una
+// notifica e, se è aperta da tempo, si ricarica invece di mostrare i dati che
+// ha in memoria (statistiche, pole e novità caricate ore prima: toccando la
+// notifica del GP si rivedeva il racconto vecchio); e l'indirizzo è sempre
+// diverso da quello di prima, altrimenti con la stessa vista già aperta non
+// succedeva nulla. Vedi l'ascolto di hashchange in index.html. I link delle
+// Novità (#novita) restano senza n: una pagina non ancora aggiornata non li
+// riconoscerebbe più.
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     const url = new URL(event.notification.data && event.notification.data.url || './', self.registration.scope).href;
+    const hash = new URL(url).hash;
+    const marked = hash.includes('=') && !hash.startsWith('#novita') ? `${url}&n=${Date.now()}` : url;
     event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
         const open = list.find(c => c.url.startsWith(self.registration.scope));
-        if (open && typeof open.navigate === 'function') return open.navigate(url).then(c => (c || open).focus()).catch(() => open.focus());
-        if (open) return open.focus();
-        return self.clients.openWindow(url);
+        if (!open) return self.clients.openWindow(url);
+        // Browser senza navigate (o pagina non controllata da questo service
+        // worker): l'indirizzo arriva alla pagina con un messaggio.
+        const viaMessage = () => { open.postMessage({ type: 'notification-open', url: marked }); return open; };
+        const shown = typeof open.navigate === 'function'
+            ? open.navigate(marked).then(c => c || open, viaMessage)
+            : Promise.resolve(viaMessage());
+        return shown.then(c => c.focus());
     }));
 });

@@ -738,8 +738,13 @@
         //   vs   = anno di confronto della telemetria
         //   s    = "stagione" con #mode=stats: su telefono porta al racconto
         //          della stagione (tocco della notifica di fine stagione)
+        //   n    = aggiunto da sw.js quando si tocca una notifica con la web
+        //          app già aperta (vedi l'ascolto di hashchange in initApp)
         // L'hash non arriva mai al server (il sito è statico) e si aggiorna con
         // replaceState: niente voci extra nella cronologia del browser.
+        const PAGE_LOADED_AT = Date.now();
+        // Dopo questo tempo dall'apertura, il tocco di una notifica ricarica la pagina.
+        const NOTIFICATION_RELOAD_AFTER_MS = 10000;
         function parseUrlState() {
             const p = new URLSearchParams(location.hash.replace(/^#/, ''));
             return { site: p.get('mode'), circuit: p.get('c'), mode: p.get('view'), year: p.get('y'), compare: p.get('vs'), a: p.get('a'), b: p.get('b'), focus: p.get('s') };
@@ -1782,18 +1787,35 @@
             // Hash incollato/modificato a mano nella stessa scheda (replaceState
             // non lo fa scattare, quindi nessun ciclo con syncUrlState).
             window.addEventListener('hashchange', () => {
+                // Tocco di una notifica con la web app già aperta: sw.js
+                // aggiunge all'indirizzo n=<istante del tocco>, che qui si
+                // toglie. Se la pagina è aperta da più di 10 secondi si
+                // ricarica su quell'indirizzo: i dati in memoria (pole,
+                // calendario, statistiche, novità) sono quelli di quando è
+                // stata aperta, anche ore prima, e la notifica annuncia
+                // proprio un dato nuovo. Vale anche per #novita, che non ha n.
+                const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+                const fromNotification = params.has('n');
+                if (fromNotification) {
+                    params.delete('n');
+                    try { history.replaceState(null, '', '#' + params.toString().replace(/\+/g, '%20')); } catch (err) { /* es. file:// */ }
+                }
                 // #novita (link della notifica delle novità con la web app già
                 // aperta): apre le Novità e rimette l'indirizzo della vista.
                 const novita = changelogHashDate();
+                if ((fromNotification || novita !== undefined) && Date.now() - PAGE_LOADED_AT > NOTIFICATION_RELOAD_AFTER_MS) { location.reload(); return; }
                 if (novita !== undefined) { openChangelog(novita); syncUrlState(); return; }
                 if (location.hash === buildUrlHash()) return;
                 const state = parseUrlState();
                 if (state.site === 'pace') { setSiteMode('pace', { state: { year: state.year, circuit: state.circuit, a: state.a, b: state.b } }); return; }
                 if (state.site === 'stats') {
-                    // Tocco della notifica di fine stagione con la web app già
-                    // aperta: statistiche riscaricate, quelle in memoria
-                    // possono essere di ore prima.
-                    if (state.focus === 'stagione') { statsData = null; statsView = null; }
+                    // Arrivando da un link le statistiche si riscaricano
+                    // sempre: quelle in memoria possono essere di ore prima
+                    // (fino al 2026-11-10 solo per il link del racconto della
+                    // stagione; con quello della notifica del GP si rivedeva
+                    // il racconto vecchio).
+                    statsData = null;
+                    statsView = null;
                     setSiteMode('stats').then(() => { if (state.focus === 'stagione') focusSeasonStory(); });
                     return;
                 }
@@ -4101,6 +4123,17 @@
                 navigator.serviceWorker.register('sw.js').catch(err => {
                     console.warn('Registrazione service worker fallita:', err);
                 });
+            });
+            // Tocco di una notifica con la web app già aperta, nei browser in
+            // cui sw.js non può cambiare l'indirizzo della pagina: lo manda
+            // con un messaggio. Applicato come un link: fa scattare hashchange.
+            navigator.serviceWorker.addEventListener('message', event => {
+                const data = event.data;
+                if (!data || data.type !== 'notification-open' || typeof data.url !== 'string') return;
+                try {
+                    const target = new URL(data.url, location.href);
+                    if (target.origin === location.origin && target.hash) location.hash = target.hash;
+                } catch (err) { /* indirizzo non valido: niente da fare */ }
             });
         }
     </script>

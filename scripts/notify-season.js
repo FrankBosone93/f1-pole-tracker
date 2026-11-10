@@ -20,7 +20,9 @@
 //     (build-stats.js lo riscrive quando Jolpica ha la classifica dell'ultimo
 //     round), così il tocco apre il bilancio finale. Se dopo un giorno non è
 //     ancora pronto (es. API di Anthropic non disponibile) si invia comunque:
-//     il testo della notifica non dipende dal racconto;
+//     il testo della notifica non dipende dal racconto. Dal 2026-11-10 si
+//     aspetta anche che il sito online abbia quel racconto (lib/live-site.js:
+//     GitHub Pages lo pubblica circa un minuto dopo il salvataggio);
 //   - non è già partita: stato in status/notified-season.json.
 // Se manca qualcosa si riprova al run successivo di notify-gp.yml (dopo ogni
 // aggiornamento di dati e statistiche, e lunedì e martedì alle 8:13 UTC, che
@@ -38,6 +40,7 @@
 const fs = require('fs');
 const path = require('path');
 const { sendAll } = require('./lib/notify-channels');
+const { liveJson, waitForLive } = require('./lib/live-site');
 const { standingsIncludeRace } = require('./lib/standings-fresh');
 const { titleClinches, atCircuit } = require('./lib/title-clinches');
 const { surnameKey } = require('./lib/driver-names');
@@ -115,6 +118,8 @@ function buildReport() {
         finished,
         waiting,
         storyReady: !!s?.story?.text && s.story.circuit === last.circuit,
+        // stats.json del sito online ha già il racconto riscritto dopo l'ultima gara?
+        storyOnline: stats => !!stats && Number(stats.year) === season && !!stats.season?.story?.text && stats.season.story.circuit === last.circuit,
         sendFrom: sendFrom(last),
         title: `🏆 Stagione ${season} conclusa`,
         message,
@@ -143,7 +148,16 @@ async function main() {
         else console.warn(`⚠️  Racconto della stagione non riscritto dopo ${report.last.circuit}: la notifica parte comunque.`);
     }
     if (waiting.length) { console.log(`In attesa di: ${waiting.join('; ')}. Si riprova al prossimo controllo.`); return; }
-    if (DRY_RUN) { console.log('(--dry-run: notifica non inviata)'); return; }
+    if (DRY_RUN) {
+        console.log(`(racconto finale sul sito online: ${report.storyOnline(await liveJson('stats.json')) ? 'sì' : 'non ancora'})`);
+        console.log('(--dry-run: notifica non inviata)');
+        return;
+    }
+    // Racconto riscritto: si aspetta che sia anche online. Se non è mai stato
+    // riscritto (vedi sopra) non c'è niente da aspettare.
+    if (report.storyReady && !await waitForLive('stats.json', report.storyOnline, 'il racconto finale della stagione')) {
+        console.warn('⚠️  Il sito online non ha ancora il racconto finale della stagione: la notifica parte comunque.');
+    }
 
     // Nessun canale configurato non è un errore: lo stato non cambia, così si
     // invierà appena ce n'è uno.

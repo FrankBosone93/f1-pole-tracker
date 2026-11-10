@@ -97,9 +97,13 @@ async function openf1RaceResults(session, driverNames) {
 // con le penalità già applicate): ordine della griglia, tempo migliore della
 // qualifica nell'ultima fase disputata (Q3, Q2 o Q1), penalty: true per chi
 // parte più indietro della sua posizione di qualifica (chi avanza solo per
-// effetto degli arretramenti altrui non è marcato). Finché la griglia non è
-// pubblicata, l'ordine è quello della qualifica. La pole del sito (data.json)
-// resta invece il più veloce in qualifica, a prescindere dalle penalità.
+// effetto degli arretramenti altrui non è marcato). Chi non ha una posizione
+// in qualifica (nessun tempo, o squalificato) non è marcato: parte in fondo
+// perché non si è qualificato, non per una penalità, e lo dice già la colonna
+// del tempo (fino al 2026-11-10 aveva l'asterisco anche lui). Finché la
+// griglia non è pubblicata, l'ordine è quello della qualifica. La pole del
+// sito (data.json) resta invece il più veloce in qualifica, a prescindere
+// dalle penalità.
 // Formato del sito: {position, driver, team, time, penalty?}.
 async function openf1QualyResults(session, driverNames) {
     const rows = await openf1Json(`https://api.openf1.org/v1/session_result?session_key=${session.session_key}`);
@@ -137,7 +141,7 @@ async function openf1QualyResults(session, driverNames) {
             // distinguere un incidente senza tempo da una squalifica:
             // "Squalificato" solo se OpenF1 lo dice, altrimenti "Non classificato".
             time: r.dsq ? 'Squalificato' : !r.position ? 'Non classificato' : (best ? fmtLap(best) : '-'),
-            ...(gridPos.size && (!r.position || (gridPos.get(r.driver_number) ?? 99) > r.position) ? { penalty: true } : {}),
+            ...(gridPos.size && r.position && (gridPos.get(r.driver_number) ?? 99) > r.position ? { penalty: true } : {}),
         };
     });
 }

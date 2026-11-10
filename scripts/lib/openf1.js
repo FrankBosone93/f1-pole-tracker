@@ -49,6 +49,13 @@ const CIRCUIT_MAP = {
     'Las Vegas': 'Las Vegas',
     'Lusail': 'Qatar (Lusail)',
     'Yas Marina Circuit': 'Abu Dhabi (Yas Marina)',
+    // Circuiti del calendario 2027 che il sito ha già con le pole del 2021
+    // (OpenF1 non ha dati prima del 2023, quindi mancavano da questa tabella):
+    // senza queste righe, finché Jolpica non pubblica il calendario 2027, a
+    // gennaio venivano "imparati" come circuiti nuovi con un altro nome
+    // ("Portimão", "Istanbul") e la loro storia si divideva in due.
+    'Algarve International Circuit': 'Portimão (Portogallo)',
+    'Istanbul': 'Istanbul (Turchia)',
 };
 
 // Circuiti nuovi riconosciuti in automatico (lib/auto-circuits.js), solo se
