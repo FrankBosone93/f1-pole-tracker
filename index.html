@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=a5566f9e87">
+    <link rel="stylesheet" href="styles.css?v=4cfba6bc20">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -2728,9 +2728,13 @@
         }
 
         // corner = elemento facoltativo in alto a destra, sulla riga del titolo.
+        // Titoli in corsivo maiuscolo da 16px (dal 2026-11-11, prima 14px
+        // grassetto). Il titolo vuole almeno 16rem: se accanto al menu dei GP
+        // non c'è spazio (telefono, desktop stretto) il menu va sotto, così
+        // anche "JEDDAH (ARABIA SAUDITA) 2026 - R2" resta su due righe.
         const statsCard = (title, body, corner = '') => `<div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-800 mb-4">
-                <div class="flex items-start justify-between gap-3 mb-3">
-                    <h2 class="text-sm font-bold text-[#E10600] min-w-0">${title}</h2>${corner}
+                <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 mb-3">
+                    <h2 class="flex-[1_1_16rem] min-w-0 text-base leading-snug italic uppercase font-extrabold tracking-wide text-[#E10600]">${title}</h2>${corner}
                 </div>${body}</div>`;
 
         // Menu in alto a destra per scegliere il GP: mostra sempre "Scegli un
@@ -2757,9 +2761,12 @@
             const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${changelogItemHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
             const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
-            // Titolo senza il numero del round (dal 2026-11-11), che resta
-            // nel menu dei GP come "R20 - Interlagos (San Paolo)".
-            return statsCard(`${escapeHtml(gp.circuit)} ${data.year}`,
+            // Titolo "Interlagos (San Paolo) 2026 - R20" (dal 2026-11-11,
+            // prima "20. Interlagos (San Paolo) 2026"); nel menu dei GP
+            // "R20 - Interlagos (San Paolo)".
+            // "2026 - R20" va a capo tutto insieme (dopo il trattino il
+            // browser andrebbe a capo anche con spazi non divisibili).
+            return statsCard(`${escapeHtml(gp.circuit)} <span class="whitespace-nowrap">${data.year} - R${gp.round}</span>`,
                     `${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
                     <p class="text-[11px] text-gray-500 mt-1.5 mb-4 pb-4 border-b border-gray-800">Racconto scritto con l'IA dai dati del sito.</p>` : ''}
                     <ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
