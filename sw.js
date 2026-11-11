@@ -127,12 +127,23 @@ self.addEventListener('push', event => {
 // succedeva nulla. Vedi l'ascolto di hashchange in index.html. I link delle
 // Novità (#novita) restano senza n: una pagina non ancora aggiornata non li
 // riconoscerebbe più.
+//
+// Dal 2026-11-11 il tocco si annota anche nella cache (NOTIFICATION_TAP_KEY,
+// { url, at }): sull'iPhone, con la web app già aperta, né navigate né il
+// messaggio arrivavano alla pagina (la notifica delle Novità apriva la web
+// app dov'era, senza le Novità). La pagina la legge quando torna in primo
+// piano e, se nessuno dei due l'ha già fatto, va lei sull'indirizzo.
+const NOTIFICATION_TAP_KEY = '__notifica-toccata';
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     const url = new URL(event.notification.data && event.notification.data.url || './', self.registration.scope).href;
     const hash = new URL(url).hash;
     const marked = hash.includes('=') && !hash.startsWith('#novita') ? `${url}&n=${Date.now()}` : url;
-    event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const tapKey = new URL(NOTIFICATION_TAP_KEY, self.registration.scope).href;
+    const noteTap = caches.open(CACHE_NAME)
+        .then(cache => cache.put(tapKey, new Response(JSON.stringify({ url: marked, at: Date.now() }))))
+        .catch(() => {});
+    event.waitUntil(noteTap.then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true })).then(list => {
         const open = list.find(c => c.url.startsWith(self.registration.scope));
         if (!open) return self.clients.openWindow(url);
         // Browser senza navigate (o pagina non controllata da questo service
