@@ -1,6 +1,45 @@
 {
   "entries": [
     {
+      "date": "2026-11-10",
+      "title": "Changelog — 10 Novembre 2026",
+      "sections": [
+        {
+          "title": "Notifiche",
+          "items": [
+            "Le notifiche arrivano quando il sito mostra già quello che annunciano: toccandole si vedono subito **pole**, **racconto del GP** o **racconto della stagione** aggiornati.",
+            "Se la web app è già aperta, toccando una notifica il sito **si aggiorna** e mostra i dati nuovi invece di quelli caricati prima.",
+            "Dopo le gare corse di notte o al mattino in Italia (come **Las Vegas**) classifica e passo gara arrivano appena ci sono i risultati, e la notifica del GP arriva in giornata invece che la sera."
+          ]
+        },
+        {
+          "title": "Statistiche",
+          "items": [
+            "Il **racconto del GP** si scrive una volta sola, quando ci sono tutti i dati (pole, risultati, classifica, telemetria e passo gara), e la notifica lo aspetta: chi la tocca legge subito il racconto completo. Se un dato manca ancora il lunedì mattina, il racconto si scrive con quelli disponibili."
+          ]
+        },
+        {
+          "title": "Calendario e Stagioni precedenti",
+          "items": [
+            "Le tabelle dei risultati stanno sempre dentro lo schermo, anche sui telefoni più stretti: i nomi troppo lunghi finiscono con i puntini e «Non classificato» va su due righe.",
+            "Nelle qualifiche l'asterisco **«penalità in griglia»** compare solo per chi è stato davvero arretrato, non più per chi non ha fatto segnare un tempo."
+          ]
+        },
+        {
+          "title": "Passo gara",
+          "items": [
+            "Piloti e squadre hanno gli stessi nomi del resto del sito (ad esempio **«Andrea Kimi Antonelli»** e **«Red Bull»**)."
+          ]
+        },
+        {
+          "title": "Affidabilità",
+          "items": [
+            "Il sito è pronto per la pausa invernale e la stagione 2027: la classifica finale resta corretta e i circuiti che tornano in calendario (Portimão, Istanbul) mantengono il loro nome."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-08",
       "title": "Changelog — 8 Novembre 2026",
       "sections": [
