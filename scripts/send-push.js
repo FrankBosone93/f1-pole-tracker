@@ -8,6 +8,12 @@
 // Uso:
 //   node scripts/send-push.js --to Francesco --title "..." --body "..." [--url "#novita"]
 //   node scripts/send-push.js --all --title "..." --body "..." --url "#novita"
+//   node scripts/send-push.js --all --title "📝 Novità su F1 Pole Tracker" --apple-title "📝 Novità" ...
+//
+// --apple-title (facoltativo): titolo per iPhone, iPad e Mac (iscrizioni su
+// web.push.apple.com). Apple scrive già sotto la notifica "da F1 Pole", quindi
+// dal 2026-11-11 le Novità lì si chiamano solo "📝 Novità"; gli altri
+// dispositivi (Android, Chrome) ricevono --title.
 //
 // --to accetta uno o più nomi separati da virgola (campo "name" delle
 // iscrizioni); senza --to né --all non invia nulla. --url relativo al sito.
@@ -25,7 +31,7 @@ function arg(name) {
 }
 
 async function main() {
-    const title = arg('title'), body = arg('body') || '';
+    const title = arg('title'), appleTitle = arg('apple-title'), body = arg('body') || '';
     const to = arg('to'), all = process.argv.includes('--all');
     if (!title || (!to && !all)) throw new Error('servono --title e uno tra --to <nomi> e --all');
     const subs = JSON.parse(fs.readFileSync(path.join(ROOT, 'private', 'webpush-subscriptions.json'), 'utf-8'));
@@ -35,7 +41,8 @@ async function main() {
     if (!targets.length) throw new Error(`nessuna iscrizione con nome ${to}`);
     const url = new URL(arg('url') || '', SITE_URL).href;
     for (const s of targets) {
-        const r = await sendWebPush(s, { title, body, url }, key);
+        const isApple = new URL(s.endpoint).hostname.endsWith('push.apple.com');
+        const r = await sendWebPush(s, { title: isApple && appleTitle ? appleTitle : title, body, url }, key);
         console.log(`${s.name || s.endpoint.slice(0, 40)}: HTTP ${r.status}${r.text ? ' ' + r.text : ''}`);
     }
 }
