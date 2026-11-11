@@ -1,7 +1,21 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-11-10T21:47:09.671Z",
+  "updatedAt": "2026-11-11T06:07:59.170Z",
   "items": [
+    {
+      "title": "La Ferrari non ama la pioggia, ma fa progressi",
+      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/ferrari-non-ama-pioggia-ma-fa-progressi",
+      "date": "2026-11-11T06:00:00.000Z",
+      "author": "Carlo Platella",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/11/GettyImages-2304014925-1200x800-1-436x291.jpg"
+    },
+    {
+      "title": "Vasseur: “Leclerc e Hamilton sono usciti dalla riunione scherzando. Spero continui così”",
+      "link": "https://www.formulapassion.it/f1/f1-news/vasseur-leclerc-hamilton-usciti-riunione-scherzando-spero-continui-cosi-ferrari",
+      "date": "2026-11-11T06:00:00.000Z",
+      "author": "Stefano Ollanu",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/11/Leclerc-Hamilton-Ferrari-1-436x291.jpg"
+    },
     {
       "title": "Brasile, lo straordinario diventa abitudine",
       "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/mercedes-aggiornata-potenziale-elevatissimo-stretta-finestra-esercizio-antonelli",
@@ -22,20 +36,6 @@
       "date": "2026-11-10T17:10:41.000Z",
       "author": "A cura della Redazione",
       "image": "https://storage.googleapis.com/fp-media/1/2026/10/FORNAROLI-WEC-MCLAREN-1-436x291.jpg"
-    },
-    {
-      "title": "Ferrari, kit giallo-nero per Las Vegas",
-      "link": "https://www.formulapassion.it/f1/f1-news/ferrari-kit-giallo-nero-per-las-vegas",
-      "date": "2026-11-10T17:00:12.000Z",
-      "author": "A cura della Redazione",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/11/ferrari-kit-las-vegas-436x291.jpg"
-    },
-    {
-      "title": "Montoya: “Per Verstappen è impossibile avercela con Antonelli, rivede in Kimi il se stesso di pochi anni fa”",
-      "link": "https://www.formulapassion.it/f1/f1-news/montoya-verstappen-impossibile-odiare-kimi-antonelli-ricorda-lui-pochi-anni-fa",
-      "date": "2026-11-10T17:00:00.000Z",
-      "author": "Marco Belloro",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/10/Verstappen-Antonelli-436x291.jpg"
     }
   ]
 }
