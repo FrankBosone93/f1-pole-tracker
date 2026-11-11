@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=bd8eaf69d5">
+    <link rel="stylesheet" href="styles.css?v=4cfba6bc20">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -1764,7 +1764,6 @@
                 // #novita (link della notifica delle novità con la web app già
                 // aperta): apre le Novità e rimette l'indirizzo della vista.
                 const novita = changelogHashDate();
-                if (fromNotification || novita !== undefined) { takeNotificationTap(); logNotificationStep(`hashchange ${location.hash}`); } // già gestito qui
                 if ((fromNotification || novita !== undefined) && Date.now() - PAGE_LOADED_AT > NOTIFICATION_RELOAD_AFTER_MS) { location.reload(); return; }
                 if (novita !== undefined) { openChangelog(novita); syncUrlState(); return; }
                 if (location.hash === buildUrlHash()) return;
@@ -3770,47 +3769,6 @@
         // Link delle novità: …/#novita (notifica, apre il più recente) o
         // …/#novita=AAAA-MM-GG (condiviso, apre quel changelog). undefined se
         // l'indirizzo non è un link delle novità, null senza data.
-        // Registro temporaneo dei tocchi (2026-11-11, vedi sw.js): #diagnosi
-        // lo mostra.
-        async function logNotificationStep(msg) {
-            if (!('caches' in window)) return;
-            try {
-                const key = new URL('__notifica-registro', location.href).href;
-                const cache = await caches.open('f1-pole-tracker-v1');
-                const old = await cache.match(key);
-                const list = old ? await old.json() : [];
-                list.push({ t: Date.now(), who: 'pagina', msg });
-                await cache.put(key, new Response(JSON.stringify(list.slice(-40))));
-            } catch (err) { /* solo diagnosi */ }
-        }
-        async function showNotificationLog() {
-            let list = [];
-            try { const res = await caches.match(new URL('__notifica-registro', location.href).href); if (res) list = await res.json(); } catch (err) {}
-            const text = list.map(e => `${new Date(e.t).toLocaleTimeString('it-IT')} ${e.who}: ${e.msg}`).join('\n') || 'registro vuoto';
-            const el = document.createElement('pre');
-            el.className = 'fixed inset-0 z-50 bg-black text-green-400 text-xs p-4 overflow-auto whitespace-pre-wrap';
-            el.textContent = text + '\n\n(tocca per chiudere)';
-            el.onclick = () => el.remove();
-            document.body.appendChild(el);
-        }
-        if (location.hash === '#diagnosi') setTimeout(showNotificationLog, 1500);
-        // Tocco di una notifica annotato da sw.js (vedi sotto, ascolto di
-        // visibilitychange): lo legge e lo toglie. null se non c'è.
-        async function takeNotificationTap() {
-            if (!('caches' in window)) return null;
-            try {
-                const key = new URL('__notifica-toccata', location.href).href;
-                let tap = null;
-                for (const name of await caches.keys()) {
-                    const cache = await caches.open(name);
-                    const res = await cache.match(key);
-                    if (!res) continue;
-                    await cache.delete(key);
-                    tap = tap || await res.json();
-                }
-                return tap;
-            } catch (err) { return null; }
-        }
         function changelogHashDate() {
             const m = location.hash.match(/^#novita(?:=(\d{4}-\d{2}-\d{2}))?$/);
             return m ? (m[1] || null) : undefined;
@@ -3920,39 +3878,6 @@
                     console.warn('Registrazione service worker fallita:', err);
                 });
             });
-            // Tocco di una notifica con la web app già aperta, ultima
-            // possibilità (dal 2026-11-11): sw.js lo annota nella cache e la
-            // pagina, tornando in primo piano, lo legge. Sull'iPhone né
-            // navigate né il messaggio qui sotto arrivavano: toccando la
-            // notifica delle Novità la web app si apriva dov'era. Si aspetta
-            // un attimo, così se l'indirizzo è già arrivato per le altre vie
-            // il tocco è già stato tolto (vedi hashchange) e non si fa due
-            // volte. All'apertura il tocco si toglie e basta: la pagina è già
-            // stata aperta sull'indirizzo della notifica.
-            takeNotificationTap().then(tap => logNotificationStep(`apertura (${location.hash})${tap ? ', tocco tolto: ' + tap.url : ''}`));
-            // Più controlli nei primi secondi: su iOS il service worker può
-            // ricevere il tocco dopo che la pagina è già tornata visibile.
-            let tapChecks = [];
-            const checkNotificationTap = () => {
-                if (document.visibilityState !== 'visible') return;
-                tapChecks.forEach(clearTimeout);
-                logNotificationStep(`visibile (${location.hash})`);
-                tapChecks = [800, 2000, 4000, 8000].map(ms => setTimeout(async () => {
-                    const tap = await takeNotificationTap();
-                    if (!tap) return;
-                    logNotificationStep(`tocco letto dopo ${ms} ms: ${tap.url}`);
-                    tapChecks.forEach(clearTimeout);
-                    if (Date.now() - tap.at > 120000) return;
-                    try {
-                        const target = new URL(tap.url, location.href);
-                        if (target.origin !== location.origin) return;
-                        if (target.hash && target.hash !== location.hash) location.hash = target.hash; // come un link: hashchange
-                        else location.reload();
-                    } catch (err) { /* indirizzo non valido: niente da fare */ }
-                }, ms));
-            };
-            document.addEventListener('visibilitychange', checkNotificationTap);
-            window.addEventListener('focus', checkNotificationTap);
             // Tocco di una notifica con la web app già aperta, nei browser in
             // cui sw.js non può cambiare l'indirizzo della pagina: lo manda
             // con un messaggio. Applicato come un link: fa scattare hashchange.

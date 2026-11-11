@@ -127,44 +127,19 @@ self.addEventListener('push', event => {
 // succedeva nulla. Vedi l'ascolto di hashchange in index.html. I link delle
 // Novità (#novita) restano senza n: una pagina non ancora aggiornata non li
 // riconoscerebbe più.
-//
-// Dal 2026-11-11 il tocco si annota anche nella cache (NOTIFICATION_TAP_KEY,
-// { url, at }): sull'iPhone, con la web app già aperta, né navigate né il
-// messaggio arrivavano alla pagina (la notifica delle Novità apriva la web
-// app dov'era, senza le Novità). La pagina la legge quando torna in primo
-// piano e, se nessuno dei due l'ha già fatto, va lei sull'indirizzo.
-const NOTIFICATION_TAP_KEY = '__notifica-toccata';
-// Registro temporaneo (2026-11-11) per capire cosa succede sull'iPhone:
-// ultimi passaggi del tocco, letti dalla pagina con #diagnosi.
-const NOTIFICATION_LOG_KEY = '__notifica-registro';
-async function logStep(msg) {
-    try {
-        const cache = await caches.open(CACHE_NAME);
-        const key = new URL(NOTIFICATION_LOG_KEY, self.registration.scope).href;
-        const old = await cache.match(key);
-        const list = old ? await old.json() : [];
-        list.push({ t: Date.now(), who: 'sw', msg });
-        await cache.put(key, new Response(JSON.stringify(list.slice(-40))));
-    } catch (err) { /* solo diagnosi */ }
-}
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     const url = new URL(event.notification.data && event.notification.data.url || './', self.registration.scope).href;
     const hash = new URL(url).hash;
     const marked = hash.includes('=') && !hash.startsWith('#novita') ? `${url}&n=${Date.now()}` : url;
-    const tapKey = new URL(NOTIFICATION_TAP_KEY, self.registration.scope).href;
-    const noteTap = caches.open(CACHE_NAME)
-        .then(cache => cache.put(tapKey, new Response(JSON.stringify({ url: marked, at: Date.now() }))))
-        .catch(() => {});
-    event.waitUntil(noteTap.then(() => logStep(`tocco ${marked}`)).then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true })).then(async list => {
+    event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
         const open = list.find(c => c.url.startsWith(self.registration.scope));
-        await logStep(`finestre ${list.length}, aperta ${open ? open.url : 'no'}, navigate ${open ? typeof open.navigate : '-'}`);
-        if (!open) return self.clients.openWindow(url).then(c => logStep(`openWindow ${c ? c.url : 'null'}`), e => logStep(`openWindow errore ${e}`));
+        if (!open) return self.clients.openWindow(url);
         // Browser senza navigate (o pagina non controllata da questo service
         // worker): l'indirizzo arriva alla pagina con un messaggio.
-        const viaMessage = e => { logStep(`messaggio${e ? ' dopo errore ' + e : ''}`); open.postMessage({ type: 'notification-open', url: marked }); return open; };
+        const viaMessage = () => { open.postMessage({ type: 'notification-open', url: marked }); return open; };
         const shown = typeof open.navigate === 'function'
-            ? open.navigate(marked).then(c => { logStep(`navigate ok ${c ? c.url : 'null'}`); return c || open; }, viaMessage)
+            ? open.navigate(marked).then(c => c || open, viaMessage)
             : Promise.resolve(viaMessage());
         return shown.then(c => c.focus());
     }));
