@@ -2565,7 +2565,10 @@
             // una riga a parte sotto): riduce l'altezza del riquadro di una
             // riga.
 
-            const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${escapeHtml(race.circuit)}</span>
+            // Titolo "Interlagos (San Paolo) - R20", come le schede GP delle
+            // Stats (dal 2026-11-11, prima "20. Interlagos (San Paolo)");
+            // stesso carattere di prima.
+            const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${escapeHtml(race.circuit)} <span class="whitespace-nowrap">- R${race.round}</span></span>
                 <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>` +
                 // Countdown su una riga a sé, sotto nome e date del weekend.
                 (countdown ? `<div class="featured-countdown text-gray-400 mt-0.5">⏳ ${countdown}</div>` : '');
