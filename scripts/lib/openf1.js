@@ -4,6 +4,8 @@
 // qualifica) e build-race-pace.js (giri di gara): distanziamento delle
 // richieste per il rate limit del piano gratuito e mappa dei nomi dei circuiti.
 
+const fs = require('fs');
+const path = require('path');
 const { fetchJson, sleep } = require('./http');
 
 // Il piano gratuito di OpenF1 consente 3 richieste/secondo e 30 al minuto: con
@@ -20,6 +22,47 @@ async function openf1Json(url) {
     if (wait > 0) await sleep(wait);
     return fetchJson(url);
 }
+
+// Elenchi della stagione (meetings e sessions), chiesti da quasi tutti gli
+// script: una sola richiesta per run, e le liste filtrate (solo gare, solo
+// qualifiche) si ricavano da quella completa invece di chiederle a parte.
+// Fino al 2026-11-11 un giro di update-calendar.yml (sei script di seguito)
+// scaricava meetings?year 6 volte e le sessioni 6 volte. Con
+// OPENF1_CACHE_DIR (impostata nei workflow che lanciano più script nello
+// stesso job) la lista si salva anche su file e si riusa per 15 minuti dagli
+// script successivi. Un errore non si salva: il prossimo tentativo richiede
+// di nuovo. Ogni chiamata riceve una copia, così chi la modifica non tocca
+// quella degli altri.
+const SEASON_LIST_MAX_AGE_MS = 15 * 60 * 1000;
+const seasonLists = new Map();
+async function loadSeasonList(kind, year) {
+    const dir = process.env.OPENF1_CACHE_DIR;
+    const file = dir ? path.join(dir, `openf1-${kind}-${year}.json`) : null;
+    if (file) {
+        try {
+            if (Date.now() - fs.statSync(file).mtimeMs < SEASON_LIST_MAX_AGE_MS) return JSON.parse(fs.readFileSync(file, 'utf-8'));
+        } catch (err) { /* file assente o illeggibile: si scarica */ }
+    }
+    const data = await openf1Json(`https://api.openf1.org/v1/${kind}?year=${year}`);
+    if (file && Array.isArray(data)) {
+        try {
+            fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(file, JSON.stringify(data), 'utf-8');
+        } catch (err) { /* la cache su file è solo un risparmio */ }
+    }
+    return data;
+}
+async function openf1SeasonList(kind, year) {
+    const key = `${kind}-${year}`;
+    if (!seasonLists.has(key)) {
+        const pending = loadSeasonList(kind, year);
+        seasonLists.set(key, pending);
+        pending.catch(() => seasonLists.delete(key));
+    }
+    return structuredClone(await seasonLists.get(key));
+}
+const openf1Meetings = year => openf1SeasonList('meetings', year);
+const openf1Sessions = year => openf1SeasonList('sessions', year);
 
 // circuit_short_name (OpenF1) -> nome circuito usato dal sito.
 const CIRCUIT_MAP = {
@@ -72,4 +115,4 @@ function circuitSlug(circuitName) {
         .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-module.exports = { openf1Json, CIRCUIT_MAP, circuitSlug };
+module.exports = { openf1Json, openf1Meetings, openf1Sessions, CIRCUIT_MAP, circuitSlug };

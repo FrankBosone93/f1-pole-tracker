@@ -18,7 +18,7 @@
 // auto-circuits.json: nome del sito = città, coordinate del circuito da
 // Jolpica, fuso orario da Open-Meteo. Vedi lib/auto-circuits.js.
 
-const { openf1Json, CIRCUIT_MAP } = require('./openf1');
+const { openf1Meetings, openf1Sessions, CIRCUIT_MAP } = require('./openf1');
 const { CIRCUIT_ID_MAP, matchCircuitById } = require('./f1-mapping');
 const { CIRCUIT_INFO } = require('./weather');
 const { jolpicaRaces } = require('./jolpica');
@@ -43,7 +43,7 @@ const DAY_MS = 86400000;
 async function currentSeason() {
     const year = new Date().getUTCFullYear();
     try {
-        const meetings = await openf1Json(`https://api.openf1.org/v1/meetings?year=${year}`);
+        const meetings = await openf1Meetings(year);
         if (meetings.some(m => !/testing/i.test(m.meeting_name))) return year;
         return year - 1;
     } catch (err) {
@@ -53,8 +53,8 @@ async function currentSeason() {
 }
 
 async function fromOpenF1(year, learner) {
-    const meetings = await openf1Json(`https://api.openf1.org/v1/meetings?year=${year}`);
-    const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}`);
+    const meetings = await openf1Meetings(year);
+    const sessions = await openf1Sessions(year);
     const real = meetings
         .filter(m => !/testing/i.test(m.meeting_name) && !m.is_cancelled)
         .sort((a, b) => a.date_start.localeCompare(b.date_start));

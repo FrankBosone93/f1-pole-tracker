@@ -30,7 +30,7 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
-const { openf1Json, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
+const { openf1Json, openf1Sessions, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
 const { fetchJson } = require('./lib/http');
 
 const OUT_PATH = path.join(__dirname, '..', 'telemetry.json');
@@ -272,7 +272,7 @@ async function buildCircuitTelemetry(session, season) {
 async function buildSeason(season, existingCircuits, saveProgress) {
     console.log(`\n=== Stagione ${season} ===`);
     console.log(`Richiesta sessioni di qualifica ${season} a OpenF1...`);
-    const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_type=Qualifying`);
+    const sessions = (await openf1Sessions(season)).filter(s => s.session_type === 'Qualifying');
     // OpenF1 marca anche le qualifiche sprint con session_type "Qualifying":
     // si distinguono solo dal session_name ("Sprint Qualifying" vs "Qualifying").
     const mainQualy = sessions.filter(s => s.session_name === 'Qualifying');

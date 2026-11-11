@@ -24,6 +24,15 @@
 //
 // Gira in .github/workflows/update-stats.yml dopo ogni aggiornamento dei
 // dati. Uso manuale: node scripts/build-stats.js
+//
+// Calcolo completo (dal 2026-11-11): se alla fine non manca nulla di quello
+// che viene da fuori (classifiche e qualifiche di Jolpica fino all'ultimo
+// GP, direzione gara, racconto del GP e della stagione) e STATS_SETTLED_FILE
+// è impostata, lo script crea quel file. Il workflow se ne ricorda (cache di
+// GitHub, chiave = impronta dei file letti e del codice) e, finché quei file
+// non cambiano, i giri successivi non ricalcolano: prima il calcolo partiva
+// dopo ogni aggiornamento dei dati anche senza dati nuovi (16 giri a vuoto su
+// 28 tra il 6 e il 9 novembre 2026, ognuno con ~11 richieste esterne).
 
 const fs = require('fs');
 const path = require('path');
@@ -465,6 +474,7 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
     try {
         gp.raceControl = await raceControlEvents(season, race.circuit, race.results.race);
     } catch (err) {
+        pending.push(`direzione gara di ${race.circuit}`);
         console.warn(`⚠️  ${race.circuit}: direzione gara da OpenF1 non disponibile (${err.message})${gp.raceControl ? ', tengo i messaggi precedenti' : ''}.`);
     }
     if (storyGate) gp.storyStatus = storyGate.status;
@@ -477,6 +487,7 @@ async function buildGp(season, race, races, poles, standings, isLast, prev, fact
         const input = storyInput(season, race, pole, gp.facts, after, gp.raceControl);
         gp.story = await gpStory(input, prev?.story) || prev?.story || undefined;
     } catch (err) {
+        pending.push(`racconto di ${race.circuit}`);
         console.warn(`⚠️  ${race.circuit}: racconto del GP non disponibile (${err.message}).`);
         gp.story = prev?.story || undefined;
     }
@@ -510,6 +521,10 @@ function storyGateFor(season, race, poles, standings, now = Date.now()) {
     return { write: false, status: 'waiting', missing };
 }
 
+// Cosa manca ancora da fuori in questo giro (vedi "Calcolo completo" sopra):
+// vuoto = il risultato non cambierebbe ricalcolando con gli stessi file.
+const pending = [];
+
 const writeJsonIfChanged = (rel, data) => {
     const p = path.join(ROOT, rel);
     const json = JSON.stringify(data, null, 2) + '\n';
@@ -542,6 +557,7 @@ async function main() {
     try {
         progress = await seasonProgress(season, done, prevSeason?.progress, names);
     } catch (err) {
+        pending.push('classifiche dopo ogni gara');
         console.warn(`⚠️  Classifiche dopo ogni gara da Jolpica non disponibili (${err.message}): tengo quelle precedenti.`);
         progress = prevSeason?.progress || [];
     }
@@ -571,6 +587,7 @@ async function main() {
         qualifyings = await seasonQualifyings(season, names);
         stats.qualyDuels = qualyDuels(qualifyings);
     } catch (err) {
+        pending.push('qualifiche della stagione');
         console.warn(`⚠️  Duelli in qualifica da Jolpica non disponibili (${err.message}): tengo quelli precedenti.`);
         stats.qualyDuels = prevSeason?.qualyDuels || [];
     }
@@ -604,6 +621,7 @@ async function main() {
                 const story = await seasonStory(input, prevStory);
                 stats.story = story ? (story === prevStory ? prevStory : { ...story, round: lastRace.round, circuit: lastRace.circuit }) : prevStory;
             } catch (err) {
+                pending.push('racconto della stagione');
                 console.warn(`⚠️  Racconto della stagione non disponibile (${err.message}).`);
                 stats.story = prevStory;
             }
@@ -629,6 +647,26 @@ async function main() {
     (lastGp?.facts || []).forEach(f => console.log(`  ${f.icon} ${f.text}`));
     console.log(`Stagione ${season}: ${stats.racesDone}/${stats.racesTotal} GP, ${stats.drivers.length} piloti, ${stats.qualyDuels.length} duelli in qualifica, classifica dopo ${stats.progress.length} gare.`);
     if (stats.story) console.log(`  📖 (dopo ${stats.story.circuit}) ${stats.story.text}`);
+
+    // Dati esterni non ancora arrivati: il prossimo giro deve ricalcolare
+    // anche se i file letti non cambiano.
+    if (lastRace && stats.progress[stats.progress.length - 1]?.circuit !== lastRace.circuit) pending.push(`classifica dopo ${lastRace.circuit} su Jolpica`);
+    if (qualifyings) {
+        const onJolpica = new Set(qualifyings.map(q => q.circuit));
+        races.filter(r => r.results?.qualy?.length && !onJolpica.has(r.circuit)).forEach(r => pending.push(`qualifica di ${r.circuit} su Jolpica`));
+    }
+    if (lastGp?.storyStatus === 'waiting') pending.push(`dati di ${lastGp.circuit} per il racconto`);
+    done.forEach(r => { if (!readJson(`stats/${season}/${circuitSlug(r.circuit)}.json`)?.story && !(lastGp?.circuit === r.circuit && lastGp.storyStatus === 'waiting')) pending.push(`racconto di ${r.circuit}`); });
+    if (lastRace && stats.story?.circuit !== lastRace.circuit) pending.push('racconto della stagione');
+    const unique = [...new Set(pending)];
+    if (unique.length) console.log(`Calcolo da ripetere al prossimo giro, manca ancora: ${unique.join(', ')}.`);
+    else {
+        console.log('Calcolo completo: con questi dati il prossimo giro non ricalcola.');
+        if (process.env.STATS_SETTLED_FILE) {
+            fs.mkdirSync(path.dirname(process.env.STATS_SETTLED_FILE), { recursive: true });
+            fs.writeFileSync(process.env.STATS_SETTLED_FILE, `${new Date().toISOString()}\n`, 'utf-8');
+        }
+    }
 }
 
 main()

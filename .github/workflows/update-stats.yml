@@ -43,6 +43,24 @@ jobs:
           # L'ultima versione di main, con i dati appena aggiornati.
           ref: main
 
+      # Dal 2026-11-11: impronta dei file che il calcolo legge (dati e codice).
+      # Se un giro precedente con la stessa impronta era completo (nulla in
+      # attesa da Jolpica, OpenF1 o Claude, vedi build-stats.js) la cache di
+      # GitHub ha la chiave e, quando il giro parte da un aggiornamento dei
+      # dati, il calcolo si salta: darebbe lo stesso risultato. L'orario del
+      # lunedì e il lancio manuale ricalcolano sempre.
+      - name: Impronta dei dati letti
+        id: inputs
+        run: echo "key=stats-settled-${{ hashFiles('calendar.json', 'data.json', 'standings.json', 'telemetry.json', 'pace/**', 'scripts/build-stats.js', 'scripts/lib/**', 'package-lock.json') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Calcolo già completo con questi dati?
+        id: settled
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/stats-settled
+          key: ${{ steps.inputs.outputs.key }}
+          lookup-only: true
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -52,18 +70,30 @@ jobs:
       # SDK di Anthropic per il racconto del GP (package-lock.json).
       # --omit=dev: Tailwind (devDependency) serve solo a check-css.yml.
       - name: Installa le dipendenze
+        if: steps.settled.outputs.cache-hit != 'true' || github.event_name != 'workflow_run'
         run: npm ci --omit=dev --no-audit --no-fund
 
       # continue-on-error: lo script scrive comunque status/stats.json (con
       # ok:false in caso di errore), che va committato per l'indicatore del sito.
       - name: Calcola le statistiche
         id: run
+        if: steps.settled.outputs.cache-hit != 'true' || github.event_name != 'workflow_run'
         continue-on-error: true
         env:
+          STATS_SETTLED_FILE: /tmp/stats-settled/ok
           # Chiave dell'API di Anthropic per il racconto del GP scritto da
           # Claude: senza, la sezione mostra solo l'elenco dei fatti.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/build-stats.js
+
+      # Stesso risultato del giro che ha completato il calcolo con questi
+      # dati: niente da ricalcolare. Lo stato si aggiorna comunque (ogni 6
+      # ore, vedi lib/status.js), per l'indicatore del sito.
+      - name: Statistiche già calcolate con questi dati
+        if: steps.settled.outputs.cache-hit == 'true' && github.event_name == 'workflow_run'
+        run: |
+          echo "Dati invariati dall'ultimo calcolo completo: niente da ricalcolare."
+          node -e "require('./scripts/lib/status').writeStatus('stats', true)"
 
       - name: Commit e push se stats.json, l'archivio dei GP o lo stato sono cambiati
         run: |
@@ -78,6 +108,21 @@ jobs:
             push_with_retry
           fi
 
+      # Dopo il push: se il push fallisse, il giro dopo deve ricalcolare.
+      - name: Ricorda che con questi dati il calcolo è completo
+        if: steps.run.outcome == 'success' && steps.settled.outputs.cache-hit != 'true'
+        id: marker
+        run: |
+          if [ -f /tmp/stats-settled/ok ]; then echo "save=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Salva il calcolo completo nella cache
+        if: steps.marker.outputs.save == 'true'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/stats-settled
+          key: ${{ steps.inputs.outputs.key }}
+
       - name: Fallisci il run se lo script è fallito
-        if: steps.run.outcome != 'success'
+        if: steps.run.outcome == 'failure'
         run: exit 1

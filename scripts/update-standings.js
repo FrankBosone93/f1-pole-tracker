@@ -19,7 +19,7 @@ const { matchTeam } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
 const { fetchJson } = require('./lib/http');
 const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
-const { openf1Json } = require('./lib/openf1');
+const { openf1Json, openf1Sessions } = require('./lib/openf1');
 
 // Squadra di ogni pilota e vittorie, dai risultati di gara in calendar.json
 // (OpenF1): la squadra è quella dell'ultima gara (l'elenco delle squadre di
@@ -40,7 +40,7 @@ function calendarFacts() {
 // Classifica da OpenF1, o null se non disponibile.
 async function standingsFromOpenF1(season) {
     const now = new Date();
-    const races = (await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_type=Race`))
+    const races = (await openf1Sessions(season)).filter(s => s.session_type === 'Race')
         .filter(s => new Date(s.date_end) < now)
         .sort((a, b) => b.date_start.localeCompare(a.date_start));
     for (const session of races.slice(0, 3)) { // l'ultima, o la precedente se non ancora calcolata

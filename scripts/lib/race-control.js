@@ -7,7 +7,7 @@
 // sanzione, penalità scontate). Numeri di gara sostituiti con i nomi del sito
 // ("CAR 63 (RUS)" -> "George Russell"), orari finali tolti.
 
-const { openf1Json, CIRCUIT_MAP } = require('./openf1');
+const { openf1Json, openf1Sessions, CIRCUIT_MAP } = require('./openf1');
 const { surnameKey } = require('./driver-names');
 
 const relevant = m =>
@@ -15,13 +15,11 @@ const relevant = m =>
     m.flag === 'RED' || /^RED FLAG\b/.test(m.message) || // dal 2026 senza flag
     (/^FIA STEWARDS: .*(PENALTY FOR|DRIVE THROUGH|STOP AND GO|DISQUALIFIED)/.test(m.message) && !/PENALTY SERVED/.test(m.message));
 
-// Gare della stagione su OpenF1, una richiesta per stagione per ogni run.
-const sessionsBySeason = {};
 
 // raceResults = righe di calendar.json (results.race), per i nomi.
 async function raceControlEvents(season, circuit, raceResults) {
-    sessionsBySeason[season] ??= await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
-    const sessions = sessionsBySeason[season];
+    // Gare della stagione su OpenF1 (lista della stagione in cache, vedi lib/openf1.js).
+    const sessions = (await openf1Sessions(season)).filter(s => s.session_name === 'Race');
     const session = sessions.find(s => CIRCUIT_MAP[s.circuit_short_name] === circuit);
     if (!session) throw new Error(`gara OpenF1 non trovata per ${circuit}`);
     const messages = await openf1Json(`https://api.openf1.org/v1/race_control?session_key=${session.session_key}`);

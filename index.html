@@ -21,7 +21,7 @@
          (scripts/build-css.js), che rigenera styles.css e aggiorna il ?v= qui
          sotto (impronta del contenuto). Il workflow check-css.yml segnala se
          styles.css non è aggiornato. -->
-    <link rel="stylesheet" href="styles.css?v=4913542118">
+    <link rel="stylesheet" href="styles.css?v=a5566f9e87">
 
     <!-- Chart.js per il grafico, dal CDN. Versione FISSA con controllo di
          integrità (SRI): prima puntava alla "ultima versione", quindi una
@@ -40,8 +40,6 @@
            quanto lo schermo, e il widget "Prossimo GP" in versione mobile. */
         body.phone-landscape { padding-left: 12px; padding-right: 12px; max-width: none !important; }
         body.phone-landscape #mainGrid { display: block !important; }
-        body.phone-landscape #resizeHandle,
-        body.phone-landscape #vResizeHandle { display: none !important; }
         body.phone-landscape #leftColumn { position: static !important; }
         body.phone-landscape #chartCard { margin-bottom: 1.5rem; }
         body.phone-landscape #featuredRaceWidget { display: block !important; }
@@ -96,13 +94,15 @@
            l'asse del grafico (la lista è dalla stagione più recente: row-reverse,
            su mobile resta com'è). !important dove JS imposta stili inline. */
         /* Una sola colonna, larga quanto la pagina: le colonne della griglia a
-           due colonne (66.67% 12px 33.33%, più i due gap da 16px, vedi
-           applyGridColumns) sommavano 44px più della pagina, e grafico,
+           due colonne di prima (66.67% 12px 33.33%, più i due gap da 16px)
+           sommavano 44px più della pagina, e grafico,
            dettagli e widget "Prossimo GP" debordavano a destra: margini
            asimmetrici e, sotto i 1176px circa, pagina più larga dello schermo
            di 12px (scorrimento laterale). Corretto il 2026-11-05, con la
            pagina più larga di 44px (classe del body) per non stringere grafico
-           e box dei dettagli sugli schermi grandi. */
+           e box dei dettagli sugli schermi grandi. Dal 2026-11-11 la griglia
+           ha una colonna sola anche di partenza (style di #mainGrid): la
+           griglia a due colonne con le maniglie non si usava più. */
         body.quali-wide #mainGrid { grid-template-columns: minmax(0, 1fr) !important; }
         /* Widget "Prossimo GP" nel flusso dell'header, non in posizione
            assoluta: quando si allunga (risultati di una sessione aperti, meteo
@@ -112,7 +112,6 @@
         body.quali-wide #featuredRaceWidgetDesktop { position: static; flex: 0 0 auto; margin-bottom: .5rem; }
         body.quali-wide #leftColumn { grid-column: 1 / -1; position: static; }
         body.quali-wide #detailsColumn { grid-column: 1 / -1; width: auto !important; margin-left: 0 !important; margin-top: 1.5rem !important; }
-        body.quali-wide #resizeHandle { display: none !important; }
         body.quali-wide #detailsList { flex-direction: row; }
         body.quali-wide #detailsList.details-asc { flex-direction: row-reverse; }
         body.quali-wide #detailsList > * { flex: 1 1 0; min-width: 0; margin: 0 !important; }
@@ -126,13 +125,6 @@
         body.quali-wide #detailsList .detail-driver { row-gap: .125rem; }
         /* Vista Telemetria (body.telemetry-wide): pilota e tempo centrati. */
         body.telemetry-wide #chartCaption { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-        /* Maniglie di ridimensionamento tolte anche dal grafico dei tempi:
-           #resizeHandle resta come spazio di 12px tra le due colonne della
-           griglia fuori dalle Qualifiche, senza pillola né trascinamento;
-           #vResizeHandle sparisce. */
-        #vResizeHandle { display: none !important; }
-        #resizeHandle { pointer-events: none; }
-        #resizeHandle > div { display: none; }
     </style>
 </head>
 <!-- Larghezza massima su desktop 1196px = 72rem (1152px) + 44px: fino al
@@ -219,9 +211,9 @@
         <div id="featuredRaceWidgetDesktop" class="hidden md:block md:absolute md:top-0 md:right-0 text-left pt-1"></div>
     </header>
 
-    <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: 66.67% 12px 33.33%;">
+    <div id="mainGrid" class="md:grid md:gap-4 md:items-start" style="grid-template-columns: minmax(0, 1fr);">
 
-        <!-- Colonna sinistra (desktop, 2/3 dello schermo di default, trascinabile): grafico, classifica. Su mobile è semplicemente in cima. -->
+        <!-- Grafico, in cima; sotto, "Dettagli Qualifiche". -->
         <div id="leftColumn" class="md:sticky md:top-8">
             <!-- Contenitore Grafico -->
             <div id="chartCard" class="bg-[#1E1E1E] px-2 py-3 md:p-4 rounded-xl border border-gray-800 mb-6 md:mb-0">
@@ -296,29 +288,10 @@
                     </div></div>
                 </div>
             </div>
-
-            <!-- Divisore trascinabile (solo desktop) per ridimensionare l'altezza del grafico.
-                 Il pillolo interno viene centrato via JS sull'asse X reale del grafico (non
-                 sulla larghezza della card), quindi qui niente justify-center. -->
-            <div id="vResizeHandle" class="hidden md:flex w-full items-center cursor-row-resize group py-3">
-                <div class="h-1 w-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
-            </div>
         </div>
 
-        <!-- Divisore trascinabile (solo desktop) per ridimensionare le due colonne.
-             Ancorato verticalmente al centro del grafico (non a tutta l'altezza
-             della colonna), così non si sposta quando si apre il pannello classifica. -->
-        <div id="resizeHandle" class="hidden md:flex md:sticky md:top-8 relative cursor-col-resize group">
-            <div class="absolute left-1/2 -translate-x-1/2 w-1 h-24 rounded-full bg-gray-700 group-hover:bg-[#E10600] transition-colors"></div>
-        </div>
-
-        <!-- Colonna destra (desktop): lista dettagli, impilata verticalmente.
-             Larghezza limitata via JS al massimo alla misura "di default" (vedi
-             applyDetailsColumnWidth): il ridimensionamento del grafico può farla
-             restringere (se il grafico si allarga oltre il default) ma mai
-             allargare oltre la dimensione di default. È ancorata al bordo destro
-             (margin-left: auto), così resta sempre nella stessa posizione e non
-             si sovrappone mai al pannello Classifica, qualunque sia il drag. -->
+        <!-- Dettagli Qualifiche: un box per anno, in colonna su mobile e in
+             riga sotto il grafico su desktop (body.quali-wide). -->
         <div id="detailsColumn">
             <!-- Titolo cliccabile per chiudere/aprire la sezione, tastino per
                  l'ordine degli anni: scelte ricordate sul dispositivo
@@ -611,7 +584,6 @@
                 el.style.overflow = '';
                 if (!open) setHidden(true);
                 holdScrollAnchor(false);
-                scheduleReposition(); // l'altezza della pagina è cambiata
             };
             if (reducedMotion()) { finish(); return; }
             const full = { ...styleNow(), opacity: '1' };
@@ -698,7 +670,6 @@
             detailsPrefs.collapsed = !detailsPrefs.collapsed;
             saveDetailsPrefs();
             applyDetailsPrefs(true);
-            scheduleReposition(); // l'altezza della pagina è cambiata
         }
         applyDetailsPrefs();
         const dataSourceBadge = document.getElementById('dataSourceBadge');
@@ -1258,12 +1229,7 @@
             // già stretti); renderTrackMap lo toglie se il circuito non ha tracciato.
             placeTrackMap(wide);
             if (!wide && chartViewMode === 'telemetry' && trackMapCtx) openTrackMapWrap();
-            if (changed) {
-                applyFeaturedWidgetWidth();
-                alignDetailsColumnTop();
-                alignChartTop();
-                scheduleReposition();
-            }
+            if (changed) applyFeaturedWidgetWidth();
         }
         // Sposta lo stesso riquadro del tracciato (con i suoi eventi) a lato
         // dei grafici (side) o sotto i riquadri del giro.
@@ -1399,11 +1365,6 @@
             return best <= 70 * 70 ? bestT : null;
         }
         (function setupTrackMapPointer() {
-            // A fine apertura/chiusura l'altezza della colonna è cambiata:
-            // stesso riallineamento di quando cambia il contenuto.
-            document.getElementById('telemetryMapWrap').addEventListener('transitionend', e => {
-                if (e.propertyName === 'grid-template-rows') scheduleReposition();
-            });
             const svg = document.getElementById('telemetryMap');
             // Niente tooltip sui grafici: i valori sono già nei riquadri, sui
             // grafici basta la linea verticale.
@@ -1753,9 +1714,10 @@
             if (calendar) {
                 calendarData = calendar;
                 renderFeaturedRace();
-                // Aggiorna lo stato "live"/"passata"/"da disputare" delle
-                // sessioni ogni minuto, senza bisogno di ricaricare la pagina.
-                setInterval(renderFeaturedRace, 60000);
+                // Ogni minuto: conto alla rovescia e stato "live"/"passata"/
+                // "da disputare" delle sessioni, senza ricaricare la pagina
+                // (vedi tickFeaturedRace).
+                setInterval(tickFeaturedRace, 60000);
             }
 
             if (historyIndex && Array.isArray(historyIndex.years) && historyIndex.years.length > 0) {
@@ -1823,17 +1785,8 @@
                 select.value = state.circuit;
                 updateApp(state.circuit, state);
             });
-            applyChartHeight(); // posiziona anche il divisore orizzontale, centrato sul grafico
-            applyDetailsColumnWidth();
+            applyChartHeight();
             applyFeaturedWidgetWidth();
-            // In quest'ordine e solo ora: applyFeaturedWidgetWidth() ha
-            // appena fissato la larghezza del widget, che può farne
-            // ricalcolare l'altezza (il testo si dispone diversamente).
-            // Calcolare l'allineamento PRIMA di questo punto userebbe
-            // un'altezza del widget non definitiva (bug osservato: un
-            // valore corretto al primo giro, sbagliato pochi istanti dopo).
-            alignDetailsColumnTop();
-            alignChartTop();
         }
 
         // Data di oggi nel fuso locale dell'utente, "YYYY-MM-DD" (confrontabile
@@ -1860,56 +1813,28 @@
             return pastRaces.length > 0 ? pastRaces[0].circuit : null;
         }
 
-        // --- DIVISORE TRASCINABILE (solo desktop) tra grafico e dettagli ---
+        // --- LAYOUT DESKTOP ---------------------------------------------------
+        // Dal 2026-11-03 su desktop le Qualifiche usano sempre il layout largo
+        // (quali-wide: grafico e "Dettagli Qualifiche" uno sotto l'altro, in
+        // una colonna sola) e Passo gara e Statistiche nascondono la griglia;
+        // sul telefono, anche ruotato, la colonna è una sola. Il vecchio
+        // layout a due colonne non si vedeva più: il suo codice (maniglie per
+        // allargare e alzare il grafico, larghezza della colonna dei dettagli,
+        // allineamento del grafico al primo riquadro dei dettagli) è stato
+        // tolto il 2026-11-11.
         const mainGrid = document.getElementById('mainGrid');
-        const resizeHandle = document.getElementById('resizeHandle');
-        const MIN_RATIO = 0.3, MAX_RATIO = 0.78;
-        const DEFAULT_LEFT_RATIO = 2 / 3; // larghezza "di default" del grafico, fissa
-        let leftRatio = DEFAULT_LEFT_RATIO; // deve combaciare con "2fr 12px 1fr" di partenza
+        const chartContainer = document.getElementById('chartContainer');
+        const chartCard = document.getElementById('chartCard');
 
-        function applyGridColumns() {
-            const leftPct = (leftRatio * 100).toFixed(2);
-            const rightPct = ((1 - leftRatio) * 100).toFixed(2);
-            mainGrid.style.gridTemplateColumns = `${leftPct}% 12px ${rightPct}%`;
-            applyDetailsColumnWidth();
-            scheduleReposition();
-        }
-
-        // Il pannello Classifica sta nella finestra dei pannelli
-        // (#panelDialog), che ne decide la larghezza: niente più larghezza
-        // legata al grafico.
-        function applyClassificaPanelWidth() {}
-
-        // La colonna "Dettagli Qualifiche" ha una larghezza massima FISSA pari
-        // al 2/3 di default del grafico (stessa base della classifica): il
-        // drag della maniglia può solo restringerla (se il grafico si allarga
-        // oltre il default), mai allargarla oltre il default. Ancorata al
-        // bordo destro con margin-left:auto, così la sua posizione non
-        // dipende mai da leftRatio e non si sovrappone mai al pannello
-        // Classifica quando il grafico si restringe.
-        const detailsColumn = document.getElementById('detailsColumn');
-        function applyDetailsColumnWidth() {
-            if (!isDesktopLayout()) {
-                detailsColumn.style.width = '';
-                detailsColumn.style.marginLeft = '';
-                return;
-            }
-            const totalWidth = mainGrid.getBoundingClientRect().width;
-            const defaultWidth = (totalWidth - 12) * (1 - DEFAULT_LEFT_RATIO);
-            const liveWidth = (totalWidth - 12) * (1 - leftRatio);
-            detailsColumn.style.width = Math.min(defaultWidth, liveWidth) + 'px';
-            detailsColumn.style.marginLeft = 'auto';
-        }
-
-        // Il riquadro "Prossimo GP" nell'header deve avere la stessa
-        // larghezza (di default, non quella live trascinabile) dei riquadri
-        // di "Dettagli Qualifiche" - vive in un contenitore diverso
-        // (l'header, non mainGrid) quindi va calcolata a parte con la
-        // stessa formula usata per detailsColumn.
+        // Riquadro "Prossimo GP" nell'header su desktop: largo un terzo della
+        // pagina (quanto la colonna dei dettagli del vecchio layout), con il
+        // bordo destro allineato a quello del grafico. Almeno
+        // FEATURED_WIDGET_MIN_WIDTH: a 768px un terzo della pagina (231px)
+        // non bastava per "Qualifiche Sprint" accanto a un orario lungo
+        // ("Dom 30 mag, 08:58"), che finiva troncato. Pallino, "Qualifiche
+        // Sprint" (87px) e l'orario più lungo (105px), con spazi, padding e
+        // bordo, fanno 241px; 250 per avere margine.
         const featuredRaceWidgetDesktop = document.getElementById('featuredRaceWidgetDesktop');
-        // Larghezza minima del riquadro su desktop: pallino, "Qualifiche
-        // Sprint" (87px) e l'orario più lungo ("Dom 30 mag, 08:58", 105px),
-        // con spazi, padding e bordo, fanno 241px; 250 per avere margine.
         const FEATURED_WIDGET_MIN_WIDTH = 250;
         function applyFeaturedWidgetWidth() {
             if (!isDesktopLayout()) {
@@ -1917,251 +1842,42 @@
                 featuredRaceWidgetDesktop.style.marginRight = '';
                 return;
             }
-            // Layout a due colonne (dal 2026-11-03 non più usato su desktop,
-            // dove le Qualifiche sono sempre in quali-wide, vedi sotto):
-            // copia larghezza e bordo destro REALI di detailsColumn (misurati,
-            // non ricalcolati con la stessa formula): detailsColumn vive
-            // dentro mainGrid, la cui griglia (colonne percentuali + gap-4)
-            // trabocca oltre il bordo destro di mainGrid stesso di una
-            // quantità fissa (l'handle da 12px + i due gap da 16px = 44px),
-            // quindi calcolare la larghezza con la stessa formula ma
-            // ancorarla nell'header (un contenitore diverso, senza lo stesso
-            // "trabocco") lasciava il riquadro spostato di quei 44px rispetto
-            // ai riquadri di "Dettagli Qualifiche". Misurando direttamente
-            // detailsColumn il risultato resta corretto anche se gap/misure
-            // cambiassero in futuro.
-            let detailsRect = detailsColumn.getBoundingClientRect();
-            // Layout largo delle Qualifiche (l'unico usato su desktop, la
-            // griglia lì ha una sola colonna e non deborda più): detailsColumn
-            // è sotto il grafico, larga quanto la pagina. Si usa la misura che
-            // avrebbe nella sua colonna (applyDetailsColumnWidth), con il bordo
-            // destro del grafico. Almeno FEATURED_WIDGET_MIN_WIDTH: a 768px
-            // un terzo della pagina (231px) non bastava per "Qualifiche
-            // Sprint" accanto a un orario lungo ("Dom 30 mag, 08:58"), che
-            // finiva troncato.
-            if (document.body.classList.contains('quali-wide')) {
-                const totalWidth = mainGrid.getBoundingClientRect().width;
-                detailsRect = {
-                    width: Math.max((totalWidth - 12) * (1 - Math.max(leftRatio, DEFAULT_LEFT_RATIO)), FEATURED_WIDGET_MIN_WIDTH),
-                    right: document.getElementById('leftColumn').getBoundingClientRect().right,
-                };
-            }
+            // Passo gara e Statistiche: riquadro nascosto, restano le misure precedenti.
+            if (!document.body.classList.contains('quali-wide')) return;
+            const totalWidth = mainGrid.getBoundingClientRect().width;
+            const width = Math.max((totalWidth - 12) * (1 - 2 / 3), FEATURED_WIDGET_MIN_WIDTH);
+            const right = document.getElementById('leftColumn').getBoundingClientRect().right;
             const parentRect = featuredRaceWidgetDesktop.parentElement.getBoundingClientRect();
-            // In modalità Passo gara la colonna dei dettagli è nascosta (misura
-            // 0): niente da allineare, si lasciano le misure precedenti.
-            if (detailsRect.width === 0) return;
-            featuredRaceWidgetDesktop.style.width = detailsRect.width + 'px';
-            featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - detailsRect.right) + 'px';
-        }
-
-        let dragging = false;
-        resizeHandle.addEventListener('mousedown', (e) => {
-            dragging = true;
-            document.body.style.cursor = 'col-resize';
-            document.body.style.userSelect = 'none';
-            e.preventDefault();
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (!dragging) return;
-            const rect = mainGrid.getBoundingClientRect();
-            let ratio = (e.clientX - rect.left) / rect.width;
-            leftRatio = Math.min(MAX_RATIO, Math.max(MIN_RATIO, ratio));
-            applyGridColumns();
-        });
-        window.addEventListener('mouseup', () => {
-            if (!dragging) return;
-            dragging = false;
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-        });
-
-        // --- DIVISORE TRASCINABILE (solo desktop) per l'altezza del grafico ---
-        const chartContainer = document.getElementById('chartContainer');
-        const vResizeHandle = document.getElementById('vResizeHandle');
-        const leftColumn = document.getElementById('leftColumn');
-        const chartCard = document.getElementById('chartCard');
-        const MIN_CHART_HEIGHT = 200, MAX_CHART_HEIGHT = 700;
-        let chartHeight = 440; // deve combaciare con "md:h-[440px]" di partenza
-
-        // Le due maniglie devono restare ancorate all'area di disegno REALE
-        // del grafico (gli assi X/Y calcolati da Chart.js), non al bordo
-        // della card (che include padding/etichetta) né tantomeno alla
-        // colonna dei dettagli qualifiche. chartArea è la zona di plot vera
-        // e propria, esclusi assi ed etichette.
-        function getChartAreaRect() {
-            if (!currentChart || !currentChart.chartArea) return null;
-            const canvasRect = document.getElementById('poleChart').getBoundingClientRect();
-            const a = currentChart.chartArea;
-            return {
-                top: canvasRect.top + a.top,
-                bottom: canvasRect.top + a.bottom,
-                left: canvasRect.left + a.left,
-                right: canvasRect.left + a.right,
-            };
-        }
-
-        // Maniglia larghezza (verticale): centrata sull'asse Y del grafico.
-        // Il pallino interno è posizionato con "top" assoluto (non margin-top):
-        // un margin-top sull'elemento sticky ne altererebbe anche la soglia di
-        // aggancio dello scroll, facendolo restare "sticky" in un momento
-        // diverso rispetto alla colonna del grafico (bug osservato scorrendo
-        // la pagina). Con "top" assoluto sul figlio, l'elemento sticky esterno
-        // non ha margini e resta perfettamente sincronizzato con leftColumn.
-        function positionResizeHandle() {
-            if (!isDesktopLayout()) return;
-            // L'altezza "naturale" di resizeHandle deve combaciare con quella
-            // di leftColumn (non con l'intera riga della griglia, che segue
-            // anche la colonna dei dettagli molto più alta): altrimenti i due
-            // elementi "sticky" si sganciano dallo scroll in punti diversi.
-            resizeHandle.style.height = leftColumn.offsetHeight + 'px';
-            const handleRect = resizeHandle.getBoundingClientRect();
-            const pill = resizeHandle.firstElementChild;
-            const area = getChartAreaRect();
-            let centerY;
-            if (area) {
-                centerY = (area.top + area.bottom) / 2 - handleRect.top;
-            } else {
-                // Il grafico non è ancora pronto: fallback sul centro della card.
-                const cardRect = chartCard.getBoundingClientRect();
-                centerY = (cardRect.top - handleRect.top) + cardRect.height / 2;
-            }
-            pill.style.top = Math.max(0, centerY - pill.offsetHeight / 2) + 'px';
-        }
-
-        // Maniglia altezza (orizzontale): centrata sull'asse X del grafico.
-        function positionVResizeHandle() {
-            if (!isDesktopLayout()) return;
-            const area = getChartAreaRect();
-            if (!area) return;
-            const handleRect = vResizeHandle.getBoundingClientRect();
-            const pill = vResizeHandle.firstElementChild;
-            const centerX = (area.left + area.right) / 2 - handleRect.left;
-            pill.style.marginLeft = Math.max(0, centerX - pill.offsetWidth / 2) + 'px';
-        }
-
-        function repositionHandles() {
-            positionResizeHandle();
-            positionVResizeHandle();
-        }
-
-        // Chart.js si ridimensiona già da solo (ResizeObserver sul contenitore)
-        // quando cambiano le dimensioni della card: chiamare chart.resize() a
-        // mano qui interferisce con quel meccanismo e può azzerare la
-        // larghezza del canvas. Si aspetta invece che Chart.js finisca il suo
-        // resize automatico prima di leggere chartArea aggiornata (setTimeout
-        // invece di requestAnimationFrame, che si è rivelato inaffidabile in
-        // alcuni ambienti di test).
-        function scheduleReposition() {
-            // Riposiziona subito (sincrono): l'altezza di leftColumn è già
-            // nota non appena cambia il DOM (es. apertura/chiusura pannelli),
-            // e aspettare solo i 50ms sotto lascerebbe la maniglia sbagliata
-            // (altezza vecchia) visibile per un istante, con un salto brusco
-            // quando poi scatta alla misura giusta. Il setTimeout resta per
-            // catturare l'assestamento asincrono di Chart.js (il suo resize
-            // interno, che invece richiede tempo).
-            repositionHandles();
-            setTimeout(repositionHandles, 50);
+            featuredRaceWidgetDesktop.style.width = width + 'px';
+            featuredRaceWidgetDesktop.style.marginRight = (parentRect.right - right) + 'px';
         }
 
         // Altezza del contenitore dei grafici, calcolata in un solo punto:
-        // - desktop: quella trascinata col divisore (chartHeight);
+        // - desktop: 440px in telemetria (tre pannelli), 360px per il grafico
+        //   dei tempi, così sotto si vedono già i box dei dettagli in riga;
         // - telefono ruotato: quasi tutto lo schermo, così i tre grafici della
         //   telemetria si vedono interi senza scorrere;
         // - telefono verticale: 380px in telemetria (3 pannelli), altrimenti
         //   quella del CSS (200px).
         // Prima ogni evento resize (anche la barra di Safari che si nasconde
         // scorrendo) riportava la telemetria su mobile a 200px.
-        // Desktop: il grafico dei tempi è un po' più basso della telemetria
-        // (tre pannelli), così sotto si vedono già i box dei dettagli in riga.
-        const DESKTOP_TIMES_CHART_HEIGHT = 360;
+        const DESKTOP_TIMES_CHART_HEIGHT = 360, DESKTOP_TELEMETRY_CHART_HEIGHT = 440;
         function chartContainerHeight() {
-            if (isDesktopLayout()) return (chartViewMode === 'telemetry' ? chartHeight : DESKTOP_TIMES_CHART_HEIGHT) + 'px';
+            if (isDesktopLayout()) return (chartViewMode === 'telemetry' ? DESKTOP_TELEMETRY_CHART_HEIGHT : DESKTOP_TIMES_CHART_HEIGHT) + 'px';
             if (isPhoneLandscape()) return Math.max(220, window.innerHeight - 64) + 'px';
             return chartViewMode === 'telemetry' ? '380px' : '';
         }
 
         function applyChartHeight() {
             chartContainer.style.height = chartContainerHeight();
-            scheduleReposition();
         }
 
-        // Allinea il bordo superiore del grafico a quello del primo riquadro
-        // di "Dettagli Qualifiche": il selettore circuito sopra il grafico è
-        // più alto (label + select) della sola intestazione "Dettagli
-        // Qualifiche" sopra il primo riquadro, quindi di default il grafico
-        // parte più in basso. Calcolato a runtime (non un valore fisso)
-        // perché l'altezza del primo riquadro varia da circuito a circuito
-        // (una entry con penaltyNote ha una riga in più).
-        let detailsPushDown = 0;
-        function alignChartTop() {
-            // Layout largo delle Qualifiche: dettagli sotto il grafico, niente da allineare.
-            if (!isDesktopLayout() || document.body.classList.contains('quali-wide')) {
-                chartCard.style.marginTop = '';
-                return;
-            }
-            chartCard.style.marginTop = '0px';
-            const firstDetailCard = detailsList.firstElementChild;
-            if (!firstDetailCard) return;
-            const naturalTop = chartCard.getBoundingClientRect().top;
-            // Se i dettagli sono scesi per far posto ai risultati aperti nel
-            // widget "Prossimo GP", il grafico non li segue: resta dove
-            // starebbe col widget chiuso.
-            const targetTop = firstDetailCard.getBoundingClientRect().top - detailsPushDown;
-            // Il selettore circuito (label + select) sopra il grafico è più
-            // alto dell'intestazione "Dettagli Qualifiche" sopra il primo
-            // riquadro: allineare del tutto i due bordi superiori
-            // spingerebbe il grafico dentro lo spazio del selettore
-            // (sovrapposizione segnalata dall'utente). Non si sale mai più
-            // in alto del bordo inferiore del selettore (+8px di margine
-            // minimo): l'allineamento è quindi "il più vicino possibile
-            // senza sovrapporsi", non necessariamente perfetto.
-            const selectorBottom = select.closest('div').getBoundingClientRect().bottom;
-            const minTop = selectorBottom + 8;
-            const desiredTop = Math.max(targetTop, minTop);
-            const delta = desiredTop - naturalTop;
-            chartCard.style.marginTop = delta + 'px';
-        }
-
-        // Il widget "Prossimo GP" (in alto a destra, ancorato al titolo) è
-        // più corto del titolo+selettore a sinistra, quindi sotto di lui
-        // restava uno spazio vuoto ben visibile prima che iniziasse
-        // "Dettagli Qualifiche" (segnalato dall'utente). Si tira su
-        // detailsColumn di conseguenza, mai più in basso della sua
-        // posizione naturale (solo per "chiudere" lo spazio in eccesso, non
-        // per spingere i dettagli più giù del normale). Eccezione: quando il
-        // widget si allunga oltre quella posizione (risultati di una sessione
-        // aperti) i dettagli scendono sotto di lui, come su mobile, invece di
-        // finirci sotto coperti. detailsPushDown (dichiarato prima di
-        // alignChartTop, che lo usa) = di quanto sono scesi.
-        function alignDetailsColumnTop() {
-            detailsPushDown = 0;
-            if (!isDesktopLayout()) {
-                detailsColumn.style.marginTop = '';
-                return;
-            }
-            detailsColumn.style.marginTop = '0px';
-            const widget = document.getElementById('featuredRaceWidgetDesktop');
-            if (!widget || !widget.firstElementChild) {
-                detailsColumn.style.marginTop = '';
-                return;
-            }
-            const naturalTop = detailsColumn.getBoundingClientRect().top;
-            const targetTop = widget.getBoundingClientRect().bottom + 8;
-            const delta = targetTop - naturalTop;
-            // Spostamento che si avrebbe a pannelli dei risultati chiusi: la
-            // differenza è lo spazio occupato dai risultati aperti.
-            const openResults = [...widget.querySelectorAll('[id*="-results-"]:not(.hidden)')]
-                .reduce((h, el) => h + el.getBoundingClientRect().height, 0);
-            detailsPushDown = delta - Math.min(delta - openResults, 0);
-            detailsColumn.style.marginTop = delta + 'px';
-        }
         // Un solo handler di resize, al massimo una volta per frame: prima
         // c'erano 5 listener separati che leggevano e scrivevano il layout
         // ognuno per conto suo a ogni evento (decine al secondo durante un
-        // ridimensionamento). L'ordine conta: le larghezze prima (le
-        // allineamenti dipendono da esse), detailsColumn già riposizionato
-        // prima che alignChartTop() ne legga il primo riquadro, e l'altezza
-        // del grafico per ultima.
+        // ridimensionamento). L'ordine conta: prima il tipo di layout, poi la
+        // larghezza del riquadro "Prossimo GP" (che misura il grafico) e
+        // l'altezza del grafico per ultima.
         let resizeFramePending = false;
         window.addEventListener('resize', () => {
             if (resizeFramePending) return;
@@ -2169,13 +1885,9 @@
             requestAnimationFrame(() => {
                 resizeFramePending = false;
                 applyLayoutMode();
-                applyClassificaPanelWidth();
                 applyTelemetryWide();
                 applyDetailsPrefs(); // ordine di default diverso tra desktop e mobile
-                applyDetailsColumnWidth();
                 applyFeaturedWidgetWidth();
-                alignDetailsColumnTop();
-                alignChartTop();
                 applyChartHeight();
                 // Rotazione del telefono / cambio di layout: la telemetria va
                 // ricreata (asse Y compatto o no, altezze diverse). Non a ogni
@@ -2190,28 +1902,6 @@
         });
         let lastLayoutKey = `${isDesktopLayout()}|${isPhoneLandscape()}|${isCompactTelemetryAxis()}`;
 
-        let vDragging = false, vStartY = 0, vStartHeight = chartHeight;
-        vResizeHandle.addEventListener('mousedown', (e) => {
-            vDragging = true;
-            vStartY = e.clientY;
-            vStartHeight = chartHeight;
-            document.body.style.cursor = 'row-resize';
-            document.body.style.userSelect = 'none';
-            e.preventDefault();
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (!vDragging) return;
-            const delta = e.clientY - vStartY;
-            chartHeight = Math.min(MAX_CHART_HEIGHT, Math.max(MIN_CHART_HEIGHT, vStartHeight + delta));
-            applyChartHeight();
-        });
-        window.addEventListener('mouseup', () => {
-            if (!vDragging) return;
-            vDragging = false;
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-        });
-
         function formatSecondsToTime(totalSeconds) {
             // Arrotondamento sul totale, prima di dividere in minuti e
             // secondi: arrotondando solo i millesimi, 83,9996 s diventava
@@ -2225,10 +1915,7 @@
 
         // --- VISTA CLASSIFICA ---
         function toggleClassificaPanel() {
-            toggleSeasonPanel('classificaPanel', () => {
-                renderClassifica();
-                applyClassificaPanelWidth();
-            });
+            toggleSeasonPanel('classificaPanel', renderClassifica);
         }
 
         function renderClassifica() {
@@ -2432,7 +2119,6 @@
             const panel = document.getElementById(panelId);
             if (!panel) return;
             slide(panel, !slideIsOpen(panel));
-            scheduleReposition(); // l'altezza del contenitore è cambiata
         }
 
         // Griglia a 3 colonne (pallino, etichetta, orario) condivisa tra il
@@ -2542,7 +2228,6 @@
             if (chevron) chevron.classList.toggle('rotate-180', open);
             const header = document.getElementById(`raceHeader-${idPrefix}-${round}`);
             if (header) header.setAttribute('aria-expanded', String(open));
-            scheduleReposition(); // l'altezza di leftColumn è cambiata
         }
 
         // Elenco gare (round, circuito, date weekend, vincitore) condiviso
@@ -2629,7 +2314,6 @@
             SEASON_PANELS.filter(other => other !== id).forEach(other => document.getElementById(other).classList.add('hidden'));
             render();
             panel.classList.remove('hidden');
-            scheduleReposition();
         }
 
         // Finestra dei pannelli: aperta finché uno dei quattro è visibile.
@@ -2739,7 +2423,6 @@
                         ${y}
                     </button>
                 `).join('');
-                scheduleReposition();
             };
             if (animate) await fadeSwap(body, render);
             else { body.style.opacity = '1'; render(); }
@@ -2776,7 +2459,6 @@
                 await fadeSwap(body, () => {
                     body.style.minHeight = `${keep}px`;
                     body.innerHTML = '<div class="text-gray-500 italic">Caricamento...</div>';
-                    scheduleReposition();
                 });
                 try {
                     const res = await fetch(`history/${year}.json`, { cache: 'no-cache' });
@@ -2790,7 +2472,6 @@
                         await fadeSwap(body, () => {
                             body.style.minHeight = '';
                             body.innerHTML = `<div class="text-gray-500 italic">⚠️ Dati non disponibili per il ${year}.</div>`;
-                            scheduleReposition();
                         });
                     }
                     return;
@@ -2801,7 +2482,6 @@
             await fadeSwap(body, () => {
                 body.style.minHeight = '';
                 body.innerHTML = renderRaceList(historyCache[year].races, `hist${year}`);
-                scheduleReposition();
             });
         }
 
@@ -2847,10 +2527,34 @@
             return past.length > 0 ? past[0] : null;
         }
 
+        // Cosa mostra il riquadro, conto alla rovescia a parte: GP in
+        // evidenza, stato di ogni sessione, meteo sì/no. Se non cambia, ogni
+        // minuto basta aggiornare il testo del conto alla rovescia (dal
+        // 2026-11-11; prima si ricostruiva tutto il riquadro, in entrambe le
+        // versioni, ogni minuto).
+        let featuredWidgetKey = null;
+        function featuredWidgetState() {
+            const race = determineFeaturedRace();
+            if (!race) return { race, countdown: null, key: 'nessuno' };
+            const raceStart = race.schedule && race.schedule.race && race.schedule.race.date && race.schedule.race.time
+                ? new Date(`${race.schedule.race.date}T${race.schedule.race.time}`)
+                : null;
+            const countdown = raceStart ? formatCountdown(raceStart) : null;
+            const statuses = SESSION_LABELS.map(([key]) => getSessionStatus(race.schedule && race.schedule[key], SESSION_DURATION_MIN[key])).join(',');
+            return { race, countdown, key: [calendarData.season, race.round, race.circuit, !!countdown, !!forecastFor(race), statuses].join('|') };
+        }
+
+        function tickFeaturedRace() {
+            const { key, countdown } = featuredWidgetState();
+            if (key !== featuredWidgetKey) return renderFeaturedRace();
+            document.querySelectorAll('.featured-countdown').forEach(el => { el.textContent = `⏳ ${countdown}`; });
+        }
+
         function renderFeaturedRace() {
             const mobileContainer = document.getElementById('featuredRaceWidget');
             const desktopContainer = document.getElementById('featuredRaceWidgetDesktop');
-            const race = determineFeaturedRace();
+            const { race, countdown, key } = featuredWidgetState();
+            featuredWidgetKey = key;
             if (!race) {
                 if (mobileContainer) mobileContainer.innerHTML = '';
                 if (desktopContainer) desktopContainer.innerHTML = '';
@@ -2860,24 +2564,21 @@
             // Data del weekend affiancata al nome del circuito (non più su
             // una riga a parte sotto): riduce l'altezza del riquadro di una
             // riga.
-            const raceStart = race.schedule && race.schedule.race && race.schedule.race.date && race.schedule.race.time
-                ? new Date(`${race.schedule.race.date}T${race.schedule.race.time}`)
-                : null;
-            const countdown = raceStart ? formatCountdown(raceStart) : null;
 
             const headerHtml = `<span class="font-bold text-gray-200 text-xs">🏁 ${race.round}. ${escapeHtml(race.circuit)}</span>
                 <span class="text-gray-500"> · ${formatRaceDateRange(race.weekendStart, race.date)}</span>` +
                 // Countdown su una riga a sé, sotto nome e date del weekend.
-                (countdown ? `<div class="text-gray-400 mt-0.5">⏳ ${countdown}</div>` : '');
+                (countdown ? `<div class="featured-countdown text-gray-400 mt-0.5">⏳ ${countdown}</div>` : '');
 
             // idPrefix diverso per mobile/desktop: la stessa gara compare in
             // entrambi i contenitori contemporaneamente (uno nascosto via CSS,
             // non rimosso dal DOM), quindi senza un prefisso diverso gli id dei
             // pannelli "Risultati" sarebbero duplicati sulla pagina.
             //
-            // Questa funzione gira ogni 60s e ricostruisce l'HTML: i pannelli
-            // "Risultati" che l'utente ha aperto vanno ricordati e riaperti,
-            // altrimenti si richiudevano da soli ogni minuto mentre li leggeva.
+            // Quando il riquadro si ricostruisce (es. una sessione passa da
+            // live a conclusa) i pannelli "Risultati" che l'utente ha aperto
+            // vanno ricordati e riaperti, altrimenti si richiudevano da soli
+            // mentre li leggeva.
             // Uno che si sta richiudendo a tendina conta già come chiuso.
             const openPanelIds = [...document.querySelectorAll('[id^="widget-"][id*="-results-"]:not(.hidden)')]
                 .filter(el => el.__slideTarget !== false).map(el => el.id);
@@ -2959,11 +2660,8 @@
                 await openPaceView(state);
             } else {
                 // Tornando alle qualifiche il layout ha di nuovo il suo
-                // contenuto: si riallineano grafico e colonne.
-                applyDetailsColumnWidth();
+                // contenuto: si rimisurano riquadro "Prossimo GP" e grafico.
                 applyFeaturedWidgetWidth();
-                alignDetailsColumnTop();
-                alignChartTop();
                 applyChartHeight();
             }
             syncUrlState();
@@ -3668,7 +3366,6 @@
                 // ripristinato quando si torna alla vista normale sotto.
                 chartContainer.style.height = chartContainerHeight();
                 renderTelemetryCharts();
-                scheduleReposition();
                 return;
             }
 
@@ -3709,8 +3406,8 @@
                         maintainAspectRatio: false,
                         // Il ResizeObserver interno di Chart.js scatta anche alla
                         // creazione del chart e, su desktop, il riposizionamento
-                        // delle maniglie (scheduleReposition, subito dopo) forza un
-                        // reflow che lo fa scattare troppo presto: senza questo
+                        // delle maniglie (tolte il 2026-11-11) forzava un
+                        // reflow che lo faceva scattare troppo presto: senza questo
                         // ritardo Chart.js annulla l'animazione d'ingresso quasi
                         // subito (osservato: si completava in ~10ms invece di 1s,
                         // la durata di allora).
@@ -3764,8 +3461,8 @@
                         maintainAspectRatio: false,
                         // Il ResizeObserver interno di Chart.js scatta anche alla
                         // creazione del chart e, su desktop, il riposizionamento
-                        // delle maniglie (scheduleReposition, subito dopo) forza un
-                        // reflow che lo fa scattare troppo presto: senza questo
+                        // delle maniglie (tolte il 2026-11-11) forzava un
+                        // reflow che lo faceva scattare troppo presto: senza questo
                         // ritardo Chart.js annulla l'animazione d'ingresso quasi
                         // subito (osservato: si completava in ~10ms invece di 1s,
                         // la durata di allora).
@@ -3799,7 +3496,6 @@
                     }
                 });
             }
-            scheduleReposition();
         }
 
         // Messaggio al posto di un grafico quando Chart.js non è disponibile.
@@ -3901,7 +3597,6 @@
             // ridisegna da solo (0,4 s).
             fadeIn(detailsList);
 
-            alignChartTop();
             syncUrlState();
         }
 

@@ -19,7 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const { matchCircuitById } = require('./lib/f1-mapping');
 const { writeStatus } = require('./lib/status');
-const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1Sessions, CIRCUIT_MAP } = require('./lib/openf1');
 const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
 const { knownDriverNames } = require('./lib/driver-names');
@@ -31,7 +31,7 @@ const { checkSprintWithJolpica } = require('./lib/sprint-check');
 // Jolpica o restano quelli già salvati.
 async function loadOpenF1Sessions(season) {
     try {
-        return await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}`);
+        return await openf1Sessions(season);
     } catch (err) {
         console.warn(`⚠️  Sessioni OpenF1 non disponibili (${err.message}): risultati da Jolpica o in cache.`);
         return [];

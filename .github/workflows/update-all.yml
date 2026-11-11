@@ -13,6 +13,11 @@ on:
 permissions:
   contents: write
 
+# Più script OpenF1 di seguito nello stesso job: la lista di meetings e
+# sessioni della stagione si scarica una volta e si riusa (lib/openf1.js).
+env:
+  OPENF1_CACHE_DIR: /tmp/f1-openf1-cache
+
 jobs:
   update-all:
     runs-on: ubuntu-latest

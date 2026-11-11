@@ -19,7 +19,7 @@ const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces } = require('./lib/jolpica');
 const { writeStatus } = require('./lib/status');
 const { HttpError } = require('./lib/http');
-const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1Json, openf1Sessions: openf1SeasonSessions, CIRCUIT_MAP } = require('./lib/openf1');
 const { surnameKey, knownDriverNames, siteDriverName } = require('./lib/driver-names');
 
 // Nome di chi parte davanti come sul resto del sito ("Andrea Kimi Antonelli",
@@ -161,7 +161,7 @@ async function main() {
     const currentData = JSON.parse(fs.readFileSync(DATA_JSON_PATH, 'utf-8'));
     let openf1Sessions = null;
     try {
-        openf1Sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Qualifying`);
+        openf1Sessions = (await openf1SeasonSessions(season)).filter(s => s.session_name === 'Qualifying');
     } catch (err) {
         console.warn(`⚠️  OpenF1 non disponibile (${err.message}): griglia da Jolpica.`);
     }

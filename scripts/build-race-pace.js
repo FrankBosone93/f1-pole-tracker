@@ -29,7 +29,7 @@
 const fs = require('fs');
 const path = require('path');
 const { writeStatus } = require('./lib/status');
-const { openf1Json, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
+const { openf1Json, openf1Sessions, CIRCUIT_MAP, circuitSlug } = require('./lib/openf1');
 const { HttpError } = require('./lib/http');
 const { knownDriverNames, siteDriverName } = require('./lib/driver-names');
 const { matchTeam } = require('./lib/f1-mapping');
@@ -343,7 +343,7 @@ async function main() {
     let changed = false;
     const errors = [];
     for (const season of seasons) {
-        const sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Race`);
+        const sessions = (await openf1Sessions(season)).filter(s => s.session_name === 'Race');
         const recent = r => (now - new Date(`${r.date}T23:59:59Z`)) / 86400000 < RECHECK_DAYS;
         const known = new Set(REFRESH ? [] : (index.races[season] || []).filter(r => !recent(r)).map(r => r.circuit));
         const todo = sessions

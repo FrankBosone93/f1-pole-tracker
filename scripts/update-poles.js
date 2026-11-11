@@ -34,7 +34,7 @@ const { jolpicaRaces, jolpicaDriver } = require('./lib/jolpica');
 const { fetchQualyWeather } = require('./lib/weather');
 const { writeStatus } = require('./lib/status');
 const { HttpError } = require('./lib/http');
-const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1Json, openf1Sessions: openf1SeasonSessions, CIRCUIT_MAP } = require('./lib/openf1');
 const { knownDriverNames, siteDriverName, surnameKey } = require('./lib/driver-names');
 
 const DATA_JSON_PATH = path.join(__dirname, '..', 'data.json');
@@ -242,7 +242,7 @@ async function main() {
     // risponde (es. sessione F1 in corso) si va avanti solo con Jolpica.
     let openf1Sessions = null;
     try {
-        openf1Sessions = await openf1Json(`https://api.openf1.org/v1/sessions?year=${season}&session_name=Qualifying`);
+        openf1Sessions = (await openf1SeasonSessions(season)).filter(s => s.session_name === 'Qualifying');
     } catch (err) {
         console.warn(`⚠️  OpenF1 non disponibile (${err.message}): pole solo da Jolpica in questo run.`);
     }

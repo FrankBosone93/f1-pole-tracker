@@ -36,7 +36,7 @@
 const fs = require('fs');
 const path = require('path');
 const { matchCircuitById } = require('./lib/f1-mapping');
-const { openf1Json, CIRCUIT_MAP } = require('./lib/openf1');
+const { openf1Sessions, CIRCUIT_MAP } = require('./lib/openf1');
 const { loadSeasonCalendar } = require('./lib/season-calendar');
 const { jolpicaRaces, jolpicaRaceRows, jolpicaQualyRows } = require('./lib/jolpica');
 const DAY_MS = 86400000;
@@ -55,7 +55,7 @@ const HISTORY_SESSIONS = ['Race', 'Qualifying', 'Sprint', 'Sprint Qualifying'];
 async function openf1RaceSessions(year) {
     if (year < OPENF1_FIRST_YEAR) return [];
     try {
-        const all = await openf1Json(`https://api.openf1.org/v1/sessions?year=${year}`);
+        const all = await openf1Sessions(year);
         return all.filter(s => HISTORY_SESSIONS.includes(s.session_name));
     } catch (err) {
         console.warn(`⚠️  ${year}: gare OpenF1 non disponibili (${err.message}), uso Jolpica.`);
