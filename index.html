@@ -3071,14 +3071,49 @@
             return set;
         }
 
-        // Giri "puliti" di un pilota, usati per scala e statistiche: niente
-        // primo giro, giri di entrata/uscita dai box, giri sotto safety car /
-        // VSC o bandiera rossa, e niente giri oltre il 110% della mediana (un
-        // giro con un problema o un'escursione falserebbe passo e costanza).
-        function cleanLapTimes(race, n, neutral) {
-            const times = race.laps[n] || [];
+        // Mediana dei tempi di tutti i piloti, giro per giro (una volta per gara).
+        const fieldLapMediansCache = new WeakMap();
+        function fieldLapMedians(race) {
+            if (!fieldLapMediansCache.has(race)) {
+                const medians = [];
+                for (let i = 0; i < race.totalLaps; i++) {
+                    const times = Object.values(race.laps).map(l => l[i]).filter(t => typeof t === 'number').sort((x, y) => x - y);
+                    medians.push(times.length ? times[Math.floor(times.length / 2)] : null);
+                }
+                fieldLapMediansCache.set(race, medians);
+            }
+            return fieldLapMediansCache.get(race);
+        }
+
+        // Giri di gara di un pilota senza primo giro, giri di entrata/uscita
+        // dai box e giri sotto safety car / VSC o bandiera rossa: [[tempo, indice]].
+        function racingLaps(race, n, neutral) {
             const skip = new Set([...(race.pitIn[n] || []), ...(race.pitOut[n] || []), ...(race.redFlags || [])]);
-            const base = times.filter((t, i) => typeof t === 'number' && i > 0 && !skip.has(i + 1) && !neutral.has(i + 1));
+            return (race.laps[n] || []).map((t, i) => [t, i])
+                .filter(([t, i]) => typeof t === 'number' && i > 0 && !skip.has(i + 1) && !neutral.has(i + 1));
+        }
+
+        // Giri "puliti" per la SCALA del grafico: niente giri oltre il 110%
+        // della mediana di tutti i piloti in QUEL giro (un giro con un
+        // problema o un'escursione). Fino al 2026-11-11 valeva la mediana del
+        // pilota su tutta la gara (sotto, paceLapTimes): nelle gare con
+        // pioggia i giri sul bagnato, lenti per tutti, finivano sopra il
+        // bordo del grafico (Interlagos 2026: i primi 17 giri, sulle
+        // intermedie a 86-90 s contro i 76 s dell'asciutto, comparivano solo
+        // dal giro 18).
+        function cleanLapTimes(race, n, neutral) {
+            const field = fieldLapMedians(race);
+            return racingLaps(race, n, neutral).filter(([t, i]) => field[i] !== null && t <= field[i] * 1.10).map(([t]) => t);
+        }
+
+        // Giri per PASSO MEDIO e COSTANZA: come sempre, niente giri oltre il
+        // 110% della mediana del pilota su tutta la gara. Nelle gare con
+        // pioggia restano quindi i giri sull'asciutto: con quelli sul bagnato
+        // la costanza misurerebbe la differenza tra le due condizioni
+        // (Interlagos 2026, Norris: ±5,41 s invece di ±2,18 s). Scelta del
+        // 2026-11-11: i numeri non cambiano in nessuna gara.
+        function paceLapTimes(race, n, neutral) {
+            const base = racingLaps(race, n, neutral).map(([t]) => t);
             if (!base.length) return [];
             const sorted = base.slice().sort((x, y) => x - y);
             const median = sorted[Math.floor(sorted.length / 2)];
@@ -3086,7 +3121,7 @@
         }
 
         function paceStats(race, drv, neutral) {
-            const clean = cleanLapTimes(race, drv.n, neutral);
+            const clean = paceLapTimes(race, drv.n, neutral);
             const valid = (race.laps[drv.n] || []).filter(t => typeof t === 'number');
             const mean = clean.length ? clean.reduce((s, t) => s + t, 0) / clean.length : null;
             const sd = clean.length > 1 ? Math.sqrt(clean.reduce((s, t) => s + (t - mean) ** 2, 0) / (clean.length - 1)) : null;
