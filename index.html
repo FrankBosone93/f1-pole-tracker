@@ -2741,7 +2741,7 @@
                 .filter(season => season.gps.length);
             if (seasons.reduce((n, season) => n + season.gps.length, 0) < 2) return '';
             const options = season => season.gps.slice().reverse()
-                .map(g => `<option value="${escapeHtml(g.file)}">${g.round}. ${escapeHtml(g.circuit)}</option>`).join('');
+                .map(g => `<option value="${escapeHtml(g.file)}">R${g.round} - ${escapeHtml(g.circuit)}</option>`).join('');
             return `<select aria-label="Scegli il GP" onchange="selectStatsGp(this.value)" class="shrink-0 w-[8.5rem] bg-[#121212] text-gray-300 text-xs border border-gray-700 rounded-md px-1.5 py-1 focus:outline-none focus:border-[#E10600]">
                 <option value="" selected disabled hidden>Scegli un circuito</option>
                 ${seasons.length > 1 ? seasons.map(season => `<optgroup label="${season.year}">${options(season)}</optgroup>`).join('') : options(seasons[0])}
@@ -2757,7 +2757,9 @@
             const facts = gp.facts.map(f => `<li class="flex gap-2"><span class="shrink-0">${f.icon}</span><span>${changelogItemHtml(f.text)}</span></li>`).join('');
             const qualiLink = '#' + new URLSearchParams({ c: gp.circuit }).toString().replace(/\+/g, '%20');
             const paceLink = '#' + new URLSearchParams({ mode: 'pace', y: String(data.year), c: gp.circuit }).toString().replace(/\+/g, '%20');
-            return statsCard(`${gp.round}. ${escapeHtml(gp.circuit)} ${data.year}`,
+            // Titolo senza il numero del round (dal 2026-11-11), che resta
+            // nel menu dei GP come "R20 - Interlagos (San Paolo)".
+            return statsCard(`${escapeHtml(gp.circuit)} ${data.year}`,
                     `${gp.story?.text ? `<p class="text-sm text-gray-200 leading-relaxed">${escapeHtml(gp.story.text)}</p>
                     <p class="text-[11px] text-gray-500 mt-1.5 mb-4 pb-4 border-b border-gray-800">Racconto scritto con l'IA dai dati del sito.</p>` : ''}
                     <ul class="space-y-2 text-sm text-gray-200">${facts}</ul>
