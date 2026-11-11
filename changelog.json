@@ -1,6 +1,37 @@
 {
   "entries": [
     {
+      "date": "2026-11-11",
+      "title": "Changelog — 11 Novembre 2026",
+      "sections": [
+        {
+          "title": "Passo gara",
+          "items": [
+            "Nelle gare con la pioggia il grafico mostra anche i **giri sul bagnato**: a Interlagos 2026 si vede tutta la gara dal giro 2, non più solo dal giro 18. **Passo medio** e **costanza** restano calcolati come prima."
+          ]
+        },
+        {
+          "title": "Statistiche",
+          "items": [
+            "Il menu dei GP mostra il round e il circuito, ad esempio **«R20 - Interlagos (San Paolo)»**, e il titolo del riepilogo diventa **«Interlagos (San Paolo) 2026 - R20»**.",
+            "I titoli dei riquadri sono un po' più grandi, in **corsivo maiuscolo**, e quelli lunghi stanno al massimo su due righe."
+          ]
+        },
+        {
+          "title": "Stagioni precedenti",
+          "items": [
+            "Nelle stagioni **2021** e **2022** gli esiti di gara sono scritti come nel resto del sito: «+1 giro», «Ritirato», «Non partito», «Squalificato»."
+          ]
+        },
+        {
+          "title": "Affidabilità",
+          "items": [
+            "Il sito è un po' più leggero e veloce: le statistiche si ricalcolano solo quando arrivano dati nuovi e il countdown del prossimo GP aggiorna solo sé stesso."
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-11-10",
       "title": "Changelog — 10 Novembre 2026",
       "sections": [
