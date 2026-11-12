@@ -3046,12 +3046,14 @@
         // Mescole Pirelli: colori ufficiali e sigla.
         // Gomma del giro di pole nel riquadro dell'anno (dal 2023, da
         // telemetry.json), accanto al nome del pilota: pallino con il colore
-        // della mescola, come nel passo gara, e nome della mescola. Niente se
-        // il dato non c'è (2021-2022, o OpenF1 senza stint).
+        // della mescola, come nel passo gara, e sigla della mescola (S, M, H,
+        // I, W; dal 2026-11-12, prima il nome intero "Soft"), con il nome nel
+        // suggerimento. Niente se il dato non c'è (2021-2022, o OpenF1 senza
+        // stint).
         function poleTyreHtml(compound) {
             if (!compound) return '';
             const c = compoundOf(compound);
-            return `<span class="inline-flex items-center gap-1 text-xs text-gray-400 font-normal" title="Gomma del giro di pole"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span>${escapeHtml(c.label)}</span>`;
+            return `<span class="inline-flex items-center gap-1 text-xs text-gray-400 font-normal" title="Gomma del giro di pole: ${escapeHtml(c.label)}"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span>${escapeHtml(c.letter)}</span>`;
         }
 
         const COMPOUNDS = {
