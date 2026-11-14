@@ -1,7 +1,14 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-11-14T11:25:46.111Z",
+  "updatedAt": "2026-11-14T17:58:01.777Z",
   "items": [
+    {
+      "title": "Steiner: “Prima o poi Antonelli guiderà per la Ferrari”",
+      "link": "https://www.formulapassion.it/f1/f1-news/la-certezza-di-steiner-prima-o-poi-antonelli-guidera-per-la-ferrari",
+      "date": "2026-11-14T17:00:00.000Z",
+      "author": "Alessandro Prada",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/11/GettyImages-2303013297-436x291.jpg"
+    },
     {
       "title": "Verstappen: “Probabilmente correrò le 24 Ore di Spa e del Nürburgring. Le Mans non è nei miei piani, per adesso”",
       "link": "https://www.formulapassion.it/f1/f1-news/verstappen-probabilmente-correro-le-24-ore-di-spa-e-del-nurburgring-le-mans-non-e-nei-miei-piani-per-adesso",
@@ -29,13 +36,6 @@
       "date": "2026-11-14T07:00:00.000Z",
       "author": "Valerio Barretta",
       "image": "https://storage.googleapis.com/fp-media/1/2026/10/GettyImages-2293833610-1-436x291.jpg"
-    },
-    {
-      "title": "Terruzzi: “Leclerc e Hamilton fanno politica. Ma uno è coccolato in Ferrari, l’altro sta sulle balle a tanti”",
-      "link": "https://www.formulapassion.it/f1/f1-news/terruzzi-leclerc-hamilton-fanno-politica-uno-coccolato-in-ferrari-laltro-sta-sulle-balle",
-      "date": "2026-11-14T07:00:00.000Z",
-      "author": "Stefano Ollanu",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/11/Leclerc-Hamilton-Ferrari-436x291.jpg"
     }
   ]
 }
