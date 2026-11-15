@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-10T19:39:07.021Z",
+  "updatedAt": "2026-11-15T14:42:06.858Z",
   "lastGp": {
     "round": 20,
     "circuit": "Interlagos (San Paolo)",
@@ -383,8 +383,8 @@
         "team": "RB",
         "a": "Liam Lawson",
         "b": "Arvid Lindblad",
-        "aAhead": 11,
-        "bAhead": 6
+        "aAhead": 10,
+        "bAhead": 7
       },
       {
         "team": "Red Bull",
@@ -1225,9 +1225,9 @@
       }
     ],
     "story": {
-      "text": "Il Mondiale 2026 parla la lingua di Andrea Kimi Antonelli e della Mercedes. George Russell aveva aperto in testa vincendo a Melbourne, ma da Suzuka, terza gara, il comando è passato ad Antonelli e non è più cambiato. Con 9 vittorie, 16 podi e 7 pole il pilota Mercedes ha chiuso i conti a Città del Messico, con 4 gare d'anticipo. La squadra ha poi blindato il titolo costruttori a Interlagos, forte di 12 vittorie e 12 pole su 20 gare.\n\nLe sorprese non sono mancate. A Monza Antonelli ha vinto partendo 19°, rimontando 18 posizioni, nel giorno della pole di Pierre Gasly con l'Alpine. Nella seconda parte di stagione è cresciuto Max Verstappen, vincitore a Sepang, a Singapore, dove ha conquistato anche la Sprint, e a Città del Messico, poi 2° a Interlagos partendo 21°. In qualifica i duelli più netti tra compagni sono stati quelli di Fernando Alonso su Lance Stroll (16-2) e di Carlos Sainz su Alex Albon (15-4).\n\nMancano 3 gare, a partire da Las Vegas, e resta aperta la lotta per il secondo posto: Verstappen ha 279 punti, Russell 262 e Hamilton 261. Tra i costruttori la Ferrari, con 510 punti, precede la Red Bull, ferma a 415.",
+      "text": "Andrea Kimi Antonelli ha dominato il 2026. George Russell, vincitore a Melbourne, era ancora leader dopo Shanghai, 51 punti contro 47. A Suzuka però Antonelli è passato in testa e non l'ha più lasciata. Con 9 vittorie, 16 podi e 7 pole ha chiuso il conto a Città del Messico, con 4 gare d'anticipo. Il suo capolavoro è Monza: vittoria partendo 19°, nel weekend della pole a sorpresa di Pierre Gasly con l'Alpine.\n\nLa Mercedes si è presa il titolo costruttori a Interlagos con 12 vittorie su 20 e 652 punti, contro i 510 della Ferrari. Il Cavallino ha vinto con Lewis Hamilton a Barcellona e con Charles Leclerc a Silverstone, mentre Lando Norris ha firmato 3 successi con la McLaren. Nel finale è emerso Max Verstappen: vittorie a Sepang, Singapore e Città del Messico, poi secondo a Interlagos partendo 21°. In qualifica spicca Fernando Alonso, davanti a Lance Stroll 16 volte contro 2.\n\nMancano 3 gare, a partire da Las Vegas. Resta da decidere il secondo posto, con Verstappen a 279 punti, Russell a 262, Hamilton a 261 e Leclerc a 249.",
       "model": "claude-opus-5-5",
-      "hash": "947416a6e625b9dc",
+      "hash": "2d617838fd921887",
       "round": 20,
       "circuit": "Interlagos (San Paolo)"
     }
