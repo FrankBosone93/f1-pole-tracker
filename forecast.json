@@ -1,13 +1,13 @@
 {
   "source": "Open-Meteo",
-  "updatedAt": "2026-11-18T20:51:35.235Z",
+  "updatedAt": "2026-11-19T12:03:56.287Z",
   "season": 2026,
   "round": 21,
   "circuit": "Las Vegas",
   "sessions": {
     "qualy": {
       "rain": 0,
-      "temp": 13,
+      "temp": 9,
       "icon": "🌙",
       "sky": "Sereno"
     },
