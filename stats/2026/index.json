@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-15T14:42:06.858Z",
+  "updatedAt": "2026-11-21T07:32:32.242Z",
   "lastGp": {
     "round": 20,
     "circuit": "Interlagos (San Paolo)",
@@ -224,7 +224,7 @@
         "team": "Mercedes",
         "wins": 9,
         "podiums": 16,
-        "poles": 7
+        "poles": 8
       },
       {
         "name": "Max Verstappen",
@@ -288,7 +288,7 @@
         "name": "Mercedes",
         "wins": 12,
         "podiums": 24,
-        "poles": 12
+        "poles": 13
       },
       {
         "name": "Red Bull",
