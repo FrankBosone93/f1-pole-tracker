@@ -1204,5 +1204,14 @@
     "timeStr": "1:27.470",
     "seconds": 87.47,
     "weather": "🌧️ Pioggia Battente"
+  },
+  {
+    "year": 2026,
+    "circuit": "Las Vegas",
+    "driver": "Andrea Kimi Antonelli",
+    "team": "Mercedes",
+    "timeStr": "1:33.893",
+    "seconds": 93.893,
+    "weather": "☁️ Notturno Nuvoloso"
   }
 ]
