@@ -1,13 +1,13 @@
 {
   "source": "Open-Meteo",
-  "updatedAt": "2026-11-21T11:40:42.010Z",
+  "updatedAt": "2026-11-21T19:43:43.665Z",
   "season": 2026,
   "round": 21,
   "circuit": "Las Vegas",
   "sessions": {
     "race": {
       "rain": 0,
-      "temp": 8,
+      "temp": 7,
       "icon": "☁️",
       "sky": "Coperto"
     }
