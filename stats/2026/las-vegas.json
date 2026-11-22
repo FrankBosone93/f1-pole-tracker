@@ -17,7 +17,7 @@
     },
     {
       "icon": "📉",
-      "text": "**Più posizioni perse**: Isack Hadjar, da 4° a 14° (-10)."
+      "text": "**Più posizioni perse**: Isack Hadjar, da 4° a 15° (-11)."
     },
     {
       "icon": "⚡",
@@ -105,8 +105,8 @@
   ],
   "storyStatus": "complete",
   "story": {
-    "text": "A Las Vegas Max Verstappen vince con una sola sosta (Soft → Medium), precedendo Lando Norris di 0,639 s. Andrea Kimi Antonelli, poleman in 1:33.893, chiude 4°, mentre la rimonta più notevole è quella di Oscar Piastri, terzo dopo essere partito 17° (+14). In una gara con safety car dal giro 19 al 25, Lewis Hamilton e Charles Leclerc ricevono 10 secondi di penalità e chiudono 7° e 10°. Nel mondiale Antonelli, già Campione, sale a 402 punti, con Verstappen secondo a 304.",
+    "text": "Max Verstappen vince il Gran Premio di Las Vegas 2026 partendo dalla prima casella e con una sola sosta (Soft → Medium), precedendo Lando Norris di 0,639 s. Terzo Oscar Piastri, autore della rimonta più ampia, da 17° a 3°, mentre il poleman Andrea Kimi Antonelli chiude 4° dopo essere scattato sesto. La safety car è intervenuta dal giro 19 al 25. Nel mondiale, con Antonelli già Campione, Verstappen è secondo con 304 punti, davanti a Hamilton con 267 e a Russell e Norris a quota 264.",
     "model": "claude-opus-5-5",
-    "hash": "9530e5bb29061b46"
+    "hash": "08c5e9677d637159"
   }
 }
