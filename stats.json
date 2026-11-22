@@ -1,42 +1,42 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-21T16:17:27.042Z",
+  "updatedAt": "2026-11-22T07:14:10.133Z",
   "lastGp": {
-    "round": 20,
-    "circuit": "Interlagos (San Paolo)",
-    "date": "2026-11-08",
+    "round": 21,
+    "circuit": "Las Vegas",
+    "date": "2026-11-22",
     "facts": [
       {
-        "icon": "🌧️",
-        "text": "**Pole sul bagnato** per Lando Norris (1:27.470): tempo non confrontabile con le qualifiche asciutte."
+        "icon": "⏱️",
+        "text": "**Pole 1:33.893**: 1,581 s più lenta della pole 2024 (George Russell), prima stagione qui con le regole 2026."
       },
       {
         "icon": "🏁",
-        "text": "**Pole e vittoria**: Lando Norris."
+        "text": "**Andrea Kimi Antonelli**, autore della pole, chiude 4°."
       },
       {
         "icon": "📈",
-        "text": "**Più posizioni guadagnate**: Max Verstappen, da 21° a 2° (+19)."
+        "text": "**Più posizioni guadagnate**: Oscar Piastri, da 17° a 3° (+14)."
       },
       {
         "icon": "📉",
-        "text": "**Più posizioni perse**: Oliver Bearman, da 6° a 17° (-11)."
+        "text": "**Più posizioni perse**: Isack Hadjar, da 4° a 14° (-10)."
       },
       {
         "icon": "⚡",
-        "text": "**Giro più veloce**: Andrea Kimi Antonelli in 1:12.689 (giro 55)."
+        "text": "**Giro più veloce**: Liam Lawson in 1:35.591 (giro 50)."
       },
       {
         "icon": "🛞",
-        "text": "**Lando Norris** ha vinto con 3 soste (Intermedia → Soft → Soft → Intermedia)."
+        "text": "**Max Verstappen** ha vinto con 1 sosta (Soft → Medium)."
       },
       {
         "icon": "🔧",
-        "text": "**Strategia più usata**: 3 soste (17 piloti su 20 classificati)."
+        "text": "**Strategia più usata**: 1 sosta (16 piloti su 19 classificati)."
       },
       {
         "icon": "💨",
-        "text": "**Velocità massima** nel giro di pole: 299 km/h (2025: 336 km/h)."
+        "text": "**Velocità massima** nel giro di pole: 351 km/h (2025: 331 km/h)."
       },
       {
         "icon": "🏆",
@@ -44,7 +44,7 @@
       },
       {
         "icon": "🏆",
-        "text": "**Mercedes** è matematicamente Campione del Mondo Costruttori 2026, con 3 gare d'anticipo."
+        "text": "**Mercedes** è già Campione del Mondo Costruttori 2026: titolo deciso a Interlagos, con 3 gare d'anticipo."
       }
     ],
     "standings": {
@@ -52,57 +52,65 @@
         {
           "position": 1,
           "driver": "Andrea Kimi Antonelli",
-          "points": 390
+          "points": 402
         },
         {
           "position": 2,
           "driver": "Max Verstappen",
-          "points": 279
+          "points": 304
         },
         {
           "position": 3,
-          "driver": "George Russell",
-          "points": 262
+          "driver": "Lewis Hamilton",
+          "points": 267
         },
         {
           "position": 4,
-          "driver": "Lewis Hamilton",
-          "points": 261
+          "driver": "George Russell",
+          "points": 264
         },
         {
           "position": 5,
-          "driver": "Charles Leclerc",
-          "points": 249
+          "driver": "Lando Norris",
+          "points": 264
         }
       ],
       "constructors": [
         {
           "position": 1,
           "team": "Mercedes",
-          "points": 652
+          "points": 666
         },
         {
           "position": 2,
           "team": "Ferrari",
-          "points": 510
+          "points": 517
         }
       ]
     },
     "raceControl": [
       {
-        "giro": 42,
-        "messaggio": "FIA STEWARDS: 5 SECOND TIME PENALTY FOR Alex Albon - REJOINING UNSAFELY"
+        "giro": 17,
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Lewis Hamilton - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
       },
       {
-        "giro": 53,
-        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Nico Hulkenberg - LEAVING THE TRACK AND GAINING AN ADVANTAGE"
+        "giro": 19,
+        "messaggio": "SAFETY CAR DEPLOYED"
+      },
+      {
+        "giro": 25,
+        "messaggio": "SAFETY CAR IN THIS LAP"
+      },
+      {
+        "giro": 42,
+        "messaggio": "FIA STEWARDS: 10 SECOND TIME PENALTY FOR Charles Leclerc - CAUSING A COLLISON"
       }
     ],
     "storyStatus": "complete",
     "story": {
-      "text": "Lando Norris trasforma in vittoria la pole conquistata sotto la pioggia battente a Interlagos e chiude con 3 soste davanti a Max Verstappen, secondo a 14,602 s dopo una rimonta dal 21° posto in griglia. Completa il podio Isack Hadjar, mentre Andrea Kimi Antonelli, quinto, firma il giro più veloce in 1:12.689. A San Paolo Mercedes diventa matematicamente Campione del Mondo Costruttori 2026, con 3 gare d'anticipo. Nel mondiale piloti Antonelli comanda con 390 punti, davanti a Verstappen con 279.",
+      "text": "A Las Vegas Max Verstappen vince con una sola sosta (Soft → Medium), precedendo Lando Norris di 0,639 s. Andrea Kimi Antonelli, poleman in 1:33.893, chiude 4°, mentre la rimonta più notevole è quella di Oscar Piastri, terzo dopo essere partito 17° (+14). In una gara con safety car dal giro 19 al 25, Lewis Hamilton e Charles Leclerc ricevono 10 secondi di penalità e chiudono 7° e 10°. Nel mondiale Antonelli, già Campione, sale a 402 punti, con Verstappen secondo a 304.",
       "model": "claude-opus-5-5",
-      "hash": "4cefe7df43c47e10"
+      "hash": "9530e5bb29061b46"
     }
   },
   "gps": [
@@ -205,16 +213,21 @@
       "round": 20,
       "circuit": "Interlagos (San Paolo)",
       "file": "stats/2026/interlagos-san-paolo.json"
+    },
+    {
+      "round": 21,
+      "circuit": "Las Vegas",
+      "file": "stats/2026/las-vegas.json"
     }
   ],
   "season": {
-    "racesDone": 20,
+    "racesDone": 21,
     "racesTotal": 23,
     "winners": 6,
     "poleSitters": 6,
     "poleToWin": {
       "converted": 14,
-      "of": 20
+      "of": 21
     },
     "frontRowLockouts": 4,
     "wetQualifyings": 1,
@@ -229,8 +242,8 @@
       {
         "name": "Max Verstappen",
         "team": "Red Bull",
-        "wins": 3,
-        "podiums": 12,
+        "wins": 4,
+        "podiums": 13,
         "poles": 2
       },
       {
@@ -244,7 +257,7 @@
         "name": "Lando Norris",
         "team": "McLaren",
         "wins": 3,
-        "podiums": 6,
+        "podiums": 7,
         "poles": 4
       },
       {
@@ -272,7 +285,7 @@
         "name": "Oscar Piastri",
         "team": "McLaren",
         "wins": 0,
-        "podiums": 2,
+        "podiums": 3,
         "poles": 0
       },
       {
@@ -292,14 +305,14 @@
       },
       {
         "name": "Red Bull",
-        "wins": 3,
-        "podiums": 15,
+        "wins": 4,
+        "podiums": 16,
         "poles": 2
       },
       {
         "name": "McLaren",
         "wins": 3,
-        "podiums": 8,
+        "podiums": 10,
         "poles": 4
       },
       {
@@ -1222,14 +1235,54 @@
             "points": 415
           }
         ]
+      },
+      {
+        "round": 21,
+        "circuit": "Las Vegas",
+        "drivers": [
+          {
+            "driver": "Andrea Kimi Antonelli",
+            "points": 390
+          },
+          {
+            "driver": "Max Verstappen",
+            "points": 279
+          },
+          {
+            "driver": "George Russell",
+            "points": 262
+          },
+          {
+            "driver": "Lewis Hamilton",
+            "points": 261
+          },
+          {
+            "driver": "Charles Leclerc",
+            "points": 249
+          }
+        ],
+        "teams": [
+          {
+            "team": "Mercedes",
+            "points": 652
+          },
+          {
+            "team": "Ferrari",
+            "points": 510
+          },
+          {
+            "team": "Red Bull",
+            "points": 415
+          }
+        ]
       }
     ],
     "story": {
-      "text": "Andrea Kimi Antonelli ha dominato il 2026. George Russell, vincitore a Melbourne, era ancora leader dopo Shanghai, 51 punti contro 47. A Suzuka però Antonelli è passato in testa e non l'ha più lasciata. Con 9 vittorie, 16 podi e 7 pole ha chiuso il conto a Città del Messico, con 4 gare d'anticipo. Il suo capolavoro è Monza: vittoria partendo 19°, nel weekend della pole a sorpresa di Pierre Gasly con l'Alpine.\n\nLa Mercedes si è presa il titolo costruttori a Interlagos con 12 vittorie su 20 e 652 punti, contro i 510 della Ferrari. Il Cavallino ha vinto con Lewis Hamilton a Barcellona e con Charles Leclerc a Silverstone, mentre Lando Norris ha firmato 3 successi con la McLaren. Nel finale è emerso Max Verstappen: vittorie a Sepang, Singapore e Città del Messico, poi secondo a Interlagos partendo 21°. In qualifica spicca Fernando Alonso, davanti a Lance Stroll 16 volte contro 2.\n\nMancano 3 gare, a partire da Las Vegas. Resta da decidere il secondo posto, con Verstappen a 279 punti, Russell a 262, Hamilton a 261 e Leclerc a 249.",
+      "text": "La stagione 2026 porta la firma di Andrea Kimi Antonelli e della Mercedes. George Russell aveva aperto vincendo a Melbourne ed era ancora in testa dopo Shanghai, ma da Suzuka il comando è passato ad Antonelli, che non l'ha più lasciato. Il titolo è arrivato a Città del Messico, alla gara 19, con 4 gare d'anticipo, grazie a 9 vittorie, 16 podi e 8 pole. Spicca la rimonta di Monza dal 19° posto, nel giorno della pole a sorpresa di Pierre Gasly con l'Alpine. La Mercedes ha chiuso il costruttori a Interlagos, con 12 vittorie e 13 pole.\n\nNella seconda parte è emerso Max Verstappen, con quattro successi a Sepang, Singapore (dove ha vinto anche la Sprint), Città del Messico e Las Vegas, più il secondo posto a Interlagos partendo 21°. La Ferrari ha vinto con Hamilton a Barcellona e con Leclerc a Silverstone, la McLaren tre volte con Lando Norris. In qualifica i duelli più netti sono stati Alonso su Stroll per 17-2 e Sainz su Albon per 16-4, mentre Antonelli ha battuto Russell 12-9.\n\nMancano 2 gare, a partire dal Qatar, e resta aperta la lotta per il secondo posto: Verstappen 279, Russell 262, Hamilton 261, Leclerc 249. Tra i costruttori la Ferrari (510) precede la Red Bull (415).",
       "model": "claude-opus-5-5",
-      "hash": "2d617838fd921887",
-      "round": 20,
-      "circuit": "Interlagos (San Paolo)"
+      "hash": "7e2bb0158809163a",
+      "round": 21,
+      "circuit": "Las Vegas"
     }
   },
   "pastSeasons": []
