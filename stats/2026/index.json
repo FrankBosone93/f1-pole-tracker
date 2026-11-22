@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-11-22T07:14:10.133Z",
+  "updatedAt": "2026-11-22T15:14:15.846Z",
   "lastGp": {
     "round": 21,
     "circuit": "Las Vegas",
@@ -1242,45 +1242,45 @@
         "drivers": [
           {
             "driver": "Andrea Kimi Antonelli",
-            "points": 390
+            "points": 402
           },
           {
             "driver": "Max Verstappen",
-            "points": 279
-          },
-          {
-            "driver": "George Russell",
-            "points": 262
+            "points": 304
           },
           {
             "driver": "Lewis Hamilton",
-            "points": 261
+            "points": 267
           },
           {
-            "driver": "Charles Leclerc",
-            "points": 249
+            "driver": "George Russell",
+            "points": 264
+          },
+          {
+            "driver": "Lando Norris",
+            "points": 264
           }
         ],
         "teams": [
           {
             "team": "Mercedes",
-            "points": 652
+            "points": 666
           },
           {
             "team": "Ferrari",
-            "points": 510
+            "points": 517
           },
           {
             "team": "Red Bull",
-            "points": 415
+            "points": 440
           }
         ]
       }
     ],
     "story": {
-      "text": "La stagione 2026 porta la firma di Andrea Kimi Antonelli e della Mercedes. George Russell aveva aperto vincendo a Melbourne ed era ancora in testa dopo Shanghai, ma da Suzuka il comando è passato ad Antonelli, che non l'ha più lasciato. Il titolo è arrivato a Città del Messico, alla gara 19, con 4 gare d'anticipo, grazie a 9 vittorie, 16 podi e 8 pole. Spicca la rimonta di Monza dal 19° posto, nel giorno della pole a sorpresa di Pierre Gasly con l'Alpine. La Mercedes ha chiuso il costruttori a Interlagos, con 12 vittorie e 13 pole.\n\nNella seconda parte è emerso Max Verstappen, con quattro successi a Sepang, Singapore (dove ha vinto anche la Sprint), Città del Messico e Las Vegas, più il secondo posto a Interlagos partendo 21°. La Ferrari ha vinto con Hamilton a Barcellona e con Leclerc a Silverstone, la McLaren tre volte con Lando Norris. In qualifica i duelli più netti sono stati Alonso su Stroll per 17-2 e Sainz su Albon per 16-4, mentre Antonelli ha battuto Russell 12-9.\n\nMancano 2 gare, a partire dal Qatar, e resta aperta la lotta per il secondo posto: Verstappen 279, Russell 262, Hamilton 261, Leclerc 249. Tra i costruttori la Ferrari (510) precede la Red Bull (415).",
+      "text": "Andrea Kimi Antonelli ha dominato il 2026. George Russell aveva aperto da leader vincendo a Melbourne, ma dopo Suzuka Antonelli è passato in testa e non l'ha più lasciata, arrivando a 156 punti dopo Monaco con 66 di vantaggio. La vittoria più spettacolare è arrivata a Monza, partendo 19° e recuperando 18 posizioni. Il titolo si è deciso a Città del Messico, gara 19, con 4 gare d'anticipo: per lui 9 vittorie, 16 podi e 8 pole.\n\nLa Mercedes ha chiuso il mondiale costruttori a Interlagos con 3 gare d'anticipo, forte di 12 vittorie e 13 pole. Nella seconda metà è cresciuta la Red Bull di Max Verstappen, vincitore a Sepang, Singapore, Città del Messico e Las Vegas e secondo a Interlagos partendo 21°. Tra le sorprese ci sono la pole di Pierre Gasly con l'Alpine a Monza e il terzo posto di Oscar Piastri a Las Vegas dal 17° posto. In qualifica i duelli più netti sono stati quelli di Fernando Alonso su Lance Stroll (17-2) e di Carlos Sainz su Alex Albon (16-4).\n\nMancano 2 gare, a partire dal Qatar (Lusail). Resta da decidere la piazza d'onore: Verstappen è secondo con 304 punti, davanti a Lewis Hamilton con 267 e a George Russell e Lando Norris, appaiati a 264. Tra i costruttori la Ferrari, con 517 punti, precede la Red Bull, ferma a 440.",
       "model": "claude-opus-5-5",
-      "hash": "7e2bb0158809163a",
+      "hash": "29ebd68b2fcbbf31",
       "round": 21,
       "circuit": "Las Vegas"
     }
