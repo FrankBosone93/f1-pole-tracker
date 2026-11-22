@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "updatedAt": "2026-11-22T07:12:32.185Z",
+  "updatedAt": "2026-11-22T16:30:40.158Z",
   "races": [
     {
       "round": 1,
@@ -8989,16 +8989,16 @@
           },
           {
             "position": 14,
-            "driver": "Isack Hadjar",
-            "team": "Red Bull",
-            "time": "+36.488",
+            "driver": "Liam Lawson",
+            "team": "RB",
+            "time": "+36.588",
             "retired": null
           },
           {
             "position": 15,
-            "driver": "Liam Lawson",
-            "team": "RB",
-            "time": "+36.588",
+            "driver": "Isack Hadjar",
+            "team": "Red Bull",
+            "time": "+46.488",
             "retired": null
           },
           {
