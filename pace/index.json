@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-10T17:54:25.781Z",
+  "updatedAt": "2026-11-22T07:13:11.784Z",
   "races": {
     "2023": [
       {
@@ -457,6 +457,11 @@
         "circuit": "Interlagos (San Paolo)",
         "date": "2026-11-08",
         "file": "pace/2026/interlagos-san-paolo.json"
+      },
+      {
+        "circuit": "Las Vegas",
+        "date": "2026-11-22",
+        "file": "pace/2026/las-vegas.json"
       }
     ]
   }
