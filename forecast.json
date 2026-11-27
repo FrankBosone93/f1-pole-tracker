@@ -1,6 +1,6 @@
 {
   "source": "Open-Meteo",
-  "updatedAt": "2026-11-26T17:15:56.744Z",
+  "updatedAt": "2026-11-27T01:53:56.357Z",
   "season": 2026,
   "round": 22,
   "circuit": "Qatar (Lusail)",
@@ -14,8 +14,8 @@
     "race": {
       "rain": 0,
       "temp": 24,
-      "icon": "🌙",
-      "sky": "Poco nuvoloso"
+      "icon": "☁️",
+      "sky": "Coperto"
     }
   }
 }
