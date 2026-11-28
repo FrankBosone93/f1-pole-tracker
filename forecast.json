@@ -1,6 +1,6 @@
 {
   "source": "Open-Meteo",
-  "updatedAt": "2026-11-27T23:41:26.164Z",
+  "updatedAt": "2026-11-28T17:46:17.914Z",
   "season": 2026,
   "round": 22,
   "circuit": "Qatar (Lusail)",
@@ -8,8 +8,8 @@
     "qualy": {
       "rain": 0,
       "temp": 23,
-      "icon": "🌙",
-      "sky": "Sereno"
+      "icon": "☁️",
+      "sky": "Parzialmente nuvoloso"
     },
     "race": {
       "rain": 0,
