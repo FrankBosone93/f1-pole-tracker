@@ -1,7 +1,21 @@
 {
   "source": "FormulaPassion.it",
-  "updatedAt": "2026-11-27T21:11:24.688Z",
+  "updatedAt": "2026-11-28T07:41:24.409Z",
   "items": [
+    {
+      "title": "Verso il ritorno ai V8: confermato il congelamento dei motori attuali a metà 2028",
+      "link": "https://www.formulapassion.it/f1/f1-news/verso-il-ritorno-ai-v8-confermato-il-congelamento-dei-motori-attuali-a-meta-2028",
+      "date": "2026-11-28T07:00:00.000Z",
+      "author": "Simone Peluso",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/09/F1-Start-Madrid-Partenza-436x291.jpg"
+    },
+    {
+      "title": "GP Qatar 2026: orari Sky/Now e TV8",
+      "link": "https://www.formulapassion.it/f1/f1-orari/orari-tv-gp-qatar-2026-lusail-televisione-programmazione-diretta-sky-differita-tv8-dove-vederla-ferrari-leclerc-hamilton-antonelli",
+      "date": "2026-11-28T07:00:00.000Z",
+      "author": "Marco Belloro",
+      "image": "https://storage.googleapis.com/fp-media/1/2026/11/Start-Qatar-2025-F1-Partenza-436x291.jpg"
+    },
     {
       "title": "Crisi Ferrari, Hamilton è solo 8°: “Eppure in FP1 la vettura andava bene”",
       "link": "https://www.formulapassion.it/f1/f1-news/crisi-ferrari-hamilton-e-solo-8-eppure-in-fp1-la-vettura-andava-bene-gp-qatar-prove",
@@ -22,20 +36,6 @@
       "date": "2026-11-27T20:40:42.000Z",
       "author": "Valerio Barretta",
       "image": "https://storage.googleapis.com/fp-media/1/2026/11/ferrari-f1-qatar-leclerc-prove-1-436x291.jpg"
-    },
-    {
-      "title": "Qatar, telemetria FP2: Mercedes in versione astronave, Ferrari da incubo",
-      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/f1-gp-qatar-2026-telemetria-ferrari-incubo-peggior-venerdi-della-stagione-mercedes-sf26",
-      "date": "2026-11-27T20:30:00.000Z",
-      "author": "Federico Albano",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/11/Hamilton-Ferrari-Qatar-436x291.jpg"
-    },
-    {
-      "title": "Antonelli in simbiosi con la Mercedes, Ferrari irriconoscibile",
-      "link": "https://www.formulapassion.it/f1/f1-analisi-tecnica/qatar-kimi-simbiosi-macchina-ferrari-irriconoscibile",
-      "date": "2026-11-27T19:44:55.000Z",
-      "author": "Carlo Platella",
-      "image": "https://storage.googleapis.com/fp-media/1/2026/11/mercedes-antonelli-gp-qatar-f1-436x291.jpg"
     }
   ]
 }
